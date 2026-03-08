@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Validation | NestJS - Tài liệu tiếng Việt</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:       #0e0e0e;
+      --surface:  #1a1a1a;
+      --surface2: #222;
+      --border:   #2a2a2a;
+      --border-l: #333;
+      --red:      #ea2845;
+      --red-l:    #ff4d6a;
+      --red-glow: rgba(234,40,69,.15);
+      --text:     #e8e8e8;
+      --muted:    #888;
+      --sec:      #b0b0b0;
+      --code-bg:  #1e1e1e;
+      --code-bd:  #2d2d2d;
+      --hint-bg:  #0d2a1a;
+      --hint-c:   #4ade80;
+      --warn-bg:  #2a1a0d;
+      --warn-c:   #fb923c;
+      --note-bg:  #0d1a2a;
+      --note-c:   #60a0d0;
+      --toc-w:    220px;
+      --font:     'Inter', sans-serif;
+      --mono:     'Source Code Pro', monospace;
+      --r:        6px;
+      --rl:       10px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font); background: var(--bg); color: var(--text); font-size: 15px; line-height: 1.78; }
+
+    .page { max-width: 1060px; margin: 0 auto; padding: 48px 32px 96px; display: flex; gap: 56px; align-items: flex-start; }
+    .content { flex: 1; min-width: 0; }
+
+    /* TOC */
+    .toc { width: var(--toc-w); flex-shrink: 0; position: sticky; top: 32px; align-self: flex-start; max-height: calc(100vh - 48px); overflow-y: auto; }
+    .toc::-webkit-scrollbar { width: 3px; }
+    .toc::-webkit-scrollbar-thumb { background: var(--border-l); border-radius: 2px; }
+    .toc-title { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); padding-bottom: 8px; margin-bottom: 8px; border-bottom: 1px solid var(--border); }
+    .toc ul { list-style: none; }
+    .toc ul li a { display: block; padding: 3.5px 0; font-size: 12.5px; color: var(--muted); text-decoration: none; line-height: 1.5; transition: color .15s; cursor: pointer; }
+    .toc ul li a:hover, .toc ul li a.active { color: var(--red-l); }
+
+    /* Banner */
+    .vi-banner { display: flex; align-items: center; gap: 10px; padding: 11px 16px; border: 1px solid rgba(234,40,69,.3); border-radius: var(--rl); background: linear-gradient(135deg,rgba(234,40,69,.1),rgba(234,40,69,.04)); font-size: 13px; color: var(--sec); margin-bottom: 32px; }
+    .vi-banner strong { color: var(--red-l); }
+
+    /* Headings */
+    h1 { font-size: 36px; font-weight: 700; letter-spacing: -.5px; line-height: 1.2; margin-bottom: 6px; }
+    h1::after { content:''; display:block; width:44px; height:3px; background:var(--red); border-radius:2px; margin-top:12px; }
+    h3 { font-size: 19px; font-weight: 600; letter-spacing: -.2px; margin: 40px 0 12px; display: flex; align-items: center; gap: 8px; scroll-margin-top: 80px; }
+    .anchor { font-size: 14px; color: var(--muted); text-decoration: none; opacity: 0; transition: opacity .2s; }
+    h3:hover .anchor { opacity: 1; }
+    p { color: var(--sec); line-height: 1.82; margin-bottom: 16px; }
+    p:last-child { margin-bottom: 0; }
+    a { color: var(--red-l); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    strong { color: var(--text); font-weight: 600; }
+    ul { color: var(--sec); padding-left: 22px; line-height: 2.1; margin: 16px 0; }
+
+    /* inline code */
+    code { font-family: var(--mono); font-size: 13px; background: var(--code-bg); border: 1px solid var(--code-bd); padding: 1px 6px; border-radius: 4px; color: #f9a8d4; }
+
+    /* Callouts */
+    .hint, .warn, .note {
+      margin: 18px 0; padding: 12px 16px; border-left: 3px solid;
+      border-radius: var(--r); font-size: 13.5px; line-height: 1.72;
+    }
+    .hint { background: var(--hint-bg); border-color: var(--hint-c); color: #a7f3d0; }
+    .warn { background: var(--warn-bg); border-color: var(--warn-c); color: #fed7aa; }
+    .note { background: var(--note-bg); border-color: var(--note-c); color: #bae6fd; }
+    .hint p, .warn p, .note p { margin: 0; color: inherit; }
+    .lbl { display: block; font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 4px; }
+    .hint .lbl { color: var(--hint-c); }
+    .warn .lbl  { color: var(--warn-c); }
+    .note .lbl  { color: var(--note-c); }
+
+    /* Code blocks */
+    .cb { margin: 18px 0; border: 1px solid var(--code-bd); border-radius: var(--rl); overflow: hidden; background: var(--code-bg); }
+    .cb-head { display: flex; align-items: center; justify-content: space-between; padding: 8px 14px; background: #181818; border-bottom: 1px solid var(--code-bd); min-height: 38px; }
+    .cb-fname { font-family: var(--mono); font-size: 11.5px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+    .cb-fname::before { content:''; display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--red); }
+    .cb-right { display: flex; align-items: center; gap: 6px; }
+    .tabs { display: flex; gap: 3px; }
+    .tab { padding: 4px 11px; font-size: 11px; font-family: var(--mono); font-weight: 500; border: 1px solid transparent; border-radius: 4px; color: var(--muted); cursor: pointer; user-select: none; transition: all .14s; }
+    .tab.on { color: var(--red-l); background: var(--red-glow); border-color: var(--red); }
+    .tab:hover:not(.on) { color: var(--text); background: rgba(255,255,255,.04); }
+    .cpbtn { padding: 3px 9px; font-size: 10.5px; font-family: var(--mono); background: var(--surface); border: 1px solid var(--border-l); color: var(--muted); border-radius: 4px; cursor: pointer; transition: all .14s; }
+    .cpbtn:hover { background: var(--surface2); color: var(--text); }
+    .pane { display: none; }
+    .pane.on { display: block; }
+    pre { padding: 18px 20px; overflow-x: auto; font-family: var(--mono); font-size: 13.5px; line-height: 1.65; color: #abb2bf; }
+    pre::-webkit-scrollbar { height: 5px; }
+    pre::-webkit-scrollbar-thumb { background: var(--border-l); border-radius: 3px; }
+
+    /* syntax */
+    .kw  { color: #c678dd; }
+    .fn  { color: #61afef; }
+    .str { color: #98c379; }
+    .dec { color: #e5c07b; }
+    .typ { color: #e5c07b; }
+    .cm  { color: #5c6370; font-style: italic; }
+    .pn  { color: #abb2bf; }
+    .num { color: #d19a66; }
+    .cl  { color: #e06c75; }
+    .tmpl{ color: #d19a66; }
+
+    /* Page nav */
+    .page-nav { display: flex; justify-content: space-between; margin-top: 52px; gap: 16px; }
+    .pnbtn { display: flex; flex-direction: column; padding: 14px 18px; border: 1px solid var(--border); border-radius: var(--rl); text-decoration: none; transition: all .2s; min-width: 150px; }
+    .pnbtn:hover { border-color: var(--red); background: var(--red-glow); text-decoration: none; }
+    .pnlbl   { font-size: 10.5px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); margin-bottom: 3px; }
+    .pntitle { font-size: 14px; font-weight: 600; color: var(--text); }
+    .pnbtn.r { text-align: right; margin-left: auto; }
+
+    @media (max-width: 860px) { .toc { display: none; } }
+    @media (max-width: 600px) { .page { padding: 24px 16px 64px; } }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <main class="content">
+
+    <div class="vi-banner">
+      <span style="font-size:17px">🇻🇳</span>
+      <div>Dịch từ <strong><a href="https://docs.nestjs.com/techniques/validation" target="_blank">docs.nestjs.com/techniques/validation</a></strong>. Thuật ngữ kỹ thuật giữ nguyên tiếng Anh.</div>
+    </div>
+
+    <h1>Validation</h1>
+
+    <p style="margin-top:18px">Việc kiểm tra tính chính xác của bất kỳ dữ liệu nào được gửi vào ứng dụng web là một <strong>best practice</strong>. Để tự động validate các incoming request, Nest cung cấp một số pipe có sẵn ngay lập tức:</p>
+
+    <ul>
+      <li><code>ValidationPipe</code></li>
+      <li><code>ParseIntPipe</code></li>
+      <li><code>ParseBoolPipe</code></li>
+      <li><code>ParseArrayPipe</code></li>
+      <li><code>ParseUUIDPipe</code></li>
+    </ul>
+
+    <p><code>ValidationPipe</code> sử dụng thư viện <a href="https://github.com/typestack/class-validator" target="_blank">class-validator</a> mạnh mẽ và các validation decorator mang tính khai báo (declarative) của nó. <code>ValidationPipe</code> cung cấp một cách tiếp cận thuận tiện để thực thi các quy tắc validation cho tất cả client payload đến, trong đó các quy tắc cụ thể được khai báo bằng các annotation đơn giản trong các class/DTO declaration cục bộ trong mỗi module.</p>
+
+    <!-- ═══════════════════════ OVERVIEW ═══════════════════════ -->
+    <h3 id="overview">Overview <a class="anchor" href="#overview">#</a></h3>
+
+    <p>Trong chương <a href="https://docs.nestjs.com/pipes" target="_blank">Pipes</a>, chúng ta đã tìm hiểu quy trình xây dựng các validation pipe đơn giản và bind chúng với controller, method hoặc ở cấp global để chứng minh cách hoạt động của quy trình. Hãy chắc chắn xem lại chương đó để hiểu rõ nhất các chủ đề trong chương này. Ở đây, chúng ta sẽ tập trung vào các use case thực tế khác nhau của <code>ValidationPipe</code> và cách sử dụng một số tính năng tùy chỉnh nâng cao của nó.</p>
+
+    <!-- ═══════════════════════ USING BUILT-IN VALIDATIONPIPE ═══════════════════════ -->
+    <h3 id="using-built-in">Using the built-in ValidationPipe <a class="anchor" href="#using-built-in">#</a></h3>
+
+    <p>Để bắt đầu sử dụng, trước tiên cài đặt các dependency cần thiết.</p>
+
+    <div class="cb">
+      <div class="cb-head"><div style="flex:1"></div><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      <div id="v0"><div class="pane on"><pre>$ npm i --save class-validator class-transformer</pre></div></div>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">💡 Hint</span>
+      <p><code>ValidationPipe</code> được export từ package <code>@nestjs/common</code>.</p>
+    </div>
+
+    <p>Vì pipe này sử dụng thư viện <code>class-validator</code> và <code>class-transformer</code>, có nhiều option khả dụng. Bạn cấu hình các setting này thông qua configuration object được truyền vào pipe. Dưới đây là các option có sẵn:</p>
+
+    <div class="cb">
+      <div class="cb-head"><div style="flex:1"></div><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      <div id="v1"><div class="pane on"><pre><span class="kw">export interface</span> <span class="typ">ValidationPipeOptions</span> <span class="kw">extends</span> <span class="typ">ValidatorOptions</span> <span class="pn">{</span>
+  transform<span class="pn">?:</span> <span class="typ">boolean</span><span class="pn">;</span>
+  disableErrorMessages<span class="pn">?:</span> <span class="typ">boolean</span><span class="pn">;</span>
+  exceptionFactory<span class="pn">?:</span> <span class="pn">(</span>errors<span class="pn">:</span> <span class="typ">ValidationError</span><span class="pn">[])</span> <span class="pn">=&gt;</span> <span class="typ">any</span><span class="pn">;</span>
+<span class="pn">}</span></pre></div></div>
+    </div>
+
+    <p>Tất cả các option <code>class-validator</code> khả dụng (kế thừa từ interface <code>ValidatorOptions</code>):</p>
+
+    <table style="width:100%;border-collapse:collapse;margin:18px 0;font-size:13.5px">
+      <thead><tr style="border-bottom:2px solid var(--border-l)">
+        <th style="text-align:left;padding:8px 12px;color:var(--muted)">Option</th>
+        <th style="text-align:left;padding:8px 12px;color:var(--muted)">Type</th>
+        <th style="text-align:left;padding:8px 12px;color:var(--muted)">Mô tả</th>
+      </tr></thead>
+      <tbody>
+        <tr style="border-bottom:1px solid var(--border)"><td style="padding:8px 12px"><code>skipMissingProperties</code></td><td style="padding:8px 12px"><code>boolean</code></td><td style="padding:8px 12px">Nếu set thành true, validator sẽ bỏ qua validation của tất cả property mà null hoặc undefined trong object đang được validate.</td></tr>
+        <tr style="border-bottom:1px solid var(--border)"><td style="padding:8px 12px"><code>whitelist</code></td><td style="padding:8px 12px"><code>boolean</code></td><td style="padding:8px 12px">Nếu set thành true, validator sẽ loại bỏ (strip) tất cả property của object được validate mà không sử dụng bất kỳ validation decorator nào.</td></tr>
+        <tr style="border-bottom:1px solid var(--border)"><td style="padding:8px 12px"><code>forbidNonWhitelisted</code></td><td style="padding:8px 12px"><code>boolean</code></td><td style="padding:8px 12px">Nếu set thành true, thay vì strip các property non-whitelisted, validator sẽ throw exception.</td></tr>
+        <tr style="border-bottom:1px solid var(--border)"><td style="padding:8px 12px"><code>forbidUnknownValues</code></td><td style="padding:8px 12px"><code>boolean</code></td><td style="padding:8px 12px">Nếu set thành true, nỗ lực validate các object không xác định sẽ thất bại ngay lập tức.</td></tr>
+        <tr style="border-bottom:1px solid var(--border)"><td style="padding:8px 12px"><code>disableErrorMessages</code></td><td style="padding:8px 12px"><code>boolean</code></td><td style="padding:8px 12px">Nếu set thành true, validation error sẽ không được trả về cho client.</td></tr>
+        <tr style="border-bottom:1px solid var(--border)"><td style="padding:8px 12px"><code>errorHttpStatusCode</code></td><td style="padding:8px 12px"><code>number</code></td><td style="padding:8px 12px">Setting này cho phép bạn chỉ định loại exception sẽ được sử dụng trong trường hợp lỗi. Mặc định nó throw <code>BadRequestException</code>.</td></tr>
+        <tr style="border-bottom:1px solid var(--border)"><td style="padding:8px 12px"><code>exceptionFactory</code></td><td style="padding:8px 12px"><code>Function</code></td><td style="padding:8px 12px">Nhận một mảng validation error và trả về một exception object để throw.</td></tr>
+        <tr style="border-bottom:1px solid var(--border)"><td style="padding:8px 12px"><code>groups</code></td><td style="padding:8px 12px"><code>string[]</code></td><td style="padding:8px 12px">Các group được sử dụng trong quá trình validation của object.</td></tr>
+        <tr style="border-bottom:1px solid var(--border)"><td style="padding:8px 12px"><code>always</code></td><td style="padding:8px 12px"><code>boolean</code></td><td style="padding:8px 12px">Set default cho option <code>always</code> của decorator. Default có thể bị override trong decorator option.</td></tr>
+        <tr style="border-bottom:1px solid var(--border)"><td style="padding:8px 12px"><code>strictGroups</code></td><td style="padding:8px 12px"><code>boolean</code></td><td style="padding:8px 12px">Nếu <code>groups</code> không được cung cấp hoặc rỗng, bỏ qua các decorator có ít nhất một group.</td></tr>
+        <tr style="border-bottom:1px solid var(--border)"><td style="padding:8px 12px"><code>dismissDefaultMessages</code></td><td style="padding:8px 12px"><code>boolean</code></td><td style="padding:8px 12px">Nếu set thành true, validation sẽ không sử dụng default message. Error message luôn là <code>undefined</code> nếu không được set explicitly.</td></tr>
+        <tr style="border-bottom:1px solid var(--border)"><td style="padding:8px 12px"><code>validationError.target</code></td><td style="padding:8px 12px"><code>boolean</code></td><td style="padding:8px 12px">Cho biết target có nên được expose trong <code>ValidationError</code> hay không.</td></tr>
+        <tr style="border-bottom:1px solid var(--border)"><td style="padding:8px 12px"><code>validationError.value</code></td><td style="padding:8px 12px"><code>boolean</code></td><td style="padding:8px 12px">Cho biết validated value có nên được expose trong <code>ValidationError</code> hay không.</td></tr>
+        <tr style="border-bottom:1px solid var(--border)"><td style="padding:8px 12px"><code>stopAtFirstError</code></td><td style="padding:8px 12px"><code>boolean</code></td><td style="padding:8px 12px">Khi set thành true, validation của property đã cho sẽ dừng sau khi gặp error đầu tiên. Mặc định là false.</td></tr>
+      </tbody>
+    </table>
+
+    <div class="note">
+      <span class="lbl">📌 Notice</span>
+      <p>Tìm thêm thông tin về package <code>class-validator</code> trong <a href="https://github.com/typestack/class-validator" target="_blank">repository</a> của nó.</p>
+    </div>
+
+    <!-- ═══════════════════════ AUTO-VALIDATION ═══════════════════════ -->
+    <h3 id="auto-validation">Auto-validation <a class="anchor" href="#auto-validation">#</a></h3>
+
+    <p>Chúng ta sẽ bắt đầu bằng cách bind <code>ValidationPipe</code> ở cấp application, do đó đảm bảo tất cả endpoint được bảo vệ khỏi việc nhận dữ liệu không chính xác.</p>
+
+    <div class="cb">
+      <div class="cb-head"><div class="cb-fname">main.ts</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div>
+      <div id="v2"><div class="pane on"><pre><span class="kw">async function</span> <span class="fn">bootstrap</span><span class="pn">() {</span>
+  <span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> <span class="cl">NestFactory</span><span class="pn">.</span><span class="fn">create</span><span class="pn">(</span><span class="cl">AppModule</span><span class="pn">);</span>
+  app<span class="pn">.</span><span class="fn">useGlobalPipes</span><span class="pn">(</span><span class="kw">new</span> <span class="cl">ValidationPipe</span><span class="pn">());</span>
+  <span class="kw">await</span> app<span class="pn">.</span><span class="fn">listen</span><span class="pn">(</span>process<span class="pn">.</span>env<span class="pn">.</span>PORT <span class="pn">??</span> <span class="num">3000</span><span class="pn">);</span>
+<span class="pn">}</span>
+<span class="fn">bootstrap</span><span class="pn">();</span></pre></div></div>
+    </div>
+
+    <p>Để kiểm tra pipe, hãy tạo một endpoint cơ bản.</p>
+
+    <div class="cb">
+      <div class="cb-head"><div style="flex:1"></div><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      <div id="v3"><div class="pane on"><pre><span class="dec">@Post</span><span class="pn">()</span>
+<span class="fn">create</span><span class="pn">(</span><span class="dec">@Body</span><span class="pn">()</span> createUserDto<span class="pn">:</span> <span class="typ">CreateUserDto</span><span class="pn">) {</span>
+  <span class="kw">return</span> <span class="str">'This action adds a new user'</span><span class="pn">;</span>
+<span class="pn">}</span></pre></div></div>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">💡 Hint</span>
+      <p>Vì TypeScript không lưu trữ metadata về <strong>generic hoặc interface</strong>, khi bạn sử dụng chúng trong DTO, <code>ValidationPipe</code> có thể không validate được incoming data đúng cách. Vì lý do này, hãy cân nhắc sử dụng concrete class trong DTO của bạn.</p>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">💡 Hint</span>
+      <p>Khi import DTO, bạn không thể sử dụng type-only import vì nó sẽ bị xóa tại runtime, nghĩa là hãy nhớ dùng <code>import { CreateUserDto }</code> thay vì <code>import type { CreateUserDto }</code>.</p>
+    </div>
+
+    <p>Bây giờ chúng ta có thể thêm một vài validation rule trong <code>CreateUserDto</code>. Chúng ta làm điều này bằng cách sử dụng các decorator được cung cấp bởi package <a href="https://github.com/typestack/class-validator" target="_blank">class-validator</a>, được mô tả chi tiết <a href="https://github.com/typestack/class-validator#usage" target="_blank">tại đây</a>. Theo cách này, bất kỳ route nào sử dụng <code>CreateUserDto</code> sẽ tự động thực thi các validation rule này.</p>
+
+    <div class="cb">
+      <div class="cb-head"><div class="cb-fname">create-user.dto.ts</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div>
+      <div id="v4"><div class="pane on"><pre><span class="kw">import</span> <span class="pn">{</span> IsEmail<span class="pn">,</span> IsNotEmpty <span class="pn">}</span> <span class="kw">from</span> <span class="str">'class-validator'</span><span class="pn">;</span>
+
+<span class="kw">export class</span> <span class="cl">CreateUserDto</span> <span class="pn">{</span>
+  <span class="dec">@IsEmail</span><span class="pn">()</span>
+  email<span class="pn">:</span> <span class="typ">string</span><span class="pn">;</span>
+
+  <span class="dec">@IsNotEmpty</span><span class="pn">()</span>
+  password<span class="pn">:</span> <span class="typ">string</span><span class="pn">;</span>
+<span class="pn">}</span></pre></div></div>
+    </div>
+
+    <p>Với các rule này, nếu một request hit endpoint của chúng ta với property <code>email</code> không hợp lệ trong request body, ứng dụng sẽ tự động respond với mã <code>400 Bad Request</code>, kèm theo response body như sau:</p>
+
+    <div class="cb">
+      <div class="cb-head"><div style="flex:1"></div><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      <div id="v5"><div class="pane on"><pre><span class="pn">{</span>
+  <span class="str">"statusCode"</span><span class="pn">:</span> <span class="num">400</span><span class="pn">,</span>
+  <span class="str">"error"</span><span class="pn">:</span> <span class="str">"Bad Request"</span><span class="pn">,</span>
+  <span class="str">"message"</span><span class="pn">:</span> <span class="pn">[</span><span class="str">"email must be an email"</span><span class="pn">]</span>
+<span class="pn">}</span></pre></div></div>
+    </div>
+
+    <p>Ngoài việc validate request body, <code>ValidationPipe</code> có thể được sử dụng với các request object property khác. Giả sử chúng ta muốn accept <code>:id</code> trong endpoint path. Để đảm bảo chỉ các số được chấp nhận cho request parameter này, chúng ta có thể sử dụng construct sau:</p>
+
+    <div class="cb">
+      <div class="cb-head"><div style="flex:1"></div><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      <div id="v6"><div class="pane on"><pre><span class="dec">@Get</span><span class="pn">(</span><span class="str">':id'</span><span class="pn">)</span>
+<span class="fn">findOne</span><span class="pn">(</span><span class="dec">@Param</span><span class="pn">()</span> params<span class="pn">:</span> <span class="typ">FindOneParams</span><span class="pn">) {</span>
+  <span class="kw">return</span> <span class="str">'This action returns a user'</span><span class="pn">;</span>
+<span class="pn">}</span></pre></div></div>
+    </div>
+
+    <p><code>FindOneParams</code>, giống như một DTO, chỉ đơn giản là một class định nghĩa validation rule sử dụng <code>class-validator</code>. Nó sẽ trông như thế này:</p>
+
+    <div class="cb">
+      <div class="cb-head"><div style="flex:1"></div><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      <div id="v7"><div class="pane on"><pre><span class="kw">import</span> <span class="pn">{</span> IsNumberString <span class="pn">}</span> <span class="kw">from</span> <span class="str">'class-validator'</span><span class="pn">;</span>
+
+<span class="kw">export class</span> <span class="cl">FindOneParams</span> <span class="pn">{</span>
+  <span class="dec">@IsNumberString</span><span class="pn">()</span>
+  id<span class="pn">:</span> <span class="typ">string</span><span class="pn">;</span>
+<span class="pn">}</span></pre></div></div>
+    </div>
+
+    <!-- ═══════════════════════ DISABLE DETAILED ERRORS ═══════════════════════ -->
+    <h3 id="disable-errors">Disable detailed errors <a class="anchor" href="#disable-errors">#</a></h3>
+
+    <p>Error message có thể hữu ích để giải thích request bị sai ở đâu. Tuy nhiên, một số môi trường production thích disable detailed error. Thực hiện điều này bằng cách truyền options object cho <code>ValidationPipe</code>:</p>
+
+    <div class="cb">
+      <div class="cb-head"><div style="flex:1"></div><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      <div id="v8"><div class="pane on"><pre>app<span class="pn">.</span><span class="fn">useGlobalPipes</span><span class="pn">(</span>
+  <span class="kw">new</span> <span class="cl">ValidationPipe</span><span class="pn">({</span>
+    disableErrorMessages<span class="pn">:</span> <span class="kw">true</span><span class="pn">,</span>
+  <span class="pn">}),</span>
+<span class="pn">);</span></pre></div></div>
+    </div>
+
+    <p>Kết quả là, detailed error message sẽ không được hiển thị trong response body.</p>
+
+    <!-- ═══════════════════════ STRIPPING PROPERTIES ═══════════════════════ -->
+    <h3 id="stripping">Stripping properties <a class="anchor" href="#stripping">#</a></h3>
+
+    <p><code>ValidationPipe</code> của chúng ta cũng có thể filter ra các property mà không nên được nhận bởi method handler. Trong trường hợp này, chúng ta có thể <strong>whitelist</strong> các property được chấp nhận, và bất kỳ property nào không nằm trong whitelist sẽ tự động bị strip khỏi resulting object. Ví dụ: nếu handler của chúng ta expect property <code>email</code> và <code>password</code>, nhưng request cũng bao gồm property <code>age</code>, property này có thể tự động bị loại bỏ khỏi resulting DTO. Để enable behavior này, set <code>whitelist</code> thành <code>true</code>.</p>
+
+    <div class="cb">
+      <div class="cb-head"><div style="flex:1"></div><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      <div id="v9"><div class="pane on"><pre>app<span class="pn">.</span><span class="fn">useGlobalPipes</span><span class="pn">(</span>
+  <span class="kw">new</span> <span class="cl">ValidationPipe</span><span class="pn">({</span>
+    whitelist<span class="pn">:</span> <span class="kw">true</span><span class="pn">,</span>
+  <span class="pn">}),</span>
+<span class="pn">);</span></pre></div></div>
+    </div>
+
+    <p>Khi set thành true, điều này sẽ tự động loại bỏ các non-whitelisted property (những property không có bất kỳ decorator nào trong validation class).</p>
+
+    <p>Ngoài ra, bạn có thể dừng request khỏi việc xử lý khi có non-whitelisted property xuất hiện, và trả về error response cho user. Để enable điều này, set option <code>forbidNonWhitelisted</code> thành <code>true</code>, kết hợp với setting <code>whitelist</code> thành <code>true</code>.</p>
+
+    <!-- ═══════════════════════ TRANSFORM PAYLOAD ═══════════════════════ -->
+    <h3 id="transform">Transform payload objects <a class="anchor" href="#transform">#</a></h3>
+
+    <p>Payload đến qua network là các plain JavaScript object. <code>ValidationPipe</code> có thể tự động transform payload thành object được typed theo DTO class của chúng. Để enable auto-transformation, set <code>transform</code> thành <code>true</code>. Điều này có thể được thực hiện ở method level:</p>
+
+    <div class="cb">
+      <div class="cb-head"><div class="cb-fname">cats.controller.ts</div><div class="cb-right"><div class="tabs"><div class="tab on">JS</div></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div>
+      <div id="v10"><div class="pane on"><pre><span class="dec">@Post</span><span class="pn">()</span>
+<span class="dec">@UsePipes</span><span class="pn">(</span><span class="kw">new</span> <span class="cl">ValidationPipe</span><span class="pn">({</span> transform<span class="pn">:</span> <span class="kw">true</span> <span class="pn">}))</span>
+<span class="kw">async</span> <span class="fn">create</span><span class="pn">(</span><span class="dec">@Body</span><span class="pn">()</span> createCatDto<span class="pn">:</span> <span class="typ">CreateCatDto</span><span class="pn">) {</span>
+  <span class="kw">this</span><span class="pn">.</span>catsService<span class="pn">.</span><span class="fn">create</span><span class="pn">(</span>createCatDto<span class="pn">);</span>
+<span class="pn">}</span></pre></div></div>
+    </div>
+
+    <p>Để enable behavior này globally, set option trên global pipe:</p>
+
+    <div class="cb">
+      <div class="cb-head"><div style="flex:1"></div><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      <div id="v11"><div class="pane on"><pre>app<span class="pn">.</span><span class="fn">useGlobalPipes</span><span class="pn">(</span>
+  <span class="kw">new</span> <span class="cl">ValidationPipe</span><span class="pn">({</span>
+    transform<span class="pn">:</span> <span class="kw">true</span><span class="pn">,</span>
+  <span class="pn">}),</span>
+<span class="pn">);</span></pre></div></div>
+    </div>
+
+    <p>Với option auto-transformation được enable, <code>ValidationPipe</code> cũng sẽ thực hiện chuyển đổi các primitive type. Trong ví dụ sau, method <code>findOne()</code> nhận một argument đại diện cho <code>id</code> path parameter được extract:</p>
+
+    <div class="cb">
+      <div class="cb-head"><div style="flex:1"></div><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      <div id="v12"><div class="pane on"><pre><span class="dec">@Get</span><span class="pn">(</span><span class="str">':id'</span><span class="pn">)</span>
+<span class="fn">findOne</span><span class="pn">(</span><span class="dec">@Param</span><span class="pn">(</span><span class="str">'id'</span><span class="pn">)</span> id<span class="pn">:</span> <span class="typ">number</span><span class="pn">) {</span>
+  console<span class="pn">.</span><span class="fn">log</span><span class="pn">(</span><span class="kw">typeof</span> id <span class="pn">===</span> <span class="str">'number'</span><span class="pn">);</span> <span class="cm">// true</span>
+  <span class="kw">return</span> <span class="str">'This action returns a user'</span><span class="pn">;</span>
+<span class="pn">}</span></pre></div></div>
+    </div>
+
+    <p>Mặc định, mỗi path parameter và query parameter đến qua network dưới dạng <code>string</code>. Trong ví dụ trên, chúng ta chỉ định type <code>id</code> là <code>number</code> (trong method signature). Do đó, <code>ValidationPipe</code> sẽ cố gắng tự động chuyển đổi string identifier thành number.</p>
+
+    <!-- ═══════════════════════ EXPLICIT CONVERSION ═══════════════════════ -->
+    <h3 id="explicit-conversion">Explicit conversion <a class="anchor" href="#explicit-conversion">#</a></h3>
+
+    <p>Trong section trên, chúng ta đã cho thấy <code>ValidationPipe</code> có thể implicitly transform query và path parameter dựa trên expected type. Tuy nhiên, tính năng này yêu cầu auto-transformation phải được enable.</p>
+
+    <p>Ngoài ra (với auto-transformation disabled), bạn có thể explicitly cast value sử dụng <code>ParseIntPipe</code> hoặc <code>ParseBoolPipe</code> (lưu ý rằng <code>ParseStringPipe</code> không cần thiết vì, như đã đề cập trước đó, mọi path parameter và query parameter đều đến qua network dưới dạng <code>string</code> theo mặc định).</p>
+
+    <div class="cb">
+      <div class="cb-head"><div style="flex:1"></div><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      <div id="v13"><div class="pane on"><pre><span class="dec">@Get</span><span class="pn">(</span><span class="str">':id'</span><span class="pn">)</span>
+<span class="fn">findOne</span><span class="pn">(</span>
+  <span class="dec">@Param</span><span class="pn">(</span><span class="str">'id'</span><span class="pn">,</span> <span class="cl">ParseIntPipe</span><span class="pn">)</span> id<span class="pn">:</span> <span class="typ">number</span><span class="pn">,</span>
+  <span class="dec">@Query</span><span class="pn">(</span><span class="str">'sort'</span><span class="pn">,</span> <span class="cl">ParseBoolPipe</span><span class="pn">)</span> sort<span class="pn">:</span> <span class="typ">boolean</span><span class="pn">,</span>
+<span class="pn">) {</span>
+  console<span class="pn">.</span><span class="fn">log</span><span class="pn">(</span><span class="kw">typeof</span> id <span class="pn">===</span> <span class="str">'number'</span><span class="pn">);</span> <span class="cm">// true</span>
+  console<span class="pn">.</span><span class="fn">log</span><span class="pn">(</span><span class="kw">typeof</span> sort <span class="pn">===</span> <span class="str">'boolean'</span><span class="pn">);</span> <span class="cm">// true</span>
+  <span class="kw">return</span> <span class="str">'This action returns a user'</span><span class="pn">;</span>
+<span class="pn">}</span></pre></div></div>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">💡 Hint</span>
+      <p><code>ParseIntPipe</code> và <code>ParseBoolPipe</code> được export từ package <code>@nestjs/common</code>.</p>
+    </div>
+
+    <!-- ═══════════════════════ MAPPED TYPES ═══════════════════════ -->
+    <h3 id="mapped-types">Mapped types <a class="anchor" href="#mapped-types">#</a></h3>
+
+    <p>Khi bạn xây dựng các tính năng như <strong>CRUD</strong> (Create/Read/Update/Delete), thường hữu ích khi xây dựng các variant trên một base entity type. Nest cung cấp một số utility function thực hiện type transformation để làm task này thuận tiện hơn.</p>
+
+    <div class="warn">
+      <span class="lbl">⚠️ Warning</span>
+      <p>Nếu ứng dụng của bạn sử dụng package <code>@nestjs/swagger</code>, hãy xem <a href="https://docs.nestjs.com/openapi/mapped-types" target="_blank">chương này</a> để biết thêm thông tin về Mapped Types. Tương tự, nếu bạn sử dụng package <code>@nestjs/graphql</code> hãy xem <a href="https://docs.nestjs.com/graphql/mapped-types" target="_blank">chương này</a>. Cả hai package đều phụ thuộc nhiều vào type và do đó chúng yêu cầu import khác nhau để sử dụng. Do đó, nếu bạn sử dụng <code>@nestjs/mapped-types</code> (thay vì package thích hợp, hoặc <code>@nestjs/swagger</code> hoặc <code>@nestjs/graphql</code>) tùy thuộc vào type ứng dụng của bạn, bạn có thể gặp nhiều side-effect không được document.</p>
+    </div>
+
+    <p>Khi xây dựng input validation type (còn gọi là DTO), thường hữu ích khi xây dựng các biến thể <strong>create</strong> và <strong>update</strong> trên cùng một type. Ví dụ, biến thể <strong>create</strong> có thể yêu cầu tất cả field, trong khi biến thể <strong>update</strong> có thể làm tất cả field trở thành optional.</p>
+
+    <p>Nest cung cấp utility function <code>PartialType()</code> để làm task này dễ dàng hơn và giảm thiểu boilerplate.</p>
+
+    <p>Function <code>PartialType()</code> trả về một type (class) với tất cả property của input type được set thành optional. Ví dụ, giả sử chúng ta có <strong>create</strong> type như sau:</p>
+
+    <div class="cb">
+      <div class="cb-head"><div style="flex:1"></div><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      <div id="v14"><div class="pane on"><pre><span class="kw">export class</span> <span class="cl">CreateCatDto</span> <span class="pn">{</span>
+  name<span class="pn">:</span> <span class="typ">string</span><span class="pn">;</span>
+  age<span class="pn">:</span> <span class="typ">number</span><span class="pn">;</span>
+  breed<span class="pn">:</span> <span class="typ">string</span><span class="pn">;</span>
+<span class="pn">}</span></pre></div></div>
+    </div>
+
+    <p>Mặc định, tất cả các field này đều là required. Để tạo type với cùng các field, nhưng mỗi field là optional, sử dụng <code>PartialType()</code> truyền class reference (<code>CreateCatDto</code>) làm argument:</p>
+
+    <div class="cb">
+      <div class="cb-head"><div style="flex:1"></div><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      <div id="v15"><div class="pane on"><pre><span class="kw">export class</span> <span class="cl">UpdateCatDto</span> <span class="kw">extends</span> <span class="fn">PartialType</span><span class="pn">(</span><span class="cl">CreateCatDto</span><span class="pn">) {}</span></pre></div></div>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">💡 Hint</span>
+      <p>Function <code>PartialType()</code> được import từ package <code>@nestjs/mapped-types</code>.</p>
+    </div>
+
+    <p>Function <code>PickType()</code> xây dựng một type (class) mới bằng cách chọn một tập hợp property từ input type. Ví dụ, giả sử chúng ta bắt đầu với type:</p>
+
+    <div class="cb">
+      <div class="cb-head"><div style="flex:1"></div><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      <div id="v16"><div class="pane on"><pre><span class="kw">export class</span> <span class="cl">CreateCatDto</span> <span class="pn">{</span>
+  name<span class="pn">:</span> <span class="typ">string</span><span class="pn">;</span>
+  age<span class="pn">:</span> <span class="typ">number</span><span class="pn">;</span>
+  breed<span class="pn">:</span> <span class="typ">string</span><span class="pn">;</span>
+<span class="pn">}</span></pre></div></div>
+    </div>
+
+    <p>Chúng ta có thể pick một tập property từ class này bằng utility function <code>PickType()</code>:</p>
+
+    <div class="cb">
+      <div class="cb-head"><div style="flex:1"></div><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      <div id="v17"><div class="pane on"><pre><span class="kw">export class</span> <span class="cl">UpdateCatAgeDto</span> <span class="kw">extends</span> <span class="fn">PickType</span><span class="pn">(</span><span class="cl">CreateCatDto</span><span class="pn">,</span> <span class="pn">[</span><span class="str">'age'</span><span class="pn">]</span> <span class="kw">as const</span><span class="pn">) {}</span></pre></div></div>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">💡 Hint</span>
+      <p>Function <code>PickType()</code> được import từ package <code>@nestjs/mapped-types</code>.</p>
+    </div>
+
+    <p>Function <code>OmitType()</code> xây dựng một type bằng cách chọn tất cả property từ input type rồi loại bỏ một tập key nhất định. Ví dụ, giả sử chúng ta bắt đầu với type:</p>
+
+    <div class="cb">
+      <div class="cb-head"><div style="flex:1"></div><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      <div id="v18"><div class="pane on"><pre><span class="kw">export class</span> <span class="cl">CreateCatDto</span> <span class="pn">{</span>
+  name<span class="pn">:</span> <span class="typ">string</span><span class="pn">;</span>
+  age<span class="pn">:</span> <span class="typ">number</span><span class="pn">;</span>
+  breed<span class="pn">:</span> <span class="typ">string</span><span class="pn">;</span>
+<span class="pn">}</span></pre></div></div>
+    </div>
+
+    <p>Chúng ta có thể tạo ra derived type có mọi property <strong>ngoại trừ</strong> <code>name</code> như dưới đây. Trong construct này, argument thứ hai cho <code>OmitType</code> là mảng tên property.</p>
+
+    <div class="cb">
+      <div class="cb-head"><div style="flex:1"></div><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      <div id="v19"><div class="pane on"><pre><span class="kw">export class</span> <span class="cl">UpdateCatDto</span> <span class="kw">extends</span> <span class="fn">OmitType</span><span class="pn">(</span><span class="cl">CreateCatDto</span><span class="pn">,</span> <span class="pn">[</span><span class="str">'name'</span><span class="pn">]</span> <span class="kw">as const</span><span class="pn">) {}</span></pre></div></div>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">💡 Hint</span>
+      <p>Function <code>OmitType()</code> được import từ package <code>@nestjs/mapped-types</code>.</p>
+    </div>
+
+    <p>Function <code>IntersectionType()</code> kết hợp hai type thành một type mới (class). Ví dụ, giả sử chúng ta bắt đầu với hai type:</p>
+
+    <div class="cb">
+      <div class="cb-head"><div style="flex:1"></div><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      <div id="v20"><div class="pane on"><pre><span class="kw">export class</span> <span class="cl">CreateCatDto</span> <span class="pn">{</span>
+  name<span class="pn">:</span> <span class="typ">string</span><span class="pn">;</span>
+  breed<span class="pn">:</span> <span class="typ">string</span><span class="pn">;</span>
+<span class="pn">}</span>
+
+<span class="kw">export class</span> <span class="cl">AdditionalCatInfo</span> <span class="pn">{</span>
+  color<span class="pn">:</span> <span class="typ">string</span><span class="pn">;</span>
+<span class="pn">}</span></pre></div></div>
+    </div>
+
+    <p>Chúng ta có thể tạo new type kết hợp tất cả property trong cả hai type:</p>
+
+    <div class="cb">
+      <div class="cb-head"><div style="flex:1"></div><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      <div id="v21"><div class="pane on"><pre><span class="kw">export class</span> <span class="cl">UpdateCatDto</span> <span class="kw">extends</span> <span class="fn">IntersectionType</span><span class="pn">(</span>
+  <span class="cl">CreateCatDto</span><span class="pn">,</span>
+  <span class="cl">AdditionalCatInfo</span><span class="pn">,</span>
+<span class="pn">) {}</span></pre></div></div>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">💡 Hint</span>
+      <p>Function <code>IntersectionType()</code> được import từ package <code>@nestjs/mapped-types</code>.</p>
+    </div>
+
+    <p>Các type mapping utility function có thể composable. Ví dụ, code sau sẽ tạo ra type (class) có tất cả property của type <code>CreateCatDto</code> ngoại trừ <code>name</code>, và các property đó sẽ được set thành optional:</p>
+
+    <div class="cb">
+      <div class="cb-head"><div style="flex:1"></div><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      <div id="v22"><div class="pane on"><pre><span class="kw">export class</span> <span class="cl">UpdateCatDto</span> <span class="kw">extends</span> <span class="fn">PartialType</span><span class="pn">(</span>
+  <span class="fn">OmitType</span><span class="pn">(</span><span class="cl">CreateCatDto</span><span class="pn">,</span> <span class="pn">[</span><span class="str">'name'</span><span class="pn">]</span> <span class="kw">as const</span><span class="pn">),</span>
+<span class="pn">) {}</span></pre></div></div>
+    </div>
+
+    <!-- ═══════════════════════ PARSING AND VALIDATING ARRAYS ═══════════════════════ -->
+    <h3 id="parsing-arrays">Parsing and validating arrays <a class="anchor" href="#parsing-arrays">#</a></h3>
+
+    <p>TypeScript không lưu trữ metadata về generic hoặc interface, vì vậy khi bạn sử dụng chúng trong DTO, <code>ValidationPipe</code> có thể không validate và parse payload đúng cách. Ví dụ, trong code sau, <code>createUserDtos</code> sẽ không được type đúng:</p>
+
+    <div class="cb">
+      <div class="cb-head"><div style="flex:1"></div><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      <div id="v23"><div class="pane on"><pre><span class="dec">@Post</span><span class="pn">()</span>
+<span class="fn">createBulk</span><span class="pn">(</span><span class="dec">@Body</span><span class="pn">()</span> createUserDtos<span class="pn">:</span> <span class="typ">CreateUserDto</span><span class="pn">[]) {</span>
+  <span class="kw">return</span> <span class="str">'This action adds new users'</span><span class="pn">;</span>
+<span class="pn">}</span></pre></div></div>
+    </div>
+
+    <p>Để validate array, tạo một class chuyên dụng chứa property wraps array, hoặc sử dụng <code>ParseArrayPipe</code>.</p>
+
+    <div class="cb">
+      <div class="cb-head"><div style="flex:1"></div><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      <div id="v24"><div class="pane on"><pre><span class="dec">@Post</span><span class="pn">()</span>
+<span class="fn">createBulk</span><span class="pn">(</span>
+  <span class="dec">@Body</span><span class="pn">(</span><span class="kw">new</span> <span class="cl">ParseArrayPipe</span><span class="pn">({</span> items<span class="pn">:</span> <span class="cl">CreateUserDto</span> <span class="pn">}))</span>
+  createUserDtos<span class="pn">:</span> <span class="typ">CreateUserDto</span><span class="pn">[],</span>
+<span class="pn">) {</span>
+  <span class="kw">return</span> <span class="str">'This action adds new users'</span><span class="pn">;</span>
+<span class="pn">}</span></pre></div></div>
+    </div>
+
+    <p>Ngoài ra, <code>ParseArrayPipe</code> có thể hữu ích khi parsing query parameter. Hãy xem xét một method <code>findByIds()</code> trả về user dựa trên identifier được truyền dưới dạng query parameter.</p>
+
+    <div class="cb">
+      <div class="cb-head"><div style="flex:1"></div><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      <div id="v25"><div class="pane on"><pre><span class="dec">@Get</span><span class="pn">()</span>
+<span class="fn">findByIds</span><span class="pn">(</span>
+  <span class="dec">@Query</span><span class="pn">(</span><span class="str">'ids'</span><span class="pn">,</span> <span class="kw">new</span> <span class="cl">ParseArrayPipe</span><span class="pn">({</span> items<span class="pn">:</span> <span class="cl">Number</span><span class="pn">,</span> separator<span class="pn">:</span> <span class="str">','</span> <span class="pn">}))</span>
+  ids<span class="pn">:</span> <span class="typ">number</span><span class="pn">[],</span>
+<span class="pn">) {</span>
+  <span class="kw">return</span> <span class="str">'This action returns users by ids'</span><span class="pn">;</span>
+<span class="pn">}</span></pre></div></div>
+    </div>
+
+    <p>Construct này validate incoming query parameter từ HTTP <code>GET</code> request như sau:</p>
+
+    <div class="cb">
+      <div class="cb-head"><div style="flex:1"></div><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      <div id="v26"><div class="pane on"><pre>GET /?ids=1,2,3</pre></div></div>
+    </div>
+
+    <!-- ═══════════════════════ WEBSOCKETS AND MICROSERVICES ═══════════════════════ -->
+    <h3 id="websockets">WebSockets and Microservices <a class="anchor" href="#websockets">#</a></h3>
+
+    <p>Mặc dù chương này cho thấy ví dụ sử dụng HTTP style application (ví dụ: Express hoặc Fastify), <code>ValidationPipe</code> hoạt động giống nhau cho WebSocket và microservice, bất kể transport method nào được sử dụng.</p>
+
+    <!-- ═══════════════════════ LEARN MORE ═══════════════════════ -->
+    <h3 id="learn-more">Learn more <a class="anchor" href="#learn-more">#</a></h3>
+
+    <p>Đọc thêm về custom validator, error message, và các decorator khả dụng được cung cấp bởi package <code>class-validator</code> <a href="https://github.com/typestack/class-validator" target="_blank">tại đây</a>.</p>
+
+    <!-- Page navigation -->
+    <div class="page-nav">
+      <a class="pnbtn" href="Mongo.html">
+        <span class="pnlbl">← Trước</span>
+        <span class="pntitle">Mongo</span>
+      </a>
+      <a class="pnbtn r" href="Caching.html">
+        <span class="pnlbl">Tiếp →</span>
+        <span class="pntitle">Caching</span>
+      </a>
+    </div>
+
+  </main>
+
+  <!-- TOC -->
+  <aside class="toc">
+    <div class="toc-title">Nội dung</div>
+    <ul>
+      <li><a href="#overview">Overview</a></li>
+      <li><a href="#using-built-in">Using the built-in ValidationPipe</a></li>
+      <li><a href="#auto-validation">Auto-validation</a></li>
+      <li><a href="#disable-errors">Disable detailed errors</a></li>
+      <li><a href="#stripping">Stripping properties</a></li>
+      <li><a href="#transform">Transform payload objects</a></li>
+      <li><a href="#explicit-conversion">Explicit conversion</a></li>
+      <li><a href="#mapped-types">Mapped types</a></li>
+      <li><a href="#parsing-arrays">Parsing and validating arrays</a></li>
+      <li><a href="#websockets">WebSockets &amp; Microservices</a></li>
+      <li><a href="#learn-more">Learn more</a></li>
+    </ul>
+  </aside>
+
+</div>
+
+<script>
+  function sw(btn, bid, lang) {
+    var c = document.getElementById(bid);
+    if (!c) return;
+    btn.parentElement.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('on'); });
+    btn.classList.add('on');
+    c.querySelectorAll('.pane').forEach(function(p) {
+      p.classList.remove('on');
+      if (p.dataset.lang === lang) p.classList.add('on');
+    });
+  }
+  function cp(btn) {
+    var wrap = btn.closest('.cb');
+    var pane = wrap.querySelector('.pane.on') || wrap.querySelector('.pane');
+    if (!pane) return;
+    navigator.clipboard.writeText(pane.textContent.trim()).then(function() {
+      var o = btn.textContent;
+      btn.textContent = 'Copied!';
+      btn.style.color = '#4ade80';
+      setTimeout(function() { btn.textContent = o; btn.style.color = ''; }, 1500);
+    });
+  }
+  
+  // Smooth scroll on TOC click
+  document.querySelectorAll('.toc a').forEach(function(link) {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      var target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+
+  // Highlight active section
+  var tocLinks = document.querySelectorAll('.toc a');
+  var heads = document.querySelectorAll('h3[id]');
+  function hi() {
+    var cur = '';
+    heads.forEach(function(h) { 
+      if (scrollY >= h.offsetTop - 120) cur = h.id; 
+    });
+    tocLinks.forEach(function(a) {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + cur);
+    });
+  }
+  window.addEventListener('scroll', hi, { passive: true });
+  hi();
+</script>
+</body>
+</html>

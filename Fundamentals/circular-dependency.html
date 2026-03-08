@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Circular Dependency | NestJS - Tài liệu tiếng Việt</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+    :root {
+      --bg:       #0e0e0e;
+      --surface:  #1a1a1a;
+      --surface2: #222;
+      --border:   #2a2a2a;
+      --border-l: #333;
+      --red:      #ea2845;
+      --red-l:    #ff4d6a;
+      --red-glow: rgba(234,40,69,.15);
+      --text:     #e8e8e8;
+      --muted:    #888;
+      --sec:      #b0b0b0;
+      --code-bg:  #1e1e1e;
+      --code-bd:  #2d2d2d;
+      --hint-bg:  #0d2a1a;
+      --hint-c:   #4ade80;
+      --warn-bg:  #2a1a0d;
+      --warn-c:   #fb923c;
+      --note-bg:  #0d1a2a;
+      --note-c:   #60a0d0;
+      --toc-w:    220px;
+      --font:     'Inter', sans-serif;
+      --mono:     'Source Code Pro', monospace;
+      --r:        6px;
+      --rl:       10px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font); background: var(--bg); color: var(--text); font-size: 15px; line-height: 1.78; }
+
+    .page { max-width: 1060px; margin: 0 auto; padding: 48px 32px 96px; display: flex; gap: 56px; align-items: flex-start; }
+    .content { flex: 1; min-width: 0; }
+
+    /* TOC */
+    .toc { width: var(--toc-w); flex-shrink: 0; position: sticky; top: 32px; align-self: flex-start; max-height: calc(100vh - 48px); overflow-y: auto; }
+    .toc::-webkit-scrollbar { width: 3px; }
+    .toc::-webkit-scrollbar-thumb { background: var(--border-l); border-radius: 2px; }
+    .toc-title { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); padding-bottom: 8px; margin-bottom: 8px; border-bottom: 1px solid var(--border); }
+    .toc ul { list-style: none; }
+    .toc ul li a { display: block; padding: 3.5px 0; font-size: 12.5px; color: var(--muted); text-decoration: none; line-height: 1.5; transition: color .15s; cursor: pointer; }
+    .toc ul li a:hover, .toc ul li a.active { color: var(--red-l); }
+
+    /* Banner */
+    .vi-banner { display: flex; align-items: center; gap: 10px; padding: 11px 16px; border: 1px solid rgba(234,40,69,.3); border-radius: var(--rl); background: linear-gradient(135deg,rgba(234,40,69,.1),rgba(234,40,69,.04)); font-size: 13px; color: var(--sec); margin-bottom: 32px; }
+    .vi-banner strong { color: var(--red-l); }
+
+    /* Headings */
+    h1 { font-size: 36px; font-weight: 700; letter-spacing: -.5px; line-height: 1.2; margin-bottom: 6px; }
+    h1::after { content:''; display:block; width:44px; height:3px; background:var(--red); border-radius:2px; margin-top:12px; }
+    h3 { font-size: 19px; font-weight: 600; letter-spacing: -.2px; margin: 40px 0 12px; display: flex; align-items: center; gap: 8px; scroll-margin-top: 80px; }
+    .anchor { font-size: 14px; color: var(--muted); text-decoration: none; opacity: 0; transition: opacity .2s; }
+    h3:hover .anchor { opacity: 1; }
+    p { color: var(--sec); line-height: 1.82; margin-bottom: 16px; }
+    p:last-child { margin-bottom: 0; }
+    a { color: var(--red-l); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    strong { color: var(--text); font-weight: 600; }
+    ul { color: var(--sec); padding-left: 22px; line-height: 2.1; margin: 16px 0; }
+
+    /* inline code */
+    code { font-family: var(--mono); font-size: 13px; background: var(--code-bg); border: 1px solid var(--code-bd); padding: 1px 6px; border-radius: 4px; color: #f9a8d4; }
+
+    /* Callouts */
+    .hint, .warn, .note {
+      margin: 18px 0; padding: 12px 16px; border-left: 3px solid;
+      border-radius: var(--r); font-size: 13.5px; line-height: 1.72;
+    }
+    .hint { background: var(--hint-bg); border-color: var(--hint-c); color: #a7f3d0; }
+    .warn { background: var(--warn-bg); border-color: var(--warn-c); color: #fed7aa; }
+    .note { background: var(--note-bg); border-color: var(--note-c); color: #bae6fd; }
+    .hint p, .warn p, .note p { margin: 0; color: inherit; }
+    .lbl { display: block; font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 4px; }
+    .hint .lbl { color: var(--hint-c); }
+    .warn .lbl  { color: var(--warn-c); }
+    .note .lbl  { color: var(--note-c); }
+
+    /* Code blocks */
+    .cb { margin: 18px 0; border: 1px solid var(--code-bd); border-radius: var(--rl); overflow: hidden; background: var(--code-bg); }
+    .cb-head { display: flex; align-items: center; justify-content: space-between; padding: 8px 14px; background: #181818; border-bottom: 1px solid var(--code-bd); min-height: 38px; }
+    .cb-fname { font-family: var(--mono); font-size: 11.5px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+    .cb-fname::before { content:''; display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--red); }
+    .cb-right { display: flex; align-items: center; gap: 6px; }
+    .tabs { display: flex; gap: 3px; }
+    .tab { padding: 4px 11px; font-size: 11px; font-family: var(--mono); font-weight: 500; border: 1px solid transparent; border-radius: 4px; color: var(--muted); cursor: pointer; user-select: none; transition: all .14s; }
+    .tab.on { color: var(--red-l); background: var(--red-glow); border-color: var(--red); }
+    .tab:hover:not(.on) { color: var(--text); background: rgba(255,255,255,.04); }
+    .cpbtn { padding: 3px 9px; font-size: 10.5px; font-family: var(--mono); background: var(--surface); border: 1px solid var(--border-l); color: var(--muted); border-radius: 4px; cursor: pointer; transition: all .14s; }
+    .cpbtn:hover { background: var(--surface2); color: var(--text); }
+    .pane { display: none; }
+    .pane.on { display: block; }
+    pre { padding: 18px 20px; overflow-x: auto; font-family: var(--mono); font-size: 13.5px; line-height: 1.65; color: #abb2bf; }
+    pre::-webkit-scrollbar { height: 5px; }
+    pre::-webkit-scrollbar-thumb { background: var(--border-l); border-radius: 3px; }
+
+    /* syntax */
+    .kw  { color: #c678dd; }
+    .fn  { color: #61afef; }
+    .str { color: #98c379; }
+    .dec { color: #e5c07b; }
+    .typ { color: #e5c07b; }
+    .cm  { color: #5c6370; font-style: italic; }
+    .pn  { color: #abb2bf; }
+    .num { color: #d19a66; }
+    .cl  { color: #e06c75; }
+    .tmpl{ color: #d19a66; }
+
+    /* Page nav */
+    .page-nav { display: flex; justify-content: space-between; margin-top: 52px; gap: 16px; }
+    .pnbtn { display: flex; flex-direction: column; padding: 14px 18px; border: 1px solid var(--border); border-radius: var(--rl); text-decoration: none; transition: all .2s; min-width: 150px; }
+    .pnbtn:hover { border-color: var(--red); background: var(--red-glow); text-decoration: none; }
+    .pnlbl   { font-size: 10.5px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); margin-bottom: 3px; }
+    .pntitle { font-size: 14px; font-weight: 600; color: var(--text); }
+    .pnbtn.r { text-align: right; margin-left: auto; }
+
+    @media (max-width: 860px) { .toc { display: none; } }
+    @media (max-width: 600px) { .page { padding: 24px 16px 64px; } }
+  </style>
+</head>
+<body>
+<div class="page">
+<main class="content">
+
+<div class="vi-banner">
+<span style="font-size:17px">🇻🇳</span>
+<div>Dịch từ <strong><a href="https://docs.nestjs.com/fundamentals/circular-dependency" target="_blank">docs.nestjs.com/fundamentals/circular-dependency</a></strong>. Thuật ngữ kỹ thuật giữ nguyên tiếng Anh.</div>
+</div>
+
+<h1>Circular dependency</h1>
+
+<p style="margin-top:18px">Circular dependency xảy ra khi hai class phụ thuộc lẫn nhau. Ví dụ, class A cần class B, và class B cũng cần class A. Circular dependency có thể phát sinh trong Nest giữa các module và giữa các provider.</p>
+
+<p>Mặc dù nên tránh circular dependency khi có thể, bạn không phải lúc nào cũng làm được. Trong những trường hợp đó, Nest cho phép resolve circular dependency giữa các provider bằng hai cách. Trong chương này, chúng ta mô tả việc sử dụng <strong>forward referencing</strong> như một kỹ thuật, và sử dụng class <strong>ModuleRef</strong> để lấy provider instance từ DI container như một cách khác.</p>
+
+<p>Chúng ta cũng mô tả cách resolve circular dependency giữa các module.</p>
+
+<div class="warn"><span class="lbl">⚠️ Warning</span><p>Circular dependency cũng có thể xảy ra khi sử dụng "barrel files"/file index.ts để nhóm import. Barrel file nên được bỏ qua khi liên quan đến các module/provider class. Ví dụ, barrel file không nên được sử dụng khi import file trong cùng thư mục với barrel file, tức là <code>cats/cats.controller</code> không nên import <code>cats</code> để import file <code>cats/cats.service</code>. Xem thêm chi tiết tại <a href="https://github.com/nestjs/nest/issues/1181#issuecomment-430197191" target="_blank">GitHub issue này</a>.</p></div>
+
+<h3 id="forward-reference">Forward reference <a class="anchor" href="#forward-reference">#</a></h3>
+
+<p><strong>Forward reference</strong> cho phép Nest tham chiếu đến các class chưa được định nghĩa bằng cách sử dụng utility function <code>forwardRef()</code>. Ví dụ, nếu <code>CatsService</code> và <code>CommonService</code> phụ thuộc lẫn nhau, cả hai phía của relationship đều có thể sử dụng <code>@Inject()</code> và utility <code>forwardRef()</code> để resolve circular dependency. Nếu không, Nest sẽ không khởi tạo chúng vì tất cả essential metadata sẽ không khả dụng. Đây là một ví dụ:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">cats.service</div><div class="cb-right"><div class="tabs"><div class="tab on" onclick="sw(this,'c0','ts')">TS</div><div class="tab" onclick="sw(this,'c0','js')">JS</div></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div id="c0"><div class="pane on" data-lang="ts"><pre><span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">CatsService</span> <span class="pn">{</span>
+  <span class="fn">constructor</span><span class="pn">(</span>
+    <span class="dec">@Inject</span><span class="pn">(</span><span class="fn">forwardRef</span><span class="pn">(() =&gt;</span> <span class="cl">CommonService</span><span class="pn">))</span>
+    <span class="kw">private</span> commonService<span class="pn">:</span> <span class="cl">CommonService</span><span class="pn">,</span>
+  <span class="pn">) {}</span>
+<span class="pn">}</span></pre></div><div class="pane" data-lang="js"><pre><span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="dec">@Dependencies</span><span class="pn">(</span><span class="fn">forwardRef</span><span class="pn">(() =&gt;</span> <span class="cl">CommonService</span><span class="pn">))</span>
+<span class="kw">export class</span> <span class="cl">CatsService</span> <span class="pn">{</span>
+  <span class="fn">constructor</span><span class="pn">(</span>commonService<span class="pn">) {</span>
+    <span class="kw">this</span><span class="pn">.</span>commonService <span class="pn">=</span> commonService<span class="pn">;</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div></div></div>
+
+<div class="hint"><span class="lbl">💡 Hint</span><p>Function <code>forwardRef()</code> được import từ package <code>@nestjs/common</code>.</p></div>
+
+<p>Đó là một phía của relationship. Bây giờ hãy làm tương tự với <code>CommonService</code>:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">common.service</div><div class="cb-right"><div class="tabs"><div class="tab on" onclick="sw(this,'c1','ts')">TS</div><div class="tab" onclick="sw(this,'c1','js')">JS</div></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div id="c1"><div class="pane on" data-lang="ts"><pre><span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">CommonService</span> <span class="pn">{</span>
+  <span class="fn">constructor</span><span class="pn">(</span>
+    <span class="dec">@Inject</span><span class="pn">(</span><span class="fn">forwardRef</span><span class="pn">(() =&gt;</span> <span class="cl">CatsService</span><span class="pn">))</span>
+    <span class="kw">private</span> catsService<span class="pn">:</span> <span class="cl">CatsService</span><span class="pn">,</span>
+  <span class="pn">) {}</span>
+<span class="pn">}</span></pre></div><div class="pane" data-lang="js"><pre><span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="dec">@Dependencies</span><span class="pn">(</span><span class="fn">forwardRef</span><span class="pn">(() =&gt;</span> <span class="cl">CatsService</span><span class="pn">))</span>
+<span class="kw">export class</span> <span class="cl">CommonService</span> <span class="pn">{</span>
+  <span class="fn">constructor</span><span class="pn">(</span>catsService<span class="pn">) {</span>
+    <span class="kw">this</span><span class="pn">.</span>catsService <span class="pn">=</span> catsService<span class="pn">;</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div></div></div>
+
+<div class="warn"><span class="lbl">⚠️ Warning</span><p>Thứ tự khởi tạo là không xác định (indeterminate). Đảm bảo code của bạn không phụ thuộc vào constructor nào được gọi trước. Circular dependency phụ thuộc vào provider có <code>Scope.REQUEST</code> có thể dẫn đến undefined dependency. Thông tin chi tiết hơn có thể xem <a href="https://docs.nestjs.com/fundamentals/injection-scopes#scope-hierarchy" target="_blank">tại đây</a>.</p></div>
+
+<h3 id="moduleref-class-alternative">ModuleRef class alternative <a class="anchor" href="#moduleref-class-alternative">#</a></h3>
+
+<p>Một giải pháp thay thế cho <code>forwardRef()</code> là refactor code và sử dụng class <code>ModuleRef</code> để lấy provider ở một phía của circular relationship. Tìm hiểu thêm về utility class <code>ModuleRef</code> <a href="https://docs.nestjs.com/fundamentals/module-ref" target="_blank">tại đây</a>.</p>
+
+<h3 id="module-forward-reference">Module forward reference <a class="anchor" href="#module-forward-reference">#</a></h3>
+
+<p>Để resolve circular dependency giữa các module, sử dụng cùng utility function <code>forwardRef()</code> ở cả hai phía của module association. Ví dụ:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">common.module</div><div class="cb-right"><div class="tabs"><div class="tab on" onclick="sw(this,'c2','ts')">TS</div><div class="tab" onclick="sw(this,'c2','js')">JS</div></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div id="c2"><div class="pane on" data-lang="ts"><pre><span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">:</span> <span class="pn">[</span><span class="fn">forwardRef</span><span class="pn">(() =&gt;</span> <span class="cl">CatsModule</span><span class="pn">)],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">CommonModule</span> <span class="pn">{}</span></pre></div><div class="pane" data-lang="js"><pre><span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">:</span> <span class="pn">[</span><span class="fn">forwardRef</span><span class="pn">(() =&gt;</span> <span class="cl">CatsModule</span><span class="pn">)],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">CommonModule</span> <span class="pn">{}</span></pre></div></div></div>
+
+<p>Đó là một phía của relationship. Bây giờ hãy làm tương tự với <code>CatsModule</code>:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">cats.module</div><div class="cb-right"><div class="tabs"><div class="tab on" onclick="sw(this,'c3','ts')">TS</div><div class="tab" onclick="sw(this,'c3','js')">JS</div></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div id="c3"><div class="pane on" data-lang="ts"><pre><span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">:</span> <span class="pn">[</span><span class="fn">forwardRef</span><span class="pn">(() =&gt;</span> <span class="cl">CommonModule</span><span class="pn">)],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">CatsModule</span> <span class="pn">{}</span></pre></div><div class="pane" data-lang="js"><pre><span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">:</span> <span class="pn">[</span><span class="fn">forwardRef</span><span class="pn">(() =&gt;</span> <span class="cl">CommonModule</span><span class="pn">)],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">CatsModule</span> <span class="pn">{}</span></pre></div></div></div>
+
+<!-- Page navigation -->
+<div class="page-nav">
+<a class="pnbtn" href="injection-scopes.html">
+<span class="pnlbl">← Trước</span>
+<span class="pntitle">Injection scopes</span>
+</a>
+<a class="pnbtn r" href="module-reference.html">
+<span class="pnlbl">Tiếp →</span>
+<span class="pntitle">Module reference</span>
+</a>
+</div>
+
+</main>
+
+<aside class="toc">
+<div class="toc-title">Nội dung</div>
+<ul>
+<li><a href="#forward-reference">Forward reference</a></li>
+<li><a href="#moduleref-class-alternative">ModuleRef class alternative</a></li>
+<li><a href="#module-forward-reference">Module forward reference</a></li>
+</ul>
+</aside>
+
+</div>
+<script>
+  function sw(btn, bid, lang) {
+    var c = document.getElementById(bid);
+    if (!c) return;
+    btn.parentElement.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('on'); });
+    btn.classList.add('on');
+    c.querySelectorAll('.pane').forEach(function(p) {
+      p.classList.remove('on');
+      if (p.dataset.lang === lang) p.classList.add('on');
+    });
+  }
+  function cp(btn) {
+    var wrap = btn.closest('.cb');
+    var pane = wrap.querySelector('.pane.on') || wrap.querySelector('.pane');
+    if (!pane) return;
+    navigator.clipboard.writeText(pane.textContent.trim()).then(function() {
+      var o = btn.textContent;
+      btn.textContent = 'Copied!';
+      btn.style.color = '#4ade80';
+      setTimeout(function() { btn.textContent = o; btn.style.color = ''; }, 1500);
+    });
+  }
+  
+  // Smooth scroll on TOC click
+  document.querySelectorAll('.toc a').forEach(function(link) {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      var target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+
+  // Highlight active section
+  var tocLinks = document.querySelectorAll('.toc a');
+  var heads = document.querySelectorAll('h3[id]');
+  function hi() {
+    var cur = '';
+    heads.forEach(function(h) { 
+      if (scrollY >= h.offsetTop - 120) cur = h.id; 
+    });
+    tocLinks.forEach(function(a) {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + cur);
+    });
+  }
+  window.addEventListener('scroll', hi, { passive: true });
+  hi();
+</script>
+</body>
+</html>

@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Custom decorators | NestJS - Tài liệu tiếng Việt</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:       #0e0e0e;
+      --surface:  #1a1a1a;
+      --surface2: #222;
+      --border:   #2a2a2a;
+      --border-l: #333;
+      --red:      #ea2845;
+      --red-l:    #ff4d6a;
+      --red-glow: rgba(234,40,69,.15);
+      --text:     #e8e8e8;
+      --muted:    #888;
+      --sec:      #b0b0b0;
+      --code-bg:  #1e1e1e;
+      --code-bd:  #2d2d2d;
+      --hint-bg:  #0d2a1a;
+      --hint-c:   #4ade80;
+      --warn-bg:  #2a1a0d;
+      --warn-c:   #fb923c;
+      --note-bg:  #0d1a2a;
+      --note-c:   #60a0d0;
+      --toc-w:    220px;
+      --font:     'Inter', sans-serif;
+      --mono:     'Source Code Pro', monospace;
+      --r:        6px;
+      --rl:       10px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font); background: var(--bg); color: var(--text); font-size: 15px; line-height: 1.78; }
+
+    .page { max-width: 1060px; margin: 0 auto; padding: 48px 32px 96px; display: flex; gap: 56px; align-items: flex-start; }
+    .content { flex: 1; min-width: 0; }
+
+    /* TOC */
+    .toc { width: var(--toc-w); flex-shrink: 0; position: sticky; top: 32px; align-self: flex-start; max-height: calc(100vh - 48px); overflow-y: auto; }
+    .toc::-webkit-scrollbar { width: 3px; }
+    .toc::-webkit-scrollbar-thumb { background: var(--border-l); border-radius: 2px; }
+    .toc-title { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); padding-bottom: 8px; margin-bottom: 8px; border-bottom: 1px solid var(--border); }
+    .toc ul { list-style: none; }
+    .toc ul li a { display: block; padding: 3.5px 0; font-size: 12.5px; color: var(--muted); text-decoration: none; line-height: 1.5; transition: color .15s; }
+    .toc ul li a:hover, .toc ul li a.active { color: var(--red-l); }
+
+    /* Banner */
+    .vi-banner { display: flex; align-items: center; gap: 10px; padding: 11px 16px; border: 1px solid rgba(234,40,69,.3); border-radius: var(--rl); background: linear-gradient(135deg,rgba(234,40,69,.1),rgba(234,40,69,.04)); font-size: 13px; color: var(--sec); margin-bottom: 32px; }
+    .vi-banner strong { color: var(--red-l); }
+
+    /* Series complete banner */
+    .series-done { display: flex; align-items: center; gap: 14px; padding: 16px 20px; border: 1px solid rgba(74,222,128,.35); border-radius: var(--rl); background: linear-gradient(135deg,rgba(74,222,128,.1),rgba(74,222,128,.03)); margin-bottom: 32px; }
+    .series-done-icon { font-size: 28px; flex-shrink: 0; }
+    .series-done-text { font-size: 13.5px; color: #a7f3d0; line-height: 1.7; }
+    .series-done-text strong { color: #4ade80; }
+
+    /* Headings */
+    h1 { font-size: 36px; font-weight: 700; letter-spacing: -.5px; line-height: 1.2; margin-bottom: 6px; }
+    h1::after { content:''; display:block; width:44px; height:3px; background:var(--red); border-radius:2px; margin-top:12px; }
+    h3 { font-size: 19px; font-weight: 600; letter-spacing: -.2px; margin: 40px 0 12px; display: flex; align-items: center; gap: 8px; }
+    .anchor { font-size: 14px; color: var(--muted); text-decoration: none; opacity: 0; transition: opacity .2s; }
+    h3:hover .anchor { opacity: 1; }
+    p { color: var(--sec); line-height: 1.82; margin-bottom: 16px; }
+    p:last-child { margin-bottom: 0; }
+    a { color: var(--red-l); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    strong { color: var(--text); font-weight: 600; }
+    blockquote { border-left: 3px solid var(--border-l); padding: 10px 16px; margin: 18px 0; color: var(--muted); font-size: 14px; font-style: italic; background: var(--surface); border-radius: 0 var(--r) var(--r) 0; }
+
+    /* inline code */
+    code { font-family: var(--mono); font-size: 13px; background: var(--code-bg); border: 1px solid var(--code-bd); padding: 1px 6px; border-radius: 4px; color: #f9a8d4; }
+
+    /* Callouts */
+    .hint, .warn, .note {
+      margin: 18px 0; padding: 12px 16px; border-left: 3px solid;
+      border-radius: var(--r); font-size: 13.5px; line-height: 1.72;
+    }
+    .hint { background: var(--hint-bg); border-color: var(--hint-c); color: #a7f3d0; }
+    .warn { background: var(--warn-bg); border-color: var(--warn-c); color: #fed7aa; }
+    .note { background: var(--note-bg); border-color: var(--note-c); color: #bae6fd; }
+    .hint p, .warn p, .note p { margin: 0; color: inherit; }
+    .lbl { display: block; font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 4px; }
+    .hint .lbl { color: var(--hint-c); }
+    .warn .lbl  { color: var(--warn-c); }
+    .note .lbl  { color: var(--note-c); }
+
+    /* Code blocks */
+    .cb { margin: 18px 0; border: 1px solid var(--code-bd); border-radius: var(--rl); overflow: hidden; background: var(--code-bg); }
+    .cb-head { display: flex; align-items: center; justify-content: space-between; padding: 8px 14px; background: #181818; border-bottom: 1px solid var(--code-bd); min-height: 38px; }
+    .cb-fname { font-family: var(--mono); font-size: 11.5px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+    .cb-fname::before { content:''; display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--red); }
+    .cb-right { display: flex; align-items: center; gap: 6px; }
+    .tabs { display: flex; gap: 3px; }
+    .tab { padding: 4px 11px; font-size: 11px; font-family: var(--mono); font-weight: 500; border: 1px solid transparent; border-radius: 4px; color: var(--muted); cursor: pointer; user-select: none; transition: all .14s; }
+    .tab.on { color: var(--red-l); background: var(--red-glow); border-color: var(--red); }
+    .tab:hover:not(.on) { color: var(--text); background: rgba(255,255,255,.04); }
+    .cpbtn { padding: 3px 9px; font-size: 10.5px; font-family: var(--mono); background: var(--surface); border: 1px solid var(--border-l); color: var(--muted); border-radius: 4px; cursor: pointer; transition: all .14s; }
+    .cpbtn:hover { background: var(--surface2); color: var(--text); }
+    .pane { display: none; }
+    .pane.on { display: block; }
+    pre { padding: 18px 20px; overflow-x: auto; font-family: var(--mono); font-size: 13.5px; line-height: 1.65; color: #abb2bf; }
+    pre::-webkit-scrollbar { height: 5px; }
+    pre::-webkit-scrollbar-thumb { background: var(--border-l); border-radius: 3px; }
+
+    /* syntax */
+    .kw  { color: #c678dd; }
+    .fn  { color: #61afef; }
+    .str { color: #98c379; }
+    .dec { color: #e5c07b; }
+    .typ { color: #e5c07b; }
+    .cm  { color: #5c6370; font-style: italic; }
+    .pn  { color: #abb2bf; }
+    .num { color: #d19a66; }
+    .cl  { color: #e06c75; }
+    .tmpl{ color: #d19a66; }
+
+    /* Param decorators table */
+    .param-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 13.5px; border: 1px solid var(--border); border-radius: var(--rl); overflow: hidden; }
+    .param-table thead th { padding: 10px 16px; text-align: left; background: #1e1e1e; color: var(--text); font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; border-bottom: 1px solid var(--border); }
+    .param-table tbody tr { border-bottom: 1px solid var(--border); }
+    .param-table tbody tr:last-child { border-bottom: none; }
+    .param-table tbody tr:nth-child(odd)  { background: #181818; }
+    .param-table tbody tr:nth-child(even) { background: #1c1c1c; }
+    .param-table tbody tr:hover { background: var(--surface2); }
+    .param-table td { padding: 9px 16px; color: var(--sec); vertical-align: middle; }
+    .param-table td:first-child { font-family: var(--mono); font-size: 12.5px; color: #f9a8d4; white-space: nowrap; }
+    .param-table td:last-child  { font-family: var(--mono); font-size: 12.5px; color: #98c379; }
+
+    /* JSON block */
+    .json-block { margin: 14px 0; padding: 16px 20px; background: #161616; border: 1px solid var(--code-bd); border-radius: var(--rl); font-family: var(--mono); font-size: 13.5px; line-height: 1.8; color: #abb2bf; }
+    .json-key { color: #e06c75; }
+    .json-num { color: #d19a66; }
+    .json-str { color: #98c379; }
+    .json-arr { color: #abb2bf; }
+
+    /* Composition visual */
+    .compose-diagram { margin: 20px 0; padding: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--rl); }
+    .compose-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+    .compose-row:last-child { margin-bottom: 0; }
+    .cd-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); width: 80px; flex-shrink: 0; }
+    .cd-tag { padding: 4px 10px; border-radius: 4px; font-family: var(--mono); font-size: 12px; border: 1px solid; }
+    .cd-tag.before { background: #1a2a1a; border-color: #3a6a3a; color: #86efac; }
+    .cd-tag.after  { background: rgba(234,40,69,.1); border-color: var(--red); color: var(--red-l); font-weight: 700; }
+    .cd-arrow { color: var(--muted); font-size: 14px; }
+    .cd-equals { color: var(--muted); font-size: 18px; padding: 0 6px; }
+
+    /* Series nav grid */
+    .series-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px,1fr)); gap: 8px; margin: 20px 0; }
+    .series-item { padding: 10px 14px; border-radius: var(--r); border: 1px solid var(--border); background: var(--surface); font-size: 13px; color: var(--muted); text-decoration: none; transition: all .15s; display: flex; align-items: center; gap: 8px; }
+    .series-item:hover { border-color: var(--red); color: var(--red-l); text-decoration: none; background: var(--red-glow); }
+    .series-item.done { border-color: #2a5a2a; color: #4ade80; background: rgba(74,222,128,.05); }
+    .series-item.done:hover { border-color: #4ade80; }
+    .series-item .si-num { font-family: var(--mono); font-size: 10.5px; opacity: .6; }
+
+    /* Page nav */
+    .page-nav { display: flex; justify-content: space-between; margin-top: 52px; gap: 16px; }
+    .pnbtn { display: flex; flex-direction: column; padding: 14px 18px; border: 1px solid var(--border); border-radius: var(--rl); text-decoration: none; transition: all .2s; min-width: 150px; }
+    .pnbtn:hover { border-color: var(--red); background: var(--red-glow); text-decoration: none; }
+    .pnlbl   { font-size: 10.5px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); margin-bottom: 3px; }
+    .pntitle { font-size: 14px; font-weight: 600; color: var(--text); }
+    .pnbtn.r { text-align: right; margin-left: auto; }
+
+    @media (max-width: 860px) { .toc { display: none; } }
+    @media (max-width: 600px) { .page { padding: 24px 16px 64px; } }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ════════════════════ MAIN CONTENT ════════════════════ -->
+  <main class="content">
+
+    <div class="vi-banner">
+      <span style="font-size:17px">🇻🇳</span>
+      <div>Dịch từ <strong><a href="https://docs.nestjs.com/custom-decorators" target="_blank">docs.nestjs.com/custom-decorators</a></strong>. Thuật ngữ kỹ thuật giữ nguyên tiếng Anh.</div>
+    </div>
+
+    <div class="series-done">
+      <div class="series-done-icon">🎉</div>
+      <div class="series-done-text">
+        <strong>Hoàn thành toàn bộ phần Overview!</strong><br>
+        Đây là trang cuối cùng trong series <strong>10 trang</strong> NestJS Overview được dịch sang tiếng Việt.
+      </div>
+    </div>
+
+    <h1>Custom decorators</h1>
+
+    <p style="margin-top:18px">Nest được xây dựng xung quanh một tính năng ngôn ngữ gọi là <strong>decorators</strong>. Decorator là khái niệm được biết đến rộng rãi trong nhiều ngôn ngữ lập trình phổ biến, nhưng trong thế giới JavaScript, chúng vẫn còn tương đối mới. Để hiểu rõ hơn cách decorator hoạt động, hãy đọc <a href="https://medium.com/google-developers/exploring-es7-decorators-76ecb65fb841" target="_blank">bài viết này</a>.</p>
+
+    <blockquote>
+      Một ES2016 decorator là một expression trả về function và có thể nhận target, name và property descriptor làm argument. Bạn áp dụng nó bằng cách đặt ký tự <code>@</code> ở phía trước decorator và đặt nó ở ngay trên những gì bạn muốn decorate. Decorator có thể được định nghĩa cho class, method hoặc property.
+    </blockquote>
+
+    <!-- ── PARAM DECORATORS ── -->
+    <h3 id="param-decorators">Param decorators <a class="anchor" href="#param-decorators">#</a></h3>
+
+    <p>Nest cung cấp một tập <strong>param decorator</strong> hữu ích để dùng cùng với HTTP route handler. Dưới đây là danh sách các decorator được cung cấp và các Express (hoặc Fastify) object tương ứng:</p>
+
+    <div style="overflow-x:auto;margin:18px 0;border-radius:var(--rl);border:1px solid var(--border)">
+      <table class="param-table" style="border:none;border-radius:0">
+        <thead>
+          <tr><th>Decorator</th><th>Express / Fastify object</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>@Request(), @Req()</td><td>req</td></tr>
+          <tr><td>@Response(), @Res()</td><td>res</td></tr>
+          <tr><td>@Next()</td><td>next</td></tr>
+          <tr><td>@Session()</td><td>req.session</td></tr>
+          <tr><td>@Param(param?: string)</td><td>req.params / req.params[param]</td></tr>
+          <tr><td>@Body(param?: string)</td><td>req.body / req.body[param]</td></tr>
+          <tr><td>@Query(param?: string)</td><td>req.query / req.query[param]</td></tr>
+          <tr><td>@Headers(param?: string)</td><td>req.headers / req.headers[param]</td></tr>
+          <tr><td>@Ip()</td><td>req.ip</td></tr>
+          <tr><td>@HostParam()</td><td>req.hosts</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>Ngoài ra, bạn có thể tạo <strong>custom decorator</strong> của riêng mình. Tại sao lại hữu ích?</p>
+
+    <p>Trong thế giới Node.js, thông thường người ta attach property vào <strong>request</strong> object, rồi trích xuất thủ công trong mỗi route handler với code như sau:</p>
+
+    <div class="cb">
+      <div class="cb-head"><div style="flex:1"></div><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      <div id="b0"><div class="pane on"><pre><span class="kw">const</span> user <span class="pn">=</span> req<span class="pn">.</span>user<span class="pn">;</span></pre></div></div>
+    </div>
+
+    <p>Để code dễ đọc và minh bạch hơn, bạn có thể tạo decorator <code>@User()</code> và tái sử dụng nó trên tất cả controller:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">user.decorator.ts</div>
+        <div class="cb-right">
+          <div class="tabs">
+            <div class="tab on" onclick="sw(this,'b1','ts')">TS</div>
+            <div class="tab"    onclick="sw(this,'b1','js')">JS</div>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div id="b1">
+        <div class="pane on" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">{</span> createParamDecorator<span class="pn">,</span> <span class="typ">ExecutionContext</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+
+<span class="kw">export const</span> User <span class="pn">=</span> <span class="fn">createParamDecorator</span><span class="pn">(</span>
+  <span class="pn">(</span>data<span class="pn">:</span> <span class="kw">unknown</span><span class="pn">,</span> ctx<span class="pn">:</span> <span class="typ">ExecutionContext</span><span class="pn">)</span> <span class="pn">=&gt; {</span>
+    <span class="kw">const</span> request <span class="pn">=</span> ctx<span class="pn">.</span><span class="fn">switchToHttp</span><span class="pn">().</span><span class="fn">getRequest</span><span class="pn">();</span>
+    <span class="kw">return</span> request<span class="pn">.</span>user<span class="pn">;</span>
+  <span class="pn">},</span>
+<span class="pn">);</span></pre></div>
+        <div class="pane" data-lang="js"><pre><span class="kw">import</span> <span class="pn">{</span> createParamDecorator <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+
+<span class="kw">export const</span> User <span class="pn">=</span> <span class="fn">createParamDecorator</span><span class="pn">((</span>data<span class="pn">,</span> ctx<span class="pn">)</span> <span class="pn">=&gt; {</span>
+  <span class="kw">const</span> request <span class="pn">=</span> ctx<span class="pn">.</span><span class="fn">switchToHttp</span><span class="pn">().</span><span class="fn">getRequest</span><span class="pn">();</span>
+  <span class="kw">return</span> request<span class="pn">.</span>user<span class="pn">;</span>
+<span class="pn">});</span></pre></div>
+      </div>
+    </div>
+
+    <p>Sau đó, dùng nó ở bất cứ đâu phù hợp:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div style="flex:1"></div>
+        <div class="cb-right">
+          <div class="tabs">
+            <div class="tab on" onclick="sw(this,'b2','ts')">TS</div>
+            <div class="tab"    onclick="sw(this,'b2','js')">JS</div>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div id="b2">
+        <div class="pane on" data-lang="ts"><pre><span class="dec">@Get</span><span class="pn">()</span>
+<span class="kw">async</span> <span class="fn">findOne</span><span class="pn">(</span><span class="dec">@User</span><span class="pn">()</span> user<span class="pn">:</span> <span class="cl">UserEntity</span><span class="pn">)</span> <span class="pn">{</span>
+  <span class="fn">console</span><span class="pn">.</span><span class="fn">log</span><span class="pn">(</span>user<span class="pn">);</span>
+<span class="pn">}</span></pre></div>
+        <div class="pane" data-lang="js"><pre><span class="dec">@Get</span><span class="pn">()</span>
+<span class="dec">@Bind</span><span class="pn">(</span><span class="fn">User</span><span class="pn">())</span>
+<span class="kw">async</span> <span class="fn">findOne</span><span class="pn">(</span>user<span class="pn">)</span> <span class="pn">{</span>
+  <span class="fn">console</span><span class="pn">.</span><span class="fn">log</span><span class="pn">(</span>user<span class="pn">);</span>
+<span class="pn">}</span></pre></div>
+      </div>
+    </div>
+
+    <!-- ── PASSING DATA ── -->
+    <h3 id="passing-data">Passing data <a class="anchor" href="#passing-data">#</a></h3>
+
+    <p>Khi hành vi của decorator phụ thuộc vào một số điều kiện, bạn có thể dùng tham số <code>data</code> để truyền argument cho factory function của decorator. Một use case là custom decorator trích xuất property từ request object theo key.</p>
+
+    <p>Giả sử <a href="https://docs.nestjs.com/security/authentication" target="_blank">authentication layer</a> validate request và attach user entity vào request object. User entity của authenticated request có thể trông như sau:</p>
+
+    <div class="json-block">
+      <span class="pn">{</span><br>
+      &nbsp;&nbsp;<span class="json-key">"id"</span><span class="pn">:</span> <span class="json-num">101</span><span class="pn">,</span><br>
+      &nbsp;&nbsp;<span class="json-key">"firstName"</span><span class="pn">:</span> <span class="json-str">"Alan"</span><span class="pn">,</span><br>
+      &nbsp;&nbsp;<span class="json-key">"lastName"</span><span class="pn">:</span> <span class="json-str">"Turing"</span><span class="pn">,</span><br>
+      &nbsp;&nbsp;<span class="json-key">"email"</span><span class="pn">:</span> <span class="json-str">"alan@email.com"</span><span class="pn">,</span><br>
+      &nbsp;&nbsp;<span class="json-key">"roles"</span><span class="pn">:</span> <span class="json-arr">[</span><span class="json-str">"admin"</span><span class="json-arr">]</span><br>
+      <span class="pn">}</span>
+    </div>
+
+    <p>Hãy định nghĩa decorator nhận property name làm key và trả về giá trị liên quan nếu tồn tại (hoặc <code>undefined</code> nếu không tồn tại, hoặc nếu <code>user</code> object chưa được tạo):</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">user.decorator.ts</div>
+        <div class="cb-right">
+          <div class="tabs">
+            <div class="tab on" onclick="sw(this,'b3','ts')">TS</div>
+            <div class="tab"    onclick="sw(this,'b3','js')">JS</div>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div id="b3">
+        <div class="pane on" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">{</span> createParamDecorator<span class="pn">,</span> <span class="typ">ExecutionContext</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+
+<span class="kw">export const</span> User <span class="pn">=</span> <span class="fn">createParamDecorator</span><span class="pn">(</span>
+  <span class="pn">(</span>data<span class="pn">:</span> <span class="typ">string</span><span class="pn">,</span> ctx<span class="pn">:</span> <span class="typ">ExecutionContext</span><span class="pn">)</span> <span class="pn">=&gt; {</span>
+    <span class="kw">const</span> request <span class="pn">=</span> ctx<span class="pn">.</span><span class="fn">switchToHttp</span><span class="pn">().</span><span class="fn">getRequest</span><span class="pn">();</span>
+    <span class="kw">const</span> user <span class="pn">=</span> request<span class="pn">.</span>user<span class="pn">;</span>
+
+    <span class="kw">return</span> data <span class="pn">?</span> user<span class="pn">?.[</span>data<span class="pn">]</span> <span class="pn">:</span> user<span class="pn">;</span>
+  <span class="pn">},</span>
+<span class="pn">);</span></pre></div>
+        <div class="pane" data-lang="js"><pre><span class="kw">import</span> <span class="pn">{</span> createParamDecorator <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+
+<span class="kw">export const</span> User <span class="pn">=</span> <span class="fn">createParamDecorator</span><span class="pn">((</span>data<span class="pn">,</span> ctx<span class="pn">)</span> <span class="pn">=&gt; {</span>
+  <span class="kw">const</span> request <span class="pn">=</span> ctx<span class="pn">.</span><span class="fn">switchToHttp</span><span class="pn">().</span><span class="fn">getRequest</span><span class="pn">();</span>
+  <span class="kw">const</span> user <span class="pn">=</span> request<span class="pn">.</span>user<span class="pn">;</span>
+
+  <span class="kw">return</span> data <span class="pn">?</span> user <span class="pn">&amp;&amp;</span> user<span class="pn">[</span>data<span class="pn">]</span> <span class="pn">:</span> user<span class="pn">;</span>
+<span class="pn">});</span></pre></div>
+      </div>
+    </div>
+
+    <p>Đây là cách truy cập property cụ thể qua decorator <code>@User()</code> trong controller:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div style="flex:1"></div>
+        <div class="cb-right">
+          <div class="tabs">
+            <div class="tab on" onclick="sw(this,'b4','ts')">TS</div>
+            <div class="tab"    onclick="sw(this,'b4','js')">JS</div>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div id="b4">
+        <div class="pane on" data-lang="ts"><pre><span class="dec">@Get</span><span class="pn">()</span>
+<span class="kw">async</span> <span class="fn">findOne</span><span class="pn">(</span><span class="dec">@User</span><span class="pn">(</span><span class="str">'firstName'</span><span class="pn">)</span> firstName<span class="pn">:</span> <span class="typ">string</span><span class="pn">)</span> <span class="pn">{</span>
+  <span class="fn">console</span><span class="pn">.</span><span class="fn">log</span><span class="pn">(</span><span class="tmpl">`Hello ${firstName}`</span><span class="pn">);</span>
+<span class="pn">}</span></pre></div>
+        <div class="pane" data-lang="js"><pre><span class="dec">@Get</span><span class="pn">()</span>
+<span class="dec">@Bind</span><span class="pn">(</span><span class="fn">User</span><span class="pn">(</span><span class="str">'firstName'</span><span class="pn">))</span>
+<span class="kw">async</span> <span class="fn">findOne</span><span class="pn">(</span>firstName<span class="pn">)</span> <span class="pn">{</span>
+  <span class="fn">console</span><span class="pn">.</span><span class="fn">log</span><span class="pn">(</span><span class="tmpl">`Hello ${firstName}`</span><span class="pn">);</span>
+<span class="pn">}</span></pre></div>
+      </div>
+    </div>
+
+    <p>Bạn có thể dùng cùng một decorator với các key khác nhau để truy cập các property khác nhau. Nếu <code>user</code> object sâu hoặc phức tạp, điều này giúp implementation của request handler dễ đọc hơn.</p>
+
+    <div class="hint">
+      <span class="lbl">💡 Hint</span>
+      <p>Với TypeScript, <code>createParamDecorator&lt;T&gt;()</code> là generic — bạn có thể enforce type safety tường minh, ví dụ <code>createParamDecorator&lt;string&gt;((data, ctx) =&gt; ...)</code>. Hoặc chỉ định kiểu parameter trong factory function: <code>createParamDecorator((data: string, ctx) =&gt; ...)</code>. Nếu bỏ qua cả hai, type của <code>data</code> sẽ là <code>any</code>.</p>
+    </div>
+
+    <!-- ── WORKING WITH PIPES ── -->
+    <h3 id="working-with-pipes">Working with pipes <a class="anchor" href="#working-with-pipes">#</a></h3>
+
+    <p>Nest xử lý custom param decorator giống hệt như các decorator tích hợp (<code>@Body()</code>, <code>@Param()</code> và <code>@Query()</code>). Điều này có nghĩa là pipe cũng được thực thi cho custom annotated parameter (trong ví dụ của chúng ta, argument <code>user</code>). Hơn nữa, bạn có thể áp dụng pipe trực tiếp vào custom decorator:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div style="flex:1"></div>
+        <div class="cb-right">
+          <div class="tabs">
+            <div class="tab on" onclick="sw(this,'b5','ts')">TS</div>
+            <div class="tab"    onclick="sw(this,'b5','js')">JS</div>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div id="b5">
+        <div class="pane on" data-lang="ts"><pre><span class="dec">@Get</span><span class="pn">()</span>
+<span class="kw">async</span> <span class="fn">findOne</span><span class="pn">(</span>
+  <span class="dec">@User</span><span class="pn">(</span><span class="kw">new</span> <span class="cl">ValidationPipe</span><span class="pn">({</span> validateCustomDecorators<span class="pn">:</span> <span class="kw">true</span> <span class="pn">}))</span>
+  user<span class="pn">:</span> <span class="cl">UserEntity</span><span class="pn">,</span>
+<span class="pn">)</span> <span class="pn">{</span>
+  <span class="fn">console</span><span class="pn">.</span><span class="fn">log</span><span class="pn">(</span>user<span class="pn">);</span>
+<span class="pn">}</span></pre></div>
+        <div class="pane" data-lang="js"><pre><span class="dec">@Get</span><span class="pn">()</span>
+<span class="dec">@Bind</span><span class="pn">(</span><span class="fn">User</span><span class="pn">(</span><span class="kw">new</span> <span class="cl">ValidationPipe</span><span class="pn">({</span> validateCustomDecorators<span class="pn">:</span> <span class="kw">true</span> <span class="pn">})))</span>
+<span class="kw">async</span> <span class="fn">findOne</span><span class="pn">(</span>user<span class="pn">)</span> <span class="pn">{</span>
+  <span class="fn">console</span><span class="pn">.</span><span class="fn">log</span><span class="pn">(</span>user<span class="pn">);</span>
+<span class="pn">}</span></pre></div>
+      </div>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">💡 Hint</span>
+      <p>Lưu ý rằng option <code>validateCustomDecorators</code> phải được đặt thành <code>true</code>. <code>ValidationPipe</code> mặc định không validate argument được annotate bằng custom decorator.</p>
+    </div>
+
+    <!-- ── DECORATOR COMPOSITION ── -->
+    <h3 id="decorator-composition">Decorator composition <a class="anchor" href="#decorator-composition">#</a></h3>
+
+    <p>Nest cung cấp helper method <code>applyDecorators</code> để kết hợp nhiều decorator thành một. Ví dụ, giả sử bạn muốn kết hợp tất cả decorator liên quan đến authentication thành một decorator duy nhất:</p>
+
+    <!-- Minh hoạ trực quan composition -->
+    <div class="compose-diagram">
+      <div class="compose-row">
+        <div class="cd-label">Trước:</div>
+        <div class="cd-tag before">@SetMetadata('roles', roles)</div>
+        <div class="cd-tag before">@UseGuards(AuthGuard, RolesGuard)</div>
+        <div class="cd-tag before">@ApiBearerAuth()</div>
+        <div class="cd-tag before">@ApiUnauthorizedResponse(…)</div>
+      </div>
+      <div class="compose-row">
+        <div class="cd-label" style="color:#4ade80">Sau:</div>
+        <div class="cd-tag after">@Auth('admin')</div>
+        <div class="cd-equals">=</div>
+        <span style="font-size:12.5px;color:var(--muted);font-family:var(--mono)">4 decorator trong 1 lần khai báo</span>
+      </div>
+    </div>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">auth.decorator.ts</div>
+        <div class="cb-right">
+          <div class="tabs">
+            <div class="tab on" onclick="sw(this,'b6','ts')">TS</div>
+            <div class="tab"    onclick="sw(this,'b6','js')">JS</div>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div id="b6">
+        <div class="pane on" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">{</span> applyDecorators <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+
+<span class="kw">export function</span> <span class="fn">Auth</span><span class="pn">(...</span>roles<span class="pn">:</span> <span class="cl">Role</span><span class="pn">[])</span> <span class="pn">{</span>
+  <span class="kw">return</span> <span class="fn">applyDecorators</span><span class="pn">(</span>
+    <span class="fn">SetMetadata</span><span class="pn">(</span><span class="str">'roles'</span><span class="pn">,</span> roles<span class="pn">),</span>
+    <span class="fn">UseGuards</span><span class="pn">(</span><span class="cl">AuthGuard</span><span class="pn">,</span> <span class="cl">RolesGuard</span><span class="pn">),</span>
+    <span class="fn">ApiBearerAuth</span><span class="pn">(),</span>
+    <span class="fn">ApiUnauthorizedResponse</span><span class="pn">({</span> description<span class="pn">:</span> <span class="str">'Unauthorized'</span> <span class="pn">}),</span>
+  <span class="pn">);</span>
+<span class="pn">}</span></pre></div>
+        <div class="pane" data-lang="js"><pre><span class="kw">import</span> <span class="pn">{</span> applyDecorators <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+
+<span class="kw">export function</span> <span class="fn">Auth</span><span class="pn">(...</span>roles<span class="pn">)</span> <span class="pn">{</span>
+  <span class="kw">return</span> <span class="fn">applyDecorators</span><span class="pn">(</span>
+    <span class="fn">SetMetadata</span><span class="pn">(</span><span class="str">'roles'</span><span class="pn">,</span> roles<span class="pn">),</span>
+    <span class="fn">UseGuards</span><span class="pn">(</span><span class="cl">AuthGuard</span><span class="pn">,</span> <span class="cl">RolesGuard</span><span class="pn">),</span>
+    <span class="fn">ApiBearerAuth</span><span class="pn">(),</span>
+    <span class="fn">ApiUnauthorizedResponse</span><span class="pn">({</span> description<span class="pn">:</span> <span class="str">'Unauthorized'</span> <span class="pn">}),</span>
+  <span class="pn">);</span>
+<span class="pn">}</span></pre></div>
+      </div>
+    </div>
+
+    <p>Sau đó dùng custom <code>@Auth()</code> decorator như sau:</p>
+
+    <div class="cb">
+      <div class="cb-head"><div style="flex:1"></div><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      <div id="b7">
+        <div class="pane on"><pre><span class="dec">@Get</span><span class="pn">(</span><span class="str">'users'</span><span class="pn">)</span>
+<span class="dec">@Auth</span><span class="pn">(</span><span class="str">'admin'</span><span class="pn">)</span>
+<span class="fn">findAllUsers</span><span class="pn">()</span> <span class="pn">{}</span></pre></div>
+      </div>
+    </div>
+
+    <p>Điều này có tác dụng áp dụng cả bốn decorator chỉ với một lần khai báo.</p>
+
+    <div class="warn">
+      <span class="lbl">⚠️ Warning</span>
+      <p>Decorator <code>@ApiHideProperty()</code> từ package <code>@nestjs/swagger</code> không composable và sẽ không hoạt động đúng với hàm <code>applyDecorators</code>.</p>
+    </div>
+
+    <!-- ── SERIES COMPLETE ── -->
+    <h3 id="series-complete">Toàn bộ series Overview <a class="anchor" href="#series-complete">#</a></h3>
+
+    <p>Bạn đã hoàn thành toàn bộ <strong>10 trang</strong> trong phần Overview của NestJS! Dưới đây là danh sách đầy đủ các trang đã được dịch:</p>
+
+    <div class="series-grid">
+      <a class="series-item done" href="nestjs-controllers-vi.html">
+        <span class="si-num">01</span> Controllers
+      </a>
+      <a class="series-item done" href="nestjs-providers-vi.html">
+        <span class="si-num">02</span> Providers
+      </a>
+      <a class="series-item done" href="nestjs-modules-vi.html">
+        <span class="si-num">03</span> Modules
+      </a>
+      <a class="series-item done" href="nestjs-middleware-vi.html">
+        <span class="si-num">04</span> Middleware
+      </a>
+      <a class="series-item done" href="nestjs-exception-filters-vi.html">
+        <span class="si-num">05</span> Exception filters
+      </a>
+      <a class="series-item done" href="nestjs-pipes-vi.html">
+        <span class="si-num">06</span> Pipes
+      </a>
+      <a class="series-item done" href="nestjs-guards-vi.html">
+        <span class="si-num">07</span> Guards
+      </a>
+      <a class="series-item done" href="nestjs-interceptors-vi.html">
+        <span class="si-num">08</span> Interceptors
+      </a>
+      <a class="series-item done" href="nestjs-custom-decorators-vi.html" style="border-color:var(--red);color:var(--red-l)">
+        <span class="si-num">09</span> Custom decorators ✓
+      </a>
+    </div>
+
+    <!-- PAGE NAV -->
+    <div class="page-nav">
+      <a class="pnbtn" href="nestjs-interceptors-vi.html">
+        <div class="pnlbl">&larr; Trước</div>
+        <div class="pntitle">Interceptors</div>
+      </a>
+      <a class="pnbtn r" href="https://docs.nestjs.com/fundamentals/custom-providers" target="_blank">
+        <div class="pnlbl">Tiếp theo (docs gốc) &rarr;</div>
+        <div class="pntitle">Custom providers</div>
+      </a>
+    </div>
+
+  </main>
+
+  <!-- ════════════════════ TOC ════════════════════ -->
+  <aside class="toc">
+    <div class="toc-title">Trong trang này</div>
+    <ul>
+      <li><a href="#param-decorators">Param decorators</a></li>
+      <li><a href="#passing-data">Passing data</a></li>
+      <li><a href="#working-with-pipes">Working with pipes</a></li>
+      <li><a href="#decorator-composition">Decorator composition</a></li>
+      <li><a href="#series-complete">Toàn bộ series Overview</a></li>
+    </ul>
+  </aside>
+
+</div>
+
+<script>
+  function sw(btn, bid, lang) {
+    var c = document.getElementById(bid);
+    if (!c) return;
+    btn.parentElement.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('on'); });
+    btn.classList.add('on');
+    c.querySelectorAll('.pane').forEach(function(p) {
+      p.classList.remove('on');
+      if (p.dataset.lang === lang) p.classList.add('on');
+    });
+  }
+  function cp(btn) {
+    var wrap = btn.closest('.cb');
+    var pane = wrap.querySelector('.pane.on') || wrap.querySelector('.pane');
+    if (!pane) return;
+    navigator.clipboard.writeText(pane.textContent.trim()).then(function() {
+      var o = btn.textContent;
+      btn.textContent = 'Copied!';
+      btn.style.color = '#4ade80';
+      setTimeout(function() { btn.textContent = o; btn.style.color = ''; }, 1500);
+    });
+  }
+  var tocLinks = document.querySelectorAll('.toc a');
+  var heads    = document.querySelectorAll('h3[id]');
+  function hi() {
+    var cur = '';
+    heads.forEach(function(h) { if (scrollY >= h.offsetTop - 110) cur = h.id; });
+    tocLinks.forEach(function(a) {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + cur);
+    });
+  }
+  window.addEventListener('scroll', hi, { passive: true });
+  hi();
+</script>
+</body>
+</html>

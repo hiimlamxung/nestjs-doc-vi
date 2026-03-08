@@ -1,0 +1,1314 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Controllers | NestJS - Tài liệu tiếng Việt</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --color-bg: #0e0e0e;
+      --color-sidebar: #111111;
+      --color-surface: #1a1a1a;
+      --color-surface-2: #222222;
+      --color-border: #2a2a2a;
+      --color-border-light: #333;
+      --color-primary: #ea2845;
+      --color-primary-light: #ff4d6a;
+      --color-primary-glow: rgba(234,40,69,0.15);
+      --color-text: #e8e8e8;
+      --color-text-muted: #888;
+      --color-text-secondary: #b0b0b0;
+      --color-code-bg: #1e1e1e;
+      --color-code-border: #2d2d2d;
+      --color-hint-bg: #0d2a1a;
+      --color-hint-border: #1a5c32;
+      --color-hint-text: #4ade80;
+      --color-warning-bg: #2a1a0d;
+      --color-warning-border: #7a4a1a;
+      --color-warning-text: #fb923c;
+      --sidebar-width: 280px;
+      --toc-width: 220px;
+      --font-body: 'Inter', sans-serif;
+      --font-code: 'Source Code Pro', monospace;
+      --radius: 6px;
+      --radius-lg: 10px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-body);
+      background: var(--color-bg);
+      color: var(--color-text);
+      font-size: 15px;
+      line-height: 1.75;
+      display: flex;
+      min-height: 100vh;
+    }
+    .sidebar {
+      width: var(--sidebar-width);
+      min-height: 100vh;
+      background: var(--color-sidebar);
+      border-right: 1px solid var(--color-border);
+      position: fixed;
+      top: 0; left: 0;
+      overflow-y: auto;
+      z-index: 100;
+    }
+    .sidebar::-webkit-scrollbar { width: 4px; }
+    .sidebar::-webkit-scrollbar-thumb { background: var(--color-border-light); border-radius: 2px; }
+    .sidebar-logo {
+      padding: 20px 20px 16px;
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+    .logo-icon {
+      width: 36px; height: 36px;
+      background: var(--color-primary);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; font-weight: 700; color: white; letter-spacing: -1px;
+    }
+    .logo-text { font-size: 16px; font-weight: 700; color: var(--color-text); }
+    .logo-text span { color: var(--color-primary); }
+    .logo-sub { font-size: 10px; color: var(--color-text-muted); margin-top: 1px; }
+    .sidebar-nav { padding: 12px 0; }
+    .nav-section-title {
+      padding: 8px 20px 4px;
+      font-size: 10.5px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--color-text-muted);
+    }
+    .nav-item {
+      display: block; padding: 5px 20px;
+      font-size: 13px; color: var(--color-text-secondary);
+      text-decoration: none; transition: all 0.15s;
+      border-left: 2px solid transparent;
+    }
+    .nav-item:hover { color: var(--color-text); background: rgba(255,255,255,0.03); }
+    .nav-item.active { color: var(--color-primary); border-left-color: var(--color-primary); background: var(--color-primary-glow); font-weight: 500; }
+    .main-wrapper { margin-left: var(--sidebar-width); flex: 1; display: flex; flex-direction: column; }
+    .topbar {
+      height: 56px; background: var(--color-sidebar);
+      border-bottom: 1px solid var(--color-border);
+      position: sticky; top: 0; z-index: 50;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 32px 0 24px;
+    }
+    .topbar-breadcrumb { font-size: 13px; color: var(--color-text-muted); }
+    .topbar-breadcrumb span { color: var(--color-text); font-weight: 500; }
+    .topbar-links { display: flex; gap: 20px; align-items: center; }
+    .topbar-links a { font-size: 13px; color: var(--color-text-muted); text-decoration: none; transition: color 0.15s; }
+    .topbar-links a:hover { color: var(--color-text); }
+    .badge-new {
+      background: var(--color-primary); color: white;
+      font-size: 9px; font-weight: 700; padding: 1px 5px;
+      border-radius: 3px; text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .outer-wrap { max-width: 1100px; width: 100%; margin: 0 auto; }
+    .content-layout {
+      display: flex; flex: 1;
+      padding: 40px 32px 80px 32px;
+      gap: 48px;
+    }
+    .content-main { flex: 1; min-width: 0; }
+    .toc-sidebar {
+      width: var(--toc-width); flex-shrink: 0;
+      position: sticky; top: 80px;
+      align-self: flex-start;
+      max-height: calc(100vh - 100px);
+      overflow-y: auto;
+    }
+    .toc-sidebar::-webkit-scrollbar { width: 3px; }
+    .toc-sidebar::-webkit-scrollbar-thumb { background: var(--color-border-light); }
+    .toc-title {
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--color-text-muted);
+      margin-bottom: 10px; padding-bottom: 8px;
+      border-bottom: 1px solid var(--color-border);
+    }
+    .toc-list { list-style: none; }
+    .toc-list li a {
+      display: block; padding: 4px 0;
+      font-size: 12.5px; color: var(--color-text-muted);
+      text-decoration: none; transition: color 0.15s; line-height: 1.5;
+    }
+    .toc-list li a:hover { color: var(--color-primary); }
+    .toc-list li a.active { color: var(--color-primary-light); }
+    .page-title {
+      font-size: 36px; font-weight: 700; color: var(--color-text);
+      margin-bottom: 8px; letter-spacing: -0.5px; line-height: 1.2;
+    }
+    .page-title::after {
+      content: ''; display: block; width: 48px; height: 3px;
+      background: var(--color-primary); margin-top: 12px; border-radius: 2px;
+    }
+    .controller-diagram {
+      width: 100%; max-width: 580px;
+      margin: 28px 0 32px;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: 28px 20px;
+      display: flex; flex-direction: column; align-items: center;
+    }
+    .diagram-flow { display: flex; align-items: center; gap: 0; flex-wrap: wrap; justify-content: center; }
+    .diagram-box {
+      padding: 10px 20px; border-radius: var(--radius);
+      font-size: 13px; font-weight: 600; font-family: var(--font-code); border: 1px solid;
+    }
+    .diagram-box.client { background: #1a2a3a; border-color: #2a4a6a; color: #60a0d0; }
+    .diagram-box.controller { background: rgba(234,40,69,0.12); border-color: var(--color-primary); color: var(--color-primary-light); }
+    .diagram-box.route { background: #1a2a1a; border-color: #2a5a2a; color: #4ade80; }
+    .diagram-arrow { padding: 0 12px; color: var(--color-text-muted); font-size: 18px; }
+    h2 {
+      font-size: 24px; font-weight: 700; color: var(--color-text);
+      margin: 48px 0 16px; padding-bottom: 10px;
+      border-bottom: 1px solid var(--color-border);
+    }
+    h3 {
+      font-size: 19px; font-weight: 600; color: var(--color-text);
+      margin: 40px 0 12px; letter-spacing: -0.2px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .anchor-link { font-size: 14px; color: var(--color-text-muted); text-decoration: none; opacity: 0; transition: opacity 0.2s; }
+    h3:hover .anchor-link { opacity: 1; }
+    p { margin-bottom: 16px; color: var(--color-text-secondary); line-height: 1.8; }
+    a { color: var(--color-primary-light); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    code {
+      font-family: var(--font-code); font-size: 13px;
+      background: var(--color-code-bg); border: 1px solid var(--color-code-border);
+      padding: 1px 6px; border-radius: 4px; color: #f9a8d4;
+    }
+    .code-block-wrapper {
+      margin: 20px 0; border-radius: var(--radius-lg); overflow: hidden;
+      border: 1px solid var(--color-code-border); background: var(--color-code-bg);
+    }
+    .code-block-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 9px 16px; background: #181818;
+      border-bottom: 1px solid var(--color-code-border);
+    }
+    .code-block-filename {
+      font-family: var(--font-code); font-size: 12px; color: var(--color-text-muted);
+      display: flex; align-items: center; gap: 6px;
+    }
+    .code-block-filename::before {
+      content: ''; display: inline-block; width: 8px; height: 8px;
+      border-radius: 50%; background: var(--color-primary);
+    }
+    .code-tabs { display: flex; gap: 4px; }
+    .code-tab {
+      padding: 5px 12px; font-size: 11.5px; font-weight: 500;
+      font-family: var(--font-code); color: var(--color-text-muted);
+      cursor: pointer; border-radius: 4px; transition: all 0.15s;
+      border: 1px solid transparent; user-select: none;
+    }
+    .code-tab.active { color: var(--color-primary-light); background: var(--color-primary-glow); border-color: var(--color-primary); }
+    .code-tab:hover:not(.active) { color: var(--color-text); background: rgba(255,255,255,0.04); }
+    .code-copy-btn {
+      padding: 4px 10px; font-size: 11px; font-family: var(--font-code);
+      background: var(--color-surface); border: 1px solid var(--color-border-light);
+      color: var(--color-text-muted); border-radius: 4px; cursor: pointer; transition: all 0.15s;
+    }
+    .code-copy-btn:hover { background: var(--color-surface-2); color: var(--color-text); }
+    .code-pane { display: none; }
+    .code-pane.active { display: block; }
+    pre {
+      padding: 20px; overflow-x: auto;
+      font-family: var(--font-code); font-size: 13.5px; line-height: 1.65; color: #abb2bf;
+    }
+    pre::-webkit-scrollbar { height: 6px; }
+    pre::-webkit-scrollbar-thumb { background: var(--color-border-light); border-radius: 3px; }
+    .kw  { color: #c678dd; }
+    .fn  { color: #61afef; }
+    .str { color: #98c379; }
+    .dec { color: #e5c07b; }
+    .typ { color: #e5c07b; }
+    .cm  { color: #5c6370; font-style: italic; }
+    .pn  { color: #abb2bf; }
+    .num { color: #d19a66; }
+    .cl  { color: #e06c75; }
+    .tmpl { color: #d19a66; }
+    .callout {
+      margin: 20px 0; padding: 14px 18px;
+      border-radius: var(--radius); border-left: 3px solid;
+      font-size: 13.5px; line-height: 1.7;
+    }
+    .callout p { margin: 0; }
+    .callout-hint { background: var(--color-hint-bg); border-color: var(--color-hint-text); color: #a7f3d0; }
+    .callout-hint .callout-label { color: var(--color-hint-text); font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 0.07em; display: block; margin-bottom: 5px; }
+    .callout-warning { background: var(--color-warning-bg); border-color: var(--color-warning-text); color: #fed7aa; }
+    .callout-warning .callout-label { color: var(--color-warning-text); font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 0.07em; display: block; margin-bottom: 5px; }
+    .table-wrapper { overflow-x: auto; margin: 20px 0; border-radius: var(--radius-lg); border: 1px solid var(--color-border); }
+    table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+    thead th {
+      padding: 11px 16px; text-align: left; font-weight: 600;
+      background: #1e1e1e; color: var(--color-text);
+      font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em;
+      border-bottom: 1px solid var(--color-border);
+    }
+    tbody tr { border-bottom: 1px solid var(--color-border); transition: background 0.1s; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:nth-child(odd) { background: #181818; }
+    tbody tr:nth-child(even) { background: #1c1c1c; }
+    tbody tr:hover { background: var(--color-surface-2); }
+    td { padding: 10px 16px; color: var(--color-text-secondary); vertical-align: top; }
+    td:first-child { font-family: var(--font-code); font-size: 12.5px; color: #f9a8d4; white-space: nowrap; }
+    td.desc-cell code { font-size: 12.5px; }
+    .translation-banner {
+      background: linear-gradient(135deg, rgba(234,40,69,0.1), rgba(234,40,69,0.05));
+      border: 1px solid rgba(234,40,69,0.3);
+      border-radius: var(--radius-lg);
+      padding: 12px 18px; margin-bottom: 32px;
+      display: flex; align-items: center; gap: 10px;
+      font-size: 13px; color: var(--color-text-secondary);
+    }
+    .translation-banner strong { color: var(--color-primary-light); }
+    .page-nav { display: flex; justify-content: space-between; margin-top: 48px; gap: 16px; }
+    .page-nav-btn {
+      display: flex; flex-direction: column; padding: 16px 20px;
+      border: 1px solid var(--color-border); border-radius: var(--radius-lg);
+      text-decoration: none; transition: all 0.2s; min-width: 160px;
+    }
+    .page-nav-btn:hover { border-color: var(--color-primary); background: var(--color-primary-glow); text-decoration: none; }
+    .nav-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--color-text-muted); margin-bottom: 4px; }
+    .nav-title { font-size: 14px; font-weight: 600; color: var(--color-text); }
+    .page-nav-btn.next { text-align: right; }
+    .content-footer {
+      padding: 28px 32px; border-top: 1px solid var(--color-border);
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 12.5px; color: var(--color-text-muted);
+    }
+    @media (max-width: 1100px) { .toc-sidebar { display: none; } }
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .main-wrapper { margin-left: 0; }
+      .content-layout { padding: 20px 16px 60px; }
+    }
+  </style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <a class="sidebar-logo" href="https://docs.nestjs.com" target="_blank">
+    <div class="logo-icon">N</div>
+    <div>
+      <div class="logo-text">Nest<span>JS</span></div>
+      <div class="logo-sub">A progressive Node.js framework</div>
+    </div>
+  </a>
+  <nav class="sidebar-nav">
+    <div class="nav-section-title">Giới thiệu</div>
+    <a class="nav-item" href="https://docs.nestjs.com/" target="_blank">Introduction</a>
+
+    <div class="nav-section-title">Overview</div>
+    <a class="nav-item" href="https://docs.nestjs.com/first-steps" target="_blank">First steps</a>
+    <a class="nav-item active" href="#">Controllers</a>
+    <a class="nav-item" href="https://docs.nestjs.com/providers" target="_blank">Providers</a>
+    <a class="nav-item" href="https://docs.nestjs.com/modules" target="_blank">Modules</a>
+    <a class="nav-item" href="https://docs.nestjs.com/middleware" target="_blank">Middleware</a>
+    <a class="nav-item" href="https://docs.nestjs.com/exception-filters" target="_blank">Exception filters</a>
+    <a class="nav-item" href="https://docs.nestjs.com/pipes" target="_blank">Pipes</a>
+    <a class="nav-item" href="https://docs.nestjs.com/guards" target="_blank">Guards</a>
+    <a class="nav-item" href="https://docs.nestjs.com/interceptors" target="_blank">Interceptors</a>
+    <a class="nav-item" href="https://docs.nestjs.com/custom-decorators" target="_blank">Custom decorators</a>
+
+    <div class="nav-section-title">Fundamentals</div>
+    <a class="nav-item" href="https://docs.nestjs.com/fundamentals/custom-providers" target="_blank">Custom providers</a>
+    <a class="nav-item" href="https://docs.nestjs.com/fundamentals/async-providers" target="_blank">Asynchronous providers</a>
+    <a class="nav-item" href="https://docs.nestjs.com/fundamentals/dynamic-modules" target="_blank">Dynamic modules</a>
+    <a class="nav-item" href="https://docs.nestjs.com/fundamentals/injection-scopes" target="_blank">Injection scopes</a>
+    <a class="nav-item" href="https://docs.nestjs.com/fundamentals/lifecycle-events" target="_blank">Lifecycle events</a>
+    <a class="nav-item" href="https://docs.nestjs.com/fundamentals/testing" target="_blank">Testing</a>
+
+    <div class="nav-section-title">Techniques</div>
+    <a class="nav-item" href="https://docs.nestjs.com/techniques/configuration" target="_blank">Configuration</a>
+    <a class="nav-item" href="https://docs.nestjs.com/techniques/database" target="_blank">Database</a>
+    <a class="nav-item" href="https://docs.nestjs.com/techniques/validation" target="_blank">Validation</a>
+    <a class="nav-item" href="https://docs.nestjs.com/techniques/caching" target="_blank">Caching</a>
+
+    <div class="nav-section-title">Security</div>
+    <a class="nav-item" href="https://docs.nestjs.com/security/authentication" target="_blank">Authentication</a>
+    <a class="nav-item" href="https://docs.nestjs.com/security/authorization" target="_blank">Authorization</a>
+    <a class="nav-item" href="https://docs.nestjs.com/security/cors" target="_blank">CORS</a>
+
+    <div class="nav-section-title">Recipes</div>
+    <a class="nav-item" href="https://docs.nestjs.com/recipes/crud-generator" target="_blank">CRUD generator</a>
+    <a class="nav-item" href="https://docs.nestjs.com/recipes/swagger" target="_blank">Swagger</a>
+  </nav>
+</aside>
+
+<div class="main-wrapper">
+  <div class="topbar">
+    <div class="topbar-breadcrumb">Overview &rsaquo; <span>Controllers</span></div>
+    <div class="topbar-links">
+      <a href="https://courses.nestjs.com" target="_blank">Courses</a>
+      <a href="https://enterprise.nestjs.com" target="_blank">Enterprise</a>
+      <a href="https://devtools.nestjs.com" target="_blank"><span class="badge-new">NEW</span> Devtools</a>
+      <a href="https://mau.nestjs.com" target="_blank">Deploy with Mau</a>
+    </div>
+  </div>
+
+  <div class="outer-wrap">
+    <div class="content-layout">
+
+      <!-- MAIN CONTENT -->
+      <main class="content-main">
+
+        <div class="translation-banner">
+          <span style="font-size:18px;">🇻🇳</span>
+          <div>Dịch sang <strong>tiếng Việt</strong> từ <a href="https://docs.nestjs.com/controllers" target="_blank">docs.nestjs.com/controllers</a>. Thuật ngữ kỹ thuật giữ nguyên tiếng Anh theo chuẩn cộng đồng.</div>
+        </div>
+
+        <h1 class="page-title">Controllers</h1>
+
+        <div class="controller-diagram">
+          <div class="diagram-flow">
+            <div class="diagram-box client">Client Request</div>
+            <div class="diagram-arrow">&#8594;</div>
+            <div class="diagram-box controller">@Controller()</div>
+            <div class="diagram-arrow">&#8594;</div>
+            <div class="diagram-box route">Route Handler</div>
+          </div>
+          <p style="margin-top:16px;font-size:12px;color:var(--color-text-muted);text-align:center;">Routing mechanism điều hướng request đến đúng controller</p>
+        </div>
+
+        <p>Controller có trách nhiệm xử lý các <strong>request</strong> đến và trả về <strong>response</strong> cho client.</p>
+        <p>Mục đích của một controller là nhận các request cụ thể cho ứng dụng. Cơ chế <strong>routing</strong> quyết định controller nào sẽ xử lý mỗi request. Thông thường, mỗi controller có nhiều route, và mỗi route có thể thực hiện các hành động khác nhau.</p>
+        <p>Để tạo một controller cơ bản, chúng ta dùng class và <strong>decorator</strong>. Decorator liên kết class với metadata cần thiết, cho phép Nest tạo routing map kết nối request với controller tương ứng.</p>
+
+        <div class="callout callout-hint">
+          <span class="callout-label">&#128161; Hint</span>
+          <p>Để nhanh chóng tạo CRUD controller với <a href="https://docs.nestjs.com/techniques/validation" target="_blank">validation</a> tích hợp sẵn, dùng <a href="https://docs.nestjs.com/recipes/crud-generator#crud-generator" target="_blank">CRUD generator</a> của CLI: <code>nest g resource [name]</code>.</p>
+        </div>
+
+        <!-- ROUTING -->
+        <h3 id="routing">Routing <a class="anchor-link" href="#routing">#</a></h3>
+
+        <p>Trong ví dụ dưới, chúng ta dùng decorator <code>@Controller()</code> — thứ <strong>bắt buộc</strong> để định nghĩa một controller cơ bản. Chúng ta chỉ định path prefix tuỳ chọn là <code>cats</code>. Dùng path prefix trong <code>@Controller()</code> giúp nhóm các route liên quan lại và giảm code lặp. Ví dụ, nếu muốn nhóm các route quản lý entity <code>cat</code> dưới path <code>/cats</code>, ta đặt prefix <code>cats</code> trong <code>@Controller()</code> — và không cần lặp lại đoạn path đó cho từng route trong file.</p>
+
+        <div class="code-block-wrapper">
+          <div class="code-block-header">
+            <div class="code-block-filename">cats.controller.ts</div>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <div class="code-tabs">
+                <div class="code-tab active" onclick="switchTab(this,'blk-routing','ts')">TS</div>
+                <div class="code-tab" onclick="switchTab(this,'blk-routing','js')">JS</div>
+              </div>
+              <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+            </div>
+          </div>
+          <div id="blk-routing">
+            <div class="code-pane active" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Controller</span><span class="pn">,</span> <span class="cl">Get</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+
+<span class="dec">@Controller</span><span class="pn">(</span><span class="str">'cats'</span><span class="pn">)</span>
+<span class="kw">export class</span> <span class="cl">CatsController</span> <span class="pn">{</span>
+  <span class="dec">@Get</span><span class="pn">()</span>
+  <span class="fn">findAll</span><span class="pn">():</span> <span class="typ">string</span> <span class="pn">{</span>
+    <span class="kw">return</span> <span class="str">'This action returns all cats'</span><span class="pn">;</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+            <div class="code-pane" data-lang="js"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Controller</span><span class="pn">,</span> <span class="cl">Get</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+
+<span class="dec">@Controller</span><span class="pn">(</span><span class="str">'cats'</span><span class="pn">)</span>
+<span class="kw">export class</span> <span class="cl">CatsController</span> <span class="pn">{</span>
+  <span class="dec">@Get</span><span class="pn">()</span>
+  <span class="fn">findAll</span><span class="pn">()</span> <span class="pn">{</span>
+    <span class="kw">return</span> <span class="str">'This action returns all cats'</span><span class="pn">;</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+          </div>
+        </div>
+
+        <div class="callout callout-hint">
+          <span class="callout-label">&#128161; Hint</span>
+          <p>Để tạo controller bằng CLI, chạy lệnh <code>$ nest g controller [name]</code>.</p>
+        </div>
+
+        <p>Decorator HTTP request method <code>@Get()</code> đặt trước method <code>findAll()</code> báo Nest tạo một handler cho endpoint HTTP cụ thể, xác định bởi HTTP method (GET) và route path. Route path của handler được xác định bằng cách kết hợp prefix (tuỳ chọn) của controller với path chỉ định trong decorator của method. Vì chúng ta đặt prefix <code>cats</code> và không thêm path trong decorator method, Nest map <code>GET /cats</code> đến handler này.</p>
+        <p>Ví dụ: nếu prefix controller là <code>cats</code> và decorator method là <code>@Get('breed')</code>, route kết quả sẽ là <code>GET /cats/breed</code>.</p>
+        <p>Trong ví dụ trên, khi có GET request đến endpoint này, Nest routes đến method <code>findAll()</code> do người dùng định nghĩa. Tên method hoàn toàn tuỳ ý — Nest không gắn ý nghĩa cụ thể nào cho tên method.</p>
+        <p>Method này trả về status code 200 và response liên quan — ở đây là một string. Để giải thích tại sao, cần giới thiệu hai <strong>tuỳ chọn</strong> Nest dùng để thao tác response:</p>
+
+        <div class="table-wrapper">
+          <table>
+            <thead><tr><th>Phương thức</th><th>Mô tả</th></tr></thead>
+            <tbody>
+              <tr>
+                <td>Standard (khuyến nghị)</td>
+                <td class="desc-cell">Với phương thức tích hợp này, khi request handler trả về JavaScript object hoặc array, nó <strong>tự động</strong> được serialize sang JSON. Khi trả về kiểu JavaScript primitive (<code>string</code>, <code>number</code>, <code>boolean</code>), Nest gửi giá trị đó mà không serialize. Điều này giúp xử lý response đơn giản: chỉ cần return giá trị, Nest lo phần còn lại.<br><br>Hơn nữa, <strong>status code</strong> mặc định luôn là 200, ngoại trừ POST request dùng 201. Có thể thay đổi bằng decorator <code>@HttpCode(...)</code> ở cấp handler.</td>
+              </tr>
+              <tr>
+                <td>Library-specific</td>
+                <td class="desc-cell">Có thể dùng <a href="https://expressjs.com/en/api.html#res" target="_blank">response object</a> đặc thù của thư viện (như Express), inject bằng decorator <code>@Res()</code> trong chữ ký method handler (ví dụ: <code>findAll(@Res() response)</code>). Với cách này, bạn dùng được các phương thức xử lý response native của object đó. Với Express: <code>response.status(200).send()</code>.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout callout-warning">
+          <span class="callout-label">&#9888;&#65039; Warning</span>
+          <p>Nest phát hiện khi handler dùng <code>@Res()</code> hoặc <code>@Next()</code>, tức bạn đã chọn library-specific option. Nếu dùng cả hai cùng lúc, Standard approach sẽ <strong>tự động bị vô hiệu hoá</strong> cho route đó. Để dùng cả hai (ví dụ: inject response object chỉ để set cookies/headers nhưng vẫn để framework xử lý phần còn lại), phải set <code>passthrough: true</code> trong <code>@Res({ passthrough: true })</code>.</p>
+        </div>
+
+        <!-- REQUEST OBJECT -->
+        <h3 id="request-object">Request object <a class="anchor-link" href="#request-object">#</a></h3>
+
+        <p>Handler thường cần truy cập thông tin <strong>request</strong> từ client. Nest cung cấp quyền truy cập vào <a href="https://expressjs.com/en/api.html#req" target="_blank">request object</a> từ platform bên dưới (mặc định là Express). Inject nó bằng decorator <code>@Req()</code> trong chữ ký handler.</p>
+
+        <div class="code-block-wrapper">
+          <div class="code-block-header">
+            <div class="code-block-filename">cats.controller.ts</div>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <div class="code-tabs">
+                <div class="code-tab active" onclick="switchTab(this,'blk-req','ts')">TS</div>
+                <div class="code-tab" onclick="switchTab(this,'blk-req','js')">JS</div>
+              </div>
+              <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+            </div>
+          </div>
+          <div id="blk-req">
+            <div class="code-pane active" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Controller</span><span class="pn">,</span> <span class="cl">Get</span><span class="pn">,</span> <span class="cl">Req</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import type</span> <span class="pn">{</span> <span class="typ">Request</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'express'</span><span class="pn">;</span>
+
+<span class="dec">@Controller</span><span class="pn">(</span><span class="str">'cats'</span><span class="pn">)</span>
+<span class="kw">export class</span> <span class="cl">CatsController</span> <span class="pn">{</span>
+  <span class="dec">@Get</span><span class="pn">()</span>
+  <span class="fn">findAll</span><span class="pn">(</span><span class="dec">@Req</span><span class="pn">()</span> request<span class="pn">:</span> <span class="typ">Request</span><span class="pn">):</span> <span class="typ">string</span> <span class="pn">{</span>
+    <span class="kw">return</span> <span class="str">'This action returns all cats'</span><span class="pn">;</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+            <div class="code-pane" data-lang="js"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Controller</span><span class="pn">,</span> <span class="cl">Bind</span><span class="pn">,</span> <span class="cl">Get</span><span class="pn">,</span> <span class="cl">Req</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+
+<span class="dec">@Controller</span><span class="pn">(</span><span class="str">'cats'</span><span class="pn">)</span>
+<span class="kw">export class</span> <span class="cl">CatsController</span> <span class="pn">{</span>
+  <span class="dec">@Get</span><span class="pn">()</span>
+  <span class="dec">@Bind</span><span class="pn">(</span><span class="fn">Req</span><span class="pn">())</span>
+  <span class="fn">findAll</span><span class="pn">(</span>request<span class="pn">)</span> <span class="pn">{</span>
+    <span class="kw">return</span> <span class="str">'This action returns all cats'</span><span class="pn">;</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+          </div>
+        </div>
+
+        <div class="callout callout-hint">
+          <span class="callout-label">&#128161; Hint</span>
+          <p>Để tận dụng typings của <code>express</code> (như ví dụ <code>request: Request</code>), hãy cài đặt package <code>@types/express</code>.</p>
+        </div>
+
+        <p>Request object đại diện cho HTTP request và chứa các property cho query string, parameters, HTTP headers và body (xem thêm <a href="https://expressjs.com/en/api.html#req" target="_blank">tại đây</a>). Thông thường không cần truy cập thủ công — dùng các decorator chuyên dụng như <code>@Body()</code> hoặc <code>@Query()</code> thay thế. Dưới đây là danh sách decorator được cung cấp và platform-specific object tương ứng:</p>
+
+        <div class="table-wrapper">
+          <table>
+            <thead><tr><th>Decorator</th><th>Platform Object tương ứng</th></tr></thead>
+            <tbody>
+              <tr><td>@Request(), @Req()</td><td><code>req</code></td></tr>
+              <tr><td>@Response(), @Res()*</td><td><code>res</code></td></tr>
+              <tr><td>@Next()</td><td><code>next</code></td></tr>
+              <tr><td>@Session()</td><td><code>req.session</code></td></tr>
+              <tr><td>@Param(key?: string)</td><td><code>req.params</code> / <code>req.params[key]</code></td></tr>
+              <tr><td>@Body(key?: string)</td><td><code>req.body</code> / <code>req.body[key]</code></td></tr>
+              <tr><td>@Query(key?: string)</td><td><code>req.query</code> / <code>req.query[key]</code></td></tr>
+              <tr><td>@Headers(name?: string)</td><td><code>req.headers</code> / <code>req.headers[name]</code></td></tr>
+              <tr><td>@Ip()</td><td><code>req.ip</code></td></tr>
+              <tr><td>@HostParam()</td><td><code>req.hosts</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>* Để tương thích với typings giữa các HTTP platform (Express và Fastify), Nest cung cấp <code>@Res()</code> và <code>@Response()</code> — <code>@Res()</code> chỉ là alias. Cả hai expose native platform <code>response</code> object trực tiếp. Khi inject <code>@Res()</code> hoặc <code>@Response()</code> trong method handler, Nest vào <strong>Library-specific mode</strong> và bạn chịu trách nhiệm quản lý response bằng cách gọi <code>res.json(...)</code> hoặc <code>res.send(...)</code>, nếu không HTTP server sẽ bị treo.</p>
+
+        <div class="callout callout-hint">
+          <span class="callout-label">&#128161; Hint</span>
+          <p>Tìm hiểu cách tạo custom decorator, xem <a href="https://docs.nestjs.com/custom-decorators" target="_blank">chương này</a>.</p>
+        </div>
+
+        <!-- RESOURCES -->
+        <h3 id="resources">Resources <a class="anchor-link" href="#resources">#</a></h3>
+
+        <p>Trước đó, chúng ta định nghĩa endpoint để fetch resource cats (<strong>GET</strong> route). Thông thường cũng cần endpoint tạo bản ghi mới. Hãy tạo <strong>POST</strong> handler:</p>
+
+        <div class="code-block-wrapper">
+          <div class="code-block-header">
+            <div class="code-block-filename">cats.controller.ts</div>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <div class="code-tabs">
+                <div class="code-tab active" onclick="switchTab(this,'blk-resources','ts')">TS</div>
+                <div class="code-tab" onclick="switchTab(this,'blk-resources','js')">JS</div>
+              </div>
+              <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+            </div>
+          </div>
+          <div id="blk-resources">
+            <div class="code-pane active" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Controller</span><span class="pn">,</span> <span class="cl">Get</span><span class="pn">,</span> <span class="cl">Post</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+
+<span class="dec">@Controller</span><span class="pn">(</span><span class="str">'cats'</span><span class="pn">)</span>
+<span class="kw">export class</span> <span class="cl">CatsController</span> <span class="pn">{</span>
+  <span class="dec">@Post</span><span class="pn">()</span>
+  <span class="fn">create</span><span class="pn">():</span> <span class="typ">string</span> <span class="pn">{</span>
+    <span class="kw">return</span> <span class="str">'This action adds a new cat'</span><span class="pn">;</span>
+  <span class="pn">}</span>
+
+  <span class="dec">@Get</span><span class="pn">()</span>
+  <span class="fn">findAll</span><span class="pn">():</span> <span class="typ">string</span> <span class="pn">{</span>
+    <span class="kw">return</span> <span class="str">'This action returns all cats'</span><span class="pn">;</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+            <div class="code-pane" data-lang="js"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Controller</span><span class="pn">,</span> <span class="cl">Get</span><span class="pn">,</span> <span class="cl">Post</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+
+<span class="dec">@Controller</span><span class="pn">(</span><span class="str">'cats'</span><span class="pn">)</span>
+<span class="kw">export class</span> <span class="cl">CatsController</span> <span class="pn">{</span>
+  <span class="dec">@Post</span><span class="pn">()</span>
+  <span class="fn">create</span><span class="pn">()</span> <span class="pn">{</span>
+    <span class="kw">return</span> <span class="str">'This action adds a new cat'</span><span class="pn">;</span>
+  <span class="pn">}</span>
+
+  <span class="dec">@Get</span><span class="pn">()</span>
+  <span class="fn">findAll</span><span class="pn">()</span> <span class="pn">{</span>
+    <span class="kw">return</span> <span class="str">'This action returns all cats'</span><span class="pn">;</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+          </div>
+        </div>
+
+        <p>Nest cung cấp decorator cho tất cả HTTP method tiêu chuẩn: <code>@Get()</code>, <code>@Post()</code>, <code>@Put()</code>, <code>@Delete()</code>, <code>@Patch()</code>, <code>@Options()</code>, và <code>@Head()</code>. Ngoài ra, <code>@All()</code> định nghĩa endpoint xử lý tất cả chúng.</p>
+
+        <!-- ROUTE WILDCARDS -->
+        <h3 id="route-wildcards">Route wildcards <a class="anchor-link" href="#route-wildcards">#</a></h3>
+
+        <p>NestJS cũng hỗ trợ pattern-based route. Ví dụ, dấu hoa thị (<code>*</code>) dùng như wildcard để match bất kỳ tổ hợp ký tự nào ở cuối path. Method <code>findAll()</code> dưới đây sẽ được thực thi với bất kỳ route nào bắt đầu bằng <code>abcd/</code>:</p>
+
+        <div class="code-block-wrapper">
+          <div class="code-block-header">
+            <div style="flex:1;"></div>
+            <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <div id="blk-wildcard">
+            <div class="code-pane active"><pre><span class="dec">@Get</span><span class="pn">(</span><span class="str">'abcd/*'</span><span class="pn">)</span>
+<span class="fn">findAll</span><span class="pn">()</span> <span class="pn">{</span>
+  <span class="kw">return</span> <span class="str">'This route uses a wildcard'</span><span class="pn">;</span>
+<span class="pn">}</span></pre></div>
+          </div>
+        </div>
+
+        <p>Path <code>'abcd/*'</code> sẽ match <code>abcd/</code>, <code>abcd/123</code>, <code>abcd/abc</code>, v.v. Dấu gạch ngang (<code>-</code>) và dấu chấm (<code>.</code>) được hiểu theo nghĩa đen trong string-based path.</p>
+        <p>Cách này hoạt động trên cả Express và Fastify. Tuy nhiên, với Express v5, hệ thống routing đã nghiêm ngặt hơn. Trong Express thuần, bạn phải dùng named wildcard — ví dụ: <code>abcd/*splat</code> (có thể đặt tên bất kỳ). Dù vậy, Nest cung cấp compatibility layer nên vẫn dùng được dấu <code>*</code> thuần.</p>
+        <p>Đối với dấu hoa thị ở <strong>giữa route</strong>, Express yêu cầu named wildcard (ví dụ: <code>ab{*splat}cd</code>), trong khi Fastify không hỗ trợ chúng.</p>
+
+        <!-- STATUS CODE -->
+        <h3 id="status-code">Status code <a class="anchor-link" href="#status-code">#</a></h3>
+
+        <p><strong>Status code</strong> mặc định của response luôn là <strong>200</strong>, ngoại trừ POST request mặc định là <strong>201</strong>. Dùng decorator <code>@HttpCode(...)</code> ở cấp handler để thay đổi:</p>
+
+        <div class="code-block-wrapper">
+          <div class="code-block-header">
+            <div style="flex:1;"></div>
+            <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <div id="blk-statuscode">
+            <div class="code-pane active"><pre><span class="dec">@Post</span><span class="pn">()</span>
+<span class="dec">@HttpCode</span><span class="pn">(</span><span class="num">204</span><span class="pn">)</span>
+<span class="fn">create</span><span class="pn">()</span> <span class="pn">{</span>
+  <span class="kw">return</span> <span class="str">'This action adds a new cat'</span><span class="pn">;</span>
+<span class="pn">}</span></pre></div>
+          </div>
+        </div>
+
+        <div class="callout callout-hint">
+          <span class="callout-label">&#128161; Hint</span>
+          <p>Import <code>HttpCode</code> từ package <code>@nestjs/common</code>.</p>
+        </div>
+
+        <p>Nếu status code không cố định mà phụ thuộc vào nhiều yếu tố, dùng library-specific <strong>response</strong> object (inject bằng <code>@Res()</code>), hoặc throw exception.</p>
+
+        <!-- RESPONSE HEADERS -->
+        <h3 id="response-headers">Response headers <a class="anchor-link" href="#response-headers">#</a></h3>
+
+        <p>Để chỉ định custom response header, dùng decorator <code>@Header()</code> hoặc response object đặc thù của thư viện (gọi <code>res.header()</code> trực tiếp).</p>
+
+        <div class="code-block-wrapper">
+          <div class="code-block-header">
+            <div style="flex:1;"></div>
+            <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <div id="blk-header">
+            <div class="code-pane active"><pre><span class="dec">@Post</span><span class="pn">()</span>
+<span class="dec">@Header</span><span class="pn">(</span><span class="str">'Cache-Control'</span><span class="pn">,</span> <span class="str">'no-store'</span><span class="pn">)</span>
+<span class="fn">create</span><span class="pn">()</span> <span class="pn">{</span>
+  <span class="kw">return</span> <span class="str">'This action adds a new cat'</span><span class="pn">;</span>
+<span class="pn">}</span></pre></div>
+          </div>
+        </div>
+
+        <div class="callout callout-hint">
+          <span class="callout-label">&#128161; Hint</span>
+          <p>Import <code>Header</code> từ package <code>@nestjs/common</code>.</p>
+        </div>
+
+        <!-- REDIRECTION -->
+        <h3 id="redirection">Redirection <a class="anchor-link" href="#redirection">#</a></h3>
+
+        <p>Để redirect response đến URL cụ thể, dùng decorator <code>@Redirect()</code> hoặc <code>res.redirect()</code>. <code>@Redirect()</code> nhận hai tham số tuỳ chọn: <code>url</code> và <code>statusCode</code>. Mặc định <code>statusCode</code> là <code>302</code> (<code>Found</code>).</p>
+
+        <div class="code-block-wrapper">
+          <div class="code-block-header">
+            <div style="flex:1;"></div>
+            <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <div id="blk-redirect1">
+            <div class="code-pane active"><pre><span class="dec">@Get</span><span class="pn">()</span>
+<span class="dec">@Redirect</span><span class="pn">(</span><span class="str">'https://nestjs.com'</span><span class="pn">,</span> <span class="num">301</span><span class="pn">)</span></pre></div>
+          </div>
+        </div>
+
+        <div class="callout callout-hint">
+          <span class="callout-label">&#128161; Hint</span>
+          <p>Đôi khi cần xác định HTTP status code hoặc redirect URL một cách động. Thực hiện điều này bằng cách return một object theo interface <code>HttpRedirectResponse</code> (từ <code>@nestjs/common</code>).</p>
+        </div>
+
+        <p>Giá trị được return sẽ override tham số truyền vào <code>@Redirect()</code>. Ví dụ:</p>
+
+        <div class="code-block-wrapper">
+          <div class="code-block-header">
+            <div style="flex:1;"></div>
+            <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <div id="blk-redirect2">
+            <div class="code-pane active"><pre><span class="dec">@Get</span><span class="pn">(</span><span class="str">'docs'</span><span class="pn">)</span>
+<span class="dec">@Redirect</span><span class="pn">(</span><span class="str">'https://docs.nestjs.com'</span><span class="pn">,</span> <span class="num">302</span><span class="pn">)</span>
+<span class="fn">getDocs</span><span class="pn">(</span><span class="dec">@Query</span><span class="pn">(</span><span class="str">'version'</span><span class="pn">)</span> version<span class="pn">)</span> <span class="pn">{</span>
+  <span class="kw">if</span> <span class="pn">(</span>version <span class="pn">&amp;&amp;</span> version <span class="pn">===</span> <span class="str">'5'</span><span class="pn">)</span> <span class="pn">{</span>
+    <span class="kw">return</span> <span class="pn">{</span> url<span class="pn">:</span> <span class="str">'https://docs.nestjs.com/v5/'</span> <span class="pn">};</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+          </div>
+        </div>
+
+        <!-- ROUTE PARAMETERS -->
+        <h3 id="route-parameters">Route parameters <a class="anchor-link" href="#route-parameters">#</a></h3>
+
+        <p>Route với static path không hoạt động khi cần nhận <strong>dữ liệu động</strong> (ví dụ: <code>GET /cats/1</code> để lấy cat có id <code>1</code>). Để định nghĩa route với parameter, thêm <strong>token</strong> route parameter vào route path. Các token này có thể truy cập bằng decorator <code>@Param()</code> trong chữ ký method.</p>
+
+        <div class="callout callout-hint">
+          <span class="callout-label">&#128161; Hint</span>
+          <p>Route với parameter nên khai báo <strong>sau</strong> bất kỳ static path nào, tránh parameterized path chặn traffic dành cho static path.</p>
+        </div>
+
+        <div class="code-block-wrapper">
+          <div class="code-block-header">
+            <div style="flex:1;"></div>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <div class="code-tabs">
+                <div class="code-tab active" onclick="switchTab(this,'blk-param1','ts')">TS</div>
+                <div class="code-tab" onclick="switchTab(this,'blk-param1','js')">JS</div>
+              </div>
+              <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+            </div>
+          </div>
+          <div id="blk-param1">
+            <div class="code-pane active" data-lang="ts"><pre><span class="dec">@Get</span><span class="pn">(</span><span class="str">':id'</span><span class="pn">)</span>
+<span class="fn">findOne</span><span class="pn">(</span><span class="dec">@Param</span><span class="pn">()</span> params<span class="pn">:</span> any<span class="pn">):</span> <span class="typ">string</span> <span class="pn">{</span>
+  console<span class="pn">.</span><span class="fn">log</span><span class="pn">(</span>params<span class="pn">.</span>id<span class="pn">);</span>
+  <span class="kw">return</span> <span class="str">`This action returns a #<span class="tmpl">${params.id}</span> cat`</span><span class="pn">;</span>
+<span class="pn">}</span></pre></div>
+            <div class="code-pane" data-lang="js"><pre><span class="dec">@Get</span><span class="pn">(</span><span class="str">':id'</span><span class="pn">)</span>
+<span class="dec">@Bind</span><span class="pn">(</span><span class="fn">Param</span><span class="pn">())</span>
+<span class="fn">findOne</span><span class="pn">(</span>params<span class="pn">)</span> <span class="pn">{</span>
+  console<span class="pn">.</span><span class="fn">log</span><span class="pn">(</span>params<span class="pn">.</span>id<span class="pn">);</span>
+  <span class="kw">return</span> <span class="str">`This action returns a #<span class="tmpl">${params.id}</span> cat`</span><span class="pn">;</span>
+<span class="pn">}</span></pre></div>
+          </div>
+        </div>
+
+        <p>Decorator <code>@Param()</code> decorate một tham số method (ở trên là <code>params</code>), giúp route parameter truy cập được như property của tham số đó. Bạn có thể truy cập <code>id</code> qua <code>params.id</code>. Hoặc truyền token cụ thể vào decorator và tham chiếu trực tiếp:</p>
+
+        <div class="callout callout-hint">
+          <span class="callout-label">&#128161; Hint</span>
+          <p>Import <code>Param</code> từ package <code>@nestjs/common</code>.</p>
+        </div>
+
+        <div class="code-block-wrapper">
+          <div class="code-block-header">
+            <div style="flex:1;"></div>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <div class="code-tabs">
+                <div class="code-tab active" onclick="switchTab(this,'blk-param2','ts')">TS</div>
+                <div class="code-tab" onclick="switchTab(this,'blk-param2','js')">JS</div>
+              </div>
+              <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+            </div>
+          </div>
+          <div id="blk-param2">
+            <div class="code-pane active" data-lang="ts"><pre><span class="dec">@Get</span><span class="pn">(</span><span class="str">':id'</span><span class="pn">)</span>
+<span class="fn">findOne</span><span class="pn">(</span><span class="dec">@Param</span><span class="pn">(</span><span class="str">'id'</span><span class="pn">)</span> id<span class="pn">:</span> <span class="typ">string</span><span class="pn">):</span> <span class="typ">string</span> <span class="pn">{</span>
+  <span class="kw">return</span> <span class="str">`This action returns a #<span class="tmpl">${id}</span> cat`</span><span class="pn">;</span>
+<span class="pn">}</span></pre></div>
+            <div class="code-pane" data-lang="js"><pre><span class="dec">@Get</span><span class="pn">(</span><span class="str">':id'</span><span class="pn">)</span>
+<span class="dec">@Bind</span><span class="pn">(</span><span class="fn">Param</span><span class="pn">(</span><span class="str">'id'</span><span class="pn">))</span>
+<span class="fn">findOne</span><span class="pn">(</span>id<span class="pn">)</span> <span class="pn">{</span>
+  <span class="kw">return</span> <span class="str">`This action returns a #<span class="tmpl">${id}</span> cat`</span><span class="pn">;</span>
+<span class="pn">}</span></pre></div>
+          </div>
+        </div>
+
+        <!-- SUB-DOMAIN ROUTING -->
+        <h3 id="sub-domain-routing">Sub-domain routing <a class="anchor-link" href="#sub-domain-routing">#</a></h3>
+
+        <p>Decorator <code>@Controller</code> có thể nhận tuỳ chọn <code>host</code> để yêu cầu HTTP host của incoming request phải khớp với một giá trị cụ thể.</p>
+
+        <div class="code-block-wrapper">
+          <div class="code-block-header">
+            <div style="flex:1;"></div>
+            <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <div id="blk-subdomain1">
+            <div class="code-pane active"><pre><span class="dec">@Controller</span><span class="pn">({</span> host<span class="pn">:</span> <span class="str">'admin.example.com'</span> <span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">AdminController</span> <span class="pn">{</span>
+  <span class="dec">@Get</span><span class="pn">()</span>
+  <span class="fn">index</span><span class="pn">():</span> <span class="typ">string</span> <span class="pn">{</span>
+    <span class="kw">return</span> <span class="str">'Admin page'</span><span class="pn">;</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+          </div>
+        </div>
+
+        <div class="callout callout-warning">
+          <span class="callout-label">&#9888;&#65039; Warning</span>
+          <p>Vì <strong>Fastify</strong> không hỗ trợ nested router, nếu dùng sub-domain routing, hãy dùng Express adapter mặc định.</p>
+        </div>
+
+        <p>Tương tự route <code>path</code>, tuỳ chọn <code>host</code> có thể dùng token để bắt giá trị động trong host name. Host parameter có thể truy cập bằng decorator <code>@HostParam()</code>:</p>
+
+        <div class="code-block-wrapper">
+          <div class="code-block-header">
+            <div style="flex:1;"></div>
+            <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <div id="blk-subdomain2">
+            <div class="code-pane active"><pre><span class="dec">@Controller</span><span class="pn">({</span> host<span class="pn">:</span> <span class="str">':account.example.com'</span> <span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">AccountController</span> <span class="pn">{</span>
+  <span class="dec">@Get</span><span class="pn">()</span>
+  <span class="fn">getInfo</span><span class="pn">(</span><span class="dec">@HostParam</span><span class="pn">(</span><span class="str">'account'</span><span class="pn">)</span> account<span class="pn">:</span> <span class="typ">string</span><span class="pn">)</span> <span class="pn">{</span>
+    <span class="kw">return</span> account<span class="pn">;</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+          </div>
+        </div>
+
+        <!-- STATE SHARING -->
+        <h3 id="state-sharing">State sharing <a class="anchor-link" href="#state-sharing">#</a></h3>
+
+        <p>Với developer đến từ ngôn ngữ khác, có thể ngạc nhiên khi biết rằng trong Nest, hầu hết mọi thứ được chia sẻ giữa các incoming request — bao gồm database connection pool, singleton service với global state, v.v. Node.js không dùng mô hình Multi-Threaded Stateless, nơi mỗi request được xử lý bởi thread riêng. Do đó, dùng singleton instance trong Nest hoàn toàn <strong>an toàn</strong>.</p>
+        <p>Dù vậy, có edge case mà request-based lifetime cho controller có thể cần thiết: per-request caching trong GraphQL, request tracking, hay multi-tenancy. Xem thêm về kiểm soát injection scope <a href="https://docs.nestjs.com/fundamentals/injection-scopes" target="_blank">tại đây</a>.</p>
+
+        <!-- ASYNCHRONICITY -->
+        <h3 id="asynchronicity">Asynchronicity <a class="anchor-link" href="#asynchronicity">#</a></h3>
+
+        <p>Nest hỗ trợ đầy đủ hàm <code>async</code>. Mọi hàm <code>async</code> phải return một <code>Promise</code>, cho phép return giá trị deferred mà Nest tự động resolve. Ví dụ:</p>
+
+        <div class="code-block-wrapper">
+          <div class="code-block-header">
+            <div class="code-block-filename">cats.controller.ts</div>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <div class="code-tabs">
+                <div class="code-tab active" onclick="switchTab(this,'blk-async','ts')">TS</div>
+                <div class="code-tab" onclick="switchTab(this,'blk-async','js')">JS</div>
+              </div>
+              <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+            </div>
+          </div>
+          <div id="blk-async">
+            <div class="code-pane active" data-lang="ts"><pre><span class="dec">@Get</span><span class="pn">()</span>
+<span class="kw">async</span> <span class="fn">findAll</span><span class="pn">():</span> <span class="typ">Promise</span><span class="pn">&lt;</span>any[]<span class="pn">&gt;</span> <span class="pn">{</span>
+  <span class="kw">return</span> <span class="pn">[];</span>
+<span class="pn">}</span></pre></div>
+            <div class="code-pane" data-lang="js"><pre><span class="dec">@Get</span><span class="pn">()</span>
+<span class="kw">async</span> <span class="fn">findAll</span><span class="pn">()</span> <span class="pn">{</span>
+  <span class="kw">return</span> <span class="pn">[];</span>
+<span class="pn">}</span></pre></div>
+          </div>
+        </div>
+
+        <p>Code này hoàn toàn hợp lệ. Nest còn cho phép route handler return RxJS <a href="https://rxjs-dev.firebaseapp.com/guide/observable" target="_blank">observable stream</a>. Nest xử lý subscription nội bộ và resolve giá trị emit cuối cùng khi stream hoàn tất.</p>
+
+        <div class="code-block-wrapper">
+          <div class="code-block-header">
+            <div class="code-block-filename">cats.controller.ts</div>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <div class="code-tabs">
+                <div class="code-tab active" onclick="switchTab(this,'blk-rxjs','ts')">TS</div>
+                <div class="code-tab" onclick="switchTab(this,'blk-rxjs','js')">JS</div>
+              </div>
+              <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+            </div>
+          </div>
+          <div id="blk-rxjs">
+            <div class="code-pane active" data-lang="ts"><pre><span class="dec">@Get</span><span class="pn">()</span>
+<span class="fn">findAll</span><span class="pn">():</span> <span class="typ">Observable</span><span class="pn">&lt;</span>any[]<span class="pn">&gt;</span> <span class="pn">{</span>
+  <span class="kw">return</span> <span class="fn">of</span><span class="pn">([]);</span>
+<span class="pn">}</span></pre></div>
+            <div class="code-pane" data-lang="js"><pre><span class="dec">@Get</span><span class="pn">()</span>
+<span class="fn">findAll</span><span class="pn">()</span> <span class="pn">{</span>
+  <span class="kw">return</span> <span class="fn">of</span><span class="pn">([]);</span>
+<span class="pn">}</span></pre></div>
+          </div>
+        </div>
+
+        <p>Cả hai cách đều hợp lệ — chọn cái phù hợp nhất với nhu cầu của bạn.</p>
+
+        <!-- REQUEST PAYLOADS -->
+        <h3 id="request-payloads">Request payloads <a class="anchor-link" href="#request-payloads">#</a></h3>
+
+        <p>Ví dụ POST route handler trước đây không nhận tham số nào. Hãy sửa bằng cách thêm decorator <code>@Body()</code>.</p>
+        <p>Khi dùng TypeScript, cần định nghĩa schema <strong>DTO</strong> (Data Transfer Object) — object chỉ định cách dữ liệu gửi qua mạng. Nên dùng <strong>class</strong> thay vì TypeScript interface. Tại sao? Class là chuẩn JavaScript ES6, tồn tại trong compiled JavaScript. Interface TypeScript bị loại bỏ trong quá trình transpilation — Nest không thể tham chiếu chúng tại runtime. Điều này quan trọng vì các tính năng như <strong>Pipes</strong> cần truy cập metatype của biến tại runtime, chỉ khả thi với class.</p>
+        <p>Tạo class <code>CreateCatDto</code>:</p>
+
+        <div class="code-block-wrapper">
+          <div class="code-block-header">
+            <div class="code-block-filename">create-cat.dto.ts</div>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <div class="code-tabs">
+                <div class="code-tab active" onclick="switchTab(this,'blk-dto','ts')">TS</div>
+                <div class="code-tab" onclick="switchTab(this,'blk-dto','js')">JS</div>
+              </div>
+              <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+            </div>
+          </div>
+          <div id="blk-dto">
+            <div class="code-pane active" data-lang="ts"><pre><span class="kw">export class</span> <span class="cl">CreateCatDto</span> <span class="pn">{</span>
+  name<span class="pn">:</span> <span class="typ">string</span><span class="pn">;</span>
+  age<span class="pn">:</span> <span class="typ">number</span><span class="pn">;</span>
+  breed<span class="pn">:</span> <span class="typ">string</span><span class="pn">;</span>
+<span class="pn">}</span></pre></div>
+            <div class="code-pane" data-lang="js"><pre><span class="kw">export class</span> <span class="cl">CreateCatDto</span> <span class="pn">{}</span></pre></div>
+          </div>
+        </div>
+
+        <p>Chỉ có ba property cơ bản. Sau đó dùng DTO này bên trong <code>CatsController</code>:</p>
+
+        <div class="code-block-wrapper">
+          <div class="code-block-header">
+            <div class="code-block-filename">cats.controller.ts</div>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <div class="code-tabs">
+                <div class="code-tab active" onclick="switchTab(this,'blk-body','ts')">TS</div>
+                <div class="code-tab" onclick="switchTab(this,'blk-body','js')">JS</div>
+              </div>
+              <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+            </div>
+          </div>
+          <div id="blk-body">
+            <div class="code-pane active" data-lang="ts"><pre><span class="dec">@Post</span><span class="pn">()</span>
+<span class="kw">async</span> <span class="fn">create</span><span class="pn">(</span><span class="dec">@Body</span><span class="pn">()</span> createCatDto<span class="pn">:</span> <span class="cl">CreateCatDto</span><span class="pn">)</span> <span class="pn">{</span>
+  <span class="kw">return</span> <span class="str">'This action adds a new cat'</span><span class="pn">;</span>
+<span class="pn">}</span></pre></div>
+            <div class="code-pane" data-lang="js"><pre><span class="dec">@Post</span><span class="pn">()</span>
+<span class="dec">@Bind</span><span class="pn">(</span><span class="fn">Body</span><span class="pn">())</span>
+<span class="kw">async</span> <span class="fn">create</span><span class="pn">(</span>createCatDto<span class="pn">)</span> <span class="pn">{</span>
+  <span class="kw">return</span> <span class="str">'This action adds a new cat'</span><span class="pn">;</span>
+<span class="pn">}</span></pre></div>
+          </div>
+        </div>
+
+        <div class="callout callout-hint">
+          <span class="callout-label">&#128161; Hint</span>
+          <p><code>ValidationPipe</code> có thể lọc các property không nên được method handler nhận. Chúng ta có thể whitelist các property chấp nhận được — bất kỳ property nào không trong whitelist sẽ bị loại tự động. Trong <code>CreateCatDto</code>, whitelist là <code>name</code>, <code>age</code>, và <code>breed</code>. Tìm hiểu thêm <a href="https://docs.nestjs.com/techniques/validation#stripping-properties" target="_blank">tại đây</a>.</p>
+        </div>
+
+        <!-- QUERY PARAMETERS -->
+        <h3 id="query-parameters">Query parameters <a class="anchor-link" href="#query-parameters">#</a></h3>
+
+        <p>Dùng decorator <code>@Query()</code> để trích xuất query parameter từ incoming request. Ví dụ filter danh sách cats theo <code>age</code> và <code>breed</code>:</p>
+
+        <div class="code-block-wrapper">
+          <div class="code-block-header">
+            <div class="code-block-filename">cats.controller.ts</div>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <div class="code-tabs">
+                <div class="code-tab active" onclick="switchTab(this,'blk-query','ts')">TS</div>
+                <div class="code-tab" onclick="switchTab(this,'blk-query','js')">JS</div>
+              </div>
+              <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+            </div>
+          </div>
+          <div id="blk-query">
+            <div class="code-pane active" data-lang="ts"><pre><span class="dec">@Get</span><span class="pn">()</span>
+<span class="kw">async</span> <span class="fn">findAll</span><span class="pn">(</span>
+  <span class="dec">@Query</span><span class="pn">(</span><span class="str">'age'</span><span class="pn">)</span> age<span class="pn">:</span> <span class="typ">number</span><span class="pn">,</span>
+  <span class="dec">@Query</span><span class="pn">(</span><span class="str">'breed'</span><span class="pn">)</span> breed<span class="pn">:</span> <span class="typ">string</span><span class="pn">,</span>
+<span class="pn">)</span> <span class="pn">{</span>
+  <span class="kw">return</span> <span class="str">`This action returns all cats filtered by age: <span class="tmpl">${age}</span> and breed: <span class="tmpl">${breed}</span>`</span><span class="pn">;</span>
+<span class="pn">}</span></pre></div>
+            <div class="code-pane" data-lang="js"><pre><span class="dec">@Get</span><span class="pn">()</span>
+<span class="kw">async</span> <span class="fn">findAll</span><span class="pn">(</span>
+  <span class="dec">@Query</span><span class="pn">(</span><span class="str">'age'</span><span class="pn">)</span> age<span class="pn">,</span>
+  <span class="dec">@Query</span><span class="pn">(</span><span class="str">'breed'</span><span class="pn">)</span> breed<span class="pn">,</span>
+<span class="pn">)</span> <span class="pn">{</span>
+  <span class="kw">return</span> <span class="str">`This action returns all cats filtered by age: <span class="tmpl">${age}</span> and breed: <span class="tmpl">${breed}</span>`</span><span class="pn">;</span>
+<span class="pn">}</span></pre></div>
+          </div>
+        </div>
+
+        <p>Ví dụ request <code>GET /cats?age=2&amp;breed=Persian</code> sẽ cho <code>age = 2</code> và <code>breed = "Persian"</code>.</p>
+        <p>Nếu cần xử lý query parameter phức tạp hơn (nested object hoặc array):</p>
+
+        <div class="code-block-wrapper">
+          <div class="code-block-header">
+            <div style="flex:1;"></div>
+            <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <div id="blk-complexq">
+            <div class="code-pane active"><pre><span class="cm">?filter[where][name]=John&amp;filter[where][age]=30</span>
+<span class="cm">?item[]=1&amp;item[]=2</span></pre></div>
+          </div>
+        </div>
+
+        <p>Cần cấu hình HTTP adapter để dùng query parser phù hợp. Với Express, dùng <code>extended</code> parser:</p>
+
+        <div class="code-block-wrapper">
+          <div class="code-block-header">
+            <div style="flex:1;"></div>
+            <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <div id="blk-queryexpress">
+            <div class="code-pane active"><pre><span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> <span class="cl">NestFactory</span><span class="pn">.</span><span class="fn">create</span><span class="pn">&lt;</span><span class="typ">NestExpressApplication</span><span class="pn">&gt;(</span><span class="cl">AppModule</span><span class="pn">);</span>
+app<span class="pn">.</span><span class="fn">set</span><span class="pn">(</span><span class="str">'query parser'</span><span class="pn">,</span> <span class="str">'extended'</span><span class="pn">);</span></pre></div>
+          </div>
+        </div>
+
+        <p>Với Fastify, dùng tuỳ chọn <code>querystringParser</code>:</p>
+
+        <div class="code-block-wrapper">
+          <div class="code-block-header">
+            <div style="flex:1;"></div>
+            <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <div id="blk-queryfastify">
+            <div class="code-pane active"><pre><span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> <span class="cl">NestFactory</span><span class="pn">.</span><span class="fn">create</span><span class="pn">&lt;</span><span class="typ">NestFastifyApplication</span><span class="pn">&gt;(</span>
+  <span class="cl">AppModule</span><span class="pn">,</span>
+  <span class="kw">new</span> <span class="fn">FastifyAdapter</span><span class="pn">({</span>
+    querystringParser<span class="pn">:</span> <span class="pn">(</span>str<span class="pn">)</span> <span class="pn">=&gt;</span> qs<span class="pn">.</span><span class="fn">parse</span><span class="pn">(</span>str<span class="pn">),</span>
+  <span class="pn">}),</span>
+<span class="pn">);</span></pre></div>
+          </div>
+        </div>
+
+        <div class="callout callout-hint">
+          <span class="callout-label">&#128161; Hint</span>
+          <p><code>qs</code> là querystring parser hỗ trợ nesting và array. Cài đặt bằng <code>npm install qs</code>.</p>
+        </div>
+
+        <!-- HANDLING ERRORS -->
+        <h3 id="handling-errors">Handling errors <a class="anchor-link" href="#handling-errors">#</a></h3>
+
+        <p>Có một chương riêng về xử lý lỗi (làm việc với exception) <a href="https://docs.nestjs.com/exception-filters" target="_blank">tại đây</a>.</p>
+
+        <!-- FULL RESOURCE SAMPLE -->
+        <h3 id="full-resource-sample">Full resource sample <a class="anchor-link" href="#full-resource-sample">#</a></h3>
+
+        <p>Ví dụ dưới minh hoạ việc dùng nhiều decorator để tạo một controller cơ bản với các method truy cập và thao tác dữ liệu nội bộ.</p>
+
+        <div class="code-block-wrapper">
+          <div class="code-block-header">
+            <div class="code-block-filename">cats.controller.ts</div>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <div class="code-tabs">
+                <div class="code-tab active" onclick="switchTab(this,'blk-full','ts')">TS</div>
+                <div class="code-tab" onclick="switchTab(this,'blk-full','js')">JS</div>
+              </div>
+              <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+            </div>
+          </div>
+          <div id="blk-full">
+            <div class="code-pane active" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Controller</span><span class="pn">,</span> <span class="cl">Get</span><span class="pn">,</span> <span class="cl">Query</span><span class="pn">,</span> <span class="cl">Post</span><span class="pn">,</span> <span class="cl">Body</span><span class="pn">,</span> <span class="cl">Put</span><span class="pn">,</span> <span class="cl">Param</span><span class="pn">,</span> <span class="cl">Delete</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">CreateCatDto</span><span class="pn">,</span> <span class="cl">UpdateCatDto</span><span class="pn">,</span> <span class="cl">ListAllEntities</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./dto'</span><span class="pn">;</span>
+
+<span class="dec">@Controller</span><span class="pn">(</span><span class="str">'cats'</span><span class="pn">)</span>
+<span class="kw">export class</span> <span class="cl">CatsController</span> <span class="pn">{</span>
+  <span class="dec">@Post</span><span class="pn">()</span>
+  <span class="fn">create</span><span class="pn">(</span><span class="dec">@Body</span><span class="pn">()</span> createCatDto<span class="pn">:</span> <span class="cl">CreateCatDto</span><span class="pn">)</span> <span class="pn">{</span>
+    <span class="kw">return</span> <span class="str">'This action adds a new cat'</span><span class="pn">;</span>
+  <span class="pn">}</span>
+
+  <span class="dec">@Get</span><span class="pn">()</span>
+  <span class="fn">findAll</span><span class="pn">(</span><span class="dec">@Query</span><span class="pn">()</span> query<span class="pn">:</span> <span class="cl">ListAllEntities</span><span class="pn">)</span> <span class="pn">{</span>
+    <span class="kw">return</span> <span class="str">`This action returns all cats (limit: <span class="tmpl">${query.limit}</span> items)`</span><span class="pn">;</span>
+  <span class="pn">}</span>
+
+  <span class="dec">@Get</span><span class="pn">(</span><span class="str">':id'</span><span class="pn">)</span>
+  <span class="fn">findOne</span><span class="pn">(</span><span class="dec">@Param</span><span class="pn">(</span><span class="str">'id'</span><span class="pn">)</span> id<span class="pn">:</span> <span class="typ">string</span><span class="pn">)</span> <span class="pn">{</span>
+    <span class="kw">return</span> <span class="str">`This action returns a #<span class="tmpl">${id}</span> cat`</span><span class="pn">;</span>
+  <span class="pn">}</span>
+
+  <span class="dec">@Put</span><span class="pn">(</span><span class="str">':id'</span><span class="pn">)</span>
+  <span class="fn">update</span><span class="pn">(</span><span class="dec">@Param</span><span class="pn">(</span><span class="str">'id'</span><span class="pn">)</span> id<span class="pn">:</span> <span class="typ">string</span><span class="pn">,</span> <span class="dec">@Body</span><span class="pn">()</span> updateCatDto<span class="pn">:</span> <span class="cl">UpdateCatDto</span><span class="pn">)</span> <span class="pn">{</span>
+    <span class="kw">return</span> <span class="str">`This action updates a #<span class="tmpl">${id}</span> cat`</span><span class="pn">;</span>
+  <span class="pn">}</span>
+
+  <span class="dec">@Delete</span><span class="pn">(</span><span class="str">':id'</span><span class="pn">)</span>
+  <span class="fn">remove</span><span class="pn">(</span><span class="dec">@Param</span><span class="pn">(</span><span class="str">'id'</span><span class="pn">)</span> id<span class="pn">:</span> <span class="typ">string</span><span class="pn">)</span> <span class="pn">{</span>
+    <span class="kw">return</span> <span class="str">`This action removes a #<span class="tmpl">${id}</span> cat`</span><span class="pn">;</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+            <div class="code-pane" data-lang="js"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Controller</span><span class="pn">,</span> <span class="cl">Get</span><span class="pn">,</span> <span class="cl">Query</span><span class="pn">,</span> <span class="cl">Post</span><span class="pn">,</span> <span class="cl">Body</span><span class="pn">,</span> <span class="cl">Put</span><span class="pn">,</span> <span class="cl">Param</span><span class="pn">,</span> <span class="cl">Delete</span><span class="pn">,</span> <span class="cl">Bind</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+
+<span class="dec">@Controller</span><span class="pn">(</span><span class="str">'cats'</span><span class="pn">)</span>
+<span class="kw">export class</span> <span class="cl">CatsController</span> <span class="pn">{</span>
+  <span class="dec">@Post</span><span class="pn">()</span>
+  <span class="dec">@Bind</span><span class="pn">(</span><span class="fn">Body</span><span class="pn">())</span>
+  <span class="fn">create</span><span class="pn">(</span>createCatDto<span class="pn">)</span> <span class="pn">{</span>
+    <span class="kw">return</span> <span class="str">'This action adds a new cat'</span><span class="pn">;</span>
+  <span class="pn">}</span>
+
+  <span class="dec">@Get</span><span class="pn">()</span>
+  <span class="dec">@Bind</span><span class="pn">(</span><span class="fn">Query</span><span class="pn">())</span>
+  <span class="fn">findAll</span><span class="pn">(</span>query<span class="pn">)</span> <span class="pn">{</span>
+    console<span class="pn">.</span><span class="fn">log</span><span class="pn">(</span>query<span class="pn">);</span>
+    <span class="kw">return</span> <span class="str">`This action returns all cats (limit: <span class="tmpl">${query.limit}</span> items)`</span><span class="pn">;</span>
+  <span class="pn">}</span>
+
+  <span class="dec">@Get</span><span class="pn">(</span><span class="str">':id'</span><span class="pn">)</span>
+  <span class="dec">@Bind</span><span class="pn">(</span><span class="fn">Param</span><span class="pn">(</span><span class="str">'id'</span><span class="pn">))</span>
+  <span class="fn">findOne</span><span class="pn">(</span>id<span class="pn">)</span> <span class="pn">{</span>
+    <span class="kw">return</span> <span class="str">`This action returns a #<span class="tmpl">${id}</span> cat`</span><span class="pn">;</span>
+  <span class="pn">}</span>
+
+  <span class="dec">@Put</span><span class="pn">(</span><span class="str">':id'</span><span class="pn">)</span>
+  <span class="dec">@Bind</span><span class="pn">(</span><span class="fn">Param</span><span class="pn">(</span><span class="str">'id'</span><span class="pn">),</span> <span class="fn">Body</span><span class="pn">())</span>
+  <span class="fn">update</span><span class="pn">(</span>id<span class="pn">,</span> updateCatDto<span class="pn">)</span> <span class="pn">{</span>
+    <span class="kw">return</span> <span class="str">`This action updates a #<span class="tmpl">${id}</span> cat`</span><span class="pn">;</span>
+  <span class="pn">}</span>
+
+  <span class="dec">@Delete</span><span class="pn">(</span><span class="str">':id'</span><span class="pn">)</span>
+  <span class="dec">@Bind</span><span class="pn">(</span><span class="fn">Param</span><span class="pn">(</span><span class="str">'id'</span><span class="pn">))</span>
+  <span class="fn">remove</span><span class="pn">(</span>id<span class="pn">)</span> <span class="pn">{</span>
+    <span class="kw">return</span> <span class="str">`This action removes a #<span class="tmpl">${id}</span> cat`</span><span class="pn">;</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+          </div>
+        </div>
+
+        <div class="callout callout-hint">
+          <span class="callout-label">&#128161; Hint</span>
+          <p>Nest CLI cung cấp generator (schematic) tự động tạo <strong>toàn bộ boilerplate code</strong>, cải thiện developer experience. Xem thêm <a href="https://docs.nestjs.com/recipes/crud-generator" target="_blank">tại đây</a>.</p>
+        </div>
+
+        <!-- GETTING UP AND RUNNING -->
+        <h3 id="getting-up-and-running">Getting up and running <a class="anchor-link" href="#getting-up-and-running">#</a></h3>
+
+        <p>Dù <code>CatsController</code> đã được định nghĩa đầy đủ, Nest vẫn chưa biết về nó và sẽ không tự tạo instance của class đó.</p>
+        <p>Controller phải luôn là một phần của module — đó là lý do chúng ta bao gồm mảng <code>controllers</code> trong <code>@Module()</code>. Vì chưa có module nào khác ngoài root <code>AppModule</code>, ta dùng nó để đăng ký <code>CatsController</code>:</p>
+
+        <div class="code-block-wrapper">
+          <div class="code-block-header">
+            <div class="code-block-filename">app.module.ts</div>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <div class="code-tabs">
+                <div class="code-tab active" onclick="switchTab(this,'blk-module','ts')">TS</div>
+                <div class="code-tab" onclick="switchTab(this,'blk-module','js')">JS</div>
+              </div>
+              <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+            </div>
+          </div>
+          <div id="blk-module">
+            <div class="code-pane active" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Module</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">CatsController</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./cats/cats.controller'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  controllers<span class="pn">:</span> <span class="pn">[</span><span class="cl">CatsController</span><span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="pn">{}</span></pre></div>
+            <div class="code-pane" data-lang="js"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Module</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">CatsController</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./cats/cats.controller'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  controllers<span class="pn">:</span> <span class="pn">[</span><span class="cl">CatsController</span><span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="pn">{}</span></pre></div>
+          </div>
+        </div>
+
+        <p>Chúng ta gắn metadata vào module class bằng <code>@Module()</code>, và Nest có thể dễ dàng xác định controller nào cần được mount.</p>
+
+        <!-- LIBRARY-SPECIFIC -->
+        <h3 id="library-specific-approach">Library-specific approach <a class="anchor-link" href="#library-specific-approach">#</a></h3>
+
+        <p>Cho đến nay chúng ta đã đề cập cách Nest tiêu chuẩn để thao tác response. Một cách khác là dùng <a href="https://expressjs.com/en/api.html#res" target="_blank">response object</a> đặc thù của thư viện, inject bằng decorator <code>@Res()</code>. Hãy viết lại <code>CatsController</code>:</p>
+
+        <div class="code-block-wrapper">
+          <div class="code-block-header">
+            <div style="flex:1;"></div>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <div class="code-tabs">
+                <div class="code-tab active" onclick="switchTab(this,'blk-libspec','ts')">TS</div>
+                <div class="code-tab" onclick="switchTab(this,'blk-libspec','js')">JS</div>
+              </div>
+              <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+            </div>
+          </div>
+          <div id="blk-libspec">
+            <div class="code-pane active" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Controller</span><span class="pn">,</span> <span class="cl">Get</span><span class="pn">,</span> <span class="cl">Post</span><span class="pn">,</span> <span class="cl">Res</span><span class="pn">,</span> <span class="cl">HttpStatus</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="typ">Response</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'express'</span><span class="pn">;</span>
+
+<span class="dec">@Controller</span><span class="pn">(</span><span class="str">'cats'</span><span class="pn">)</span>
+<span class="kw">export class</span> <span class="cl">CatsController</span> <span class="pn">{</span>
+  <span class="dec">@Post</span><span class="pn">()</span>
+  <span class="fn">create</span><span class="pn">(</span><span class="dec">@Res</span><span class="pn">()</span> res<span class="pn">:</span> <span class="typ">Response</span><span class="pn">)</span> <span class="pn">{</span>
+    res<span class="pn">.</span><span class="fn">status</span><span class="pn">(</span><span class="cl">HttpStatus</span><span class="pn">.</span>CREATED<span class="pn">).</span><span class="fn">send</span><span class="pn">();</span>
+  <span class="pn">}</span>
+
+  <span class="dec">@Get</span><span class="pn">()</span>
+  <span class="fn">findAll</span><span class="pn">(</span><span class="dec">@Res</span><span class="pn">()</span> res<span class="pn">:</span> <span class="typ">Response</span><span class="pn">)</span> <span class="pn">{</span>
+    res<span class="pn">.</span><span class="fn">status</span><span class="pn">(</span><span class="cl">HttpStatus</span><span class="pn">.</span>OK<span class="pn">).</span><span class="fn">json</span><span class="pn">([]);</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+            <div class="code-pane" data-lang="js"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Controller</span><span class="pn">,</span> <span class="cl">Get</span><span class="pn">,</span> <span class="cl">Post</span><span class="pn">,</span> <span class="cl">Bind</span><span class="pn">,</span> <span class="cl">Res</span><span class="pn">,</span> <span class="cl">Body</span><span class="pn">,</span> <span class="cl">HttpStatus</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+
+<span class="dec">@Controller</span><span class="pn">(</span><span class="str">'cats'</span><span class="pn">)</span>
+<span class="kw">export class</span> <span class="cl">CatsController</span> <span class="pn">{</span>
+  <span class="dec">@Post</span><span class="pn">()</span>
+  <span class="dec">@Bind</span><span class="pn">(</span><span class="fn">Res</span><span class="pn">(),</span> <span class="fn">Body</span><span class="pn">())</span>
+  <span class="fn">create</span><span class="pn">(</span>res<span class="pn">,</span> createCatDto<span class="pn">)</span> <span class="pn">{</span>
+    res<span class="pn">.</span><span class="fn">status</span><span class="pn">(</span><span class="cl">HttpStatus</span><span class="pn">.</span>CREATED<span class="pn">).</span><span class="fn">send</span><span class="pn">();</span>
+  <span class="pn">}</span>
+
+  <span class="dec">@Get</span><span class="pn">()</span>
+  <span class="dec">@Bind</span><span class="pn">(</span><span class="fn">Res</span><span class="pn">())</span>
+  <span class="fn">findAll</span><span class="pn">(</span>res<span class="pn">)</span> <span class="pn">{</span>
+    res<span class="pn">.</span><span class="fn">status</span><span class="pn">(</span><span class="cl">HttpStatus</span><span class="pn">.</span>OK<span class="pn">).</span><span class="fn">json</span><span class="pn">([]);</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+          </div>
+        </div>
+
+        <p>Mặc dù cách này hoạt động và linh hoạt hơn (kiểm soát đầy đủ response object: thao tác header, truy cập tính năng đặc thù của thư viện), nó nên được dùng cẩn thận. Nhược điểm chính: code trở nên phụ thuộc vào platform (các thư viện khác nhau có API response khác nhau), và việc testing trở nên khó hơn vì cần mock response object.</p>
+        <p>Hơn nữa, bạn mất tính tương thích với các tính năng Nest dựa vào xử lý response tiêu chuẩn như Interceptor và các decorator <code>@HttpCode()</code> / <code>@Header()</code>. Để giải quyết, bật tuỳ chọn <code>passthrough</code>:</p>
+
+        <div class="code-block-wrapper">
+          <div class="code-block-header">
+            <div style="flex:1;"></div>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <div class="code-tabs">
+                <div class="code-tab active" onclick="switchTab(this,'blk-passthru','ts')">TS</div>
+                <div class="code-tab" onclick="switchTab(this,'blk-passthru','js')">JS</div>
+              </div>
+              <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+            </div>
+          </div>
+          <div id="blk-passthru">
+            <div class="code-pane active" data-lang="ts"><pre><span class="dec">@Get</span><span class="pn">()</span>
+<span class="fn">findAll</span><span class="pn">(</span><span class="dec">@Res</span><span class="pn">({</span> passthrough<span class="pn">:</span> <span class="kw">true</span> <span class="pn">})</span> res<span class="pn">:</span> <span class="typ">Response</span><span class="pn">)</span> <span class="pn">{</span>
+  res<span class="pn">.</span><span class="fn">status</span><span class="pn">(</span><span class="cl">HttpStatus</span><span class="pn">.</span>OK<span class="pn">);</span>
+  <span class="kw">return</span> <span class="pn">[];</span>
+<span class="pn">}</span></pre></div>
+            <div class="code-pane" data-lang="js"><pre><span class="dec">@Get</span><span class="pn">()</span>
+<span class="dec">@Bind</span><span class="pn">(</span><span class="fn">Res</span><span class="pn">({</span> passthrough<span class="pn">:</span> <span class="kw">true</span> <span class="pn">}))</span>
+<span class="fn">findAll</span><span class="pn">(</span>res<span class="pn">)</span> <span class="pn">{</span>
+  res<span class="pn">.</span><span class="fn">status</span><span class="pn">(</span><span class="cl">HttpStatus</span><span class="pn">.</span>OK<span class="pn">);</span>
+  <span class="kw">return</span> <span class="pn">[];</span>
+<span class="pn">}</span></pre></div>
+          </div>
+        </div>
+
+        <p>Với cách này, bạn có thể tương tác với native response object (set cookie hoặc header theo điều kiện cụ thể), đồng thời vẫn để framework xử lý phần còn lại.</p>
+
+        <!-- PAGE NAV -->
+        <div class="page-nav">
+          <a class="page-nav-btn" href="https://docs.nestjs.com/first-steps" target="_blank">
+            <div class="nav-label">&larr; Trước</div>
+            <div class="nav-title">First steps</div>
+          </a>
+          <a class="page-nav-btn next" href="https://docs.nestjs.com/providers" target="_blank">
+            <div class="nav-label">Tiếp theo &rarr;</div>
+            <div class="nav-title">Providers</div>
+          </a>
+        </div>
+
+      </main>
+
+      <!-- TOC -->
+      <aside class="toc-sidebar">
+        <div class="toc-title">Trong trang này</div>
+        <ul class="toc-list">
+          <li><a href="#routing">Routing</a></li>
+          <li><a href="#request-object">Request object</a></li>
+          <li><a href="#resources">Resources</a></li>
+          <li><a href="#route-wildcards">Route wildcards</a></li>
+          <li><a href="#status-code">Status code</a></li>
+          <li><a href="#response-headers">Response headers</a></li>
+          <li><a href="#redirection">Redirection</a></li>
+          <li><a href="#route-parameters">Route parameters</a></li>
+          <li><a href="#sub-domain-routing">Sub-domain routing</a></li>
+          <li><a href="#state-sharing">State sharing</a></li>
+          <li><a href="#asynchronicity">Asynchronicity</a></li>
+          <li><a href="#request-payloads">Request payloads</a></li>
+          <li><a href="#query-parameters">Query parameters</a></li>
+          <li><a href="#handling-errors">Handling errors</a></li>
+          <li><a href="#full-resource-sample">Full resource sample</a></li>
+          <li><a href="#getting-up-and-running">Getting up and running</a></li>
+          <li><a href="#library-specific-approach">Library-specific approach</a></li>
+        </ul>
+      </aside>
+
+    </div><!-- content-layout -->
+
+    <div class="content-footer">
+      <div>Dịch từ <a href="https://docs.nestjs.com/controllers" target="_blank">docs.nestjs.com/controllers</a> &middot; NestJS v10/v11</div>
+      <div>Copyright &copy; 2017&ndash;2026 MIT &middot; <a href="https://kamilmysliwiec.com" target="_blank">Kamil Mysliwiec</a></div>
+    </div>
+
+  </div><!-- outer-wrap -->
+</div><!-- main-wrapper -->
+
+<script>
+function switchTab(btn, containerId, lang) {
+  var container = document.getElementById(containerId);
+  if (!container) return;
+  var tabs = btn.parentElement.querySelectorAll('.code-tab');
+  tabs.forEach(function(t) { t.classList.remove('active'); });
+  btn.classList.add('active');
+  var panes = container.querySelectorAll('.code-pane');
+  panes.forEach(function(p) {
+    p.classList.remove('active');
+    if (p.dataset.lang === lang) p.classList.add('active');
+  });
+}
+
+function copyCode(btn) {
+  var wrapper = btn.closest('.code-block-wrapper');
+  var pane = wrapper.querySelector('.code-pane.active') || wrapper.querySelector('.code-pane');
+  if (!pane) return;
+  var text = pane.textContent || '';
+  navigator.clipboard.writeText(text.trim()).then(function() {
+    var orig = btn.textContent;
+    btn.textContent = 'Copied!';
+    btn.style.color = '#4ade80';
+    setTimeout(function() { btn.textContent = orig; btn.style.color = ''; }, 1500);
+  });
+}
+
+// TOC active highlight on scroll
+var tocLinks = document.querySelectorAll('.toc-list a');
+var sections = document.querySelectorAll('h3[id]');
+function updateToc() {
+  var current = '';
+  sections.forEach(function(s) {
+    if (window.scrollY >= s.offsetTop - 120) current = s.id;
+  });
+  tocLinks.forEach(function(link) {
+    link.classList.remove('active');
+    if (link.getAttribute('href') === '#' + current) link.classList.add('active');
+  });
+}
+window.addEventListener('scroll', updateToc, { passive: true });
+updateToc();
+</script>
+</body>
+</html>

@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Configuration | NestJS - Tài liệu tiếng Việt</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+    :root {
+      --bg:       #0e0e0e;
+      --surface:  #1a1a1a;
+      --surface2: #222;
+      --border:   #2a2a2a;
+      --border-l: #333;
+      --red:      #ea2845;
+      --red-l:    #ff4d6a;
+      --red-glow: rgba(234,40,69,.15);
+      --text:     #e8e8e8;
+      --muted:    #888;
+      --sec:      #b0b0b0;
+      --code-bg:  #1e1e1e;
+      --code-bd:  #2d2d2d;
+      --hint-bg:  #0d2a1a;
+      --hint-c:   #4ade80;
+      --warn-bg:  #2a1a0d;
+      --warn-c:   #fb923c;
+      --note-bg:  #0d1a2a;
+      --note-c:   #60a0d0;
+      --toc-w:    220px;
+      --font:     'Inter', sans-serif;
+      --mono:     'Source Code Pro', monospace;
+      --r:        6px;
+      --rl:       10px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font); background: var(--bg); color: var(--text); font-size: 15px; line-height: 1.78; }
+
+    .page { max-width: 1060px; margin: 0 auto; padding: 48px 32px 96px; display: flex; gap: 56px; align-items: flex-start; }
+    .content { flex: 1; min-width: 0; }
+
+    /* TOC */
+    .toc { width: var(--toc-w); flex-shrink: 0; position: sticky; top: 32px; align-self: flex-start; max-height: calc(100vh - 48px); overflow-y: auto; }
+    .toc::-webkit-scrollbar { width: 3px; }
+    .toc::-webkit-scrollbar-thumb { background: var(--border-l); border-radius: 2px; }
+    .toc-title { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); padding-bottom: 8px; margin-bottom: 8px; border-bottom: 1px solid var(--border); }
+    .toc ul { list-style: none; }
+    .toc ul li a { display: block; padding: 3.5px 0; font-size: 12.5px; color: var(--muted); text-decoration: none; line-height: 1.5; transition: color .15s; cursor: pointer; }
+    .toc ul li a:hover, .toc ul li a.active { color: var(--red-l); }
+
+    /* Banner */
+    .vi-banner { display: flex; align-items: center; gap: 10px; padding: 11px 16px; border: 1px solid rgba(234,40,69,.3); border-radius: var(--rl); background: linear-gradient(135deg,rgba(234,40,69,.1),rgba(234,40,69,.04)); font-size: 13px; color: var(--sec); margin-bottom: 32px; }
+    .vi-banner strong { color: var(--red-l); }
+
+    /* Headings */
+    h1 { font-size: 36px; font-weight: 700; letter-spacing: -.5px; line-height: 1.2; margin-bottom: 6px; }
+    h1::after { content:''; display:block; width:44px; height:3px; background:var(--red); border-radius:2px; margin-top:12px; }
+    h3 { font-size: 19px; font-weight: 600; letter-spacing: -.2px; margin: 40px 0 12px; display: flex; align-items: center; gap: 8px; scroll-margin-top: 80px; }
+    .anchor { font-size: 14px; color: var(--muted); text-decoration: none; opacity: 0; transition: opacity .2s; }
+    h3:hover .anchor { opacity: 1; }
+    p { color: var(--sec); line-height: 1.82; margin-bottom: 16px; }
+    p:last-child { margin-bottom: 0; }
+    a { color: var(--red-l); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    strong { color: var(--text); font-weight: 600; }
+    ul { color: var(--sec); padding-left: 22px; line-height: 2.1; margin: 16px 0; }
+
+    /* inline code */
+    code { font-family: var(--mono); font-size: 13px; background: var(--code-bg); border: 1px solid var(--code-bd); padding: 1px 6px; border-radius: 4px; color: #f9a8d4; }
+
+    /* Callouts */
+    .hint, .warn, .note {
+      margin: 18px 0; padding: 12px 16px; border-left: 3px solid;
+      border-radius: var(--r); font-size: 13.5px; line-height: 1.72;
+    }
+    .hint { background: var(--hint-bg); border-color: var(--hint-c); color: #a7f3d0; }
+    .warn { background: var(--warn-bg); border-color: var(--warn-c); color: #fed7aa; }
+    .note { background: var(--note-bg); border-color: var(--note-c); color: #bae6fd; }
+    .hint p, .warn p, .note p { margin: 0; color: inherit; }
+    .lbl { display: block; font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 4px; }
+    .hint .lbl { color: var(--hint-c); }
+    .warn .lbl  { color: var(--warn-c); }
+    .note .lbl  { color: var(--note-c); }
+
+    /* Code blocks */
+    .cb { margin: 18px 0; border: 1px solid var(--code-bd); border-radius: var(--rl); overflow: hidden; background: var(--code-bg); }
+    .cb-head { display: flex; align-items: center; justify-content: space-between; padding: 8px 14px; background: #181818; border-bottom: 1px solid var(--code-bd); min-height: 38px; }
+    .cb-fname { font-family: var(--mono); font-size: 11.5px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+    .cb-fname::before { content:''; display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--red); }
+    .cb-right { display: flex; align-items: center; gap: 6px; }
+    .tabs { display: flex; gap: 3px; }
+    .tab { padding: 4px 11px; font-size: 11px; font-family: var(--mono); font-weight: 500; border: 1px solid transparent; border-radius: 4px; color: var(--muted); cursor: pointer; user-select: none; transition: all .14s; }
+    .tab.on { color: var(--red-l); background: var(--red-glow); border-color: var(--red); }
+    .tab:hover:not(.on) { color: var(--text); background: rgba(255,255,255,.04); }
+    .cpbtn { padding: 3px 9px; font-size: 10.5px; font-family: var(--mono); background: var(--surface); border: 1px solid var(--border-l); color: var(--muted); border-radius: 4px; cursor: pointer; transition: all .14s; }
+    .cpbtn:hover { background: var(--surface2); color: var(--text); }
+    .pane { display: none; }
+    .pane.on { display: block; }
+    pre { padding: 18px 20px; overflow-x: auto; font-family: var(--mono); font-size: 13.5px; line-height: 1.65; color: #abb2bf; }
+    pre::-webkit-scrollbar { height: 5px; }
+    pre::-webkit-scrollbar-thumb { background: var(--border-l); border-radius: 3px; }
+
+    /* syntax */
+    .kw  { color: #c678dd; }
+    .fn  { color: #61afef; }
+    .str { color: #98c379; }
+    .dec { color: #e5c07b; }
+    .typ { color: #e5c07b; }
+    .cm  { color: #5c6370; font-style: italic; }
+    .pn  { color: #abb2bf; }
+    .num { color: #d19a66; }
+    .cl  { color: #e06c75; }
+    .tmpl{ color: #d19a66; }
+
+    /* Page nav */
+    .page-nav { display: flex; justify-content: space-between; margin-top: 52px; gap: 16px; }
+    .pnbtn { display: flex; flex-direction: column; padding: 14px 18px; border: 1px solid var(--border); border-radius: var(--rl); text-decoration: none; transition: all .2s; min-width: 150px; }
+    .pnbtn:hover { border-color: var(--red); background: var(--red-glow); text-decoration: none; }
+    .pnlbl   { font-size: 10.5px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); margin-bottom: 3px; }
+    .pntitle { font-size: 14px; font-weight: 600; color: var(--text); }
+    .pnbtn.r { text-align: right; margin-left: auto; }
+
+    @media (max-width: 860px) { .toc { display: none; } }
+    @media (max-width: 600px) { .page { padding: 24px 16px 64px; } }
+  </style>
+</head>
+<body>
+<div class="page">
+<main class="content">
+
+<div class="vi-banner">
+<span style="font-size:17px">🇻🇳</span>
+<div>Dịch từ <strong><a href="https://docs.nestjs.com/techniques/configuration" target="_blank">docs.nestjs.com/techniques/configuration</a></strong>. Thuật ngữ kỹ thuật giữ nguyên tiếng Anh.</div>
+</div>
+
+
+<h1>Configuration</h1>
+
+<p style="margin-top:18px">Ứng dụng thường chạy trong các <strong>môi trường</strong> khác nhau. Tùy thuộc vào môi trường, các cài đặt cấu hình khác nhau nên được sử dụng. Ví dụ, thông thường môi trường local dựa vào các port và database credential cụ thể, chỉ hợp lệ cho local DB instance. Môi trường production sẽ sử dụng một tập database credential riêng biệt. Vì các biến cấu hình thay đổi, best practice là <a href="https://12factor.net/config" target="_blank">lưu trữ biến cấu hình trong environment</a>.</p>
+
+<p>Các biến environment được định nghĩa bên ngoài có thể nhìn thấy bên trong Node.js thông qua global <code>process.env</code>. Chúng ta có thể cố gắng giải quyết vấn đề nhiều môi trường bằng cách thiết lập environment variable riêng biệt trong mỗi môi trường. Điều này có thể nhanh chóng trở nên khó quản lý, đặc biệt trong các môi trường dev và testing nơi các giá trị này cần được mock và/hoặc thay đổi dễ dàng.</p>
+
+<p>Trong ứng dụng Node.js, thường sử dụng file <code>.env</code>, chứa các cặp key-value trong đó mỗi key đại diện cho một giá trị cụ thể, để đại diện cho mỗi môi trường. Chạy ứng dụng trong các môi trường khác nhau chỉ đơn giản là hoán đổi đúng file <code>.env</code>.</p>
+
+<p>Cách tiếp cận tốt nhất để sử dụng kỹ thuật này trong Nest là tạo một <code>ConfigModule</code> expose một <code>ConfigService</code> để load file <code>.env</code> phù hợp. Mặc dù bạn có thể tự viết module như vậy, để thuận tiện Nest cung cấp package <code>@nestjs/config</code> sẵn. Chúng ta sẽ tìm hiểu package này trong chương hiện tại.</p>
+
+<h3 id="installation">Installation <a class="anchor" href="#installation">#</a></h3>
+
+<p>Để bắt đầu sử dụng nó, trước tiên chúng ta cài đặt dependency cần thiết.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre>$ npm i --save @nestjs/config</pre></div></div></div>
+
+<div class="hint"><span class="lbl">💡 Hint</span><p>Package <code>@nestjs/config</code> sử dụng nội bộ <a href="https://github.com/motdotla/dotenv" target="_blank">dotenv</a>.</p></div>
+
+<div class="note"><span class="lbl">📘 Notice</span><p>Package <code>@nestjs/config</code> yêu cầu TypeScript 4.1 trở lên.</p></div>
+
+<h3 id="getting-started">Getting started <a class="anchor" href="#getting-started">#</a></h3>
+
+<p>Sau khi quá trình cài đặt hoàn tất, chúng ta có thể import <code>ConfigModule</code>. Thông thường, chúng ta import nó vào root <code>AppModule</code> và kiểm soát behavior của nó bằng static method <code>.forRoot()</code>. Trong bước này, các cặp key/value của environment variable được parse và resolve. Sau đó, chúng ta sẽ thấy một số option để truy cập <code>ConfigService</code> class của <code>ConfigModule</code> trong các feature module khác.</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">app.module.ts</div><div class="cb-right"><div class="tabs"><div class="tab on" onclick="sw(this,'c0','ts')">TS</div><div class="tab" onclick="sw(this,'c0','js')">JS</div></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div id="c0"><div class="pane on" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">{</span> Module <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> ConfigModule <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/config'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">:</span> <span class="pn">[</span>ConfigModule<span class="pn">.</span><span class="fn">forRoot</span><span class="pn">()],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="pn">{}</span></pre></div><div class="pane" data-lang="js"><pre><span class="kw">import</span> <span class="pn">{</span> Module <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> ConfigModule <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/config'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">:</span> <span class="pn">[</span>ConfigModule<span class="pn">.</span><span class="fn">forRoot</span><span class="pn">()],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="pn">{}</span></pre></div></div></div>
+
+<p>Đoạn code trên sẽ load và parse file <code>.env</code> từ vị trí mặc định (thư mục gốc dự án), merge các cặp key/value từ file <code>.env</code> với environment variable được gán cho <code>process.env</code>, và lưu kết quả trong một cấu trúc private mà bạn có thể truy cập qua <code>ConfigService</code>. Method <code>forRoot()</code> đăng ký <code>ConfigService</code> provider, cung cấp method <code>get()</code> thuận tiện để đọc các biến cấu hình đã được parse/merge. Vì <code>@nestjs/config</code> dựa vào <a href="https://github.com/motdotla/dotenv" target="_blank">dotenv</a>, nó sử dụng các quy tắc của package đó để resolve xung đột khi có tên biến trùng. Khi một key tồn tại cả trong runtime environment dưới dạng environment variable (ví dụ: qua OS shell export như <code>export DATABASE_USER=test</code>) và trong file <code>.env</code>, runtime environment variable được ưu tiên.</p>
+
+<p>Một file <code>.env</code> mẫu trông giống như thế này:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre>DATABASE_HOST=localhost
+DATABASE_PORT=5432</pre></div></div></div>
+
+<h3 id="custom-env-file-path">Custom env file path <a class="anchor" href="#custom-env-file-path">#</a></h3>
+
+<p>Mặc định, package tìm file <code>.env</code> trong thư mục gốc của ứng dụng. Để chỉ định một đường dẫn khác cho file <code>.env</code>, set property <code>envFilePath</code> của object options (tùy chọn) được truyền vào <code>forRoot()</code>, như sau:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre>ConfigModule<span class="pn">.</span><span class="fn">forRoot</span><span class="pn">({</span>
+  envFilePath<span class="pn">:</span> <span class="str">'.development.env'</span><span class="pn">,</span>
+<span class="pn">});</span></pre></div></div></div>
+
+<p>Bạn cũng có thể chỉ định nhiều đường dẫn cho file <code>.env</code> như thế này:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre>ConfigModule<span class="pn">.</span><span class="fn">forRoot</span><span class="pn">({</span>
+  envFilePath<span class="pn">:</span> <span class="pn">[</span><span class="str">'.env.development.local'</span><span class="pn">,</span> <span class="str">'.env.development'</span><span class="pn">],</span>
+<span class="pn">});</span></pre></div></div></div>
+
+<p>Nếu một biến được tìm thấy trong nhiều file, file đầu tiên được ưu tiên.</p>
+
+<h3 id="disable-env-variables-loading">Disable env variables loading <a class="anchor" href="#disable-env-variables-loading">#</a></h3>
+
+<p>Nếu bạn không muốn load file <code>.env</code>, mà thay vào đó muốn đơn giản truy cập environment variable từ runtime environment (như với OS shell export như <code>export DATABASE_USER=test</code>), set property <code>ignoreEnvFile</code> của object options thành <code>true</code>, như sau:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre>ConfigModule<span class="pn">.</span><span class="fn">forRoot</span><span class="pn">({</span>
+  ignoreEnvFile<span class="pn">:</span> <span class="kw">true</span><span class="pn">,</span>
+<span class="pn">});</span></pre></div></div></div>
+
+<h3 id="use-module-globally">Use module globally <a class="anchor" href="#use-module-globally">#</a></h3>
+
+<p>Khi bạn muốn sử dụng <code>ConfigModule</code> trong các module khác, bạn cần import nó (như tiêu chuẩn với bất kỳ module Nest nào). Ngoài ra, bạn có thể khai báo nó là <a href="https://docs.nestjs.com/modules#global-modules" target="_blank">global module</a> bằng cách set property <code>isGlobal</code> thành <code>true</code>, như dưới đây. Trong trường hợp đó, bạn sẽ không cần import <code>ConfigModule</code> trong các module khác sau khi nó đã được load trong root module (ví dụ: <code>AppModule</code>).</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre>ConfigModule<span class="pn">.</span><span class="fn">forRoot</span><span class="pn">({</span>
+  isGlobal<span class="pn">:</span> <span class="kw">true</span><span class="pn">,</span>
+<span class="pn">});</span></pre></div></div></div>
+
+<h3 id="custom-configuration-files">Custom configuration files <a class="anchor" href="#custom-configuration-files">#</a></h3>
+
+<p>Đối với các dự án phức tạp hơn, bạn có thể sử dụng custom configuration file để trả về các object cấu hình lồng nhau (nested). Điều này cho phép bạn nhóm các cài đặt cấu hình liên quan theo chức năng (ví dụ: các cài đặt liên quan đến database), và lưu trữ các cài đặt liên quan trong các file riêng biệt để quản lý chúng độc lập.</p>
+
+<p>Một custom configuration file export một factory function trả về một configuration object. Configuration object có thể là bất kỳ object JavaScript lồng nhau nào. <code>process.env</code> object sẽ chứa các cặp key/value environment variable đã được resolve đầy đủ (với file <code>.env</code> và các biến được xác định bên ngoài đã được resolve và merge như mô tả <a href="#getting-started">ở trên</a>). Vì bạn kiểm soát object cấu hình trả về, bạn có thể thêm bất kỳ logic cần thiết nào để ép kiểu giá trị sang type phù hợp, set giá trị mặc định, v.v. Ví dụ:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">config/configuration.ts</div><div class="cb-right"><div class="tabs"><div class="tab on" onclick="sw(this,'c1','ts')">TS</div><div class="tab" onclick="sw(this,'c1','js')">JS</div></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div id="c1"><div class="pane on" data-lang="ts"><pre><span class="kw">export default</span> <span class="pn">() =&gt; ({</span>
+  port<span class="pn">:</span> <span class="fn">parseInt</span><span class="pn">(</span>process<span class="pn">.</span>env<span class="pn">.</span>PORT<span class="pn">,</span> <span class="num">10</span><span class="pn">)</span> <span class="pn">||</span> <span class="num">3000</span><span class="pn">,</span>
+  database<span class="pn">:</span> <span class="pn">{</span>
+    host<span class="pn">:</span> process<span class="pn">.</span>env<span class="pn">.</span>DATABASE_HOST<span class="pn">,</span>
+    port<span class="pn">:</span> <span class="fn">parseInt</span><span class="pn">(</span>process<span class="pn">.</span>env<span class="pn">.</span>DATABASE_PORT<span class="pn">,</span> <span class="num">10</span><span class="pn">)</span> <span class="pn">||</span> <span class="num">5432</span><span class="pn">,</span>
+  <span class="pn">},</span>
+<span class="pn">});</span></pre></div><div class="pane" data-lang="js"><pre><span class="kw">export default</span> <span class="pn">() =&gt; ({</span>
+  port<span class="pn">:</span> <span class="fn">parseInt</span><span class="pn">(</span>process<span class="pn">.</span>env<span class="pn">.</span>PORT<span class="pn">,</span> <span class="num">10</span><span class="pn">)</span> <span class="pn">||</span> <span class="num">3000</span><span class="pn">,</span>
+  database<span class="pn">:</span> <span class="pn">{</span>
+    host<span class="pn">:</span> process<span class="pn">.</span>env<span class="pn">.</span>DATABASE_HOST<span class="pn">,</span>
+    port<span class="pn">:</span> <span class="fn">parseInt</span><span class="pn">(</span>process<span class="pn">.</span>env<span class="pn">.</span>DATABASE_PORT<span class="pn">,</span> <span class="num">10</span><span class="pn">)</span> <span class="pn">||</span> <span class="num">5432</span><span class="pn">,</span>
+  <span class="pn">},</span>
+<span class="pn">});</span></pre></div></div></div>
+
+<p>Chúng ta load file này bằng property <code>load</code> của object options được truyền vào method <code>ConfigModule.forRoot()</code>:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">app.module.ts</div><div class="cb-right"><div class="tabs"><div class="tab on" onclick="sw(this,'c2','ts')">TS</div><div class="tab" onclick="sw(this,'c2','js')">JS</div></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div id="c2"><div class="pane on" data-lang="ts"><pre><span class="kw">import</span> configuration <span class="kw">from</span> <span class="str">'./config/configuration'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">:</span> <span class="pn">[</span>
+    ConfigModule<span class="pn">.</span><span class="fn">forRoot</span><span class="pn">({</span>
+      load<span class="pn">:</span> <span class="pn">[</span>configuration<span class="pn">],</span>
+    <span class="pn">}),</span>
+  <span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="pn">{}</span></pre></div><div class="pane" data-lang="js"><pre><span class="kw">import</span> configuration <span class="kw">from</span> <span class="str">'./config/configuration'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">:</span> <span class="pn">[</span>
+    ConfigModule<span class="pn">.</span><span class="fn">forRoot</span><span class="pn">({</span>
+      load<span class="pn">:</span> <span class="pn">[</span>configuration<span class="pn">],</span>
+    <span class="pn">}),</span>
+  <span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="pn">{}</span></pre></div></div></div>
+
+<div class="note"><span class="lbl">📘 Notice</span><p>Giá trị được gán cho property <code>load</code> là một array, cho phép bạn load nhiều configuration file (ví dụ: <code>load: [databaseConfig, authConfig]</code>).</p></div>
+
+<h3 id="using-the-configservice">Using the ConfigService <a class="anchor" href="#using-the-configservice">#</a></h3>
+
+<p>Để truy cập các giá trị cấu hình từ <code>ConfigService</code>, trước tiên chúng ta cần inject <code>ConfigService</code>. Như với bất kỳ provider nào, chúng ta cần import module chứa nó — <code>ConfigModule</code> — vào module sử dụng nó (trừ khi bạn set property <code>isGlobal</code> trong object options được truyền vào method <code>ConfigModule.forRoot()</code> thành <code>true</code>). Import nó vào feature module như dưới đây.</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">feature.module.ts</div><div class="cb-right"><div class="tabs"><div class="tab on" onclick="sw(this,'c3','ts')">TS</div><div class="tab" onclick="sw(this,'c3','js')">JS</div></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div id="c3"><div class="pane on" data-lang="ts"><pre><span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">:</span> <span class="pn">[</span>ConfigModule<span class="pn">],</span>
+  <span class="cm">// ...</span>
+<span class="pn">})</span></pre></div><div class="pane" data-lang="js"><pre><span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">:</span> <span class="pn">[</span>ConfigModule<span class="pn">],</span>
+  <span class="cm">// ...</span>
+<span class="pn">})</span></pre></div></div></div>
+
+<p>Sau đó inject nó bằng constructor injection tiêu chuẩn:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="fn">constructor</span><span class="pn">(</span><span class="kw">private</span> configService<span class="pn">:</span> <span class="cl">ConfigService</span><span class="pn">) {}</span></pre></div></div></div>
+
+<div class="hint"><span class="lbl">💡 Hint</span><p>Import <code>ConfigService</code> từ package <code>@nestjs/config</code>.</p></div>
+
+<p>Và sử dụng nó trong class:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="cm">// lấy environment variable</span>
+<span class="kw">const</span> dbHost <span class="pn">=</span> <span class="kw">this</span><span class="pn">.</span>configService<span class="pn">.</span><span class="fn">get</span><span class="pn">&lt;</span><span class="typ">string</span><span class="pn">&gt;(</span><span class="str">'DATABASE_HOST'</span><span class="pn">);</span>
+<span class="cm">// lấy custom configuration value</span>
+<span class="kw">const</span> dbHost <span class="pn">=</span> <span class="kw">this</span><span class="pn">.</span>configService<span class="pn">.</span><span class="fn">get</span><span class="pn">&lt;</span><span class="typ">string</span><span class="pn">&gt;(</span><span class="str">'database.host'</span><span class="pn">);</span></pre></div></div></div>
+
+<p>Như ở trên, sử dụng method <code>configService.get()</code> để lấy một biến cấu hình đơn giản bằng cách truyền tên biến. Bạn có thể thực hiện TypeScript type hinting bằng cách truyền type, như ở trên (ví dụ: <code>get&lt;string&gt;(...)</code>). Method <code>get()</code> cũng có thể duyệt qua nested custom configuration object (được tạo qua <a href="#custom-configuration-files">Custom configuration file</a>), như ở ví dụ thứ hai ở trên.</p>
+
+<p>Bạn cũng có thể lấy toàn bộ nested custom configuration object bằng cách sử dụng dot notation làm interface token:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="kw">const</span> dbConfig <span class="pn">=</span> <span class="kw">this</span><span class="pn">.</span>configService<span class="pn">.</span><span class="fn">get</span><span class="pn">&lt;</span><span class="typ">string</span><span class="pn">&gt;(</span><span class="str">'database'</span><span class="pn">);</span>
+<span class="cm">// bạn giờ có thể sử dụng `dbConfig.host` và `dbConfig.port`</span>
+<span class="kw">const</span> dbHost <span class="pn">=</span> dbConfig<span class="pn">.</span>host<span class="pn">;</span></pre></div></div></div>
+
+<p>Method <code>ConfigService</code> cũng có method <code>getOrThrow()</code> tùy chọn, sẽ throw nếu giá trị cấu hình không được định nghĩa, kích hoạt resolve type dễ dàng hơn. Ví dụ:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="cm">// throw nếu "database.host" không được định nghĩa</span>
+<span class="kw">const</span> dbHost <span class="pn">=</span> <span class="kw">this</span><span class="pn">.</span>configService<span class="pn">.</span><span class="fn">getOrThrow</span><span class="pn">&lt;</span><span class="typ">string</span><span class="pn">&gt;(</span><span class="str">'database.host'</span><span class="pn">);</span></pre></div></div></div>
+
+<h3 id="configuration-namespaces">Configuration namespaces <a class="anchor" href="#configuration-namespaces">#</a></h3>
+
+<p>Class <code>ConfigModule</code> cho phép bạn định nghĩa và load nhiều custom configuration file, như trong <a href="#custom-configuration-files">Custom configuration files</a> ở trên. Bạn có thể quản lý hierarchies phức tạp của configuration object với nested configuration object như trong section đó. Ngoài ra, bạn có thể trả về "namespaced" configuration object với function <code>registerAs()</code> như dưới đây:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">config/database.config.ts</div><div class="cb-right"><div class="tabs"><div class="tab on" onclick="sw(this,'c4','ts')">TS</div><div class="tab" onclick="sw(this,'c4','js')">JS</div></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div id="c4"><div class="pane on" data-lang="ts"><pre><span class="kw">export default</span> <span class="fn">registerAs</span><span class="pn">(</span><span class="str">'database'</span><span class="pn">,</span> <span class="pn">() =&gt; ({</span>
+  host<span class="pn">:</span> process<span class="pn">.</span>env<span class="pn">.</span>DATABASE_HOST<span class="pn">,</span>
+  port<span class="pn">:</span> process<span class="pn">.</span>env<span class="pn">.</span>DATABASE_PORT <span class="pn">||</span> <span class="num">5432</span><span class="pn">,</span>
+<span class="pn">}));</span></pre></div><div class="pane" data-lang="js"><pre><span class="kw">export default</span> <span class="fn">registerAs</span><span class="pn">(</span><span class="str">'database'</span><span class="pn">,</span> <span class="pn">() =&gt; ({</span>
+  host<span class="pn">:</span> process<span class="pn">.</span>env<span class="pn">.</span>DATABASE_HOST<span class="pn">,</span>
+  port<span class="pn">:</span> process<span class="pn">.</span>env<span class="pn">.</span>DATABASE_PORT <span class="pn">||</span> <span class="num">5432</span><span class="pn">,</span>
+<span class="pn">}));</span></pre></div></div></div>
+
+<p>Load namespaced configuration bằng property <code>load</code> của method <code>forRoot()</code>, giống hệt cách load custom configuration file:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="kw">import</span> databaseConfig <span class="kw">from</span> <span class="str">'./config/database.config'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">:</span> <span class="pn">[</span>
+    ConfigModule<span class="pn">.</span><span class="fn">forRoot</span><span class="pn">({</span>
+      load<span class="pn">:</span> <span class="pn">[</span>databaseConfig<span class="pn">],</span>
+    <span class="pn">}),</span>
+  <span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="pn">{}</span></pre></div></div></div>
+
+<p>Bây giờ, để lấy giá trị <code>host</code> từ namespace <code>database</code>, sử dụng dot notation. Sử dụng <code>'database'</code> làm prefix cho tên property, tương ứng với tên namespace (truyền làm đối số đầu tiên cho function <code>registerAs()</code>):</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="kw">const</span> dbHost <span class="pn">=</span> <span class="kw">this</span><span class="pn">.</span>configService<span class="pn">.</span><span class="fn">get</span><span class="pn">&lt;</span><span class="typ">string</span><span class="pn">&gt;(</span><span class="str">'database.host'</span><span class="pn">);</span></pre></div></div></div>
+
+<p>Một giải pháp thay thế hợp lý là inject namespace <code>'database'</code> trực tiếp. Điều này cho phép chúng ta hưởng lợi từ strong typing:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="fn">constructor</span><span class="pn">(</span>
+  <span class="dec">@Inject</span><span class="pn">(</span>databaseConfig<span class="pn">.</span>KEY<span class="pn">)</span>
+  <span class="kw">private</span> dbConfig<span class="pn">:</span> <span class="cl">ConfigType</span><span class="pn">&lt;</span><span class="kw">typeof</span> databaseConfig<span class="pn">&gt;,</span>
+<span class="pn">) {}</span></pre></div></div></div>
+
+<div class="hint"><span class="lbl">💡 Hint</span><p>Import <code>ConfigType</code> từ package <code>@nestjs/config</code>.</p></div>
+
+<h3 id="cache-environment-variables">Cache environment variables <a class="anchor" href="#cache-environment-variables">#</a></h3>
+
+<p>Vì truy cập vào <code>process.env</code> có thể chậm, bạn có thể set property <code>cache</code> của object options được truyền vào <code>ConfigModule.forRoot()</code> để tăng hiệu năng của method <code>ConfigService#get</code> khi xử lý các biến được lưu trong <code>process.env</code>.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre>ConfigModule<span class="pn">.</span><span class="fn">forRoot</span><span class="pn">({</span>
+  cache<span class="pn">:</span> <span class="kw">true</span><span class="pn">,</span>
+<span class="pn">});</span></pre></div></div></div>
+
+<h3 id="partial-registration">Partial registration <a class="anchor" href="#partial-registration">#</a></h3>
+
+<p>Cho đến nay, chúng ta đã xử lý configuration file trong root module (ví dụ: <code>AppModule</code>), qua method <code>forRoot()</code>. Có lẽ bạn có cấu trúc dự án phức tạp hơn, với feature-specific configuration file nằm trong nhiều thư mục khác nhau. Thay vì load tất cả các file này trong root module, package <code>@nestjs/config</code> cung cấp tính năng gọi là <strong>partial registration</strong>, chỉ tham chiếu đến các configuration file liên kết với mỗi feature module. Sử dụng static method <code>forFeature()</code> trong một feature module để thực hiện partial registration này, như sau:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="kw">import</span> databaseConfig <span class="kw">from</span> <span class="str">'./config/database.config'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">:</span> <span class="pn">[</span>ConfigModule<span class="pn">.</span><span class="fn">forFeature</span><span class="pn">(</span>databaseConfig<span class="pn">)],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">DatabaseModule</span> <span class="pn">{}</span></pre></div></div></div>
+
+<div class="warn"><span class="lbl">⚠️ Warning</span><p>Trong một số trường hợp, bạn có thể cần truy cập property được load qua partial registration bằng cách sử dụng hook <code>onModuleInit()</code>, thay vì trong constructor. Điều này là do method <code>forFeature()</code> được thực thi trong quá trình khởi tạo module, và thứ tự khởi tạo module là không xác định. Nếu bạn truy cập các giá trị được load bởi module khác, trong constructor, configuration module đó có thể chưa được khởi tạo xong. Method <code>onModuleInit()</code> chỉ chạy sau khi tất cả module mà nó phụ thuộc đã khởi tạo xong, nên đây là kỹ thuật an toàn.</p></div>
+
+<h3 id="schema-validation">Schema validation <a class="anchor" href="#schema-validation">#</a></h3>
+
+<p>Thông thường, việc throw exception trong lúc khởi động ứng dụng nếu các environment variable cần thiết không được cung cấp hoặc không đáp ứng một số quy tắc validation là standard practice. Package <code>@nestjs/config</code> cho phép hai cách khác nhau để làm điều này:</p>
+
+<ul>
+<li><a href="https://github.com/sideway/joi" target="_blank">Joi</a> built-in validator. Với Joi, bạn định nghĩa một object schema và validate các JavaScript object dựa trên nó.</li>
+<li>Custom <code>validate()</code> function nhận environment variable làm đầu vào.</li>
+</ul>
+
+<p>Để sử dụng Joi, chúng ta cần cài đặt package Joi:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre>$ npm install --save joi</pre></div></div></div>
+
+<p>Bây giờ chúng ta có thể định nghĩa validation schema Joi và truyền nó qua property <code>validationSchema</code> của object options của method <code>forRoot()</code>, như dưới đây:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">app.module.ts</div><div class="cb-right"><div class="tabs"><div class="tab on" onclick="sw(this,'c5','ts')">TS</div><div class="tab" onclick="sw(this,'c5','js')">JS</div></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div id="c5"><div class="pane on" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">*</span> <span class="kw">as</span> Joi <span class="kw">from</span> <span class="str">'joi'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">:</span> <span class="pn">[</span>
+    ConfigModule<span class="pn">.</span><span class="fn">forRoot</span><span class="pn">({</span>
+      validationSchema<span class="pn">:</span> Joi<span class="pn">.</span><span class="fn">object</span><span class="pn">({</span>
+        NODE_ENV<span class="pn">:</span> Joi<span class="pn">.</span><span class="fn">string</span><span class="pn">()</span>
+          <span class="pn">.</span><span class="fn">valid</span><span class="pn">(</span><span class="str">'development'</span><span class="pn">,</span> <span class="str">'production'</span><span class="pn">,</span> <span class="str">'test'</span><span class="pn">,</span> <span class="str">'provision'</span><span class="pn">)</span>
+          <span class="pn">.</span><span class="fn">default</span><span class="pn">(</span><span class="str">'development'</span><span class="pn">),</span>
+        PORT<span class="pn">:</span> Joi<span class="pn">.</span><span class="fn">number</span><span class="pn">().</span><span class="fn">port</span><span class="pn">().</span><span class="fn">default</span><span class="pn">(</span><span class="num">3000</span><span class="pn">),</span>
+      <span class="pn">}),</span>
+    <span class="pn">}),</span>
+  <span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="pn">{}</span></pre></div><div class="pane" data-lang="js"><pre><span class="kw">const</span> Joi <span class="pn">=</span> <span class="fn">require</span><span class="pn">(</span><span class="str">'joi'</span><span class="pn">);</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">:</span> <span class="pn">[</span>
+    ConfigModule<span class="pn">.</span><span class="fn">forRoot</span><span class="pn">({</span>
+      validationSchema<span class="pn">:</span> Joi<span class="pn">.</span><span class="fn">object</span><span class="pn">({</span>
+        NODE_ENV<span class="pn">:</span> Joi<span class="pn">.</span><span class="fn">string</span><span class="pn">()</span>
+          <span class="pn">.</span><span class="fn">valid</span><span class="pn">(</span><span class="str">'development'</span><span class="pn">,</span> <span class="str">'production'</span><span class="pn">,</span> <span class="str">'test'</span><span class="pn">,</span> <span class="str">'provision'</span><span class="pn">)</span>
+          <span class="pn">.</span><span class="fn">default</span><span class="pn">(</span><span class="str">'development'</span><span class="pn">),</span>
+        PORT<span class="pn">:</span> Joi<span class="pn">.</span><span class="fn">number</span><span class="pn">().</span><span class="fn">port</span><span class="pn">().</span><span class="fn">default</span><span class="pn">(</span><span class="num">3000</span><span class="pn">),</span>
+      <span class="pn">}),</span>
+    <span class="pn">}),</span>
+  <span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="pn">{}</span></pre></div></div></div>
+
+<p>Mặc định, tất cả environment variable được coi là tùy chọn. Ở đây, chúng ta set giá trị mặc định cho <code>NODE_ENV</code> và <code>PORT</code>, đó thường là đủ khi bạn không cung cấp chúng trong file <code>.env</code>. Ngoài ra, bạn có thể sử dụng validation method <code>required()</code> để yêu cầu bắt buộc một giá trị phải được định nghĩa trong environment (file <code>.env</code> hoặc process environment).</p>
+
+<div class="hint"><span class="lbl">💡 Hint</span><p>Mặc định, các unknown environment variable (biến không có mặt trong schema) được cho phép và không kích hoạt validation exception. Mặc định, tất cả validation error đều được báo cáo. Bạn có thể thay đổi các behavior này bằng cách truyền object <code>validationOptions</code> qua key <code>validationOptions</code> của object options <code>forRoot()</code>. Object validation options tuân theo <a href="https://joi.dev/api/?v=17.6.0#anyvalidatevalue-options" target="_blank">Joi validation options</a> tiêu chuẩn.</p></div>
+
+<h3 id="custom-validate-function">Custom validate function <a class="anchor" href="#custom-validate-function">#</a></h3>
+
+<p>Ngoài ra, bạn có thể chỉ định một <strong>synchronous</strong> <code>validate</code> function nhận một object chứa các environment variable (từ env file và process) và trả về một object chứa các environment variable đã validate để bạn có thể convert/mutate chúng nếu cần. Nếu function throw error, nó sẽ ngăn ứng dụng bootstrap.</p>
+
+<p>Trong ví dụ này, chúng ta sẽ sử dụng <code>class-transformer</code> và <code>class-validator</code> package:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">env.validation.ts</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="kw">import</span> <span class="pn">{</span> plainToInstance <span class="pn">}</span> <span class="kw">from</span> <span class="str">'class-transformer'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> IsEnum<span class="pn">,</span> IsNumber<span class="pn">,</span> validateSync <span class="pn">}</span> <span class="kw">from</span> <span class="str">'class-validator'</span><span class="pn">;</span>
+
+<span class="kw">enum</span> <span class="cl">Environment</span> <span class="pn">{</span>
+  Development <span class="pn">=</span> <span class="str">'development'</span><span class="pn">,</span>
+  Production <span class="pn">=</span> <span class="str">'production'</span><span class="pn">,</span>
+  Test <span class="pn">=</span> <span class="str">'test'</span><span class="pn">,</span>
+  Provision <span class="pn">=</span> <span class="str">'provision'</span><span class="pn">,</span>
+<span class="pn">}</span>
+
+<span class="kw">class</span> <span class="cl">EnvironmentVariables</span> <span class="pn">{</span>
+  <span class="dec">@IsEnum</span><span class="pn">(</span><span class="cl">Environment</span><span class="pn">)</span>
+  NODE_ENV<span class="pn">:</span> <span class="typ">Environment</span><span class="pn">;</span>
+
+  <span class="dec">@IsNumber</span><span class="pn">()</span>
+  PORT<span class="pn">:</span> <span class="typ">number</span><span class="pn">;</span>
+<span class="pn">}</span>
+
+<span class="kw">export function</span> <span class="fn">validate</span><span class="pn">(</span>config<span class="pn">:</span> <span class="typ">Record</span><span class="pn">&lt;</span><span class="typ">string</span><span class="pn">,</span> <span class="typ">unknown</span><span class="pn">&gt;) {</span>
+  <span class="kw">const</span> validatedConfig <span class="pn">=</span> <span class="fn">plainToInstance</span><span class="pn">(</span>
+    <span class="cl">EnvironmentVariables</span><span class="pn">,</span>
+    config<span class="pn">,</span>
+    <span class="pn">{</span> enableImplicitConversion<span class="pn">:</span> <span class="kw">true</span> <span class="pn">},</span>
+  <span class="pn">);</span>
+  <span class="kw">const</span> errors <span class="pn">=</span> <span class="fn">validateSync</span><span class="pn">(</span>validatedConfig<span class="pn">,</span> <span class="pn">{</span> skipMissingProperties<span class="pn">:</span> <span class="kw">false</span> <span class="pn">});</span>
+
+  <span class="kw">if</span> <span class="pn">(</span>errors<span class="pn">.</span>length <span class="pn">&gt;</span> <span class="num">0</span><span class="pn">) {</span>
+    <span class="kw">throw new</span> <span class="cl">Error</span><span class="pn">(</span>errors<span class="pn">.</span><span class="fn">toString</span><span class="pn">());</span>
+  <span class="pn">}</span>
+  <span class="kw">return</span> validatedConfig<span class="pn">;</span>
+<span class="pn">}</span></pre></div></div></div>
+
+<p>Với điều này, bạn sử dụng function <code>validate</code> như một configuration option của <code>ConfigModule</code>, như sau:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">app.module.ts</div><div class="cb-right"><div class="tabs"><div class="tab on" onclick="sw(this,'c6','ts')">TS</div><div class="tab" onclick="sw(this,'c6','js')">JS</div></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div id="c6"><div class="pane on" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">{</span> validate <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./env.validation'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">:</span> <span class="pn">[</span>
+    ConfigModule<span class="pn">.</span><span class="fn">forRoot</span><span class="pn">({</span>
+      validate<span class="pn">,</span>
+    <span class="pn">}),</span>
+  <span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="pn">{}</span></pre></div><div class="pane" data-lang="js"><pre><span class="kw">import</span> <span class="pn">{</span> validate <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./env.validation'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">:</span> <span class="pn">[</span>
+    ConfigModule<span class="pn">.</span><span class="fn">forRoot</span><span class="pn">({</span>
+      validate<span class="pn">,</span>
+    <span class="pn">}),</span>
+  <span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="pn">{}</span></pre></div></div></div>
+
+<h3 id="custom-getter-functions">Custom getter functions <a class="anchor" href="#custom-getter-functions">#</a></h3>
+
+<p><code>ConfigService</code> định nghĩa một method <code>get()</code> generic để lấy giá trị cấu hình theo key. Chúng ta cũng có thể thêm <code>getter</code> function để cho phép cú pháp tự nhiên hơn một chút:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">config/http.config.ts</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="kw">export default</span> <span class="fn">registerAs</span><span class="pn">(</span><span class="str">'http'</span><span class="pn">,</span> <span class="pn">() =&gt; ({</span>
+  host<span class="pn">:</span> process<span class="pn">.</span>env<span class="pn">.</span>HTTP_HOST<span class="pn">,</span>
+  port<span class="pn">:</span> process<span class="pn">.</span>env<span class="pn">.</span>HTTP_PORT<span class="pn">,</span>
+<span class="pn">}));</span></pre></div></div></div>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">api-config.service.ts</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">ApiConfigService</span> <span class="pn">{</span>
+  <span class="fn">constructor</span><span class="pn">(</span><span class="kw">private</span> configService<span class="pn">:</span> <span class="cl">ConfigService</span><span class="pn">) {}</span>
+
+  <span class="kw">get</span> <span class="fn">isAuthEnabled</span><span class="pn">():</span> <span class="typ">boolean</span> <span class="pn">{</span>
+    <span class="kw">return</span> <span class="kw">this</span><span class="pn">.</span>configService<span class="pn">.</span><span class="fn">get</span><span class="pn">&lt;</span><span class="typ">string</span><span class="pn">&gt;(</span><span class="str">'AUTH_ENABLED'</span><span class="pn">)</span> <span class="pn">===</span> <span class="str">'true'</span><span class="pn">;</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div></div></div>
+
+<h3 id="environment-variables-loaded-hook">Environment variables loaded hook <a class="anchor" href="#environment-variables-loaded-hook">#</a></h3>
+
+<p>Nếu cấu hình module phụ thuộc vào các environment variable, và các biến đó được load từ file <code>.env</code>, bạn có thể sử dụng hook <code>ConfigModule.envVariablesLoaded</code> để đảm bảo file đã được load trước khi tương tác với object <code>process.env</code>, xem ví dụ <a href="#conditional-module-configuration">Conditional module configuration</a>.</p>
+
+<h3 id="conditional-module-configuration">Conditional module configuration <a class="anchor" href="#conditional-module-configuration">#</a></h3>
+
+<p>Có thể có lúc bạn muốn load module có điều kiện và chỉ định điều kiện trong env variable. May mắn thay, <code>@nestjs/config</code> cung cấp <code>ConditionalModule</code> cho phép bạn làm điều đó.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">:</span> <span class="pn">[</span>
+    ConfigModule<span class="pn">.</span><span class="fn">forRoot</span><span class="pn">(),</span>
+    ConditionalModule<span class="pn">.</span><span class="fn">registerWhen</span><span class="pn">(</span><span class="cl">TerminusModule</span><span class="pn">,</span> <span class="str">'USE_TERMINUS'</span><span class="pn">),</span>
+  <span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="pn">{}</span></pre></div></div></div>
+
+<p>Module trên chỉ load <code>TerminusModule</code> khi file <code>.env</code> cung cấp giá trị non-false cho biến <code>USE_TERMINUS</code>. Bạn cũng có thể tự truyền một điều kiện tùy chỉnh, một function nhận tham chiếu <code>process.env</code> và nên trả về boolean cho <code>ConditionalModule</code> xử lý:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">:</span> <span class="pn">[</span>
+    ConfigModule<span class="pn">.</span><span class="fn">forRoot</span><span class="pn">(),</span>
+    ConditionalModule<span class="pn">.</span><span class="fn">registerWhen</span><span class="pn">(</span>
+      <span class="cl">TerminusModule</span><span class="pn">,</span>
+      <span class="pn">(</span>env<span class="pn">:</span> <span class="cl">NodeJS</span><span class="pn">.</span><span class="typ">ProcessEnv</span><span class="pn">) =&gt;</span> <span class="pn">!!</span>env<span class="pn">[</span><span class="str">'USE_TERMINUS'</span><span class="pn">],</span>
+    <span class="pn">),</span>
+  <span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="pn">{}</span></pre></div></div></div>
+
+<div class="warn"><span class="lbl">⚠️ Warning</span><p>Hãy đảm bảo khi sử dụng <code>ConditionalModule</code>, bạn cũng có <code>ConfigModule</code> được load trong ứng dụng, để hook <code>ConfigModule.envVariablesLoaded</code> có thể được tham chiếu và sử dụng đúng cách. Nếu hook không được kích hoạt trong 5 giây, hoặc trong khoảng thời gian timeout bằng millisecond mà người dùng set ở tham số thứ ba của <code>registerWhen</code>, thì <code>ConditionalModule</code> sẽ throw error và Nest sẽ hủy quá trình khởi động ứng dụng.</p></div>
+
+<h3 id="expandable-variables">Expandable variables <a class="anchor" href="#expandable-variables">#</a></h3>
+
+<p>Package <code>@nestjs/config</code> hỗ trợ variable expansion. Với kỹ thuật này, bạn có thể tạo các biến lồng nhau, trong đó một biến được tham chiếu trong định nghĩa của biến khác. Ví dụ:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">.env</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre>APP_URL=mywebsite.com
+SUPPORT_EMAIL=support@${APP_URL}</pre></div></div></div>
+
+<p>Với construction này, biến <code>SUPPORT_EMAIL</code> resolve thành <code>'support@mywebsite.com'</code>. Lưu ý sử dụng cú pháp <code>${...}</code> để kích hoạt resolve giá trị <code>APP_URL</code> bên trong định nghĩa <code>SUPPORT_EMAIL</code>.</p>
+
+<div class="hint"><span class="lbl">💡 Hint</span><p>Đối với tính năng này, package <code>@nestjs/config</code> sử dụng nội bộ <a href="https://github.com/motdotla/dotenv-expand" target="_blank">dotenv-expand</a>.</p></div>
+
+<p>Bật tính năng variable expansion bằng cách sử dụng property <code>expandVariables</code> trong object options được truyền vào method <code>forRoot()</code> của <code>ConfigModule</code>, như dưới đây:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">app.module.ts</div><div class="cb-right"><div class="tabs"><div class="tab on" onclick="sw(this,'c7','ts')">TS</div><div class="tab" onclick="sw(this,'c7','js')">JS</div></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div id="c7"><div class="pane on" data-lang="ts"><pre><span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">:</span> <span class="pn">[</span>
+    ConfigModule<span class="pn">.</span><span class="fn">forRoot</span><span class="pn">({</span>
+      expandVariables<span class="pn">:</span> <span class="kw">true</span><span class="pn">,</span>
+    <span class="pn">}),</span>
+  <span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="pn">{}</span></pre></div><div class="pane" data-lang="js"><pre><span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">:</span> <span class="pn">[</span>
+    ConfigModule<span class="pn">.</span><span class="fn">forRoot</span><span class="pn">({</span>
+      expandVariables<span class="pn">:</span> <span class="kw">true</span><span class="pn">,</span>
+    <span class="pn">}),</span>
+  <span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="pn">{}</span></pre></div></div></div>
+
+<h3 id="using-in-the-maints">Using in the main.ts <a class="anchor" href="#using-in-the-maints">#</a></h3>
+
+<p>Mặc dù config của chúng ta được lưu trong một service, nó vẫn có thể được sử dụng trong file <code>main.ts</code>. Bằng cách đó, bạn có thể sử dụng nó để lưu các biến như port ứng dụng hoặc CORS host.</p>
+
+<p>Để truy cập nó, bạn sử dụng method <code>app.get()</code>, theo sau là service reference:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="kw">const</span> configService <span class="pn">=</span> app<span class="pn">.</span><span class="fn">get</span><span class="pn">(</span><span class="cl">ConfigService</span><span class="pn">);</span></pre></div></div></div>
+
+<p>Sau đó bạn có thể sử dụng nó như bình thường, bằng cách gọi method <code>get</code> với configuration key:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="kw">const</span> port <span class="pn">=</span> configService<span class="pn">.</span><span class="fn">get</span><span class="pn">(</span><span class="str">'PORT'</span><span class="pn">);</span></pre></div></div></div>
+
+<div class="page-nav">
+<a class="pnbtn" href="#">
+<span class="pnlbl">← Trước</span>
+<span class="pntitle">Techniques</span>
+</a>
+<a class="pnbtn r" href="#">
+<span class="pnlbl">Tiếp →</span>
+<span class="pntitle">Database</span>
+</a>
+</div>
+
+</main>
+
+<aside class="toc">
+<div class="toc-title">Nội dung</div>
+<ul>
+<li><a href="#installation">Installation</a></li>
+<li><a href="#getting-started">Getting started</a></li>
+<li><a href="#custom-env-file-path">Custom env file path</a></li>
+<li><a href="#disable-env-variables-loading">Disable env variables loading</a></li>
+<li><a href="#use-module-globally">Use module globally</a></li>
+<li><a href="#custom-configuration-files">Custom configuration files</a></li>
+<li><a href="#using-the-configservice">Using the ConfigService</a></li>
+<li><a href="#configuration-namespaces">Configuration namespaces</a></li>
+<li><a href="#cache-environment-variables">Cache environment variables</a></li>
+<li><a href="#partial-registration">Partial registration</a></li>
+<li><a href="#schema-validation">Schema validation</a></li>
+<li><a href="#custom-validate-function">Custom validate function</a></li>
+<li><a href="#custom-getter-functions">Custom getter functions</a></li>
+<li><a href="#environment-variables-loaded-hook">Environment variables loaded hook</a></li>
+<li><a href="#conditional-module-configuration">Conditional module configuration</a></li>
+<li><a href="#expandable-variables">Expandable variables</a></li>
+<li><a href="#using-in-the-maints">Using in the main.ts</a></li>
+</ul>
+</aside>
+
+</div>
+<script>
+  function sw(btn, bid, lang) {
+    var c = document.getElementById(bid);
+    if (!c) return;
+    btn.parentElement.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('on'); });
+    btn.classList.add('on');
+    c.querySelectorAll('.pane').forEach(function(p) {
+      p.classList.remove('on');
+      if (p.dataset.lang === lang) p.classList.add('on');
+    });
+  }
+  function cp(btn) {
+    var wrap = btn.closest('.cb');
+    var pane = wrap.querySelector('.pane.on') || wrap.querySelector('.pane');
+    if (!pane) return;
+    navigator.clipboard.writeText(pane.textContent.trim()).then(function() {
+      var o = btn.textContent;
+      btn.textContent = 'Copied!';
+      btn.style.color = '#4ade80';
+      setTimeout(function() { btn.textContent = o; btn.style.color = ''; }, 1500);
+    });
+  }
+  
+  // Smooth scroll on TOC click
+  document.querySelectorAll('.toc a').forEach(function(link) {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      var target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+
+  // Highlight active section
+  var tocLinks = document.querySelectorAll('.toc a');
+  var heads = document.querySelectorAll('h3[id]');
+  function hi() {
+    var cur = '';
+    heads.forEach(function(h) { 
+      if (scrollY >= h.offsetTop - 120) cur = h.id; 
+    });
+    tocLinks.forEach(function(a) {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + cur);
+    });
+  }
+  window.addEventListener('scroll', hi, { passive: true });
+  hi();
+</script>
+</body>
+</html>

@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Providers | NestJS - Tài liệu tiếng Việt</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:          #0e0e0e;
+      --surface:     #1a1a1a;
+      --surface2:    #222;
+      --border:      #2a2a2a;
+      --border-l:    #333;
+      --red:         #ea2845;
+      --red-l:       #ff4d6a;
+      --red-glow:    rgba(234,40,69,.15);
+      --text:        #e8e8e8;
+      --muted:       #888;
+      --sec:         #b0b0b0;
+      --code-bg:     #1e1e1e;
+      --code-bd:     #2d2d2d;
+      --hint-bg:     #0d2a1a;
+      --hint-c:      #4ade80;
+      --warn-bg:     #2a1a0d;
+      --warn-c:      #fb923c;
+      --toc-w:       210px;
+      --gap:         56px;
+      --font:        'Inter', sans-serif;
+      --mono:        'Source Code Pro', monospace;
+      --r:           6px;
+      --rl:          10px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 15px;
+      line-height: 1.78;
+    }
+
+    /* ── OUTER WRAPPER ── */
+    .page {
+      max-width: 1060px;
+      margin: 0 auto;
+      padding: 48px 32px 96px;
+      display: flex;
+      gap: var(--gap);
+      align-items: flex-start;
+    }
+
+    /* ── MAIN CONTENT ── */
+    .content { flex: 1; min-width: 0; }
+
+    /* ── TOC ── */
+    .toc {
+      width: var(--toc-w);
+      flex-shrink: 0;
+      position: sticky;
+      top: 32px;
+      align-self: flex-start;
+      max-height: calc(100vh - 48px);
+      overflow-y: auto;
+    }
+    .toc::-webkit-scrollbar { width: 3px; }
+    .toc::-webkit-scrollbar-thumb { background: var(--border-l); border-radius: 2px; }
+    .toc-title {
+      font-size: 10.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--muted);
+      padding-bottom: 8px;
+      margin-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    .toc ul { list-style: none; }
+    .toc ul li a {
+      display: block;
+      padding: 3.5px 0;
+      font-size: 12.5px;
+      color: var(--muted);
+      text-decoration: none;
+      line-height: 1.5;
+      transition: color .15s;
+    }
+    .toc ul li a:hover,
+    .toc ul li a.active { color: var(--red-l); }
+
+    /* ── TYPOGRAPHY ── */
+    .vi-banner {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 16px;
+      border: 1px solid rgba(234,40,69,.3);
+      border-radius: var(--rl);
+      background: linear-gradient(135deg,rgba(234,40,69,.1),rgba(234,40,69,.04));
+      font-size: 13px;
+      color: var(--sec);
+      margin-bottom: 32px;
+    }
+    .vi-banner strong { color: var(--red-l); }
+
+    h1 {
+      font-size: 36px;
+      font-weight: 700;
+      letter-spacing: -.5px;
+      line-height: 1.2;
+      margin-bottom: 6px;
+    }
+    h1::after {
+      content: '';
+      display: block;
+      width: 44px; height: 3px;
+      background: var(--red);
+      border-radius: 2px;
+      margin-top: 12px;
+    }
+
+    h3 {
+      font-size: 19px;
+      font-weight: 600;
+      letter-spacing: -.2px;
+      margin: 40px 0 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .anchor { font-size: 14px; color: var(--muted); text-decoration: none; opacity: 0; transition: opacity .2s; }
+    h3:hover .anchor { opacity: 1; }
+
+    p { color: var(--sec); line-height: 1.82; margin-bottom: 16px; }
+    p:last-child { margin-bottom: 0; }
+    a { color: var(--red-l); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    strong { color: var(--text); font-weight: 600; }
+
+    /* inline code */
+    code {
+      font-family: var(--mono);
+      font-size: 13px;
+      background: var(--code-bg);
+      border: 1px solid var(--code-bd);
+      padding: 1px 6px;
+      border-radius: 4px;
+      color: #f9a8d4;
+    }
+
+    /* ── CALLOUTS ── */
+    .hint, .warn {
+      margin: 18px 0;
+      padding: 12px 16px;
+      border-left: 3px solid;
+      border-radius: var(--r);
+      font-size: 13.5px;
+      line-height: 1.72;
+    }
+    .hint { background: var(--hint-bg); border-color: var(--hint-c); color: #a7f3d0; }
+    .warn { background: var(--warn-bg); border-color: var(--warn-c); color: #fed7aa; }
+    .hint p, .warn p { margin: 0; color: inherit; }
+    .lbl {
+      display: block;
+      font-size: 10.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      margin-bottom: 4px;
+    }
+    .hint .lbl { color: var(--hint-c); }
+    .warn .lbl { color: var(--warn-c); }
+
+    /* ── CODE BLOCKS ── */
+    .cb {
+      margin: 18px 0;
+      border: 1px solid var(--code-bd);
+      border-radius: var(--rl);
+      overflow: hidden;
+      background: var(--code-bg);
+    }
+    .cb-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 14px;
+      background: #181818;
+      border-bottom: 1px solid var(--code-bd);
+    }
+    .cb-fname {
+      font-family: var(--mono);
+      font-size: 11.5px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .cb-fname::before {
+      content: '';
+      display: inline-block;
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--red);
+    }
+    .cb-right { display: flex; align-items: center; gap: 6px; }
+    .tabs { display: flex; gap: 3px; }
+    .tab {
+      padding: 4px 11px;
+      font-size: 11px;
+      font-family: var(--mono);
+      font-weight: 500;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      color: var(--muted);
+      cursor: pointer;
+      user-select: none;
+      transition: all .14s;
+    }
+    .tab.on { color: var(--red-l); background: var(--red-glow); border-color: var(--red); }
+    .tab:hover:not(.on) { color: var(--text); background: rgba(255,255,255,.04); }
+    .cpbtn {
+      padding: 3px 9px;
+      font-size: 10.5px;
+      font-family: var(--mono);
+      background: var(--surface);
+      border: 1px solid var(--border-l);
+      color: var(--muted);
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all .14s;
+    }
+    .cpbtn:hover { background: var(--surface2); color: var(--text); }
+    .pane { display: none; }
+    .pane.on { display: block; }
+    pre {
+      padding: 18px 20px;
+      overflow-x: auto;
+      font-family: var(--mono);
+      font-size: 13.5px;
+      line-height: 1.65;
+      color: #abb2bf;
+    }
+    pre::-webkit-scrollbar { height: 5px; }
+    pre::-webkit-scrollbar-thumb { background: var(--border-l); border-radius: 3px; }
+
+    /* syntax tokens */
+    .kw  { color: #c678dd; }
+    .fn  { color: #61afef; }
+    .str { color: #98c379; }
+    .dec { color: #e5c07b; }
+    .typ { color: #e5c07b; }
+    .cm  { color: #5c6370; font-style: italic; }
+    .pn  { color: #abb2bf; }
+    .num { color: #d19a66; }
+    .cl  { color: #e06c75; }
+    .pr  { color: #abb2bf; }
+    .tmpl{ color: #d19a66; }
+
+    /* ── DIRECTORY TREE ── */
+    .filetree {
+      margin: 16px 0;
+      padding: 16px 20px;
+      background: var(--code-bg);
+      border: 1px solid var(--code-bd);
+      border-radius: var(--rl);
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--sec);
+      line-height: 1.8;
+    }
+    .filetree .dir  { color: #61afef; font-weight: 500; }
+    .filetree .file { color: #abb2bf; }
+    .filetree .hi   { color: var(--red-l); }
+
+    /* ── PAGE NAV ── */
+    .page-nav {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 52px;
+      gap: 16px;
+    }
+    .pnbtn {
+      display: flex;
+      flex-direction: column;
+      padding: 14px 18px;
+      border: 1px solid var(--border);
+      border-radius: var(--rl);
+      text-decoration: none;
+      transition: all .2s;
+      min-width: 150px;
+    }
+    .pnbtn:hover { border-color: var(--red); background: var(--red-glow); text-decoration: none; }
+    .pnlbl { font-size: 10.5px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); margin-bottom: 3px; }
+    .pntitle { font-size: 14px; font-weight: 600; color: var(--text); }
+    .pnbtn.r { text-align: right; margin-left: auto; }
+
+    @media (max-width: 860px) { .toc { display: none; } }
+    @media (max-width: 600px) { .page { padding: 24px 16px 64px; } }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ════════════════ MAIN CONTENT ════════════════ -->
+  <main class="content">
+
+    <div class="vi-banner">
+      <span style="font-size:17px">🇻🇳</span>
+      <div>Dịch từ <strong><a href="https://docs.nestjs.com/providers" target="_blank">docs.nestjs.com/providers</a></strong>. Thuật ngữ kỹ thuật giữ nguyên tiếng Anh.</div>
+    </div>
+
+    <h1>Providers</h1>
+
+    <p style="margin-top:18px">Provider là một khái niệm cốt lõi trong Nest. Nhiều class cơ bản của Nest — như service, repository, factory, helper — đều có thể được coi là provider. Ý tưởng then chốt là một provider có thể được <strong>inject</strong> như một dependency, cho phép các object tạo ra các mối quan hệ đa dạng với nhau. Việc "kết nối" các object này phần lớn được Nest runtime system đảm nhiệm.</p>
+
+    <p>Ở chương trước, chúng ta đã tạo một <code>CatsController</code> đơn giản. Controller nên xử lý HTTP request và ủy thác các tác vụ phức tạp hơn cho <strong>provider</strong>. Provider là các plain JavaScript class được khai báo là <code>providers</code> trong một NestJS module. Tham khảo chương "Modules" để biết thêm chi tiết.</p>
+
+    <div class="hint">
+      <span class="lbl">💡 Hint</span>
+      <p>Vì Nest cho phép bạn thiết kế và tổ chức dependencies theo cách hướng đối tượng, chúng tôi khuyến khích mạnh mẽ việc tuân theo các <a href="https://en.wikipedia.org/wiki/SOLID" target="_blank">nguyên tắc SOLID</a>.</p>
+    </div>
+
+    <!-- ── SERVICES ── -->
+    <h3 id="services">Services <a class="anchor" href="#services">#</a></h3>
+
+    <p>Hãy bắt đầu bằng cách tạo một <code>CatsService</code> đơn giản. Service này sẽ xử lý việc lưu trữ và truy xuất dữ liệu, và sẽ được <code>CatsController</code> sử dụng. Do vai trò quản lý logic của ứng dụng, nó là ứng cử viên lý tưởng để định nghĩa như một provider.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">cats.service.ts</div>
+        <div class="cb-right">
+          <div class="tabs">
+            <div class="tab on" onclick="sw(this,'b1','ts')">TS</div>
+            <div class="tab"    onclick="sw(this,'b1','js')">JS</div>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div id="b1">
+        <div class="pane on" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Injectable</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="typ">Cat</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./interfaces/cat.interface'</span><span class="pn">;</span>
+
+<span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">CatsService</span> <span class="pn">{</span>
+  <span class="kw">private readonly</span> cats<span class="pn">:</span> <span class="typ">Cat</span><span class="pn">[]</span> <span class="pn">=</span> <span class="pn">[];</span>
+
+  <span class="fn">create</span><span class="pn">(</span>cat<span class="pn">:</span> <span class="typ">Cat</span><span class="pn">)</span> <span class="pn">{</span>
+    <span class="kw">this</span><span class="pn">.</span>cats<span class="pn">.</span><span class="fn">push</span><span class="pn">(</span>cat<span class="pn">);</span>
+  <span class="pn">}</span>
+
+  <span class="fn">findAll</span><span class="pn">():</span> <span class="typ">Cat</span><span class="pn">[]</span> <span class="pn">{</span>
+    <span class="kw">return</span> <span class="kw">this</span><span class="pn">.</span>cats<span class="pn">;</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+        <div class="pane" data-lang="js"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Injectable</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+
+<span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">CatsService</span> <span class="pn">{</span>
+  <span class="fn">constructor</span><span class="pn">()</span> <span class="pn">{</span>
+    <span class="kw">this</span><span class="pn">.</span>cats <span class="pn">=</span> <span class="pn">[];</span>
+  <span class="pn">}</span>
+
+  <span class="fn">create</span><span class="pn">(</span>cat<span class="pn">)</span> <span class="pn">{</span>
+    <span class="kw">this</span><span class="pn">.</span>cats<span class="pn">.</span><span class="fn">push</span><span class="pn">(</span>cat<span class="pn">);</span>
+  <span class="pn">}</span>
+
+  <span class="fn">findAll</span><span class="pn">()</span> <span class="pn">{</span>
+    <span class="kw">return</span> <span class="kw">this</span><span class="pn">.</span>cats<span class="pn">;</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+      </div>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">💡 Hint</span>
+      <p>Để tạo service bằng CLI, chỉ cần chạy lệnh <code>$ nest g service cats</code>.</p>
+    </div>
+
+    <p><code>CatsService</code> là một class cơ bản với một property và hai method. Điểm quan trọng ở đây là decorator <code>@Injectable()</code>. Decorator này gắn metadata vào class, báo hiệu rằng <code>CatsService</code> là class có thể được quản lý bởi <a href="https://en.wikipedia.org/wiki/Inversion_of_control" target="_blank">IoC</a> container của Nest.</p>
+
+    <p>Ngoài ra, ví dụ này sử dụng interface <code>Cat</code>, trông có thể như sau:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">interfaces/cat.interface.ts</div>
+        <div class="cb-right">
+          <div class="tabs">
+            <div class="tab on" onclick="sw(this,'b2','ts')">TS</div>
+            <div class="tab"    onclick="sw(this,'b2','js')">JS</div>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div id="b2">
+        <div class="pane on" data-lang="ts"><pre><span class="kw">export interface</span> <span class="cl">Cat</span> <span class="pn">{</span>
+  name<span class="pn">:</span> <span class="typ">string</span><span class="pn">;</span>
+  age<span class="pn">:</span> <span class="typ">number</span><span class="pn">;</span>
+  breed<span class="pn">:</span> <span class="typ">string</span><span class="pn">;</span>
+<span class="pn">}</span></pre></div>
+        <div class="pane" data-lang="js"><pre><span class="cm">// JavaScript không có interface — dùng JSDoc hoặc class thay thế</span></pre></div>
+      </div>
+    </div>
+
+    <p>Bây giờ chúng ta đã có service class để lấy dữ liệu cats, hãy sử dụng nó bên trong <code>CatsController</code>:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">cats.controller.ts</div>
+        <div class="cb-right">
+          <div class="tabs">
+            <div class="tab on" onclick="sw(this,'b3','ts')">TS</div>
+            <div class="tab"    onclick="sw(this,'b3','js')">JS</div>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div id="b3">
+        <div class="pane on" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Controller</span><span class="pn">,</span> <span class="cl">Get</span><span class="pn">,</span> <span class="cl">Post</span><span class="pn">,</span> <span class="cl">Body</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">CreateCatDto</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./dto/create-cat.dto'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">CatsService</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./cats.service'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="typ">Cat</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./interfaces/cat.interface'</span><span class="pn">;</span>
+
+<span class="dec">@Controller</span><span class="pn">(</span><span class="str">'cats'</span><span class="pn">)</span>
+<span class="kw">export class</span> <span class="cl">CatsController</span> <span class="pn">{</span>
+  <span class="fn">constructor</span><span class="pn">(</span><span class="kw">private</span> catsService<span class="pn">:</span> <span class="cl">CatsService</span><span class="pn">)</span> <span class="pn">{}</span>
+
+  <span class="dec">@Post</span><span class="pn">()</span>
+  <span class="kw">async</span> <span class="fn">create</span><span class="pn">(</span><span class="dec">@Body</span><span class="pn">()</span> createCatDto<span class="pn">:</span> <span class="cl">CreateCatDto</span><span class="pn">)</span> <span class="pn">{</span>
+    <span class="kw">this</span><span class="pn">.</span>catsService<span class="pn">.</span><span class="fn">create</span><span class="pn">(</span>createCatDto<span class="pn">);</span>
+  <span class="pn">}</span>
+
+  <span class="dec">@Get</span><span class="pn">()</span>
+  <span class="kw">async</span> <span class="fn">findAll</span><span class="pn">():</span> <span class="typ">Promise</span><span class="pn">&lt;</span><span class="typ">Cat</span><span class="pn">[]&gt;</span> <span class="pn">{</span>
+    <span class="kw">return</span> <span class="kw">this</span><span class="pn">.</span>catsService<span class="pn">.</span><span class="fn">findAll</span><span class="pn">();</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+        <div class="pane" data-lang="js"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Controller</span><span class="pn">,</span> <span class="cl">Get</span><span class="pn">,</span> <span class="cl">Post</span><span class="pn">,</span> <span class="cl">Body</span><span class="pn">,</span> <span class="cl">Bind</span><span class="pn">,</span> <span class="cl">Dependencies</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">CatsService</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./cats.service'</span><span class="pn">;</span>
+
+<span class="dec">@Controller</span><span class="pn">(</span><span class="str">'cats'</span><span class="pn">)</span>
+<span class="dec">@Dependencies</span><span class="pn">(</span><span class="cl">CatsService</span><span class="pn">)</span>
+<span class="kw">export class</span> <span class="cl">CatsController</span> <span class="pn">{</span>
+  <span class="fn">constructor</span><span class="pn">(</span>catsService<span class="pn">)</span> <span class="pn">{</span>
+    <span class="kw">this</span><span class="pn">.</span>catsService <span class="pn">=</span> catsService<span class="pn">;</span>
+  <span class="pn">}</span>
+
+  <span class="dec">@Post</span><span class="pn">()</span>
+  <span class="dec">@Bind</span><span class="pn">(</span><span class="fn">Body</span><span class="pn">())</span>
+  <span class="kw">async</span> <span class="fn">create</span><span class="pn">(</span>createCatDto<span class="pn">)</span> <span class="pn">{</span>
+    <span class="kw">this</span><span class="pn">.</span>catsService<span class="pn">.</span><span class="fn">create</span><span class="pn">(</span>createCatDto<span class="pn">);</span>
+  <span class="pn">}</span>
+
+  <span class="dec">@Get</span><span class="pn">()</span>
+  <span class="kw">async</span> <span class="fn">findAll</span><span class="pn">()</span> <span class="pn">{</span>
+    <span class="kw">return</span> <span class="kw">this</span><span class="pn">.</span>catsService<span class="pn">.</span><span class="fn">findAll</span><span class="pn">();</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+      </div>
+    </div>
+
+    <p><code>CatsService</code> được <strong>inject</strong> thông qua constructor của class. Lưu ý việc sử dụng từ khoá <code>private</code>. Shorthand này cho phép chúng ta vừa khai báo vừa khởi tạo member <code>catsService</code> ngay trên cùng một dòng, đơn giản hoá toàn bộ quá trình.</p>
+
+    <!-- ── DEPENDENCY INJECTION ── -->
+    <h3 id="dependency-injection">Dependency injection <a class="anchor" href="#dependency-injection">#</a></h3>
+
+    <p>Nest được xây dựng xung quanh design pattern mạnh mẽ được gọi là <strong>Dependency Injection</strong>. Chúng tôi khuyến khích đọc một bài viết hay về khái niệm này trong <a href="https://angular.dev/guide/di" target="_blank">tài liệu chính thức của Angular</a>.</p>
+
+    <p>Trong Nest, nhờ khả năng của TypeScript, việc quản lý dependency rất đơn giản vì chúng được resolve dựa trên <em>type</em>. Trong ví dụ dưới, Nest sẽ resolve <code>catsService</code> bằng cách tạo và trả về một instance của <code>CatsService</code> (hoặc trong trường hợp singleton, trả về instance đã tồn tại nếu đã được yêu cầu ở nơi khác). Dependency này sau đó được inject vào constructor của controller (hoặc gán vào property đã chỉ định):</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div style="flex:1"></div>
+        <button class="cpbtn" onclick="cp(this)">Copy</button>
+      </div>
+      <div id="b4">
+        <div class="pane on"><pre><span class="fn">constructor</span><span class="pn">(</span><span class="kw">private</span> catsService<span class="pn">:</span> <span class="cl">CatsService</span><span class="pn">)</span> <span class="pn">{}</span></pre></div>
+      </div>
+    </div>
+
+    <!-- ── SCOPES ── -->
+    <h3 id="scopes">Scopes <a class="anchor" href="#scopes">#</a></h3>
+
+    <p>Provider thông thường có một lifetime ("scope") đồng bộ với vòng đời ứng dụng. Khi ứng dụng được bootstrap, mọi dependency đều phải được resolve — nghĩa là mọi provider đều được khởi tạo. Tương tự, khi ứng dụng tắt, tất cả provider sẽ bị huỷ. Tuy nhiên, cũng có thể làm cho provider có scope theo <strong>request</strong>, nghĩa là lifetime của nó được gắn với một request cụ thể thay vì vòng đời ứng dụng. Bạn có thể tìm hiểu thêm về các kỹ thuật này trong chương <a href="https://docs.nestjs.com/fundamentals/injection-scopes" target="_blank">Injection Scopes</a>.</p>
+
+    <!-- ── CUSTOM PROVIDERS ── -->
+    <h3 id="custom-providers">Custom providers <a class="anchor" href="#custom-providers">#</a></h3>
+
+    <p>Nest đi kèm với một <strong>IoC</strong> (inversion of control) container tích hợp sẵn để quản lý mối quan hệ giữa các provider. Tính năng này là nền tảng của dependency injection, nhưng thực ra nó mạnh mẽ hơn nhiều so với những gì chúng ta đã đề cập. Có nhiều cách để định nghĩa provider: có thể dùng plain value, class, hoặc cả factory bất đồng bộ lẫn đồng bộ. Xem thêm ví dụ định nghĩa provider trong chương <a href="https://docs.nestjs.com/fundamentals/dependency-injection" target="_blank">Dependency Injection</a>.</p>
+
+    <!-- ── OPTIONAL PROVIDERS ── -->
+    <h3 id="optional-providers">Optional providers <a class="anchor" href="#optional-providers">#</a></h3>
+
+    <p>Đôi khi bạn có thể có các dependency không nhất thiết phải luôn được resolve. Ví dụ: class của bạn có thể phụ thuộc vào một <strong>configuration object</strong>, nhưng nếu không có, nên dùng giá trị mặc định. Trong trường hợp đó, dependency được coi là optional và việc thiếu configuration provider không nên gây ra lỗi.</p>
+
+    <p>Để đánh dấu provider là optional, dùng decorator <code>@Optional()</code> trong chữ ký constructor.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div style="flex:1"></div>
+        <button class="cpbtn" onclick="cp(this)">Copy</button>
+      </div>
+      <div id="b5">
+        <div class="pane on"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Injectable</span><span class="pn">,</span> <span class="cl">Optional</span><span class="pn">,</span> <span class="cl">Inject</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+
+<span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">HttpService</span><span class="pn">&lt;</span><span class="typ">T</span><span class="pn">&gt;</span> <span class="pn">{</span>
+  <span class="fn">constructor</span><span class="pn">(</span><span class="dec">@Optional</span><span class="pn">()</span> <span class="dec">@Inject</span><span class="pn">(</span><span class="str">'HTTP_OPTIONS'</span><span class="pn">)</span> <span class="kw">private</span> httpClient<span class="pn">:</span> <span class="typ">T</span><span class="pn">)</span> <span class="pn">{}</span>
+<span class="pn">}</span></pre></div>
+      </div>
+    </div>
+
+    <p>Trong ví dụ trên, chúng ta đang dùng custom provider, đó là lý do bao gồm custom <strong>token</strong> <code>HTTP_OPTIONS</code>. Các ví dụ trước minh hoạ constructor-based injection, nơi dependency được chỉ định thông qua một class trong constructor. Xem thêm chi tiết về custom provider và cách token của chúng hoạt động trong chương <a href="https://docs.nestjs.com/fundamentals/custom-providers" target="_blank">Custom Providers</a>.</p>
+
+    <!-- ── PROPERTY-BASED INJECTION ── -->
+    <h3 id="property-based-injection">Property-based injection <a class="anchor" href="#property-based-injection">#</a></h3>
+
+    <p>Kỹ thuật chúng ta đã dùng từ trước đến nay được gọi là constructor-based injection — provider được inject thông qua constructor method. Trong một số trường hợp cụ thể, <strong>property-based injection</strong> có thể hữu ích. Ví dụ: nếu top-level class phụ thuộc vào một hoặc nhiều provider, việc truyền tất cả chúng lên qua <code>super()</code> trong subclass có thể trở nên cồng kềnh. Để tránh điều này, có thể dùng decorator <code>@Inject()</code> trực tiếp ở cấp property.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div style="flex:1"></div>
+        <button class="cpbtn" onclick="cp(this)">Copy</button>
+      </div>
+      <div id="b6">
+        <div class="pane on"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Injectable</span><span class="pn">,</span> <span class="cl">Inject</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+
+<span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">HttpService</span><span class="pn">&lt;</span><span class="typ">T</span><span class="pn">&gt;</span> <span class="pn">{</span>
+  <span class="dec">@Inject</span><span class="pn">(</span><span class="str">'HTTP_OPTIONS'</span><span class="pn">)</span>
+  <span class="kw">private readonly</span> httpClient<span class="pn">:</span> <span class="typ">T</span><span class="pn">;</span>
+<span class="pn">}</span></pre></div>
+      </div>
+    </div>
+
+    <div class="warn">
+      <span class="lbl">⚠️ Warning</span>
+      <p>Nếu class của bạn không extend class nào khác, thông thường nên ưu tiên <strong>constructor-based injection</strong>. Constructor chỉ rõ ràng những dependency nào được yêu cầu, giúp code dễ đọc và dễ hiểu hơn so với class property được annotate bằng <code>@Inject</code>.</p>
+    </div>
+
+    <!-- ── PROVIDER REGISTRATION ── -->
+    <h3 id="provider-registration">Provider registration <a class="anchor" href="#provider-registration">#</a></h3>
+
+    <p>Bây giờ chúng ta đã định nghĩa provider (<code>CatsService</code>) và một consumer (<code>CatsController</code>), chúng ta cần đăng ký service với Nest để nó có thể thực hiện injection. Điều này được thực hiện bằng cách chỉnh sửa file module (<code>app.module.ts</code>) và thêm service vào mảng <code>providers</code> trong decorator <code>@Module()</code>.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">app.module.ts</div>
+        <div class="cb-right">
+          <div class="tabs">
+            <div class="tab on" onclick="sw(this,'b7','ts')">TS</div>
+            <div class="tab"    onclick="sw(this,'b7','js')">JS</div>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div id="b7">
+        <div class="pane on" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Module</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">CatsController</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./cats/cats.controller'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">CatsService</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./cats/cats.service'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  controllers<span class="pn">:</span> <span class="pn">[</span><span class="cl">CatsController</span><span class="pn">],</span>
+  providers<span class="pn">:</span>   <span class="pn">[</span><span class="cl">CatsService</span><span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="pn">{}</span></pre></div>
+        <div class="pane" data-lang="js"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Module</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">CatsController</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./cats/cats.controller'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">CatsService</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./cats/cats.service'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  controllers<span class="pn">:</span> <span class="pn">[</span><span class="cl">CatsController</span><span class="pn">],</span>
+  providers<span class="pn">:</span>   <span class="pn">[</span><span class="cl">CatsService</span><span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="pn">{}</span></pre></div>
+      </div>
+    </div>
+
+    <p>Nest giờ đây có thể resolve các dependency của class <code>CatsController</code>.</p>
+
+    <p>Tại thời điểm này, cấu trúc thư mục của chúng ta sẽ trông như sau:</p>
+
+    <div class="filetree">
+      <div><span class="dir">src</span></div>
+      <div>&nbsp;&nbsp;<span class="dir">cats</span></div>
+      <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="dir">dto</span></div>
+      <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">create-cat.dto.ts</span></div>
+      <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="dir">interfaces</span></div>
+      <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">cat.interface.ts</span></div>
+      <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">cats.controller.ts</span></div>
+      <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="hi">cats.service.ts</span></div>
+      <div>&nbsp;&nbsp;<span class="file">app.module.ts</span></div>
+      <div>&nbsp;&nbsp;<span class="file">main.ts</span></div>
+    </div>
+
+    <!-- ── MANUAL INSTANTIATION ── -->
+    <h3 id="manual-instantiation">Manual instantiation <a class="anchor" href="#manual-instantiation">#</a></h3>
+
+    <p>Cho đến nay, chúng ta đã thấy Nest tự động xử lý hầu hết các chi tiết của việc resolve dependency. Tuy nhiên, trong một số trường hợp, bạn có thể cần bước ra ngoài hệ thống Dependency Injection tích hợp sẵn và thủ công lấy hoặc khởi tạo provider. Hai kỹ thuật như vậy được đề cập ngắn gọn dưới đây:</p>
+
+    <ul style="color:var(--sec);padding-left:22px;line-height:2;margin-bottom:16px;">
+      <li>Để lấy các instance đang tồn tại hoặc khởi tạo provider động, dùng <a href="https://docs.nestjs.com/fundamentals/module-ref" target="_blank">Module reference</a>.</li>
+      <li>Để lấy provider bên trong hàm <code>bootstrap()</code> (ví dụ: cho standalone application hoặc dùng configuration service trong quá trình bootstrap), xem <a href="https://docs.nestjs.com/standalone-applications" target="_blank">Standalone applications</a>.</li>
+    </ul>
+
+    <!-- PAGE NAV -->
+    <div class="page-nav">
+      <a class="pnbtn" href="nestjs-controllers-vi.html">
+        <div class="pnlbl">&larr; Trước</div>
+        <div class="pntitle">Controllers</div>
+      </a>
+      <a class="pnbtn r" href="https://docs.nestjs.com/modules" target="_blank">
+        <div class="pnlbl">Tiếp theo &rarr;</div>
+        <div class="pntitle">Modules</div>
+      </a>
+    </div>
+
+  </main>
+
+  <!-- ════════════════ TOC ════════════════ -->
+  <aside class="toc">
+    <div class="toc-title">Trong trang này</div>
+    <ul>
+      <li><a href="#services">Services</a></li>
+      <li><a href="#dependency-injection">Dependency injection</a></li>
+      <li><a href="#scopes">Scopes</a></li>
+      <li><a href="#custom-providers">Custom providers</a></li>
+      <li><a href="#optional-providers">Optional providers</a></li>
+      <li><a href="#property-based-injection">Property-based injection</a></li>
+      <li><a href="#provider-registration">Provider registration</a></li>
+      <li><a href="#manual-instantiation">Manual instantiation</a></li>
+    </ul>
+  </aside>
+
+</div><!-- .page -->
+
+<script>
+  /* tab switch */
+  function sw(btn, bid, lang) {
+    var c = document.getElementById(bid);
+    if (!c) return;
+    btn.parentElement.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('on'); });
+    btn.classList.add('on');
+    c.querySelectorAll('.pane').forEach(function(p){
+      p.classList.remove('on');
+      if (p.dataset.lang === lang) p.classList.add('on');
+    });
+  }
+
+  /* copy */
+  function cp(btn) {
+    var wrap = btn.closest('.cb');
+    var pane = wrap.querySelector('.pane.on') || wrap.querySelector('.pane');
+    if (!pane) return;
+    navigator.clipboard.writeText(pane.textContent.trim()).then(function(){
+      var o = btn.textContent;
+      btn.textContent = 'Copied!';
+      btn.style.color = '#4ade80';
+      setTimeout(function(){ btn.textContent = o; btn.style.color = ''; }, 1500);
+    });
+  }
+
+  /* TOC active on scroll */
+  var tocLinks = document.querySelectorAll('.toc a');
+  var heads    = document.querySelectorAll('h3[id]');
+  function hi() {
+    var cur = '';
+    heads.forEach(function(h){ if (scrollY >= h.offsetTop - 110) cur = h.id; });
+    tocLinks.forEach(function(a){
+      a.classList.toggle('active', a.getAttribute('href') === '#' + cur);
+    });
+  }
+  window.addEventListener('scroll', hi, { passive: true });
+  hi();
+</script>
+</body>
+</html>

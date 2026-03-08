@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Custom Providers | NestJS - Tài liệu tiếng Việt</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:       #0e0e0e;
+      --surface:  #1a1a1a;
+      --surface2: #222;
+      --border:   #2a2a2a;
+      --border-l: #333;
+      --red:      #ea2845;
+      --red-l:    #ff4d6a;
+      --red-glow: rgba(234,40,69,.15);
+      --text:     #e8e8e8;
+      --muted:    #888;
+      --sec:      #b0b0b0;
+      --code-bg:  #1e1e1e;
+      --code-bd:  #2d2d2d;
+      --hint-bg:  #0d2a1a;
+      --hint-c:   #4ade80;
+      --warn-bg:  #2a1a0d;
+      --warn-c:   #fb923c;
+      --note-bg:  #0d1a2a;
+      --note-c:   #60a0d0;
+      --toc-w:    220px;
+      --font:     'Inter', sans-serif;
+      --mono:     'Source Code Pro', monospace;
+      --r:        6px;
+      --rl:       10px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font); background: var(--bg); color: var(--text); font-size: 15px; line-height: 1.78; }
+
+    .page { max-width: 1060px; margin: 0 auto; padding: 48px 32px 96px; display: flex; gap: 56px; align-items: flex-start; }
+    .content { flex: 1; min-width: 0; }
+
+    /* TOC */
+    .toc { width: var(--toc-w); flex-shrink: 0; position: sticky; top: 32px; align-self: flex-start; max-height: calc(100vh - 48px); overflow-y: auto; }
+    .toc::-webkit-scrollbar { width: 3px; }
+    .toc::-webkit-scrollbar-thumb { background: var(--border-l); border-radius: 2px; }
+    .toc-title { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); padding-bottom: 8px; margin-bottom: 8px; border-bottom: 1px solid var(--border); }
+    .toc ul { list-style: none; }
+    .toc ul li a { display: block; padding: 3.5px 0; font-size: 12.5px; color: var(--muted); text-decoration: none; line-height: 1.5; transition: color .15s; cursor: pointer; }
+    .toc ul li a:hover, .toc ul li a.active { color: var(--red-l); }
+
+    /* Banner */
+    .vi-banner { display: flex; align-items: center; gap: 10px; padding: 11px 16px; border: 1px solid rgba(234,40,69,.3); border-radius: var(--rl); background: linear-gradient(135deg,rgba(234,40,69,.1),rgba(234,40,69,.04)); font-size: 13px; color: var(--sec); margin-bottom: 32px; }
+    .vi-banner strong { color: var(--red-l); }
+
+    /* Headings */
+    h1 { font-size: 36px; font-weight: 700; letter-spacing: -.5px; line-height: 1.2; margin-bottom: 6px; }
+    h1::after { content:''; display:block; width:44px; height:3px; background:var(--red); border-radius:2px; margin-top:12px; }
+    h3 { font-size: 19px; font-weight: 600; letter-spacing: -.2px; margin: 40px 0 12px; display: flex; align-items: center; gap: 8px; scroll-margin-top: 80px; }
+    .anchor { font-size: 14px; color: var(--muted); text-decoration: none; opacity: 0; transition: opacity .2s; }
+    h3:hover .anchor { opacity: 1; }
+    p { color: var(--sec); line-height: 1.82; margin-bottom: 16px; }
+    p:last-child { margin-bottom: 0; }
+    a { color: var(--red-l); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    strong { color: var(--text); font-weight: 600; }
+    ul { color: var(--sec); padding-left: 22px; line-height: 2.1; margin: 16px 0; }
+
+    /* inline code */
+    code { font-family: var(--mono); font-size: 13px; background: var(--code-bg); border: 1px solid var(--code-bd); padding: 1px 6px; border-radius: 4px; color: #f9a8d4; }
+
+    /* Callouts */
+    .hint, .warn, .note {
+      margin: 18px 0; padding: 12px 16px; border-left: 3px solid;
+      border-radius: var(--r); font-size: 13.5px; line-height: 1.72;
+    }
+    .hint { background: var(--hint-bg); border-color: var(--hint-c); color: #a7f3d0; }
+    .warn { background: var(--warn-bg); border-color: var(--warn-c); color: #fed7aa; }
+    .note { background: var(--note-bg); border-color: var(--note-c); color: #bae6fd; }
+    .hint p, .warn p, .note p { margin: 0; color: inherit; }
+    .lbl { display: block; font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 4px; }
+    .hint .lbl { color: var(--hint-c); }
+    .warn .lbl  { color: var(--warn-c); }
+    .note .lbl  { color: var(--note-c); }
+
+    /* Code blocks */
+    .cb { margin: 18px 0; border: 1px solid var(--code-bd); border-radius: var(--rl); overflow: hidden; background: var(--code-bg); }
+    .cb-head { display: flex; align-items: center; justify-content: space-between; padding: 8px 14px; background: #181818; border-bottom: 1px solid var(--code-bd); min-height: 38px; }
+    .cb-fname { font-family: var(--mono); font-size: 11.5px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+    .cb-fname::before { content:''; display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--red); }
+    .cb-right { display: flex; align-items: center; gap: 6px; }
+    .tabs { display: flex; gap: 3px; }
+    .tab { padding: 4px 11px; font-size: 11px; font-family: var(--mono); font-weight: 500; border: 1px solid transparent; border-radius: 4px; color: var(--muted); cursor: pointer; user-select: none; transition: all .14s; }
+    .tab.on { color: var(--red-l); background: var(--red-glow); border-color: var(--red); }
+    .tab:hover:not(.on) { color: var(--text); background: rgba(255,255,255,.04); }
+    .cpbtn { padding: 3px 9px; font-size: 10.5px; font-family: var(--mono); background: var(--surface); border: 1px solid var(--border-l); color: var(--muted); border-radius: 4px; cursor: pointer; transition: all .14s; }
+    .cpbtn:hover { background: var(--surface2); color: var(--text); }
+    .pane { display: none; }
+    .pane.on { display: block; }
+    pre { padding: 18px 20px; overflow-x: auto; font-family: var(--mono); font-size: 13.5px; line-height: 1.65; color: #abb2bf; }
+    pre::-webkit-scrollbar { height: 5px; }
+    pre::-webkit-scrollbar-thumb { background: var(--border-l); border-radius: 3px; }
+
+    /* syntax */
+    .kw  { color: #c678dd; }
+    .fn  { color: #61afef; }
+    .str { color: #98c379; }
+    .dec { color: #e5c07b; }
+    .typ { color: #e5c07b; }
+    .cm  { color: #5c6370; font-style: italic; }
+    .pn  { color: #abb2bf; }
+    .num { color: #d19a66; }
+    .cl  { color: #e06c75; }
+    .tmpl{ color: #d19a66; }
+
+    /* Page nav */
+    .page-nav { display: flex; justify-content: space-between; margin-top: 52px; gap: 16px; }
+    .pnbtn { display: flex; flex-direction: column; padding: 14px 18px; border: 1px solid var(--border); border-radius: var(--rl); text-decoration: none; transition: all .2s; min-width: 150px; }
+    .pnbtn:hover { border-color: var(--red); background: var(--red-glow); text-decoration: none; }
+    .pnlbl   { font-size: 10.5px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); margin-bottom: 3px; }
+    .pntitle { font-size: 14px; font-weight: 600; color: var(--text); }
+    .pnbtn.r { text-align: right; margin-left: auto; }
+
+    @media (max-width: 860px) { .toc { display: none; } }
+    @media (max-width: 600px) { .page { padding: 24px 16px 64px; } }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <main class="content">
+
+    <div class="vi-banner">
+      <span style="font-size:17px">🇻🇳</span>
+      <div>Dịch từ <strong><a href="https://docs.nestjs.com/fundamentals/custom-providers" target="_blank">docs.nestjs.com/fundamentals/custom-providers</a></strong>. Thuật ngữ kỹ thuật giữ nguyên tiếng Anh.</div>
+    </div>
+
+    <h1>Custom providers</h1>
+
+    <p style="margin-top:18px">Trong các chương trước, chúng ta đã đề cập đến nhiều khía cạnh khác nhau của <strong>Dependency Injection (DI)</strong> và cách nó được sử dụng trong Nest. Một ví dụ về điều này là <a href="https://docs.nestjs.com/providers" target="_blank">constructor based</a> dependency injection được sử dụng để inject các instance (thường là service provider) vào các class. Bạn sẽ không ngạc nhiên khi biết rằng Dependency Injection được xây dựng sâu vào lõi của Nest theo một cách cơ bản. Cho đến nay, chúng ta mới chỉ khám phá một pattern chính. Khi ứng dụng của bạn trở nên phức tạp hơn, bạn có thể cần tận dụng đầy đủ các tính năng của hệ thống DI, vì vậy hãy cùng khám phá chúng chi tiết hơn.</p>
+
+    <!-- ═══════════════════════ DI FUNDAMENTALS ═══════════════════════ -->
+    <h3 id="di-fundamentals">DI fundamentals <a class="anchor" href="#di-fundamentals">#</a></h3>
+
+    <p>Dependency injection là một kỹ thuật <strong>inversion of control (IoC)</strong>, trong đó bạn ủy thác việc khởi tạo các dependency cho IoC container (trong trường hợp của chúng ta là NestJS runtime system), thay vì tự thực hiện nó trong code một cách imperative. Hãy xem điều gì xảy ra trong ví dụ này từ chương <a href="https://docs.nestjs.com/providers" target="_blank">Providers</a>.</p>
+
+    <p>Đầu tiên, chúng ta định nghĩa một provider. Decorator <code>@Injectable()</code> đánh dấu class <code>CatsService</code> là một provider.</p>
+
+    <div class="cb">
+      <div class="cb-head"><div class="cb-fname">cats.service.ts</div><div class="cb-right"><div class="tabs"><div class="tab on" onclick="sw(this,'c0','ts')">TS</div><div class="tab" onclick="sw(this,'c0','js')">JS</div></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div>
+      <div id="c0">
+        <div class="pane on" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">{</span> Injectable <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> Cat <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./interfaces/cat.interface'</span><span class="pn">;</span>
+
+<span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">CatsService</span> <span class="pn">{</span>
+  <span class="kw">private readonly</span> cats<span class="pn">:</span> <span class="typ">Cat</span><span class="pn">[]</span> <span class="pn">=</span> <span class="pn">[];</span>
+
+  <span class="fn">findAll</span><span class="pn">():</span> <span class="typ">Cat</span><span class="pn">[] {</span>
+    <span class="kw">return</span> <span class="kw">this</span><span class="pn">.</span>cats<span class="pn">;</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+        <div class="pane" data-lang="js"><pre><span class="kw">import</span> <span class="pn">{</span> Injectable <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+
+<span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">CatsService</span> <span class="pn">{</span>
+  <span class="fn">constructor</span><span class="pn">() {</span>
+    <span class="kw">this</span><span class="pn">.</span>cats <span class="pn">=</span> <span class="pn">[];</span>
+  <span class="pn">}</span>
+
+  <span class="fn">findAll</span><span class="pn">() {</span>
+    <span class="kw">return</span> <span class="kw">this</span><span class="pn">.</span>cats<span class="pn">;</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+      </div>
+    </div>
+
+    <p>Sau đó, chúng ta yêu cầu Nest inject provider vào class controller:</p>
+
+    <div class="cb">
+      <div class="cb-head"><div class="cb-fname">cats.controller.ts</div><div class="cb-right"><div class="tabs"><div class="tab on" onclick="sw(this,'c1','ts')">TS</div><div class="tab" onclick="sw(this,'c1','js')">JS</div></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div>
+      <div id="c1">
+        <div class="pane on" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">{</span> Controller<span class="pn">,</span> Get <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> CatsService <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./cats.service'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> Cat <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./interfaces/cat.interface'</span><span class="pn">;</span>
+
+<span class="dec">@Controller</span><span class="pn">(</span><span class="str">'cats'</span><span class="pn">)</span>
+<span class="kw">export class</span> <span class="cl">CatsController</span> <span class="pn">{</span>
+  <span class="fn">constructor</span><span class="pn">(</span><span class="kw">private</span> catsService<span class="pn">:</span> <span class="cl">CatsService</span><span class="pn">) {}</span>
+
+  <span class="dec">@Get</span><span class="pn">()</span>
+  <span class="kw">async</span> <span class="fn">findAll</span><span class="pn">():</span> <span class="typ">Promise</span><span class="pn">&lt;</span><span class="typ">Cat</span><span class="pn">[]&gt; {</span>
+    <span class="kw">return</span> <span class="kw">this</span><span class="pn">.</span>catsService<span class="pn">.</span><span class="fn">findAll</span><span class="pn">();</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+        <div class="pane" data-lang="js"><pre><span class="kw">import</span> <span class="pn">{</span> Controller<span class="pn">,</span> Get<span class="pn">,</span> Bind<span class="pn">,</span> Dependencies <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> CatsService <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./cats.service'</span><span class="pn">;</span>
+
+<span class="dec">@Controller</span><span class="pn">(</span><span class="str">'cats'</span><span class="pn">)</span>
+<span class="dec">@Dependencies</span><span class="pn">(</span><span class="cl">CatsService</span><span class="pn">)</span>
+<span class="kw">export class</span> <span class="cl">CatsController</span> <span class="pn">{</span>
+  <span class="fn">constructor</span><span class="pn">(</span>catsService<span class="pn">) {</span>
+    <span class="kw">this</span><span class="pn">.</span>catsService <span class="pn">=</span> catsService<span class="pn">;</span>
+  <span class="pn">}</span>
+
+  <span class="dec">@Get</span><span class="pn">()</span>
+  <span class="fn">findAll</span><span class="pn">() {</span>
+    <span class="kw">return</span> <span class="kw">this</span><span class="pn">.</span>catsService<span class="pn">.</span><span class="fn">findAll</span><span class="pn">();</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+      </div>
+    </div>
+
+    <p>Cuối cùng, chúng ta đăng ký provider với Nest IoC container:</p>
+
+    <div class="cb">
+      <div class="cb-head"><div class="cb-fname">app.module.ts</div><div class="cb-right"><div class="tabs"><div class="tab on" onclick="sw(this,'c2','ts')">TS</div><div class="tab" onclick="sw(this,'c2','js')">JS</div></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div>
+      <div id="c2">
+        <div class="pane on" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">{</span> Module <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> CatsController <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./cats/cats.controller'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> CatsService <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./cats/cats.service'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  controllers<span class="pn">:</span> <span class="pn">[</span><span class="cl">CatsController</span><span class="pn">],</span>
+  providers<span class="pn">:</span> <span class="pn">[</span><span class="cl">CatsService</span><span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="pn">{}</span></pre></div>
+        <div class="pane" data-lang="js"><pre><span class="kw">import</span> <span class="pn">{</span> Module <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> CatsController <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./cats/cats.controller'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> CatsService <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./cats/cats.service'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  controllers<span class="pn">:</span> <span class="pn">[</span><span class="cl">CatsController</span><span class="pn">],</span>
+  providers<span class="pn">:</span> <span class="pn">[</span><span class="cl">CatsService</span><span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="pn">{}</span></pre></div>
+      </div>
+    </div>
+
+    <p>Chính xác thì điều gì đang xảy ra trong quy trình này? Có ba bước chính:</p>
+
+    <ul>
+      <li>Trong <code>cats.service.ts</code>, decorator <code>@Injectable()</code> khai báo class <code>CatsService</code> là một class có thể được quản lý bởi Nest IoC container.</li>
+      <li>Trong <code>cats.controller.ts</code>, <code>CatsController</code> khai báo dependency vào token <code>CatsService</code> bằng constructor injection:
+        <div class="cb" style="margin:8px 0">
+          <div class="cb-head"><div style="flex:1"></div><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+          <div id="c2a"><div class="pane on"><pre><span class="fn">constructor</span><span class="pn">(</span><span class="kw">private</span> catsService<span class="pn">:</span> <span class="cl">CatsService</span><span class="pn">) {}</span></pre></div></div>
+        </div>
+      </li>
+      <li>Trong <code>app.module.ts</code>, chúng ta liên kết token <code>CatsService</code> với class <code>CatsService</code> từ file <code>cats.service.ts</code>. Chúng ta sẽ thấy chính xác cách liên kết này (còn gọi là <em>registration</em>) xảy ra <a href="#standard-providers">bên dưới</a>.</li>
+    </ul>
+
+    <p>Khi Nest IoC container khởi tạo <code>CatsController</code>, nó đầu tiên sẽ tìm kiếm bất kỳ dependency nào*. Khi nó tìm thấy dependency <code>CatsService</code>, nó thực hiện tra cứu trên token <code>CatsService</code>, trả về class <code>CatsService</code>, theo bước đăng ký (#3 ở trên). Giả sử scope <code>SINGLETON</code> (behavior mặc định), Nest sau đó sẽ tạo một instance của <code>CatsService</code>, cache nó và trả về, hoặc nếu đã có một instance được cache, trả về instance hiện có.</p>
+
+    <p><em>*Giải thích này được đơn giản hóa một chút để minh họa ý tưởng. Một lĩnh vực quan trọng mà chúng ta đã lược qua là quá trình phân tích code để tìm dependency rất sâu - nó xảy ra trong quá trình khởi tạo ứng dụng. Một đặc điểm chính là phân tích dependency (hay "tạo dependency graph") là <strong>transitive</strong>. Trong ví dụ trên, nếu bản thân <code>CatsService</code> có dependency, những dependency đó cũng sẽ được resolved. Dependency graph đảm bảo rằng các dependency được resolved đúng thứ tự — về cơ bản là "bottom up". Cơ chế này giúp developer không phải quản lý các dependency graph phức tạp.</em></p>
+
+    <!-- ═══════════════════════ STANDARD PROVIDERS ═══════════════════════ -->
+    <h3 id="standard-providers">Standard providers <a class="anchor" href="#standard-providers">#</a></h3>
+
+    <p>Hãy xem kỹ hơn decorator <code>@Module()</code>. Trong <code>app.module</code>, chúng ta khai báo:</p>
+
+    <div class="cb">
+      <div class="cb-head"><div style="flex:1"></div><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      <div id="c3"><div class="pane on"><pre><span class="dec">@Module</span><span class="pn">({</span>
+  controllers<span class="pn">:</span> <span class="pn">[</span><span class="cl">CatsController</span><span class="pn">],</span>
+  providers<span class="pn">:</span> <span class="pn">[</span><span class="cl">CatsService</span><span class="pn">],</span>
+<span class="pn">})</span></pre></div></div>
+    </div>
+
+    <p>Property <code>providers</code> nhận một mảng các provider. Cho đến nay, chúng ta đã cung cấp provider thông qua danh sách tên class. Trên thực tế, cú pháp <code>providers: [CatsService]</code> là cách viết tắt của cú pháp đầy đủ hơn:</p>
+
+    <div class="cb">
+      <div class="cb-head"><div style="flex:1"></div><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      <div id="c4"><div class="pane on"><pre>providers<span class="pn">:</span> <span class="pn">[</span>
+  <span class="pn">{</span>
+    provide<span class="pn">:</span> <span class="cl">CatsService</span><span class="pn">,</span>
+    useClass<span class="pn">:</span> <span class="cl">CatsService</span><span class="pn">,</span>
+  <span class="pn">},</span>
+<span class="pn">];</span></pre></div></div>
+    </div>
+
+    <p>Bây giờ chúng ta thấy rõ construct này, chúng ta có thể hiểu quá trình đăng ký. Ở đây, chúng ta rõ ràng đang liên kết token <code>CatsService</code> với class <code>CatsService</code>. Ký hiệu viết tắt chỉ là sự tiện lợi để đơn giản hóa use-case phổ biến nhất, nơi token được sử dụng để yêu cầu một instance của class cùng tên.</p>
+
+    <!-- ═══════════════════════ CUSTOM PROVIDERS ═══════════════════════ -->
+    <h3 id="custom-providers">Custom providers <a class="anchor" href="#custom-providers">#</a></h3>
+
+    <p>Điều gì xảy ra khi yêu cầu của bạn vượt quá những gì <strong>Standard providers</strong> cung cấp? Dưới đây là một vài ví dụ:</p>
+
+    <ul>
+      <li>Bạn muốn tạo một custom instance thay vì để Nest khởi tạo (hoặc trả về instance đã cache) của class</li>
+      <li>Bạn muốn tái sử dụng một class hiện có trong dependency thứ hai</li>
+      <li>Bạn muốn override một class bằng mock version để testing</li>
+    </ul>
+
+    <p>Nest cho phép bạn định nghĩa Custom providers để xử lý các trường hợp này. Nó cung cấp một vài cách để định nghĩa custom provider. Hãy cùng xem.</p>
+
+    <div class="hint">
+      <span class="lbl">💡 Hint</span>
+      <p>Nếu bạn gặp vấn đề với dependency resolution, bạn có thể set biến <code>NEST_DEBUG</code> và nhận thêm dependency resolution log trong quá trình startup.</p>
+    </div>
+
+    <!-- ═══════════════════════ VALUE PROVIDERS ═══════════════════════ -->
+    <h3 id="value-providers">Value providers: <code>useValue</code> <a class="anchor" href="#value-providers">#</a></h3>
+
+    <p>Cú pháp <code>useValue</code> hữu ích để inject một constant value, đưa thư viện bên ngoài vào Nest container, hoặc thay thế implementation thực tế bằng mock object. Giả sử bạn muốn buộc Nest sử dụng mock <code>CatsService</code> cho mục đích testing.</p>
+
+    <div class="cb">
+      <div class="cb-head"><div style="flex:1"></div><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      <div id="c5"><div class="pane on"><pre><span class="kw">import</span> <span class="pn">{</span> CatsService <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./cats.service'</span><span class="pn">;</span>
+
+<span class="kw">const</span> mockCatsService <span class="pn">= {</span>
+  <span class="cm">/* mock implementation
+  ...
+  */</span>
+<span class="pn">};</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">:</span> <span class="pn">[</span><span class="cl">CatsModule</span><span class="pn">],</span>
+  providers<span class="pn">:</span> <span class="pn">[</span>
+    <span class="pn">{</span>
+      provide<span class="pn">:</span> <span class="cl">CatsService</span><span class="pn">,</span>
+      useValue<span class="pn">:</span> mockCatsService<span class="pn">,</span>
+    <span class="pn">},</span>
+  <span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="pn">{}</span></pre></div></div>
+    </div>
+
+    <p>Trong ví dụ này, token <code>CatsService</code> sẽ resolve thành mock object <code>mockCatsService</code>. <code>useValue</code> yêu cầu một value — trong trường hợp này là literal object có cùng interface với class <code>CatsService</code> mà nó thay thế. Nhờ <a href="https://www.typescriptlang.org/docs/handbook/type-compatibility.html" target="_blank">structural typing</a> của TypeScript, bạn có thể sử dụng bất kỳ object nào có compatible interface, bao gồm literal object hoặc class instance được khởi tạo bằng <code>new</code>.</p>
+
+    <!-- ═══════════════════════ NON-CLASS-BASED TOKENS ═══════════════════════ -->
+    <h3 id="non-class-tokens">Non-class-based provider tokens <a class="anchor" href="#non-class-tokens">#</a></h3>
+
+    <p>Cho đến nay, chúng ta đã sử dụng class name làm provider token (giá trị của property <code>provide</code> trong provider object được liệt kê trong mảng <code>providers</code>). Đây là pattern tiêu chuẩn với <a href="https://docs.nestjs.com/providers" target="_blank">constructor based injection</a>, nơi token là class name. (Tham khảo <a href="https://docs.nestjs.com/fundamentals/custom-providers#di-fundamentals" target="_blank">DI Fundamentals</a> để ôn lại về token). Đôi khi, chúng ta có thể muốn linh hoạt sử dụng string hoặc symbol làm DI token. Ví dụ:</p>
+
+    <div class="cb">
+      <div class="cb-head"><div style="flex:1"></div><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      <div id="c6"><div class="pane on"><pre><span class="kw">import</span> <span class="pn">{</span> connection <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./connection'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  providers<span class="pn">:</span> <span class="pn">[</span>
+    <span class="pn">{</span>
+      provide<span class="pn">:</span> <span class="str">'CONNECTION'</span><span class="pn">,</span>
+      useValue<span class="pn">:</span> connection<span class="pn">,</span>
+    <span class="pn">},</span>
+  <span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="pn">{}</span></pre></div></div>
+    </div>
+
+    <p>Trong ví dụ này, chúng ta liên kết string-valued token (<code>'CONNECTION'</code>) với object <code>connection</code> đã import từ file bên ngoài.</p>
+
+    <div class="hint">
+      <span class="lbl">💡 Hint</span>
+      <p>Ngoài việc sử dụng string làm token value, bạn cũng có thể sử dụng JavaScript <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol" target="_blank">symbol</a> hoặc TypeScript <a href="https://www.typescriptlang.org/docs/handbook/enums.html" target="_blank">enum</a>.</p>
+    </div>
+
+    <p>Trước đó chúng ta đã thấy cách inject provider sử dụng constructor based injection pattern tiêu chuẩn. Pattern này yêu cầu dependency được khai báo với class name. Custom provider <code>'CONNECTION'</code> sử dụng string-valued token. Hãy xem cách inject provider như vậy. Để làm điều đó, chúng ta sử dụng decorator <code>@Inject()</code>. Decorator này nhận một argument duy nhất — token.</p>
+
+    <div class="cb">
+      <div class="cb-head"><div style="flex:1"></div><div class="cb-right"><div class="tabs"><div class="tab on" onclick="sw(this,'c7','ts')">TS</div><div class="tab" onclick="sw(this,'c7','js')">JS</div></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div>
+      <div id="c7">
+        <div class="pane on" data-lang="ts"><pre><span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">CatsRepository</span> <span class="pn">{</span>
+  <span class="fn">constructor</span><span class="pn">(</span><span class="dec">@Inject</span><span class="pn">(</span><span class="str">'CONNECTION'</span><span class="pn">)</span> connection<span class="pn">:</span> <span class="typ">Connection</span><span class="pn">) {}</span>
+<span class="pn">}</span></pre></div>
+        <div class="pane" data-lang="js"><pre><span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="dec">@Inject</span><span class="pn">(</span><span class="str">'CONNECTION'</span><span class="pn">)</span>
+<span class="kw">export class</span> <span class="cl">CatsRepository</span> <span class="pn">{</span>
+  <span class="fn">constructor</span><span class="pn">(</span>connection<span class="pn">) {}</span>
+<span class="pn">}</span></pre></div>
+      </div>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">💡 Hint</span>
+      <p>Decorator <code>@Inject()</code> được import từ package <code>@nestjs/common</code>.</p>
+    </div>
+
+    <p>Mặc dù chúng ta sử dụng trực tiếp string <code>'CONNECTION'</code> trong ví dụ trên để minh họa, nhưng theo best practice, bạn nên định nghĩa token trong file riêng biệt, chẳng hạn <code>constants.ts</code>. Hãy coi chúng giống như symbol hoặc enum được định nghĩa trong file riêng của chúng và import khi cần.</p>
+
+    <!-- ═══════════════════════ CLASS PROVIDERS ═══════════════════════ -->
+    <h3 id="class-providers">Class providers: <code>useClass</code> <a class="anchor" href="#class-providers">#</a></h3>
+
+    <p>Cú pháp <code>useClass</code> cho phép bạn xác định động class mà token sẽ resolve thành. Ví dụ, giả sử chúng ta có class <code>ConfigService</code> abstract (hoặc default). Tùy thuộc vào môi trường hiện tại, chúng ta muốn Nest cung cấp implementation khác nhau của configuration service.</p>
+
+    <div class="cb">
+      <div class="cb-head"><div style="flex:1"></div><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      <div id="c8"><div class="pane on"><pre><span class="kw">const</span> configServiceProvider <span class="pn">= {</span>
+  provide<span class="pn">:</span> <span class="cl">ConfigService</span><span class="pn">,</span>
+  useClass<span class="pn">:</span>
+    process<span class="pn">.</span>env<span class="pn">.</span>NODE_ENV <span class="pn">===</span> <span class="str">'development'</span>
+      <span class="pn">?</span> <span class="cl">DevelopmentConfigService</span>
+      <span class="pn">:</span> <span class="cl">ProductionConfigService</span><span class="pn">,</span>
+<span class="pn">};</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  providers<span class="pn">:</span> <span class="pn">[</span>configServiceProvider<span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="pn">{}</span></pre></div></div>
+    </div>
+
+    <p>Lưu ý rằng chúng ta đã sử dụng class name <code>ConfigService</code> làm token. Với bất kỳ class nào phụ thuộc vào <code>ConfigService</code>, Nest sẽ inject instance của class được cung cấp (<code>DevelopmentConfigService</code> hoặc <code>ProductionConfigService</code>) thay thế bất kỳ default implementation nào có thể đã được khai báo ở nơi khác (ví dụ: <code>ConfigService</code> được khai báo với decorator <code>@Injectable()</code>).</p>
+
+    <!-- ═══════════════════════ FACTORY PROVIDERS ═══════════════════════ -->
+    <h3 id="factory-providers">Factory providers: <code>useFactory</code> <a class="anchor" href="#factory-providers">#</a></h3>
+
+    <p>Cú pháp <code>useFactory</code> cho phép tạo provider <strong>dynamically</strong>. Provider thực tế sẽ được cung cấp bởi value trả về từ factory function. Factory function có thể đơn giản hoặc phức tạp tùy ý. Factory đơn giản có thể không phụ thuộc vào bất kỳ provider nào khác. Factory phức tạp hơn có thể tự inject các provider khác mà nó cần để tính toán kết quả. Đối với trường hợp sau, factory provider syntax có một cặp cơ chế liên quan:</p>
+
+    <ul>
+      <li>Factory function có thể chấp nhận (optional) argument.</li>
+      <li>Property <code>inject</code> (optional) chấp nhận một mảng provider mà Nest sẽ resolve và truyền như argument vào factory function trong quá trình khởi tạo. Ngoài ra, các provider này có thể được đánh dấu là optional. Hai danh sách này có mối tương quan: Nest sẽ truyền instance từ danh sách <code>inject</code> như argument vào factory function theo cùng thứ tự.</li>
+    </ul>
+
+    <p>Ví dụ dưới đây minh họa điều này.</p>
+
+    <div class="cb">
+      <div class="cb-head"><div style="flex:1"></div><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      <div id="c9"><div class="pane on"><pre><span class="kw">const</span> connectionProvider <span class="pn">= {</span>
+  provide<span class="pn">:</span> <span class="str">'CONNECTION'</span><span class="pn">,</span>
+  useFactory<span class="pn">:</span> <span class="pn">(</span>optionsProvider<span class="pn">:</span> <span class="typ">OptionsProvider</span><span class="pn">,</span> optionalProvider<span class="pn">?:</span> <span class="typ">string</span><span class="pn">) =&gt; {</span>
+    <span class="kw">const</span> options <span class="pn">=</span> optionsProvider<span class="pn">.</span><span class="fn">get</span><span class="pn">();</span>
+    <span class="kw">return new</span> <span class="cl">DatabaseConnection</span><span class="pn">(</span>options<span class="pn">);</span>
+  <span class="pn">},</span>
+  inject<span class="pn">:</span> <span class="pn">[</span><span class="cl">OptionsProvider</span><span class="pn">,</span> <span class="pn">{</span> token<span class="pn">:</span> <span class="str">'SomeOptionalProvider'</span><span class="pn">,</span> optional<span class="pn">:</span> <span class="kw">true</span> <span class="pn">}],</span>
+<span class="pn">};</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  providers<span class="pn">:</span> <span class="pn">[</span>
+    connectionProvider<span class="pn">,</span>
+    <span class="cl">OptionsProvider</span><span class="pn">,</span>
+    <span class="cm">// { provide: 'SomeOptionalProvider', useValue: 'anything' },</span>
+  <span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="pn">{}</span></pre></div></div>
+    </div>
+
+    <!-- ═══════════════════════ ALIAS PROVIDERS ═══════════════════════ -->
+    <h3 id="alias-providers">Alias providers: <code>useExisting</code> <a class="anchor" href="#alias-providers">#</a></h3>
+
+    <p>Cú pháp <code>useExisting</code> cho phép bạn tạo alias cho các provider hiện có. Điều này tạo ra hai cách để truy cập cùng một provider. Trong ví dụ bên dưới, string-based token <code>'AliasedLoggerService'</code> là alias cho class-based token <code>LoggerService</code>. Giả sử chúng ta có hai dependency khác nhau, một dùng <code>'AliasedLoggerService'</code> và một dùng <code>LoggerService</code>. Nếu cả hai dependency đều được đăng ký với scope <code>SINGLETON</code>, chúng sẽ resolve vào cùng một instance.</p>
+
+    <div class="cb">
+      <div class="cb-head"><div style="flex:1"></div><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      <div id="c10"><div class="pane on"><pre><span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">class</span> <span class="cl">LoggerService</span> <span class="pn">{</span>
+  <span class="cm">/* implementation details */</span>
+<span class="pn">}</span>
+
+<span class="kw">const</span> loggerAliasProvider <span class="pn">= {</span>
+  provide<span class="pn">:</span> <span class="str">'AliasedLoggerService'</span><span class="pn">,</span>
+  useExisting<span class="pn">:</span> <span class="cl">LoggerService</span><span class="pn">,</span>
+<span class="pn">};</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  providers<span class="pn">:</span> <span class="pn">[</span><span class="cl">LoggerService</span><span class="pn">,</span> loggerAliasProvider<span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="pn">{}</span></pre></div></div>
+    </div>
+
+    <!-- ═══════════════════════ NON-SERVICE PROVIDERS ═══════════════════════ -->
+    <h3 id="non-service-providers">Non-service based providers <a class="anchor" href="#non-service-providers">#</a></h3>
+
+    <p>Mặc dù provider thường cung cấp service, chúng không giới hạn ở mục đích sử dụng đó. Provider có thể cung cấp <strong>bất kỳ</strong> value nào. Ví dụ, provider có thể cung cấp mảng configuration object dựa trên môi trường hiện tại, như bên dưới:</p>
+
+    <div class="cb">
+      <div class="cb-head"><div style="flex:1"></div><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      <div id="c11"><div class="pane on"><pre><span class="kw">const</span> configFactory <span class="pn">= {</span>
+  provide<span class="pn">:</span> <span class="str">'CONFIG'</span><span class="pn">,</span>
+  useFactory<span class="pn">:</span> <span class="pn">() =&gt; {</span>
+    <span class="kw">return</span> process<span class="pn">.</span>env<span class="pn">.</span>NODE_ENV <span class="pn">===</span> <span class="str">'development'</span> <span class="pn">?</span> devConfig <span class="pn">:</span> prodConfig<span class="pn">;</span>
+  <span class="pn">},</span>
+<span class="pn">};</span></pre></div></div>
+    </div>
+
+    <!-- ═══════════════════════ EXPORT CUSTOM PROVIDERS ═══════════════════════ -->
+    <h3 id="export-custom-provider">Export custom provider <a class="anchor" href="#export-custom-provider">#</a></h3>
+
+    <p>Giống như bất kỳ provider nào, custom provider được giới hạn trong scope của module khai báo nó (declaring module). Để các module khác có thể nhìn thấy, nó phải được export. Để export custom provider, chúng ta có thể sử dụng token của nó hoặc toàn bộ provider object.</p>
+
+    <p>Ví dụ sau cho thấy cách export sử dụng token:</p>
+
+    <div class="cb">
+      <div class="cb-head"><div style="flex:1"></div><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      <div id="c12"><div class="pane on"><pre><span class="kw">const</span> connectionFactory <span class="pn">= {</span>
+  provide<span class="pn">:</span> <span class="str">'CONNECTION'</span><span class="pn">,</span>
+  useFactory<span class="pn">:</span> <span class="pn">(</span>optionsProvider<span class="pn">:</span> <span class="typ">OptionsProvider</span><span class="pn">) =&gt; {</span>
+    <span class="kw">const</span> options <span class="pn">=</span> optionsProvider<span class="pn">.</span><span class="fn">get</span><span class="pn">();</span>
+    <span class="kw">return new</span> <span class="cl">DatabaseConnection</span><span class="pn">(</span>options<span class="pn">);</span>
+  <span class="pn">},</span>
+  inject<span class="pn">:</span> <span class="pn">[</span><span class="cl">OptionsProvider</span><span class="pn">],</span>
+<span class="pn">};</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  providers<span class="pn">:</span> <span class="pn">[</span>connectionFactory<span class="pn">],</span>
+  exports<span class="pn">:</span> <span class="pn">[</span><span class="str">'CONNECTION'</span><span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="pn">{}</span></pre></div></div>
+    </div>
+
+    <p>Ngoài ra, bạn có thể export với toàn bộ provider object:</p>
+
+    <div class="cb">
+      <div class="cb-head"><div style="flex:1"></div><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      <div id="c13"><div class="pane on"><pre><span class="kw">const</span> connectionFactory <span class="pn">= {</span>
+  provide<span class="pn">:</span> <span class="str">'CONNECTION'</span><span class="pn">,</span>
+  useFactory<span class="pn">:</span> <span class="pn">(</span>optionsProvider<span class="pn">:</span> <span class="typ">OptionsProvider</span><span class="pn">) =&gt; {</span>
+    <span class="kw">const</span> options <span class="pn">=</span> optionsProvider<span class="pn">.</span><span class="fn">get</span><span class="pn">();</span>
+    <span class="kw">return new</span> <span class="cl">DatabaseConnection</span><span class="pn">(</span>options<span class="pn">);</span>
+  <span class="pn">},</span>
+  inject<span class="pn">:</span> <span class="pn">[</span><span class="cl">OptionsProvider</span><span class="pn">],</span>
+<span class="pn">};</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  providers<span class="pn">:</span> <span class="pn">[</span>connectionFactory<span class="pn">],</span>
+  exports<span class="pn">:</span> <span class="pn">[</span>connectionFactory<span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="pn">{}</span></pre></div></div>
+    </div>
+
+    <!-- Page navigation -->
+    <div class="page-nav">
+      <a class="pnbtn" href="#">
+        <span class="pnlbl">← Trước</span>
+        <span class="pntitle">Module reference</span>
+      </a>
+      <a class="pnbtn r" href="#">
+        <span class="pnlbl">Tiếp →</span>
+        <span class="pntitle">Async providers</span>
+      </a>
+    </div>
+
+  </main>
+
+  <!-- TOC -->
+  <aside class="toc">
+    <div class="toc-title">Nội dung</div>
+    <ul>
+      <li><a href="#di-fundamentals">DI fundamentals</a></li>
+      <li><a href="#standard-providers">Standard providers</a></li>
+      <li><a href="#custom-providers">Custom providers</a></li>
+      <li><a href="#value-providers">Value providers: useValue</a></li>
+      <li><a href="#non-class-tokens">Non-class-based provider tokens</a></li>
+      <li><a href="#class-providers">Class providers: useClass</a></li>
+      <li><a href="#factory-providers">Factory providers: useFactory</a></li>
+      <li><a href="#alias-providers">Alias providers: useExisting</a></li>
+      <li><a href="#non-service-providers">Non-service based providers</a></li>
+      <li><a href="#export-custom-provider">Export custom provider</a></li>
+    </ul>
+  </aside>
+
+</div>
+
+<script>
+  function sw(btn, bid, lang) {
+    var c = document.getElementById(bid);
+    if (!c) return;
+    btn.parentElement.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('on'); });
+    btn.classList.add('on');
+    c.querySelectorAll('.pane').forEach(function(p) {
+      p.classList.remove('on');
+      if (p.dataset.lang === lang) p.classList.add('on');
+    });
+  }
+  function cp(btn) {
+    var wrap = btn.closest('.cb');
+    var pane = wrap.querySelector('.pane.on') || wrap.querySelector('.pane');
+    if (!pane) return;
+    navigator.clipboard.writeText(pane.textContent.trim()).then(function() {
+      var o = btn.textContent;
+      btn.textContent = 'Copied!';
+      btn.style.color = '#4ade80';
+      setTimeout(function() { btn.textContent = o; btn.style.color = ''; }, 1500);
+    });
+  }
+  
+  // Smooth scroll on TOC click
+  document.querySelectorAll('.toc a').forEach(function(link) {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      var target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+
+  // Highlight active section
+  var tocLinks = document.querySelectorAll('.toc a');
+  var heads = document.querySelectorAll('h3[id]');
+  function hi() {
+    var cur = '';
+    heads.forEach(function(h) { 
+      if (scrollY >= h.offsetTop - 120) cur = h.id; 
+    });
+    tocLinks.forEach(function(a) {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + cur);
+    });
+  }
+  window.addEventListener('scroll', hi, { passive: true });
+  hi();
+</script>
+</body>
+</html>

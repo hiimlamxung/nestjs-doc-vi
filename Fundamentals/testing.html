@@ -1,0 +1,286 @@
+<!DOCTYPE html><html lang="vi"><head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Testing | NestJS - Tài liệu tiếng Việt</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+    :root {
+      --bg:       #0e0e0e;
+      --surface:  #1a1a1a;
+      --surface2: #222;
+      --border:   #2a2a2a;
+      --border-l: #333;
+      --red:      #ea2845;
+      --red-l:    #ff4d6a;
+      --red-glow: rgba(234,40,69,.15);
+      --text:     #e8e8e8;
+      --muted:    #888;
+      --sec:      #b0b0b0;
+      --code-bg:  #1e1e1e;
+      --code-bd:  #2d2d2d;
+      --hint-bg:  #0d2a1a;
+      --hint-c:   #4ade80;
+      --warn-bg:  #2a1a0d;
+      --warn-c:   #fb923c;
+      --note-bg:  #0d1a2a;
+      --note-c:   #60a0d0;
+      --toc-w:    220px;
+      --font:     'Inter', sans-serif;
+      --mono:     'Source Code Pro', monospace;
+      --r:        6px;
+      --rl:       10px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font); background: var(--bg); color: var(--text); font-size: 15px; line-height: 1.78; }
+
+    .page { max-width: 1060px; margin: 0 auto; padding: 48px 32px 96px; display: flex; gap: 56px; align-items: flex-start; }
+    .content { flex: 1; min-width: 0; }
+
+    /* TOC */
+    .toc { width: var(--toc-w); flex-shrink: 0; position: sticky; top: 32px; align-self: flex-start; max-height: calc(100vh - 48px); overflow-y: auto; }
+    .toc::-webkit-scrollbar { width: 3px; }
+    .toc::-webkit-scrollbar-thumb { background: var(--border-l); border-radius: 2px; }
+    .toc-title { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); padding-bottom: 8px; margin-bottom: 8px; border-bottom: 1px solid var(--border); }
+    .toc ul { list-style: none; }
+    .toc ul li a { display: block; padding: 3.5px 0; font-size: 12.5px; color: var(--muted); text-decoration: none; line-height: 1.5; transition: color .15s; cursor: pointer; }
+    .toc ul li a:hover, .toc ul li a.active { color: var(--red-l); }
+
+    /* Banner */
+    .vi-banner { display: flex; align-items: center; gap: 10px; padding: 11px 16px; border: 1px solid rgba(234,40,69,.3); border-radius: var(--rl); background: linear-gradient(135deg,rgba(234,40,69,.1),rgba(234,40,69,.04)); font-size: 13px; color: var(--sec); margin-bottom: 32px; }
+    .vi-banner strong { color: var(--red-l); }
+
+    /* Headings */
+    h1 { font-size: 36px; font-weight: 700; letter-spacing: -.5px; line-height: 1.2; margin-bottom: 6px; }
+    h1::after { content:''; display:block; width:44px; height:3px; background:var(--red); border-radius:2px; margin-top:12px; }
+    h3 { font-size: 19px; font-weight: 600; letter-spacing: -.2px; margin: 40px 0 12px; display: flex; align-items: center; gap: 8px; scroll-margin-top: 80px; }
+    .anchor { font-size: 14px; color: var(--muted); text-decoration: none; opacity: 0; transition: opacity .2s; }
+    h3:hover .anchor { opacity: 1; }
+    p { color: var(--sec); line-height: 1.82; margin-bottom: 16px; }
+    p:last-child { margin-bottom: 0; }
+    a { color: var(--red-l); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    strong { color: var(--text); font-weight: 600; }
+    ul { color: var(--sec); padding-left: 22px; line-height: 2.1; margin: 16px 0; }
+
+    /* inline code */
+    code { font-family: var(--mono); font-size: 13px; background: var(--code-bg); border: 1px solid var(--code-bd); padding: 1px 6px; border-radius: 4px; color: #f9a8d4; }
+
+    /* Callouts */
+    .hint, .warn, .note {
+      margin: 18px 0; padding: 12px 16px; border-left: 3px solid;
+      border-radius: var(--r); font-size: 13.5px; line-height: 1.72;
+    }
+    .hint { background: var(--hint-bg); border-color: var(--hint-c); color: #a7f3d0; }
+    .warn { background: var(--warn-bg); border-color: var(--warn-c); color: #fed7aa; }
+    .note { background: var(--note-bg); border-color: var(--note-c); color: #bae6fd; }
+    .hint p, .warn p, .note p { margin: 0; color: inherit; }
+    .lbl { display: block; font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 4px; }
+    .hint .lbl { color: var(--hint-c); }
+    .warn .lbl  { color: var(--warn-c); }
+    .note .lbl  { color: var(--note-c); }
+
+    /* Code blocks */
+    .cb { margin: 18px 0; border: 1px solid var(--code-bd); border-radius: var(--rl); overflow: hidden; background: var(--code-bg); }
+    .cb-head { display: flex; align-items: center; justify-content: space-between; padding: 8px 14px; background: #181818; border-bottom: 1px solid var(--code-bd); min-height: 38px; }
+    .cb-fname { font-family: var(--mono); font-size: 11.5px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+    .cb-fname::before { content:''; display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--red); }
+    .cb-right { display: flex; align-items: center; gap: 6px; }
+    .tabs { display: flex; gap: 3px; }
+    .tab { padding: 4px 11px; font-size: 11px; font-family: var(--mono); font-weight: 500; border: 1px solid transparent; border-radius: 4px; color: var(--muted); cursor: pointer; user-select: none; transition: all .14s; }
+    .tab.on { color: var(--red-l); background: var(--red-glow); border-color: var(--red); }
+    .tab:hover:not(.on) { color: var(--text); background: rgba(255,255,255,.04); }
+    .cpbtn { padding: 3px 9px; font-size: 10.5px; font-family: var(--mono); background: var(--surface); border: 1px solid var(--border-l); color: var(--muted); border-radius: 4px; cursor: pointer; transition: all .14s; }
+    .cpbtn:hover { background: var(--surface2); color: var(--text); }
+    .pane { display: none; }
+    .pane.on { display: block; }
+    pre { padding: 18px 20px; overflow-x: auto; font-family: var(--mono); font-size: 13.5px; line-height: 1.65; color: #abb2bf; }
+    pre::-webkit-scrollbar { height: 5px; }
+    pre::-webkit-scrollbar-thumb { background: var(--border-l); border-radius: 3px; }
+
+    /* syntax */
+    .kw  { color: #c678dd; }
+    .fn  { color: #61afef; }
+    .str { color: #98c379; }
+    .dec { color: #e5c07b; }
+    .typ { color: #e5c07b; }
+    .cm  { color: #5c6370; font-style: italic; }
+    .pn  { color: #abb2bf; }
+    .num { color: #d19a66; }
+    .cl  { color: #e06c75; }
+    .tmpl{ color: #d19a66; }
+
+    /* Page nav */
+    .page-nav { display: flex; justify-content: space-between; margin-top: 52px; gap: 16px; }
+    .pnbtn { display: flex; flex-direction: column; padding: 14px 18px; border: 1px solid var(--border); border-radius: var(--rl); text-decoration: none; transition: all .2s; min-width: 150px; }
+    .pnbtn:hover { border-color: var(--red); background: var(--red-glow); text-decoration: none; }
+    .pnlbl   { font-size: 10.5px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); margin-bottom: 3px; }
+    .pntitle { font-size: 14px; font-weight: 600; color: var(--text); }
+    .pnbtn.r { text-align: right; margin-left: auto; }
+
+    @media (max-width: 860px) { .toc { display: none; } }
+    @media (max-width: 600px) { .page { padding: 24px 16px 64px; } }
+  
+table{width:100%;border-collapse:collapse;margin:18px 0;font-size:14px}
+thead{background:var(--surface)}
+th{text-align:left;padding:10px 14px;font-weight:600;color:var(--text);border-bottom:2px solid var(--border-l);font-size:13px}
+td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--sec);line-height:1.65;vertical-align:top}
+td code{font-size:12.5px}
+tr:hover td{background:rgba(255,255,255,.02)}
+.shell{background:#1a1a2e;border:1px solid var(--border);border-radius:var(--rl);padding:14px 18px;margin:14px 0;font-family:var(--mono);font-size:13px;color:#a5f3fc;overflow-x:auto}
+.shell::before{content:'$ ';color:#6b7280}
+</style></head><body><div class="page"><main class="content">
+<div class="vi-banner"><span style="font-size:17px">🇻🇳</span><div>Dịch từ <strong><a href="https://docs.nestjs.com/fundamentals/testing" target="_blank">docs.nestjs.com/fundamentals/testing</a></strong>. Thuật ngữ kỹ thuật giữ nguyên tiếng Anh.</div></div>
+<h1>Testing</h1>
+<p style="margin-top:18px">Automated testing được coi là một phần thiết yếu của bất kỳ nỗ lực phát triển phần mềm nghiêm túc nào. Automation giúp dễ dàng lặp lại các test riêng lẻ hoặc test suites một cách nhanh chóng và dễ dàng trong quá trình phát triển. Điều này giúp đảm bảo rằng các bản release đáp ứng các mục tiêu chất lượng và hiệu năng. Automation giúp tăng coverage và cung cấp feedback loop nhanh hơn cho developers. Automation vừa tăng năng suất của từng developer vừa đảm bảo rằng các tests được chạy tại các thời điểm quan trọng trong development lifecycle, chẳng hạn như source code control check-in, feature integration, và version release.</p>
+<p>Các tests này thường bao gồm nhiều loại, bao gồm unit tests, end-to-end (e2e) tests, integration tests, v.v. Mặc dù lợi ích là không thể phủ nhận, nhưng việc thiết lập chúng có thể rất tẻ nhạt. Nest cố gắng thúc đẩy các best practices phát triển, bao gồm testing hiệu quả, vì vậy nó bao gồm các tính năng sau để giúp developers và teams xây dựng và tự động hóa tests. Nest:</p>
+<ul>
+<li>tự động scaffold các default unit tests cho components và e2e tests cho applications</li>
+<li>cung cấp default tooling (chẳng hạn như test runner xây dựng một isolated module/application loader)</li>
+<li>cung cấp tích hợp với <a href="https://jestjs.io/" target="_blank">Jest</a> và <a href="https://github.com/ladjs/supertest" target="_blank">Supertest</a> out-of-the-box, trong khi vẫn giữ tính agnostic với testing tools</li>
+<li>cung cấp Nest dependency injection system trong testing environment để dễ dàng mocking components</li>
+</ul>
+<p>Như đã đề cập, bạn có thể sử dụng bất kỳ <strong>testing framework</strong> nào bạn thích, vì Nest không ép buộc bất kỳ tooling cụ thể nào. Chỉ cần thay thế các thành phần cần thiết (chẳng hạn như test runner), và bạn vẫn tận hưởng được lợi ích của các testing facilities sẵn có của Nest.</p>
+
+<h3 id="installation">Installation <a class="anchor" href="#installation">#</a></h3>
+<p>Để bắt đầu, trước tiên cài đặt package cần thiết:</p>
+<div class="shell">npm i --save-dev @nestjs/testing</div>
+
+<h3 id="unit-testing">Unit testing <a class="anchor" href="#unit-testing">#</a></h3>
+<p>Trong ví dụ sau, chúng ta test hai classes: <code>CatsController</code> và <code>CatsService</code>. Như đã đề cập, <a href="https://jestjs.io/" target="_blank">Jest</a> được cung cấp làm testing framework mặc định. Nó đóng vai trò test-runner và cũng cung cấp assert functions và test-double utilities hỗ trợ mocking, spying, v.v. Trong bài test cơ bản sau, chúng ta khởi tạo thủ công các classes này, và đảm bảo rằng controller và service thực hiện đúng API contract của chúng.</p>
+<div class="cb"><div class="cb-head"><div class="cb-fname">cats.controller.spec.ts</div><div class="cb-right"><div class="tabs"><div class="tab on" onclick="sw(this,'c0','ts')">TS</div><div class="tab" onclick="sw(this,'c0','js')">JS</div></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div id="c0"><div class="pane on" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">{</span> CatsController <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./cats.controller'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> CatsService <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./cats.service'</span><span class="pn">;</span>
+
+<span class="fn">describe</span><span class="pn">(</span><span class="str">'CatsController'</span><span class="pn">,</span> <span class="pn">() =&gt; {</span>
+  <span class="kw">let</span> catsController<span class="pn">:</span> <span class="typ">CatsController</span><span class="pn">;</span>
+  <span class="kw">let</span> catsService<span class="pn">:</span> <span class="typ">CatsService</span><span class="pn">;</span>
+
+  <span class="fn">beforeEach</span><span class="pn">(() =&gt; {</span>
+    catsService <span class="pn">=</span> <span class="kw">new</span> <span class="cl">CatsService</span><span class="pn">();</span>
+    catsController <span class="pn">=</span> <span class="kw">new</span> <span class="cl">CatsController</span><span class="pn">(</span>catsService<span class="pn">);</span>
+  <span class="pn">});</span>
+
+  <span class="fn">describe</span><span class="pn">(</span><span class="str">'findAll'</span><span class="pn">,</span> <span class="pn">() =&gt; {</span>
+    <span class="fn">it</span><span class="pn">(</span><span class="str">'should return an array of cats'</span><span class="pn">,</span> <span class="kw">async</span> <span class="pn">() =&gt; {</span>
+      <span class="kw">const</span> result <span class="pn">=</span> <span class="pn">[</span><span class="str">'test'</span><span class="pn">];</span>
+      jest<span class="pn">.</span><span class="fn">spyOn</span><span class="pn">(</span>catsService<span class="pn">,</span> <span class="str">'findAll'</span><span class="pn">).</span><span class="fn">mockImplementation</span><span class="pn">(() =&gt;</span> result<span class="pn">);</span>
+
+      <span class="fn">expect</span><span class="pn">(</span><span class="kw">await</span> catsController<span class="pn">.</span><span class="fn">findAll</span><span class="pn">()).</span><span class="fn">toBe</span><span class="pn">(</span>result<span class="pn">);</span>
+    <span class="pn">});</span>
+  <span class="pn">});</span>
+<span class="pn">});</span></pre></div><div class="pane" data-lang="js"><pre><span class="kw">import</span> <span class="pn">{</span> CatsController <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./cats.controller'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> CatsService <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./cats.service'</span><span class="pn">;</span>
+
+<span class="fn">describe</span><span class="pn">(</span><span class="str">'CatsController'</span><span class="pn">,</span> <span class="pn">() =&gt; {</span>
+  <span class="kw">let</span> catsController<span class="pn">;</span>
+  <span class="kw">let</span> catsService<span class="pn">;</span>
+
+  <span class="fn">beforeEach</span><span class="pn">(() =&gt; {</span>
+    catsService <span class="pn">=</span> <span class="kw">new</span> <span class="cl">CatsService</span><span class="pn">();</span>
+    catsController <span class="pn">=</span> <span class="kw">new</span> <span class="cl">CatsController</span><span class="pn">(</span>catsService<span class="pn">);</span>
+  <span class="pn">});</span>
+
+  <span class="fn">describe</span><span class="pn">(</span><span class="str">'findAll'</span><span class="pn">,</span> <span class="pn">() =&gt; {</span>
+    <span class="fn">it</span><span class="pn">(</span><span class="str">'should return an array of cats'</span><span class="pn">,</span> <span class="kw">async</span> <span class="pn">() =&gt; {</span>
+      <span class="kw">const</span> result <span class="pn">=</span> <span class="pn">[</span><span class="str">'test'</span><span class="pn">];</span>
+      jest<span class="pn">.</span><span class="fn">spyOn</span><span class="pn">(</span>catsService<span class="pn">,</span> <span class="str">'findAll'</span><span class="pn">).</span><span class="fn">mockImplementation</span><span class="pn">(() =&gt;</span> result<span class="pn">);</span>
+
+      <span class="fn">expect</span><span class="pn">(</span><span class="kw">await</span> catsController<span class="pn">.</span><span class="fn">findAll</span><span class="pn">()).</span><span class="fn">toBe</span><span class="pn">(</span>result<span class="pn">);</span>
+    <span class="pn">});</span>
+  <span class="pn">});</span>
+<span class="pn">});</span></pre></div></div></div>
+
+<div class="hint"><span class="lbl">💡 Hint</span><p>Đặt các test files gần các classes mà chúng test. Các testing files nên có đuôi <code>.spec</code> hoặc <code>.test</code>.</p></div>
+
+<p>Vì chúng ta đã thiết lập ví dụ trên thủ công, chúng ta không thực sự sử dụng bất kỳ thứ gì liên quan đến testing từ <code>@nestjs/testing</code>. Testing framework mặc định (Jest) cung cấp assert functions và test utilities sẵn có. Trong trường hợp cơ bản như trên, chúng ta không cần các Nest testing tools. Khi phần mềm sử dụng dependency injection nhiều hơn, chúng ta sẽ cần dùng <code>@nestjs/testing</code>.</p>
+
+<h3 id="testing-utilities">Testing utilities <a class="anchor" href="#testing-utilities">#</a></h3>
+
+<p>Package <code>@nestjs/testing</code> cung cấp một tập hợp các utilities cho phép xây dựng một quy trình testing mạnh mẽ hơn. Hãy viết lại ví dụ trước sử dụng class <code>Test</code> có sẵn:</p>
+<div class="cb"><div class="cb-head"><div class="cb-fname">cats.controller.spec.ts</div><div class="cb-right"><div class="tabs"><div class="tab on" onclick="sw(this,'c1','ts')">TS</div><div class="tab" onclick="sw(this,'c1','js')">JS</div></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div id="c1"><div class="pane on" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">{</span> Test <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/testing'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> CatsController <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./cats.controller'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> CatsService <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./cats.service'</span><span class="pn">;</span>
+
+<span class="fn">describe</span><span class="pn">(</span><span class="str">'CatsController'</span><span class="pn">,</span> <span class="pn">() =&gt; {</span>
+  <span class="kw">let</span> catsController<span class="pn">:</span> <span class="typ">CatsController</span><span class="pn">;</span>
+  <span class="kw">let</span> catsService<span class="pn">:</span> <span class="typ">CatsService</span><span class="pn">;</span>
+
+  <span class="fn">beforeEach</span><span class="pn">(</span><span class="kw">async</span> <span class="pn">() =&gt; {</span>
+    <span class="kw">const</span> moduleRef <span class="pn">=</span> <span class="kw">await</span> Test<span class="pn">.</span><span class="fn">createTestingModule</span><span class="pn">({</span>
+      controllers<span class="pn">: [</span>CatsController<span class="pn">],</span>
+      providers<span class="pn">: [</span>CatsService<span class="pn">],</span>
+    <span class="pn">}).</span><span class="fn">compile</span><span class="pn">();</span>
+
+    catsService <span class="pn">=</span> moduleRef<span class="pn">.</span><span class="fn">get</span><span class="pn">&lt;</span><span class="typ">CatsService</span><span class="pn">&gt;(</span>CatsService<span class="pn">);</span>
+    catsController <span class="pn">=</span> moduleRef<span class="pn">.</span><span class="fn">get</span><span class="pn">&lt;</span><span class="typ">CatsController</span><span class="pn">&gt;(</span>CatsController<span class="pn">);</span>
+  <span class="pn">});</span>
+
+  <span class="fn">describe</span><span class="pn">(</span><span class="str">'findAll'</span><span class="pn">,</span> <span class="pn">() =&gt; {</span>
+    <span class="fn">it</span><span class="pn">(</span><span class="str">'should return an array of cats'</span><span class="pn">,</span> <span class="kw">async</span> <span class="pn">() =&gt; {</span>
+      <span class="kw">const</span> result <span class="pn">=</span> <span class="pn">[</span><span class="str">'test'</span><span class="pn">];</span>
+      jest<span class="pn">.</span><span class="fn">spyOn</span><span class="pn">(</span>catsService<span class="pn">,</span> <span class="str">'findAll'</span><span class="pn">).</span><span class="fn">mockImplementation</span><span class="pn">(() =&gt;</span> result<span class="pn">);</span>
+
+      <span class="fn">expect</span><span class="pn">(</span><span class="kw">await</span> catsController<span class="pn">.</span><span class="fn">findAll</span><span class="pn">()).</span><span class="fn">toBe</span><span class="pn">(</span>result<span class="pn">);</span>
+    <span class="pn">});</span>
+  <span class="pn">});</span>
+<span class="pn">});</span></pre></div><div class="pane" data-lang="js"><pre><span class="kw">import</span> <span class="pn">{</span> Test <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/testing'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> CatsController <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./cats.controller'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> CatsService <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./cats.service'</span><span class="pn">;</span>
+
+<span class="fn">describe</span><span class="pn">(</span><span class="str">'CatsController'</span><span class="pn">,</span> <span class="pn">() =&gt; {</span>
+  <span class="kw">let</span> catsController<span class="pn">;</span>
+  <span class="kw">let</span> catsService<span class="pn">;</span>
+
+  <span class="fn">beforeEach</span><span class="pn">(</span><span class="kw">async</span> <span class="pn">() =&gt; {</span>
+    <span class="kw">const</span> moduleRef <span class="pn">=</span> <span class="kw">await</span> Test<span class="pn">.</span><span class="fn">createTestingModule</span><span class="pn">({</span>
+      controllers<span class="pn">: [</span>CatsController<span class="pn">],</span>
+      providers<span class="pn">: [</span>CatsService<span class="pn">],</span>
+    <span class="pn">}).</span><span class="fn">compile</span><span class="pn">();</span>
+
+    catsService <span class="pn">=</span> moduleRef<span class="pn">.</span><span class="fn">get</span><span class="pn">(</span>CatsService<span class="pn">);</span>
+    catsController <span class="pn">=</span> moduleRef<span class="pn">.</span><span class="fn">get</span><span class="pn">(</span>CatsController<span class="pn">);</span>
+  <span class="pn">});</span>
+
+  <span class="fn">describe</span><span class="pn">(</span><span class="str">'findAll'</span><span class="pn">,</span> <span class="pn">() =&gt; {</span>
+    <span class="fn">it</span><span class="pn">(</span><span class="str">'should return an array of cats'</span><span class="pn">,</span> <span class="kw">async</span> <span class="pn">() =&gt; {</span>
+      <span class="kw">const</span> result <span class="pn">=</span> <span class="pn">[</span><span class="str">'test'</span><span class="pn">];</span>
+      jest<span class="pn">.</span><span class="fn">spyOn</span><span class="pn">(</span>catsService<span class="pn">,</span> <span class="str">'findAll'</span><span class="pn">).</span><span class="fn">mockImplementation</span><span class="pn">(() =&gt;</span> result<span class="pn">);</span>
+
+      <span class="fn">expect</span><span class="pn">(</span><span class="kw">await</span> catsController<span class="pn">.</span><span class="fn">findAll</span><span class="pn">()).</span><span class="fn">toBe</span><span class="pn">(</span>result<span class="pn">);</span>
+    <span class="pn">});</span>
+  <span class="pn">});</span>
+<span class="pn">});</span></pre></div></div></div>
+
+<p>Class <code>Test</code> hữu ích trong việc cung cấp một application execution context mô phỏng toàn bộ Nest runtime, nhưng cho phép bạn dễ dàng quản lý class instances, bao gồm mocking và overriding. Class <code>Test</code> có phương thức <code>createTestingModule()</code> nhận module metadata object làm đối số (cùng object mà bạn truyền vào <code>@Module()</code> decorator). Phương thức này trả về một instance của <code>TestingModule</code> mà lần lượt cung cấp một số methods. Đối với unit tests, method quan trọng là <code>compile()</code>. Method này bootstraps một module cùng với các dependencies của nó (tương tự cách ứng dụng được bootstrapped trong file <code>main.ts</code> thông thường sử dụng <code>NestFactory.create()</code>), và trả về module đã sẵn sàng cho testing.</p>
+
+<div class="hint"><span class="lbl">💡 Hint</span><p>Phương thức <code>compile()</code> là <strong>asynchronous</strong> và do đó phải được awaited. Khi module đã được compiled, bạn có thể truy xuất bất kỳ <strong>static</strong> instance nào nó khai báo (controllers và providers) sử dụng phương thức <code>get()</code>.</p></div>
+
+<p><code>TestingModule</code> kế thừa từ <a href="https://docs.nestjs.com/fundamentals/module-reference" target="_blank">module reference</a> class, và do đó có khả năng resolve dynamically các scoped providers (transient hoặc request-scoped). Làm điều này với phương thức <code>resolve()</code> (phương thức <code>get()</code> chỉ có thể truy xuất static instances).</p>
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="kw">const</span> moduleRef <span class="pn">=</span> <span class="kw">await</span> Test<span class="pn">.</span><span class="fn">createTestingModule</span><span class="pn">({</span>
+  controllers<span class="pn">: [</span>CatsController<span class="pn">],</span>
+  providers<span class="pn">: [</span>CatsService<span class="pn">],</span>
+<span class="pn">}).</span><span class="fn">compile</span><span class="pn">();</span>
+
+catsService <span class="pn">=</span> <span class="kw">await</span> moduleRef<span class="pn">.</span><span class="fn">resolve</span><span class="pn">(</span>CatsService<span class="pn">);</span></pre></div></div></div>
+
+<div class="warn"><span class="lbl">⚠️ Warning</span><p>Phương thức <code>resolve()</code> trả về một unique instance của provider, từ DI container sub-tree của chính nó. Mỗi sub-tree có một unique context identifier. Do đó, nếu bạn gọi method này nhiều lần và so sánh instance references, bạn sẽ thấy chúng không bằng nhau.</p></div>
+
+<div class="hint"><span class="lbl">💡 Hint</span><p>Tìm hiểu thêm về các tính năng module reference <a href="https://docs.nestjs.com/fundamentals/module-reference" target="_blank">tại đây</a>.</p></div>
+
+<p>Thay vì sử dụng production version của bất kỳ provider nào, bạn có thể override nó bằng một <a href="https://docs.nestjs.com/fundamentals/custom-providers" target="_blank">custom provider</a> cho mục đích testing. Ví dụ, bạn có thể mock một database service thay vì kết nối đến live database. Chúng ta sẽ đề cập đến overrides trong phần tiếp theo, nhưng chúng cũng có sẵn cho unit tests.</p>
+
+<p>Class <code>TestingModule</code> cung cấp các methods sau:</p>
+
+<table>
+<thead><tr><th>Method</th><th>Mô tả</th></tr></thead>
+<tbody>
+<tr><td><code>createNestApplication()</code></td><td>Tạo và trả về một Nest application (<code>INestApplication</code> instance) dựa trên module đã cho. Lưu ý rằng ứng dụng phải được khởi tạo thủ công bằng phương thức <code>init()</code>.</td></tr>
+<tr><td><code>createNestMicroservice()</code></td><td>Tạo và trả về một Nest microservice (<code>INestMicroservice</code> instance) dựa trên module đã cho.</td></tr>
+<tr><td><code>get()</code></td><td>Truy xuất một static instance của controller hoặc provider (bao gồm guards, filters, v.v.) có sẵn trong application context. Kế thừa từ <a href="https://docs.nestjs.com/fundamentals/module-reference" target="_blank">module reference</a> class.</td></tr>
+<tr><td><code>resolve()</code></td><td>Truy xuất một dynamically created scoped instance (request hoặc transient) của controller hoặc provider (bao gồm guards, filters, v.v.) có sẵn trong application context. Kế thừa từ <a href="https://docs.nestjs.com/fundamentals/module-reference" target="_blank">module reference</a> class.</td></tr>
+<tr><td><code>select()</code></td><td>Điều hướng qua dependency graph của module; có thể được sử dụng để truy xuất một specific instance từ selected module (sử dụng cùng với strict mode (<code>strict: true</code>) trong phương thức <code>get()</code>).</td></tr>
+</tbody>
+</table>
+
+<div class="hint"><span class="lbl">💡 Hint</span><p>Đặt các e2e test files trong thư mục <code>test</code>. Các testing files nên có đuôi <code>.e2e-spec</code>.</p></div>

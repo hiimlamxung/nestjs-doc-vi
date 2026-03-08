@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Execution Context | NestJS - Tài liệu tiếng Việt</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+    :root {
+      --bg:       #0e0e0e;
+      --surface:  #1a1a1a;
+      --surface2: #222;
+      --border:   #2a2a2a;
+      --border-l: #333;
+      --red:      #ea2845;
+      --red-l:    #ff4d6a;
+      --red-glow: rgba(234,40,69,.15);
+      --text:     #e8e8e8;
+      --muted:    #888;
+      --sec:      #b0b0b0;
+      --code-bg:  #1e1e1e;
+      --code-bd:  #2d2d2d;
+      --hint-bg:  #0d2a1a;
+      --hint-c:   #4ade80;
+      --warn-bg:  #2a1a0d;
+      --warn-c:   #fb923c;
+      --note-bg:  #0d1a2a;
+      --note-c:   #60a0d0;
+      --toc-w:    220px;
+      --font:     'Inter', sans-serif;
+      --mono:     'Source Code Pro', monospace;
+      --r:        6px;
+      --rl:       10px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font); background: var(--bg); color: var(--text); font-size: 15px; line-height: 1.78; }
+
+    .page { max-width: 1060px; margin: 0 auto; padding: 48px 32px 96px; display: flex; gap: 56px; align-items: flex-start; }
+    .content { flex: 1; min-width: 0; }
+
+    /* TOC */
+    .toc { width: var(--toc-w); flex-shrink: 0; position: sticky; top: 32px; align-self: flex-start; max-height: calc(100vh - 48px); overflow-y: auto; }
+    .toc::-webkit-scrollbar { width: 3px; }
+    .toc::-webkit-scrollbar-thumb { background: var(--border-l); border-radius: 2px; }
+    .toc-title { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); padding-bottom: 8px; margin-bottom: 8px; border-bottom: 1px solid var(--border); }
+    .toc ul { list-style: none; }
+    .toc ul li a { display: block; padding: 3.5px 0; font-size: 12.5px; color: var(--muted); text-decoration: none; line-height: 1.5; transition: color .15s; cursor: pointer; }
+    .toc ul li a:hover, .toc ul li a.active { color: var(--red-l); }
+
+    /* Banner */
+    .vi-banner { display: flex; align-items: center; gap: 10px; padding: 11px 16px; border: 1px solid rgba(234,40,69,.3); border-radius: var(--rl); background: linear-gradient(135deg,rgba(234,40,69,.1),rgba(234,40,69,.04)); font-size: 13px; color: var(--sec); margin-bottom: 32px; }
+    .vi-banner strong { color: var(--red-l); }
+
+    /* Headings */
+    h1 { font-size: 36px; font-weight: 700; letter-spacing: -.5px; line-height: 1.2; margin-bottom: 6px; }
+    h1::after { content:''; display:block; width:44px; height:3px; background:var(--red); border-radius:2px; margin-top:12px; }
+    h3 { font-size: 19px; font-weight: 600; letter-spacing: -.2px; margin: 40px 0 12px; display: flex; align-items: center; gap: 8px; scroll-margin-top: 80px; }
+    .anchor { font-size: 14px; color: var(--muted); text-decoration: none; opacity: 0; transition: opacity .2s; }
+    h3:hover .anchor { opacity: 1; }
+    p { color: var(--sec); line-height: 1.82; margin-bottom: 16px; }
+    p:last-child { margin-bottom: 0; }
+    a { color: var(--red-l); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    strong { color: var(--text); font-weight: 600; }
+    ul { color: var(--sec); padding-left: 22px; line-height: 2.1; margin: 16px 0; }
+
+    /* inline code */
+    code { font-family: var(--mono); font-size: 13px; background: var(--code-bg); border: 1px solid var(--code-bd); padding: 1px 6px; border-radius: 4px; color: #f9a8d4; }
+
+    /* Callouts */
+    .hint, .warn, .note {
+      margin: 18px 0; padding: 12px 16px; border-left: 3px solid;
+      border-radius: var(--r); font-size: 13.5px; line-height: 1.72;
+    }
+    .hint { background: var(--hint-bg); border-color: var(--hint-c); color: #a7f3d0; }
+    .warn { background: var(--warn-bg); border-color: var(--warn-c); color: #fed7aa; }
+    .note { background: var(--note-bg); border-color: var(--note-c); color: #bae6fd; }
+    .hint p, .warn p, .note p { margin: 0; color: inherit; }
+    .lbl { display: block; font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 4px; }
+    .hint .lbl { color: var(--hint-c); }
+    .warn .lbl  { color: var(--warn-c); }
+    .note .lbl  { color: var(--note-c); }
+
+    /* Code blocks */
+    .cb { margin: 18px 0; border: 1px solid var(--code-bd); border-radius: var(--rl); overflow: hidden; background: var(--code-bg); }
+    .cb-head { display: flex; align-items: center; justify-content: space-between; padding: 8px 14px; background: #181818; border-bottom: 1px solid var(--code-bd); min-height: 38px; }
+    .cb-fname { font-family: var(--mono); font-size: 11.5px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+    .cb-fname::before { content:''; display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--red); }
+    .cb-right { display: flex; align-items: center; gap: 6px; }
+    .tabs { display: flex; gap: 3px; }
+    .tab { padding: 4px 11px; font-size: 11px; font-family: var(--mono); font-weight: 500; border: 1px solid transparent; border-radius: 4px; color: var(--muted); cursor: pointer; user-select: none; transition: all .14s; }
+    .tab.on { color: var(--red-l); background: var(--red-glow); border-color: var(--red); }
+    .tab:hover:not(.on) { color: var(--text); background: rgba(255,255,255,.04); }
+    .cpbtn { padding: 3px 9px; font-size: 10.5px; font-family: var(--mono); background: var(--surface); border: 1px solid var(--border-l); color: var(--muted); border-radius: 4px; cursor: pointer; transition: all .14s; }
+    .cpbtn:hover { background: var(--surface2); color: var(--text); }
+    .pane { display: none; }
+    .pane.on { display: block; }
+    pre { padding: 18px 20px; overflow-x: auto; font-family: var(--mono); font-size: 13.5px; line-height: 1.65; color: #abb2bf; }
+    pre::-webkit-scrollbar { height: 5px; }
+    pre::-webkit-scrollbar-thumb { background: var(--border-l); border-radius: 3px; }
+
+    /* syntax */
+    .kw  { color: #c678dd; }
+    .fn  { color: #61afef; }
+    .str { color: #98c379; }
+    .dec { color: #e5c07b; }
+    .typ { color: #e5c07b; }
+    .cm  { color: #5c6370; font-style: italic; }
+    .pn  { color: #abb2bf; }
+    .num { color: #d19a66; }
+    .cl  { color: #e06c75; }
+    .tmpl{ color: #d19a66; }
+
+    /* Page nav */
+    .page-nav { display: flex; justify-content: space-between; margin-top: 52px; gap: 16px; }
+    .pnbtn { display: flex; flex-direction: column; padding: 14px 18px; border: 1px solid var(--border); border-radius: var(--rl); text-decoration: none; transition: all .2s; min-width: 150px; }
+    .pnbtn:hover { border-color: var(--red); background: var(--red-glow); text-decoration: none; }
+    .pnlbl   { font-size: 10.5px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); margin-bottom: 3px; }
+    .pntitle { font-size: 14px; font-weight: 600; color: var(--text); }
+    .pnbtn.r { text-align: right; margin-left: auto; }
+
+    @media (max-width: 860px) { .toc { display: none; } }
+    @media (max-width: 600px) { .page { padding: 24px 16px 64px; } }
+  </style>
+</head>
+<body>
+<div class="page">
+<main class="content">
+
+<div class="vi-banner">
+<span style="font-size:17px">🇻🇳</span>
+<div>Dịch từ <strong><a href="https://docs.nestjs.com/fundamentals/execution-context" target="_blank">docs.nestjs.com/fundamentals/execution-context</a></strong>. Thuật ngữ kỹ thuật giữ nguyên tiếng Anh.</div>
+</div>
+
+
+<h1>Execution context</h1>
+
+<p style="margin-top:18px">Nest cung cấp một số lớp tiện ích giúp dễ dàng viết các ứng dụng hoạt động trên nhiều application context khác nhau (ví dụ: các application context dựa trên Nest HTTP server, <a href="https://docs.nestjs.com/microservices/basics" target="_blank">microservices</a> và <a href="https://docs.nestjs.com/websockets/gateways" target="_blank">WebSockets</a>). Các tiện ích này cung cấp thông tin về execution context hiện tại, có thể được sử dụng để xây dựng các <a href="https://docs.nestjs.com/guards" target="_blank">guards</a>, <a href="https://docs.nestjs.com/exception-filters" target="_blank">filters</a> và <a href="https://docs.nestjs.com/interceptors" target="_blank">interceptors</a> generic có thể hoạt động trên một tập hợp rộng các controllers, methods và execution contexts.</p>
+
+<p>Chúng ta sẽ tìm hiểu hai lớp như vậy trong chương này: <code>ArgumentsHost</code> và <code>ExecutionContext</code>.</p>
+
+<h3 id="argumentshost-class">ArgumentsHost class <a class="anchor" href="#argumentshost-class">#</a></h3>
+
+<p>Lớp <code>ArgumentsHost</code> cung cấp các phương thức để truy xuất các arguments được truyền vào một handler. Nó cho phép chọn application context phù hợp (ví dụ: HTTP, RPC (microservice), hoặc WebSockets) để truy xuất các arguments từ đó. Framework cung cấp một instance của <code>ArgumentsHost</code>, thường được tham chiếu dưới dạng tham số <code>host</code>, ở những nơi bạn có thể muốn truy cập nó. Ví dụ, phương thức <code>catch()</code> của một <a href="https://docs.nestjs.com/exception-filters#arguments-host" target="_blank">exception filter</a> được gọi với instance <code>ArgumentsHost</code>.</p>
+
+<p><code>ArgumentsHost</code> đơn giản đóng vai trò như một lớp trừu tượng hóa (abstraction) trên các arguments của handler. Ví dụ, đối với các ứng dụng HTTP server (khi sử dụng <code>@nestjs/platform-express</code>), đối tượng <code>host</code> đóng gói mảng <code>[request, response, next]</code> của Express, trong đó <code>request</code> là đối tượng request, <code>response</code> là đối tượng response, và <code>next</code> là hàm điều khiển chu kỳ request-response của ứng dụng. Mặt khác, đối với các ứng dụng <a href="https://docs.nestjs.com/graphql/quick-start" target="_blank">GraphQL</a>, đối tượng <code>host</code> chứa mảng <code>[root, args, context, info]</code>.</p>
+
+<h3 id="current-application-context">Current application context <a class="anchor" href="#current-application-context">#</a></h3>
+
+<p>Khi xây dựng các guards, filters và interceptors generic nhằm chạy trên nhiều application context, chúng ta cần một cách để xác định loại ứng dụng mà method của chúng ta đang chạy trong đó. Hãy thực hiện điều này với phương thức <code>getType()</code> của <code>ArgumentsHost</code>:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="kw">if</span> <span class="pn">(</span>host<span class="pn">.</span><span class="fn">getType</span><span class="pn">()</span> <span class="pn">===</span> <span class="str">'http'</span><span class="pn">)</span> <span class="pn">{</span>
+  <span class="cm">// do something that is only important in the context of regular HTTP requests (REST)</span>
+<span class="pn">}</span> <span class="kw">else if</span> <span class="pn">(</span>host<span class="pn">.</span><span class="fn">getType</span><span class="pn">()</span> <span class="pn">===</span> <span class="str">'rpc'</span><span class="pn">)</span> <span class="pn">{</span>
+  <span class="cm">// do something that is only important in the context of Microservice requests</span>
+<span class="pn">}</span> <span class="kw">else if</span> <span class="pn">(</span>host<span class="pn">.</span><span class="fn">getType</span><span class="pn">&lt;</span><span class="typ">GqlContextType</span><span class="pn">&gt;()</span> <span class="pn">===</span> <span class="str">'graphql'</span><span class="pn">)</span> <span class="pn">{</span>
+  <span class="cm">// do something that is only important in the context of GraphQL requests</span>
+<span class="pn">}</span></pre></div></div></div>
+
+<div class="hint"><span class="lbl">💡 Hint</span><p><code>GqlContextType</code> được import từ package <code>@nestjs/graphql</code>.</p></div>
+
+<p>Với application type có sẵn, bạn có thể viết các component tổng quát hơn, như được trình bày bên dưới.</p>
+
+<h3 id="host-handler-arguments">Host handler arguments <a class="anchor" href="#host-handler-arguments">#</a></h3>
+
+<p>Để truy xuất mảng arguments được truyền vào handler, một cách tiếp cận là sử dụng phương thức <code>getArgs()</code> của đối tượng host.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="kw">const</span> <span class="pn">[</span>req<span class="pn">,</span> res<span class="pn">,</span> next<span class="pn">]</span> <span class="pn">=</span> host<span class="pn">.</span><span class="fn">getArgs</span><span class="pn">();</span></pre></div></div></div>
+
+<p>Bạn có thể lấy một argument cụ thể theo index bằng phương thức <code>getArgByIndex()</code>:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="kw">const</span> request <span class="pn">=</span> host<span class="pn">.</span><span class="fn">getArgByIndex</span><span class="pn">(</span><span class="num">0</span><span class="pn">);</span>
+<span class="kw">const</span> response <span class="pn">=</span> host<span class="pn">.</span><span class="fn">getArgByIndex</span><span class="pn">(</span><span class="num">1</span><span class="pn">);</span></pre></div></div></div>
+
+<p>Trong các ví dụ này, chúng ta đã truy xuất các đối tượng request và response theo index, điều này thường không được khuyến khích vì nó gắn ứng dụng với một application context cụ thể. Thay vào đó, bạn có thể làm cho code của mình mạnh mẽ hơn và tái sử dụng được bằng cách sử dụng một trong các phương thức tiện ích của đối tượng <code>host</code> để chuyển sang application context phù hợp cho ứng dụng của bạn. Các phương thức chuyển đổi context được trình bày bên dưới.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="cm">/**
+ * Switch context to RPC.
+ */</span>
+<span class="fn">switchToRpc</span><span class="pn">():</span> <span class="typ">RpcArgumentsHost</span><span class="pn">;</span>
+<span class="cm">/**
+ * Switch context to HTTP.
+ */</span>
+<span class="fn">switchToHttp</span><span class="pn">():</span> <span class="typ">HttpArgumentsHost</span><span class="pn">;</span>
+<span class="cm">/**
+ * Switch context to WebSockets.
+ */</span>
+<span class="fn">switchToWs</span><span class="pn">():</span> <span class="typ">WsArgumentsHost</span><span class="pn">;</span></pre></div></div></div>
+
+<p>Hãy viết lại ví dụ trước bằng phương thức <code>switchToHttp()</code>. Phương thức tiện ích <code>host.switchToHttp()</code> trả về một đối tượng <code>HttpArgumentsHost</code> phù hợp với HTTP application context. Đối tượng <code>HttpArgumentsHost</code> có hai phương thức hữu ích mà chúng ta có thể sử dụng để trích xuất các đối tượng mong muốn. Trong trường hợp này, chúng ta cũng sử dụng type assertion của Express để trả về các đối tượng Express request và response nguyên bản (native):</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="kw">const</span> ctx <span class="pn">=</span> host<span class="pn">.</span><span class="fn">switchToHttp</span><span class="pn">();</span>
+<span class="kw">const</span> request <span class="pn">=</span> ctx<span class="pn">.</span><span class="fn">getRequest</span><span class="pn">&lt;</span><span class="typ">Request</span><span class="pn">&gt;();</span>
+<span class="kw">const</span> response <span class="pn">=</span> ctx<span class="pn">.</span><span class="fn">getResponse</span><span class="pn">&lt;</span><span class="typ">Response</span><span class="pn">&gt;();</span></pre></div></div></div>
+
+<p>Tương tự, <code>WsArgumentsHost</code> và <code>RpcArgumentsHost</code> có các phương thức để trả về các đối tượng phù hợp trong mỗi context microservices và WebSockets. Dưới đây là type declarations cho <code>WsArgumentsHost</code>:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="kw">export interface</span> <span class="typ">WsArgumentsHost</span> <span class="pn">{</span>
+  <span class="fn">getData</span><span class="pn">&lt;</span><span class="typ">T</span><span class="pn">&gt;():</span> <span class="typ">T</span><span class="pn">;</span>
+  <span class="fn">getClient</span><span class="pn">&lt;</span><span class="typ">T</span><span class="pn">&gt;():</span> <span class="typ">T</span><span class="pn">;</span>
+<span class="pn">}</span></pre></div></div></div>
+
+<p>Dưới đây là type declarations cho <code>RpcArgumentsHost</code>:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="kw">export interface</span> <span class="typ">RpcArgumentsHost</span> <span class="pn">{</span>
+  <span class="fn">getData</span><span class="pn">&lt;</span><span class="typ">T</span><span class="pn">&gt;():</span> <span class="typ">T</span><span class="pn">;</span>
+  <span class="fn">getContext</span><span class="pn">&lt;</span><span class="typ">T</span><span class="pn">&gt;():</span> <span class="typ">T</span><span class="pn">;</span>
+<span class="pn">}</span></pre></div></div></div>
+
+<h3 id="executioncontext-class">ExecutionContext class <a class="anchor" href="#executioncontext-class">#</a></h3>
+
+<p><code>ExecutionContext</code> kế thừa (extends) <code>ArgumentsHost</code>, cung cấp thêm các chi tiết về quá trình thực thi hiện tại. Giống như <code>ArgumentsHost</code>, Nest cung cấp một instance của <code>ExecutionContext</code> ở những nơi bạn có thể cần, chẳng hạn như trong phương thức <code>canActivate()</code> của một <a href="https://docs.nestjs.com/guards#execution-context" target="_blank">guard</a> và phương thức <code>intercept()</code> của một <a href="https://docs.nestjs.com/interceptors#execution-context" target="_blank">interceptor</a>. Nó cung cấp các phương thức sau:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="kw">export interface</span> <span class="typ">ExecutionContext</span> <span class="kw">extends</span> <span class="typ">ArgumentsHost</span> <span class="pn">{</span>
+  <span class="cm">/**
+   * Returns the type of the controller class which the current handler belongs to.
+   */</span>
+  <span class="fn">getClass</span><span class="pn">&lt;</span><span class="typ">T</span> <span class="pn">=</span> <span class="typ">any</span><span class="pn">&gt;():</span> <span class="typ">Type</span><span class="pn">&lt;</span><span class="typ">T</span><span class="pn">&gt;;</span>
+  <span class="cm">/**
+   * Returns a reference to the handler (method) that will be invoked next in the
+   * request pipeline.
+   */</span>
+  <span class="fn">getHandler</span><span class="pn">():</span> <span class="typ">Function</span><span class="pn">;</span>
+<span class="pn">}</span></pre></div></div></div>
+
+<p>Phương thức <code>getHandler()</code> trả về một tham chiếu đến handler sắp được gọi. Phương thức <code>getClass()</code> trả về type của lớp <code>Controller</code> mà handler cụ thể này thuộc về. Ví dụ, trong một HTTP context, nếu request hiện tại đang được xử lý là một <code>POST</code> request, gắn với phương thức <code>create()</code> trên <code>CatsController</code>, thì <code>getHandler()</code> trả về tham chiếu đến phương thức <code>create()</code> và <code>getClass()</code> trả về <strong>type</strong> <code>CatsController</code> (không phải instance):</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="kw">const</span> methodKey <span class="pn">=</span> ctx<span class="pn">.</span><span class="fn">getHandler</span><span class="pn">().</span>name<span class="pn">;</span> <span class="cm">// "create"</span>
+<span class="kw">const</span> className <span class="pn">=</span> ctx<span class="pn">.</span><span class="fn">getClass</span><span class="pn">().</span>name<span class="pn">;</span> <span class="cm">// "CatsController"</span></pre></div></div></div>
+
+<p>Khả năng truy cập tham chiếu đến cả class hiện tại và handler method mang lại sự linh hoạt rất lớn. Quan trọng nhất, nó cho chúng ta cơ hội truy cập metadata được thiết lập thông qua decorator <code>Reflector#createDecorator</code> hoặc decorator built-in <code>@SetMetadata()</code> từ bên trong guards hoặc interceptors. Chúng ta sẽ tìm hiểu use case này bên dưới.</p>
+
+<h3 id="reflection-and-metadata">Reflection and metadata <a class="anchor" href="#reflection-and-metadata">#</a></h3>
+
+<p>Nest cung cấp khả năng đính kèm <strong>custom metadata</strong> vào route handlers thông qua decorator <code>Reflector#createDecorator</code>, và decorator built-in <code>@SetMetadata()</code>. Trong phần này, hãy so sánh hai cách tiếp cận và xem cách truy cập metadata từ bên trong guard hoặc interceptor.</p>
+
+<p>Để tạo strongly-typed decorators bằng <code>Reflector#createDecorator</code>, chúng ta cần chỉ định type argument. Ví dụ, hãy tạo một decorator <code>Roles</code> nhận một mảng strings làm argument.</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">roles.decorator.ts</div><div class="cb-right"><div class="tabs"><div class="tab on" onclick="sw(this,'c0','ts')">TS</div><div class="tab" onclick="sw(this,'c0','js')">JS</div></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div id="c0"><div class="pane on" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">{</span> Reflector <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/core'</span><span class="pn">;</span>
+
+<span class="kw">export const</span> Roles <span class="pn">=</span> Reflector<span class="pn">.</span><span class="fn">createDecorator</span><span class="pn">&lt;</span><span class="typ">string</span><span class="pn">[]&gt;();</span></pre></div><div class="pane" data-lang="js"><pre><span class="kw">import</span> <span class="pn">{</span> Reflector <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/core'</span><span class="pn">;</span>
+
+<span class="kw">export const</span> Roles <span class="pn">=</span> Reflector<span class="pn">.</span><span class="fn">createDecorator</span><span class="pn">();</span></pre></div></div></div>
+
+<p>Decorator <code>Roles</code> ở đây là một function nhận một argument duy nhất kiểu <code>string[]</code>.</p>
+
+<p>Bây giờ, để sử dụng decorator này, chúng ta chỉ cần gán nó vào handler:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">cats.controller.ts</div><div class="cb-right"><div class="tabs"><div class="tab on" onclick="sw(this,'c1','ts')">TS</div><div class="tab" onclick="sw(this,'c1','js')">JS</div></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div id="c1"><div class="pane on" data-lang="ts"><pre><span class="dec">@Post</span><span class="pn">()</span>
+<span class="dec">@Roles</span><span class="pn">([</span><span class="str">'admin'</span><span class="pn">])</span>
+<span class="kw">async</span> <span class="fn">create</span><span class="pn">(</span><span class="dec">@Body</span><span class="pn">()</span> createCatDto<span class="pn">:</span> <span class="typ">CreateCatDto</span><span class="pn">) {</span>
+  <span class="kw">this</span><span class="pn">.</span>catsService<span class="pn">.</span><span class="fn">create</span><span class="pn">(</span>createCatDto<span class="pn">);</span>
+<span class="pn">}</span></pre></div><div class="pane" data-lang="js"><pre><span class="dec">@Post</span><span class="pn">()</span>
+<span class="dec">@Roles</span><span class="pn">([</span><span class="str">'admin'</span><span class="pn">])</span>
+<span class="kw">async</span> <span class="fn">create</span><span class="pn">(</span><span class="dec">@Body</span><span class="pn">()</span> createCatDto<span class="pn">) {</span>
+  <span class="kw">this</span><span class="pn">.</span>catsService<span class="pn">.</span><span class="fn">create</span><span class="pn">(</span>createCatDto<span class="pn">);</span>
+<span class="pn">}</span></pre></div></div></div>
+
+<p>Ở đây chúng ta đã gán metadata decorator <code>Roles</code> vào phương thức <code>create()</code>, chỉ ra rằng chỉ những user có role <code>admin</code> mới được phép truy cập route này.</p>
+
+<p>Để truy cập role(s) của route (custom metadata), chúng ta sẽ sử dụng lại lớp helper <code>Reflector</code>. <code>Reflector</code> có thể được inject vào class theo cách thông thường:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">roles.guard.ts</div><div class="cb-right"><div class="tabs"><div class="tab on" onclick="sw(this,'c2','ts')">TS</div><div class="tab" onclick="sw(this,'c2','js')">JS</div></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div id="c2"><div class="pane on" data-lang="ts"><pre><span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">RolesGuard</span> <span class="pn">{</span>
+  <span class="fn">constructor</span><span class="pn">(</span><span class="kw">private</span> reflector<span class="pn">:</span> <span class="typ">Reflector</span><span class="pn">) {}</span>
+<span class="pn">}</span></pre></div><div class="pane" data-lang="js"><pre><span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">RolesGuard</span> <span class="pn">{</span>
+  <span class="fn">constructor</span><span class="pn">(</span><span class="kw">private</span> reflector<span class="pn">) {}</span>
+<span class="pn">}</span></pre></div></div></div>
+
+<div class="hint"><span class="lbl">💡 Hint</span><p>Lớp <code>Reflector</code> được import từ package <code>@nestjs/core</code>.</p></div>
+
+<p>Bây giờ, để đọc metadata của handler, sử dụng phương thức <code>get()</code>:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="kw">const</span> roles <span class="pn">=</span> <span class="kw">this</span><span class="pn">.</span>reflector<span class="pn">.</span><span class="fn">get</span><span class="pn">(</span>Roles<span class="pn">,</span> context<span class="pn">.</span><span class="fn">getHandler</span><span class="pn">());</span></pre></div></div></div>
+
+<p>Phương thức <code>Reflector#get</code> cho phép chúng ta dễ dàng truy cập metadata bằng cách truyền vào hai arguments: một <strong>decorator reference</strong> và một <strong>context</strong> (target của decorator) để truy xuất metadata. Trong ví dụ này, <strong>decorator reference</strong> được chỉ định là <code>Roles</code> (tham khảo lại file <code>roles.decorator.ts</code> ở trên). Context được cung cấp bởi lời gọi <code>context.getHandler()</code>, dẫn đến việc trích xuất metadata cho route handler đang được xử lý hiện tại. Nhớ rằng, <code>getHandler()</code> cho chúng ta một <strong>tham chiếu</strong> đến hàm route handler.</p>
+
+<p>Ngoài ra, chúng ta có thể tổ chức controller của mình bằng cách áp dụng metadata ở cấp controller, áp dụng cho tất cả routes trong controller class:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">cats.controller.ts</div><div class="cb-right"><div class="tabs"><div class="tab on" onclick="sw(this,'c3','ts')">TS</div><div class="tab" onclick="sw(this,'c3','js')">JS</div></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div id="c3"><div class="pane on" data-lang="ts"><pre><span class="dec">@Roles</span><span class="pn">([</span><span class="str">'admin'</span><span class="pn">])</span>
+<span class="dec">@Controller</span><span class="pn">(</span><span class="str">'cats'</span><span class="pn">)</span>
+<span class="kw">export class</span> <span class="cl">CatsController</span> <span class="pn">{}</span></pre></div><div class="pane" data-lang="js"><pre><span class="dec">@Roles</span><span class="pn">([</span><span class="str">'admin'</span><span class="pn">])</span>
+<span class="dec">@Controller</span><span class="pn">(</span><span class="str">'cats'</span><span class="pn">)</span>
+<span class="kw">export class</span> <span class="cl">CatsController</span> <span class="pn">{}</span></pre></div></div></div>
+
+<p>Trong trường hợp này, để trích xuất metadata ở cấp controller, chúng ta truyền <code>context.getClass()</code> làm argument thứ hai (để cung cấp controller class làm context cho việc trích xuất metadata) thay vì <code>context.getHandler()</code>:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">roles.guard.ts</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="kw">const</span> roles <span class="pn">=</span> <span class="kw">this</span><span class="pn">.</span>reflector<span class="pn">.</span><span class="fn">get</span><span class="pn">(</span>Roles<span class="pn">,</span> context<span class="pn">.</span><span class="fn">getClass</span><span class="pn">());</span></pre></div></div></div>
+
+<p>Với khả năng cung cấp metadata ở nhiều cấp, bạn có thể cần trích xuất và gộp metadata từ nhiều context. Lớp <code>Reflector</code> cung cấp hai phương thức tiện ích dùng để hỗ trợ điều này. Các phương thức này trích xuất metadata <strong>cùng lúc</strong> từ cả hai target (controller và method), và kết hợp chúng theo các cách khác nhau.</p>
+
+<p>Xem xét tình huống sau, nơi bạn đã cung cấp metadata <code>Roles</code> ở cả hai cấp.</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">cats.controller.ts</div><div class="cb-right"><div class="tabs"><div class="tab on" onclick="sw(this,'c4','ts')">TS</div><div class="tab" onclick="sw(this,'c4','js')">JS</div></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div id="c4"><div class="pane on" data-lang="ts"><pre><span class="dec">@Roles</span><span class="pn">([</span><span class="str">'user'</span><span class="pn">])</span>
+<span class="dec">@Controller</span><span class="pn">(</span><span class="str">'cats'</span><span class="pn">)</span>
+<span class="kw">export class</span> <span class="cl">CatsController</span> <span class="pn">{</span>
+  <span class="dec">@Post</span><span class="pn">()</span>
+  <span class="dec">@Roles</span><span class="pn">([</span><span class="str">'admin'</span><span class="pn">])</span>
+  <span class="kw">async</span> <span class="fn">create</span><span class="pn">(</span><span class="dec">@Body</span><span class="pn">()</span> createCatDto<span class="pn">:</span> <span class="typ">CreateCatDto</span><span class="pn">) {</span>
+    <span class="kw">this</span><span class="pn">.</span>catsService<span class="pn">.</span><span class="fn">create</span><span class="pn">(</span>createCatDto<span class="pn">);</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div><div class="pane" data-lang="js"><pre><span class="dec">@Roles</span><span class="pn">([</span><span class="str">'user'</span><span class="pn">])</span>
+<span class="dec">@Controller</span><span class="pn">(</span><span class="str">'cats'</span><span class="pn">)</span>
+<span class="kw">export class</span> <span class="cl">CatsController</span> <span class="pn">{</span>
+  <span class="dec">@Post</span><span class="pn">()</span>
+  <span class="dec">@Roles</span><span class="pn">([</span><span class="str">'admin'</span><span class="pn">])</span>
+  <span class="kw">async</span> <span class="fn">create</span><span class="pn">(</span><span class="dec">@Body</span><span class="pn">()</span> createCatDto<span class="pn">) {</span>
+    <span class="kw">this</span><span class="pn">.</span>catsService<span class="pn">.</span><span class="fn">create</span><span class="pn">(</span>createCatDto<span class="pn">);</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div></div></div>
+
+<p>Nếu ý định của bạn là chỉ định <code>'user'</code> làm role mặc định, và ghi đè một cách có chọn lọc cho một số method nhất định, bạn có thể sẽ sử dụng phương thức <code>getAllAndOverride()</code>.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="kw">const</span> roles <span class="pn">=</span> <span class="kw">this</span><span class="pn">.</span>reflector<span class="pn">.</span><span class="fn">getAllAndOverride</span><span class="pn">(</span>Roles<span class="pn">, [</span>context<span class="pn">.</span><span class="fn">getHandler</span><span class="pn">(),</span> context<span class="pn">.</span><span class="fn">getClass</span><span class="pn">()]);</span></pre></div></div></div>
+
+<p>Một guard với code này, chạy trong context của phương thức <code>create()</code>, với metadata ở trên, sẽ cho kết quả <code>roles</code> chứa <code>['admin']</code>.</p>
+
+<p>Để lấy metadata cho cả hai và gộp lại (phương thức này gộp cả arrays và objects), sử dụng phương thức <code>getAllAndMerge()</code>:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="kw">const</span> roles <span class="pn">=</span> <span class="kw">this</span><span class="pn">.</span>reflector<span class="pn">.</span><span class="fn">getAllAndMerge</span><span class="pn">(</span>Roles<span class="pn">, [</span>context<span class="pn">.</span><span class="fn">getHandler</span><span class="pn">(),</span> context<span class="pn">.</span><span class="fn">getClass</span><span class="pn">()]);</span></pre></div></div></div>
+
+<p>Điều này sẽ cho kết quả <code>roles</code> chứa <code>['admin', 'user']</code>.</p>
+
+<p>Đối với cả hai phương thức gộp này, bạn truyền decorator reference làm argument đầu tiên, và một mảng các context target của metadata (tức là các lời gọi đến phương thức <code>getHandler()</code> và/hoặc <code>getClass()</code>) làm argument thứ hai.</p>
+
+<h3 id="low-level-approach">Low-level approach <a class="anchor" href="#low-level-approach">#</a></h3>
+
+<p>Như đã đề cập, thay vì sử dụng <code>Reflector#createDecorator</code>, bạn cũng có thể sử dụng decorator built-in <code>@SetMetadata()</code> để gán metadata vào handler.</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">cats.controller.ts</div><div class="cb-right"><div class="tabs"><div class="tab on" onclick="sw(this,'c5','ts')">TS</div><div class="tab" onclick="sw(this,'c5','js')">JS</div></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div id="c5"><div class="pane on" data-lang="ts"><pre><span class="dec">@Post</span><span class="pn">()</span>
+<span class="dec">@SetMetadata</span><span class="pn">(</span><span class="str">'roles'</span><span class="pn">,</span> <span class="pn">[</span><span class="str">'admin'</span><span class="pn">])</span>
+<span class="kw">async</span> <span class="fn">create</span><span class="pn">(</span><span class="dec">@Body</span><span class="pn">()</span> createCatDto<span class="pn">:</span> <span class="typ">CreateCatDto</span><span class="pn">) {</span>
+  <span class="kw">this</span><span class="pn">.</span>catsService<span class="pn">.</span><span class="fn">create</span><span class="pn">(</span>createCatDto<span class="pn">);</span>
+<span class="pn">}</span></pre></div><div class="pane" data-lang="js"><pre><span class="dec">@Post</span><span class="pn">()</span>
+<span class="dec">@SetMetadata</span><span class="pn">(</span><span class="str">'roles'</span><span class="pn">,</span> <span class="pn">[</span><span class="str">'admin'</span><span class="pn">])</span>
+<span class="kw">async</span> <span class="fn">create</span><span class="pn">(</span><span class="dec">@Body</span><span class="pn">()</span> createCatDto<span class="pn">) {</span>
+  <span class="kw">this</span><span class="pn">.</span>catsService<span class="pn">.</span><span class="fn">create</span><span class="pn">(</span>createCatDto<span class="pn">);</span>
+<span class="pn">}</span></pre></div></div></div>
+
+<div class="hint"><span class="lbl">💡 Hint</span><p>Decorator <code>@SetMetadata()</code> được import từ package <code>@nestjs/common</code>.</p></div>
+
+<p>Với cách xây dựng trên, chúng ta đã gán metadata <code>roles</code> (<code>roles</code> là key của metadata, trong khi <code>['admin']</code> là giá trị tương ứng) vào phương thức <code>create()</code>. Mặc dù cách này hoạt động, nhưng sử dụng trực tiếp <code>@SetMetadata()</code> trong routes không phải là best practice. Thay vào đó, bạn có thể tạo decorators riêng của mình, như trình bày bên dưới:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">roles.decorator.ts</div><div class="cb-right"><div class="tabs"><div class="tab on" onclick="sw(this,'c6','ts')">TS</div><div class="tab" onclick="sw(this,'c6','js')">JS</div></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div id="c6"><div class="pane on" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">{</span> SetMetadata <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+
+<span class="kw">export const</span> Roles <span class="pn">=</span> <span class="pn">(...</span>roles<span class="pn">:</span> <span class="typ">string</span><span class="pn">[])</span> <span class="pn">=&gt;</span> <span class="fn">SetMetadata</span><span class="pn">(</span><span class="str">'roles'</span><span class="pn">,</span> roles<span class="pn">);</span></pre></div><div class="pane" data-lang="js"><pre><span class="kw">import</span> <span class="pn">{</span> SetMetadata <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+
+<span class="kw">export const</span> Roles <span class="pn">=</span> <span class="pn">(...</span>roles<span class="pn">)</span> <span class="pn">=&gt;</span> <span class="fn">SetMetadata</span><span class="pn">(</span><span class="str">'roles'</span><span class="pn">,</span> roles<span class="pn">);</span></pre></div></div></div>
+
+<p>Cách tiếp cận này gọn hơn và dễ đọc hơn nhiều, đồng thời strongly-typed. Bây giờ chúng ta đã có custom decorator <code>@Roles()</code>, có thể sử dụng nó để trang trí phương thức <code>create()</code>:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">cats.controller.ts</div><div class="cb-right"><div class="tabs"><div class="tab on" onclick="sw(this,'c7','ts')">TS</div><div class="tab" onclick="sw(this,'c7','js')">JS</div></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div id="c7"><div class="pane on" data-lang="ts"><pre><span class="dec">@Post</span><span class="pn">()</span>
+<span class="dec">@Roles</span><span class="pn">(</span><span class="str">'admin'</span><span class="pn">)</span>
+<span class="kw">async</span> <span class="fn">create</span><span class="pn">(</span><span class="dec">@Body</span><span class="pn">()</span> createCatDto<span class="pn">:</span> <span class="typ">CreateCatDto</span><span class="pn">) {</span>
+  <span class="kw">this</span><span class="pn">.</span>catsService<span class="pn">.</span><span class="fn">create</span><span class="pn">(</span>createCatDto<span class="pn">);</span>
+<span class="pn">}</span></pre></div><div class="pane" data-lang="js"><pre><span class="dec">@Post</span><span class="pn">()</span>
+<span class="dec">@Roles</span><span class="pn">(</span><span class="str">'admin'</span><span class="pn">)</span>
+<span class="kw">async</span> <span class="fn">create</span><span class="pn">(</span><span class="dec">@Body</span><span class="pn">()</span> createCatDto<span class="pn">) {</span>
+  <span class="kw">this</span><span class="pn">.</span>catsService<span class="pn">.</span><span class="fn">create</span><span class="pn">(</span>createCatDto<span class="pn">);</span>
+<span class="pn">}</span></pre></div></div></div>
+
+<p>Để truy cập role(s) của route (custom metadata), chúng ta sẽ sử dụng lại lớp helper <code>Reflector</code>:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">roles.guard.ts</div><div class="cb-right"><div class="tabs"><div class="tab on" onclick="sw(this,'c8','ts')">TS</div><div class="tab" onclick="sw(this,'c8','js')">JS</div></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div id="c8"><div class="pane on" data-lang="ts"><pre><span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">RolesGuard</span> <span class="pn">{</span>
+  <span class="fn">constructor</span><span class="pn">(</span><span class="kw">private</span> reflector<span class="pn">:</span> <span class="typ">Reflector</span><span class="pn">) {}</span>
+<span class="pn">}</span></pre></div><div class="pane" data-lang="js"><pre><span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">RolesGuard</span> <span class="pn">{</span>
+  <span class="fn">constructor</span><span class="pn">(</span><span class="kw">private</span> reflector<span class="pn">) {}</span>
+<span class="pn">}</span></pre></div></div></div>
+
+
+<div class="hint"><span class="lbl">💡 Hint</span><p>Lớp <code>Reflector</code> được import từ package <code>@nestjs/core</code>.</p></div>
+
+<p>Bây giờ, để đọc metadata của handler, sử dụng phương thức <code>get()</code>:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">roles.guard.ts</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="kw">const</span> roles <span class="pn">=</span> <span class="kw">this</span><span class="pn">.</span>reflector<span class="pn">.</span><span class="fn">get</span><span class="pn">&lt;</span><span class="typ">string</span><span class="pn">[]&gt;(</span><span class="str">'roles'</span><span class="pn">,</span> context<span class="pn">.</span><span class="fn">getHandler</span><span class="pn">());</span></pre></div></div></div>
+
+<p>Phương thức <code>Reflector#get</code> cho phép chúng ta dễ dàng truy cập metadata bằng cách truyền vào metadata <strong>key</strong> và một <strong>context</strong> (target của decorator) để truy xuất metadata. Trong ví dụ này, <strong>key</strong> được chỉ định là <code>'roles'</code> (tham khảo lại file <code>roles.decorator.ts</code> ở trên và lời gọi <code>SetMetadata()</code> đã thực hiện ở đó). Context được cung cấp bởi lời gọi <code>context.getHandler()</code>, dẫn đến việc trích xuất metadata cho route handler đang được xử lý hiện tại. Nhớ rằng, <code>getHandler()</code> cho chúng ta một <strong>tham chiếu</strong> đến hàm route handler.</p>
+
+<p>Ngoài ra, chúng ta có thể tổ chức controller của mình bằng cách áp dụng metadata ở cấp controller, áp dụng cho tất cả routes trong controller class.</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">cats.controller.ts</div><div class="cb-right"><div class="tabs"><div class="tab on" onclick="sw(this,'c9','ts')">TS</div><div class="tab" onclick="sw(this,'c9','js')">JS</div></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div id="c9"><div class="pane on" data-lang="ts"><pre><span class="dec">@Roles</span><span class="pn">(</span><span class="str">'admin'</span><span class="pn">)</span>
+<span class="dec">@Controller</span><span class="pn">(</span><span class="str">'cats'</span><span class="pn">)</span>
+<span class="kw">export class</span> <span class="cl">CatsController</span> <span class="pn">{}</span></pre></div><div class="pane" data-lang="js"><pre><span class="dec">@Roles</span><span class="pn">(</span><span class="str">'admin'</span><span class="pn">)</span>
+<span class="dec">@Controller</span><span class="pn">(</span><span class="str">'cats'</span><span class="pn">)</span>
+<span class="kw">export class</span> <span class="cl">CatsController</span> <span class="pn">{}</span></pre></div></div></div>
+
+<p>Trong trường hợp này, để trích xuất metadata ở cấp controller, chúng ta truyền <code>context.getClass()</code> làm argument thứ hai (để cung cấp controller class làm context cho việc trích xuất metadata) thay vì <code>context.getHandler()</code>:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">roles.guard.ts</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="kw">const</span> roles <span class="pn">=</span> <span class="kw">this</span><span class="pn">.</span>reflector<span class="pn">.</span><span class="fn">get</span><span class="pn">&lt;</span><span class="typ">string</span><span class="pn">[]&gt;(</span><span class="str">'roles'</span><span class="pn">,</span> context<span class="pn">.</span><span class="fn">getClass</span><span class="pn">());</span></pre></div></div></div>
+
+
+
+
+<!-- Page navigation -->
+<div class="page-nav">
+<a class="pnbtn" href="injection-scopes.html">
+<span class="pnlbl">← Trước</span>
+<span class="pntitle">Injection scopes</span>
+</a>
+<a class="pnbtn r" href="lifecycle-events.html">
+<span class="pnlbl">Tiếp →</span>
+<span class="pntitle">Lifecycle events</span>
+</a>
+</div>
+
+</main>
+
+<aside class="toc">
+<div class="toc-title">Nội dung</div>
+<ul>
+<li><a href="#argumentshost-class">ArgumentsHost class</a></li>
+<li><a href="#current-application-context">Current application context</a></li>
+<li><a href="#host-handler-arguments">Host handler arguments</a></li>
+<li><a href="#executioncontext-class">ExecutionContext class</a></li>
+<li><a href="#reflection-and-metadata">Reflection and metadata</a></li>
+<li><a href="#low-level-approach">Low-level approach</a></li>
+</ul>
+</aside>
+
+</div>
+<script>
+  function sw(btn, bid, lang) {
+    var c = document.getElementById(bid);
+    if (!c) return;
+    btn.parentElement.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('on'); });
+    btn.classList.add('on');
+    c.querySelectorAll('.pane').forEach(function(p) {
+      p.classList.remove('on');
+      if (p.dataset.lang === lang) p.classList.add('on');
+    });
+  }
+  function cp(btn) {
+    var wrap = btn.closest('.cb');
+    var pane = wrap.querySelector('.pane.on') || wrap.querySelector('.pane');
+    if (!pane) return;
+    navigator.clipboard.writeText(pane.textContent.trim()).then(function() {
+      var o = btn.textContent;
+      btn.textContent = 'Copied!';
+      btn.style.color = '#4ade80';
+      setTimeout(function() { btn.textContent = o; btn.style.color = ''; }, 1500);
+    });
+  }
+  
+  // Smooth scroll on TOC click
+  document.querySelectorAll('.toc a').forEach(function(link) {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      var target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+
+  // Highlight active section
+  var tocLinks = document.querySelectorAll('.toc a');
+  var heads = document.querySelectorAll('h3[id]');
+  function hi() {
+    var cur = '';
+    heads.forEach(function(h) { 
+      if (scrollY >= h.offsetTop - 120) cur = h.id; 
+    });
+    tocLinks.forEach(function(a) {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + cur);
+    });
+  }
+  window.addEventListener('scroll', hi, { passive: true });
+  hi();
+</script>
+</body>
+</html>

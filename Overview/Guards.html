@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Guards | NestJS - Tài liệu tiếng Việt</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:       #0e0e0e;
+      --surface:  #1a1a1a;
+      --surface2: #222;
+      --border:   #2a2a2a;
+      --border-l: #333;
+      --red:      #ea2845;
+      --red-l:    #ff4d6a;
+      --red-glow: rgba(234,40,69,.15);
+      --text:     #e8e8e8;
+      --muted:    #888;
+      --sec:      #b0b0b0;
+      --code-bg:  #1e1e1e;
+      --code-bd:  #2d2d2d;
+      --hint-bg:  #0d2a1a;
+      --hint-c:   #4ade80;
+      --warn-bg:  #2a1a0d;
+      --warn-c:   #fb923c;
+      --note-bg:  #0d1a2a;
+      --note-c:   #60a0d0;
+      --toc-w:    220px;
+      --font:     'Inter', sans-serif;
+      --mono:     'Source Code Pro', monospace;
+      --r:        6px;
+      --rl:       10px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font); background: var(--bg); color: var(--text); font-size: 15px; line-height: 1.78; }
+
+    .page { max-width: 1060px; margin: 0 auto; padding: 48px 32px 96px; display: flex; gap: 56px; align-items: flex-start; }
+    .content { flex: 1; min-width: 0; }
+
+    /* TOC */
+    .toc { width: var(--toc-w); flex-shrink: 0; position: sticky; top: 32px; align-self: flex-start; max-height: calc(100vh - 48px); overflow-y: auto; }
+    .toc::-webkit-scrollbar { width: 3px; }
+    .toc::-webkit-scrollbar-thumb { background: var(--border-l); border-radius: 2px; }
+    .toc-title { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); padding-bottom: 8px; margin-bottom: 8px; border-bottom: 1px solid var(--border); }
+    .toc ul { list-style: none; }
+    .toc ul li a { display: block; padding: 3.5px 0; font-size: 12.5px; color: var(--muted); text-decoration: none; line-height: 1.5; transition: color .15s; }
+    .toc ul li a:hover, .toc ul li a.active { color: var(--red-l); }
+
+    /* Banner */
+    .vi-banner { display: flex; align-items: center; gap: 10px; padding: 11px 16px; border: 1px solid rgba(234,40,69,.3); border-radius: var(--rl); background: linear-gradient(135deg,rgba(234,40,69,.1),rgba(234,40,69,.04)); font-size: 13px; color: var(--sec); margin-bottom: 32px; }
+    .vi-banner strong { color: var(--red-l); }
+
+    /* Headings */
+    h1 { font-size: 36px; font-weight: 700; letter-spacing: -.5px; line-height: 1.2; margin-bottom: 6px; }
+    h1::after { content:''; display:block; width:44px; height:3px; background:var(--red); border-radius:2px; margin-top:12px; }
+    h3 { font-size: 19px; font-weight: 600; letter-spacing: -.2px; margin: 40px 0 12px; display: flex; align-items: center; gap: 8px; }
+    .anchor { font-size: 14px; color: var(--muted); text-decoration: none; opacity: 0; transition: opacity .2s; }
+    h3:hover .anchor { opacity: 1; }
+    p { color: var(--sec); line-height: 1.82; margin-bottom: 16px; }
+    p:last-child { margin-bottom: 0; }
+    a { color: var(--red-l); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    strong { color: var(--text); font-weight: 600; }
+
+    /* inline code */
+    code { font-family: var(--mono); font-size: 13px; background: var(--code-bg); border: 1px solid var(--code-bd); padding: 1px 6px; border-radius: 4px; color: #f9a8d4; }
+
+    /* Callouts */
+    .hint, .warn, .note {
+      margin: 18px 0; padding: 12px 16px; border-left: 3px solid;
+      border-radius: var(--r); font-size: 13.5px; line-height: 1.72;
+    }
+    .hint { background: var(--hint-bg); border-color: var(--hint-c); color: #a7f3d0; }
+    .warn { background: var(--warn-bg); border-color: var(--warn-c); color: #fed7aa; }
+    .note { background: var(--note-bg); border-color: var(--note-c); color: #bae6fd; }
+    .hint p, .warn p, .note p { margin: 0; color: inherit; }
+    .lbl { display: block; font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 4px; }
+    .hint .lbl { color: var(--hint-c); }
+    .warn .lbl  { color: var(--warn-c); }
+    .note .lbl  { color: var(--note-c); }
+
+    /* Code blocks */
+    .cb { margin: 18px 0; border: 1px solid var(--code-bd); border-radius: var(--rl); overflow: hidden; background: var(--code-bg); }
+    .cb-head { display: flex; align-items: center; justify-content: space-between; padding: 8px 14px; background: #181818; border-bottom: 1px solid var(--code-bd); }
+    .cb-fname { font-family: var(--mono); font-size: 11.5px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+    .cb-fname::before { content:''; display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--red); }
+    .cb-right { display: flex; align-items: center; gap: 6px; }
+    .tabs { display: flex; gap: 3px; }
+    .tab { padding: 4px 11px; font-size: 11px; font-family: var(--mono); font-weight: 500; border: 1px solid transparent; border-radius: 4px; color: var(--muted); cursor: pointer; user-select: none; transition: all .14s; }
+    .tab.on { color: var(--red-l); background: var(--red-glow); border-color: var(--red); }
+    .tab:hover:not(.on) { color: var(--text); background: rgba(255,255,255,.04); }
+    .cpbtn { padding: 3px 9px; font-size: 10.5px; font-family: var(--mono); background: var(--surface); border: 1px solid var(--border-l); color: var(--muted); border-radius: 4px; cursor: pointer; transition: all .14s; }
+    .cpbtn:hover { background: var(--surface2); color: var(--text); }
+    .pane { display: none; }
+    .pane.on { display: block; }
+    pre { padding: 18px 20px; overflow-x: auto; font-family: var(--mono); font-size: 13.5px; line-height: 1.65; color: #abb2bf; }
+    pre::-webkit-scrollbar { height: 5px; }
+    pre::-webkit-scrollbar-thumb { background: var(--border-l); border-radius: 3px; }
+
+    /* syntax */
+    .kw  { color: #c678dd; }
+    .fn  { color: #61afef; }
+    .str { color: #98c379; }
+    .dec { color: #e5c07b; }
+    .typ { color: #e5c07b; }
+    .cm  { color: #5c6370; font-style: italic; }
+    .pn  { color: #abb2bf; }
+    .num { color: #d19a66; }
+    .cl  { color: #e06c75; }
+    .tmpl{ color: #d19a66; }
+
+    /* Guard diagram */
+    .guard-diagram { margin: 24px 0 28px; padding: 22px 20px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--rl); }
+    .gd-flow { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 0; }
+    .gd-box { padding: 10px 16px; border-radius: var(--r); font-size: 12.5px; font-weight: 600; font-family: var(--mono); border: 1px solid; text-align: center; line-height: 1.5; }
+    .gd-box.mw    { background: #1a1a2a; border-color: #3a3a5a; color: #9090d0; }
+    .gd-box.guard { background: rgba(234,40,69,.12); border-color: var(--red); color: var(--red-l); }
+    .gd-box.pipe  { background: #1a2a3a; border-color: #2a4a6a; color: #60a0d0; }
+    .gd-box.hand  { background: #1a2a1a; border-color: #2a5a2a; color: #4ade80; }
+    .gd-arrow { padding: 0 10px; color: var(--muted); font-size: 16px; }
+    .gd-caption { text-align: center; font-size: 11.5px; color: var(--muted); margin-top: 12px; }
+
+    /* Scope badges */
+    .scope-row { display: flex; gap: 10px; flex-wrap: wrap; margin: 16px 0; }
+    .scope-badge { padding: 6px 14px; border-radius: 20px; font-size: 12.5px; font-weight: 600; border: 1px solid; }
+    .scope-badge.method     { background: rgba(96,160,208,.1); border-color: #2a4a6a; color: #60a0d0; }
+    .scope-badge.controller { background: rgba(234,40,69,.1);  border-color: var(--red); color: var(--red-l); }
+    .scope-badge.global     { background: rgba(74,222,128,.1); border-color: #2a5a2a; color: #4ade80; }
+
+    /* Flow true/false result */
+    .result-row { display: flex; gap: 14px; margin: 16px 0; flex-wrap: wrap; }
+    .result-box { flex: 1; min-width: 200px; padding: 14px 18px; border-radius: var(--rl); border: 1px solid; font-size: 13.5px; line-height: 1.7; }
+    .result-box.pass { background: rgba(74,222,128,.07); border-color: #2a5a2a; }
+    .result-box.deny { background: rgba(234,40,69,.07); border-color: #5a2a2a; }
+    .result-box .rb-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 5px; }
+    .result-box.pass .rb-label { color: #4ade80; }
+    .result-box.deny .rb-label { color: var(--red-l); }
+    .result-box p { color: var(--sec); margin: 0; font-size: 13.5px; }
+
+    /* JSON response */
+    .json-block { margin: 14px 0; padding: 16px 20px; background: #161616; border: 1px solid var(--code-bd); border-radius: var(--rl); font-family: var(--mono); font-size: 13.5px; line-height: 1.7; color: #abb2bf; }
+    .json-key { color: #e06c75; }
+    .json-num { color: #d19a66; }
+    .json-str { color: #98c379; }
+
+    /* Page nav */
+    .page-nav { display: flex; justify-content: space-between; margin-top: 52px; gap: 16px; }
+    .pnbtn { display: flex; flex-direction: column; padding: 14px 18px; border: 1px solid var(--border); border-radius: var(--rl); text-decoration: none; transition: all .2s; min-width: 150px; }
+    .pnbtn:hover { border-color: var(--red); background: var(--red-glow); text-decoration: none; }
+    .pnlbl   { font-size: 10.5px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); margin-bottom: 3px; }
+    .pntitle { font-size: 14px; font-weight: 600; color: var(--text); }
+    .pnbtn.r { text-align: right; margin-left: auto; }
+
+    @media (max-width: 860px) { .toc { display: none; } }
+    @media (max-width: 600px) { .page { padding: 24px 16px 64px; } }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ════════════════════ MAIN CONTENT ════════════════════ -->
+  <main class="content">
+
+    <div class="vi-banner">
+      <span style="font-size:17px">🇻🇳</span>
+      <div>Dịch từ <strong><a href="https://docs.nestjs.com/guards" target="_blank">docs.nestjs.com/guards</a></strong>. Thuật ngữ kỹ thuật giữ nguyên tiếng Anh.</div>
+    </div>
+
+    <h1>Guards</h1>
+
+    <p style="margin-top:18px">Guard là một class được annotate bằng decorator <code>@Injectable()</code>, implement interface <code>CanActivate</code>.</p>
+
+    <!-- Diagram vị trí Guard trong request lifecycle -->
+    <div class="guard-diagram">
+      <div class="gd-flow">
+        <div class="gd-box mw">Middleware<br><span style="font-size:10px;opacity:.7">auth, logger…</span></div>
+        <div class="gd-arrow">→</div>
+        <div class="gd-box guard">Guard<br><span style="font-size:10px;opacity:.7">canActivate()</span></div>
+        <div class="gd-arrow">→</div>
+        <div class="gd-box pipe">Interceptor<br><span style="font-size:10px;opacity:.7">+ Pipe</span></div>
+        <div class="gd-arrow">→</div>
+        <div class="gd-box hand">Route Handler<br><span style="font-size:10px;opacity:.7">@Get() @Post()…</span></div>
+      </div>
+      <div class="gd-caption">Guard thực thi SAU tất cả middleware nhưng TRƯỚC bất kỳ interceptor hay pipe nào</div>
+    </div>
+
+    <p>Guard có <strong>một trách nhiệm duy nhất</strong>: xác định xem một request đã cho có được route handler xử lý hay không, dựa trên các điều kiện nhất định (như permission, role, ACL…) có mặt tại runtime. Điều này thường được gọi là <strong>authorization</strong>.</p>
+
+    <p>Authorization (và người anh em <strong>authentication</strong>, thường phối hợp cùng) thường được xử lý bởi <a href="nestjs-middleware-vi.html">middleware</a> trong các ứng dụng Express truyền thống. Middleware là lựa chọn tốt cho authentication vì những thứ như token validation và attach property vào <code>request</code> không gắn chặt với route context cụ thể.</p>
+
+    <p>Nhưng middleware, về bản chất, là "ngu ngốc". Nó không biết handler nào sẽ được thực thi sau khi gọi <code>next()</code>. Ngược lại, <strong>Guard</strong> có quyền truy cập vào instance <code>ExecutionContext</code> và do đó biết chính xác điều gì sẽ được thực thi tiếp theo. Guard được thiết kế giống như exception filter, pipe và interceptor — cho phép bạn xen vào logic xử lý tại đúng điểm trong chu kỳ request/response một cách <strong>declarative</strong>.</p>
+
+    <div class="hint">
+      <span class="lbl">💡 Hint</span>
+      <p>Guard thực thi <strong>sau</strong> tất cả middleware, nhưng <strong>trước</strong> bất kỳ interceptor hay pipe nào.</p>
+    </div>
+
+    <!-- ── AUTHORIZATION GUARD ── -->
+    <h3 id="authorization-guard">Authorization guard <a class="anchor" href="#authorization-guard">#</a></h3>
+
+    <p>Như đã đề cập, <strong>authorization</strong> là use case tuyệt vời cho Guard vì các route cụ thể chỉ khả dụng khi caller (thường là user đã xác thực) có đủ permission. <code>AuthGuard</code> chúng ta sẽ build giả sử rằng user đã được xác thực (và do đó, token được attach vào request header). Nó sẽ trích xuất và validate token, rồi dùng thông tin đó để xác định request có thể tiếp tục hay không.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">auth.guard.ts</div>
+        <div class="cb-right">
+          <div class="tabs">
+            <div class="tab on" onclick="sw(this,'b1','ts')">TS</div>
+            <div class="tab"    onclick="sw(this,'b1','js')">JS</div>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div id="b1">
+        <div class="pane on" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Injectable</span><span class="pn">,</span> <span class="typ">CanActivate</span><span class="pn">,</span> <span class="typ">ExecutionContext</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="typ">Observable</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'rxjs'</span><span class="pn">;</span>
+
+<span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">AuthGuard</span> <span class="kw">implements</span> <span class="typ">CanActivate</span> <span class="pn">{</span>
+  <span class="fn">canActivate</span><span class="pn">(</span>
+    context<span class="pn">:</span> <span class="typ">ExecutionContext</span><span class="pn">,</span>
+  <span class="pn">):</span> <span class="typ">boolean</span> <span class="pn">|</span> <span class="typ">Promise</span><span class="pn">&lt;</span><span class="typ">boolean</span><span class="pn">&gt; |</span> <span class="typ">Observable</span><span class="pn">&lt;</span><span class="typ">boolean</span><span class="pn">&gt;</span> <span class="pn">{</span>
+    <span class="kw">const</span> request <span class="pn">=</span> context<span class="pn">.</span><span class="fn">switchToHttp</span><span class="pn">().</span><span class="fn">getRequest</span><span class="pn">();</span>
+    <span class="kw">return</span> <span class="fn">validateRequest</span><span class="pn">(</span>request<span class="pn">);</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+        <div class="pane" data-lang="js"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Injectable</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+
+<span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">AuthGuard</span> <span class="pn">{</span>
+  <span class="kw">async</span> <span class="fn">canActivate</span><span class="pn">(</span>context<span class="pn">)</span> <span class="pn">{</span>
+    <span class="kw">const</span> request <span class="pn">=</span> context<span class="pn">.</span><span class="fn">switchToHttp</span><span class="pn">().</span><span class="fn">getRequest</span><span class="pn">();</span>
+    <span class="kw">return</span> <span class="fn">validateRequest</span><span class="pn">(</span>request<span class="pn">);</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+      </div>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">💡 Hint</span>
+      <p>Nếu bạn đang tìm ví dụ thực tế về cách implement cơ chế authentication trong ứng dụng, hãy xem <a href="https://docs.nestjs.com/security/authentication" target="_blank">chương này</a>. Tương tự, để có ví dụ authorization phức tạp hơn, hãy xem <a href="https://docs.nestjs.com/security/authorization" target="_blank">trang này</a>.</p>
+    </div>
+
+    <p>Mỗi guard phải implement hàm <code>canActivate()</code>. Hàm này trả về boolean cho biết request hiện tại được cho phép hay không. Nó có thể trả về response đồng bộ hoặc bất đồng bộ (qua <code>Promise</code> hoặc <code>Observable</code>). Nest dùng giá trị trả về để điều khiển hành động tiếp theo:</p>
+
+    <div class="result-row">
+      <div class="result-box pass">
+        <div class="rb-label">✅ Trả về true</div>
+        <p>Request sẽ được xử lý bình thường — route handler được gọi.</p>
+      </div>
+      <div class="result-box deny">
+        <div class="rb-label">❌ Trả về false</div>
+        <p>Nest sẽ từ chối request — framework tự động throw <code>ForbiddenException</code>.</p>
+      </div>
+    </div>
+
+    <!-- ── EXECUTION CONTEXT ── -->
+    <h3 id="execution-context">Execution context <a class="anchor" href="#execution-context">#</a></h3>
+
+    <p>Hàm <code>canActivate()</code> nhận một argument duy nhất là instance <code>ExecutionContext</code>. <code>ExecutionContext</code> kế thừa từ <code>ArgumentsHost</code> — chúng ta đã gặp <code>ArgumentsHost</code> trong chương exception filters.</p>
+
+    <p>Bằng cách extend <code>ArgumentsHost</code>, <code>ExecutionContext</code> còn thêm một số helper method mới cung cấp thêm chi tiết về quá trình thực thi hiện tại. Những chi tiết này hữu ích để build các guard generic có thể hoạt động trên nhiều loại controller, method và execution context. Tìm hiểu thêm về <code>ExecutionContext</code> <a href="https://docs.nestjs.com/fundamentals/execution-context" target="_blank">tại đây</a>.</p>
+
+    <!-- ── ROLE-BASED AUTHENTICATION ── -->
+    <h3 id="role-based-authentication">Role-based authentication <a class="anchor" href="#role-based-authentication">#</a></h3>
+
+    <p>Hãy build một guard chức năng hơn — chỉ cho phép truy cập với user có role cụ thể. Bắt đầu với một guard template cơ bản, hiện tại nó cho phép tất cả request đi qua:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">roles.guard.ts</div>
+        <div class="cb-right">
+          <div class="tabs">
+            <div class="tab on" onclick="sw(this,'b2','ts')">TS</div>
+            <div class="tab"    onclick="sw(this,'b2','js')">JS</div>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div id="b2">
+        <div class="pane on" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Injectable</span><span class="pn">,</span> <span class="typ">CanActivate</span><span class="pn">,</span> <span class="typ">ExecutionContext</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="typ">Observable</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'rxjs'</span><span class="pn">;</span>
+
+<span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">RolesGuard</span> <span class="kw">implements</span> <span class="typ">CanActivate</span> <span class="pn">{</span>
+  <span class="fn">canActivate</span><span class="pn">(</span>
+    context<span class="pn">:</span> <span class="typ">ExecutionContext</span><span class="pn">,</span>
+  <span class="pn">):</span> <span class="typ">boolean</span> <span class="pn">|</span> <span class="typ">Promise</span><span class="pn">&lt;</span><span class="typ">boolean</span><span class="pn">&gt; |</span> <span class="typ">Observable</span><span class="pn">&lt;</span><span class="typ">boolean</span><span class="pn">&gt;</span> <span class="pn">{</span>
+    <span class="kw">return</span> <span class="kw">true</span><span class="pn">;</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+        <div class="pane" data-lang="js"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Injectable</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+
+<span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">RolesGuard</span> <span class="pn">{</span>
+  <span class="fn">canActivate</span><span class="pn">(</span>context<span class="pn">)</span> <span class="pn">{</span>
+    <span class="kw">return</span> <span class="kw">true</span><span class="pn">;</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+      </div>
+    </div>
+
+    <!-- ── BINDING GUARDS ── -->
+    <h3 id="binding-guards">Binding guards <a class="anchor" href="#binding-guards">#</a></h3>
+
+    <p>Giống như pipe và exception filter, guard có thể có scope ở các cấp độ khác nhau:</p>
+
+    <div class="scope-row">
+      <div class="scope-badge method">Method-scoped</div>
+      <div class="scope-badge controller">Controller-scoped</div>
+      <div class="scope-badge global">Global-scoped</div>
+    </div>
+
+    <p>Dưới đây, chúng ta thiết lập controller-scoped guard bằng decorator <code>@UseGuards()</code>. Decorator này có thể nhận một argument duy nhất hoặc danh sách phân cách bởi dấu phẩy.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div style="flex:1"></div>
+        <div class="cb-right">
+          <div class="tabs">
+            <div class="tab on" onclick="sw(this,'b3','ts')">TS</div>
+            <div class="tab"    onclick="sw(this,'b3','js')">JS</div>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div id="b3">
+        <div class="pane on" data-lang="ts"><pre><span class="dec">@Controller</span><span class="pn">(</span><span class="str">'cats'</span><span class="pn">)</span>
+<span class="dec">@UseGuards</span><span class="pn">(</span><span class="cl">RolesGuard</span><span class="pn">)</span>
+<span class="kw">export class</span> <span class="cl">CatsController</span> <span class="pn">{}</span></pre></div>
+        <div class="pane" data-lang="js"><pre><span class="dec">@Controller</span><span class="pn">(</span><span class="str">'cats'</span><span class="pn">)</span>
+<span class="dec">@UseGuards</span><span class="pn">(</span><span class="cl">RolesGuard</span><span class="pn">)</span>
+<span class="kw">export class</span> <span class="cl">CatsController</span> <span class="pn">{}</span></pre></div>
+      </div>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">💡 Hint</span>
+      <p>Decorator <code>@UseGuards()</code> được import từ package <code>@nestjs/common</code>.</p>
+    </div>
+
+    <p>Ở trên, chúng ta truyền class <code>RolesGuard</code> (không phải instance), để framework đảm nhận việc khởi tạo và cho phép dependency injection. Cũng có thể truyền in-place instance:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div style="flex:1"></div>
+        <div class="cb-right">
+          <div class="tabs">
+            <div class="tab on" onclick="sw(this,'b4','ts')">TS</div>
+            <div class="tab"    onclick="sw(this,'b4','js')">JS</div>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div id="b4">
+        <div class="pane on" data-lang="ts"><pre><span class="dec">@Controller</span><span class="pn">(</span><span class="str">'cats'</span><span class="pn">)</span>
+<span class="dec">@UseGuards</span><span class="pn">(</span><span class="kw">new</span> <span class="cl">RolesGuard</span><span class="pn">())</span>
+<span class="kw">export class</span> <span class="cl">CatsController</span> <span class="pn">{}</span></pre></div>
+        <div class="pane" data-lang="js"><pre><span class="dec">@Controller</span><span class="pn">(</span><span class="str">'cats'</span><span class="pn">)</span>
+<span class="dec">@UseGuards</span><span class="pn">(</span><span class="kw">new</span> <span class="cl">RolesGuard</span><span class="pn">())</span>
+<span class="kw">export class</span> <span class="cl">CatsController</span> <span class="pn">{}</span></pre></div>
+      </div>
+    </div>
+
+    <p>Cấu trúc trên gắn guard vào mọi handler được khai báo trong controller này. Để áp dụng guard chỉ cho một method, dùng decorator <code>@UseGuards()</code> ở <strong>cấp method</strong>.</p>
+
+    <p>Để thiết lập global guard, dùng method <code>useGlobalGuards()</code> của Nest application instance:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div style="flex:1"></div>
+        <div class="cb-right">
+          <div class="tabs">
+            <div class="tab on" onclick="sw(this,'b5','ts')">TS</div>
+            <div class="tab"    onclick="sw(this,'b5','js')">JS</div>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div id="b5">
+        <div class="pane on" data-lang="ts"><pre><span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> <span class="cl">NestFactory</span><span class="pn">.</span><span class="fn">create</span><span class="pn">(</span><span class="cl">AppModule</span><span class="pn">);</span>
+app<span class="pn">.</span><span class="fn">useGlobalGuards</span><span class="pn">(</span><span class="kw">new</span> <span class="cl">RolesGuard</span><span class="pn">());</span></pre></div>
+        <div class="pane" data-lang="js"><pre><span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> <span class="cl">NestFactory</span><span class="pn">.</span><span class="fn">create</span><span class="pn">(</span><span class="cl">AppModule</span><span class="pn">);</span>
+app<span class="pn">.</span><span class="fn">useGlobalGuards</span><span class="pn">(</span><span class="kw">new</span> <span class="cl">RolesGuard</span><span class="pn">());</span></pre></div>
+      </div>
+    </div>
+
+    <div class="note">
+      <span class="lbl">📌 Notice</span>
+      <p>Với hybrid app, method <code>useGlobalGuards()</code> mặc định không thiết lập guard cho gateway và microservice. Với microservice app "chuẩn" (non-hybrid), <code>useGlobalGuards()</code> mount guard globally.</p>
+    </div>
+
+    <p>Global guard được đăng ký từ bên ngoài module (với <code>useGlobalGuards()</code>) không thể inject dependency. Để giải quyết, đăng ký guard trực tiếp từ bất kỳ module nào bằng token <code>APP_GUARD</code>:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">app.module.ts</div>
+        <div class="cb-right">
+          <div class="tabs">
+            <div class="tab on" onclick="sw(this,'b6','ts')">TS</div>
+            <div class="tab"    onclick="sw(this,'b6','js')">JS</div>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div id="b6">
+        <div class="pane on" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Module</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">APP_GUARD</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/core'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  providers<span class="pn">:</span> <span class="pn">[</span>
+    <span class="pn">{</span>
+      provide<span class="pn">:</span>  <span class="cl">APP_GUARD</span><span class="pn">,</span>
+      useClass<span class="pn">:</span> <span class="cl">RolesGuard</span><span class="pn">,</span>
+    <span class="pn">},</span>
+  <span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="pn">{}</span></pre></div>
+        <div class="pane" data-lang="js"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Module</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">APP_GUARD</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/core'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  providers<span class="pn">:</span> <span class="pn">[</span>
+    <span class="pn">{</span>
+      provide<span class="pn">:</span>  <span class="cl">APP_GUARD</span><span class="pn">,</span>
+      useClass<span class="pn">:</span> <span class="cl">RolesGuard</span><span class="pn">,</span>
+    <span class="pn">},</span>
+  <span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="pn">{}</span></pre></div>
+      </div>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">💡 Hint</span>
+      <p>Khi dùng cách này, guard thực chất là global bất kể module nào sử dụng cấu trúc này. Nên thực hiện ở module nơi guard (<code>RolesGuard</code>) được định nghĩa. Ngoài ra, <code>useClass</code> không phải cách duy nhất để đăng ký custom provider. Tìm hiểu thêm <a href="https://docs.nestjs.com/fundamentals/custom-providers" target="_blank">tại đây</a>.</p>
+    </div>
+
+    <!-- ── SETTING ROLES PER HANDLER ── -->
+    <h3 id="setting-roles-per-handler">Setting roles per handler <a class="anchor" href="#setting-roles-per-handler">#</a></h3>
+
+    <p><code>RolesGuard</code> đang hoạt động, nhưng chưa đủ thông minh. Chúng ta chưa tận dụng tính năng quan trọng nhất của guard — <a href="https://docs.nestjs.com/fundamentals/execution-context" target="_blank">execution context</a>. Nó chưa biết về role, hoặc role nào được phép với mỗi handler. <code>CatsController</code> có thể có các permission scheme khác nhau cho từng route.</p>
+
+    <p>Đây là lúc <strong>custom metadata</strong> phát huy tác dụng. Nest cung cấp khả năng attach custom <strong>metadata</strong> vào route handler thông qua decorator được tạo bằng <code>Reflector.createDecorator</code> hoặc decorator tích hợp <code>@SetMetadata()</code>.</p>
+
+    <p>Hãy tạo decorator <code>@Roles()</code> bằng method <code>Reflector.createDecorator</code> — <code>Reflector</code> được cung cấp sẵn bởi framework và export từ package <code>@nestjs/core</code>:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">roles.decorator.ts</div>
+        <div class="cb-right">
+          <div class="tabs">
+            <div class="tab on" onclick="sw(this,'b7','ts')">TS</div>
+            <div class="tab"    onclick="sw(this,'b7','js')">JS</div>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div id="b7">
+        <div class="pane on" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Reflector</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/core'</span><span class="pn">;</span>
+
+<span class="kw">export const</span> Roles <span class="pn">=</span> <span class="cl">Reflector</span><span class="pn">.</span><span class="fn">createDecorator</span><span class="pn">&lt;</span><span class="typ">string</span><span class="pn">[]&gt;();</span></pre></div>
+        <div class="pane" data-lang="js"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Reflector</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/core'</span><span class="pn">;</span>
+
+<span class="kw">export const</span> Roles <span class="pn">=</span> <span class="cl">Reflector</span><span class="pn">.</span><span class="fn">createDecorator</span><span class="pn">();</span></pre></div>
+      </div>
+    </div>
+
+    <p>Decorator <code>Roles</code> ở đây là một function nhận một argument duy nhất có type <code>string[]</code>. Để dùng decorator này, chỉ cần annotate handler với nó:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">cats.controller.ts</div>
+        <div class="cb-right">
+          <div class="tabs">
+            <div class="tab on" onclick="sw(this,'b8','ts')">TS</div>
+            <div class="tab"    onclick="sw(this,'b8','js')">JS</div>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div id="b8">
+        <div class="pane on" data-lang="ts"><pre><span class="dec">@Post</span><span class="pn">()</span>
+<span class="dec">@Roles</span><span class="pn">([</span><span class="str">'admin'</span><span class="pn">])</span>
+<span class="kw">async</span> <span class="fn">create</span><span class="pn">(</span><span class="dec">@Body</span><span class="pn">()</span> createCatDto<span class="pn">:</span> <span class="cl">CreateCatDto</span><span class="pn">)</span> <span class="pn">{</span>
+  <span class="kw">this</span><span class="pn">.</span>catsService<span class="pn">.</span><span class="fn">create</span><span class="pn">(</span>createCatDto<span class="pn">);</span>
+<span class="pn">}</span></pre></div>
+        <div class="pane" data-lang="js"><pre><span class="dec">@Post</span><span class="pn">()</span>
+<span class="dec">@Roles</span><span class="pn">([</span><span class="str">'admin'</span><span class="pn">])</span>
+<span class="dec">@Bind</span><span class="pn">(</span><span class="fn">Body</span><span class="pn">())</span>
+<span class="kw">async</span> <span class="fn">create</span><span class="pn">(</span>createCatDto<span class="pn">)</span> <span class="pn">{</span>
+  <span class="kw">this</span><span class="pn">.</span>catsService<span class="pn">.</span><span class="fn">create</span><span class="pn">(</span>createCatDto<span class="pn">);</span>
+<span class="pn">}</span></pre></div>
+      </div>
+    </div>
+
+    <p>Ở đây chúng ta đã attach metadata của decorator <code>Roles</code> vào method <code>create()</code>, chỉ ra rằng chỉ user có role <code>admin</code> mới được phép truy cập route này.</p>
+
+    <p>Ngoài ra, thay vì dùng <code>Reflector.createDecorator</code>, chúng ta có thể dùng decorator tích hợp <code>@SetMetadata()</code>. Tìm hiểu thêm <a href="https://docs.nestjs.com/fundamentals/execution-context#low-level-approach" target="_blank">tại đây</a>.</p>
+
+    <!-- ── PUTTING IT ALL TOGETHER ── -->
+    <h3 id="putting-it-all-together">Putting it all together <a class="anchor" href="#putting-it-all-together">#</a></h3>
+
+    <p>Bây giờ hãy quay lại và kết hợp mọi thứ với <code>RolesGuard</code>. Hiện tại nó trả về <code>true</code> trong mọi trường hợp. Chúng ta muốn làm giá trị trả về có điều kiện dựa trên việc so sánh <strong>role được gán cho user hiện tại</strong> với role thực tế được yêu cầu bởi route đang được xử lý. Để truy cập role(s) của route (custom metadata), dùng helper class <code>Reflector</code>:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">roles.guard.ts</div>
+        <div class="cb-right">
+          <div class="tabs">
+            <div class="tab on" onclick="sw(this,'b9','ts')">TS</div>
+            <div class="tab"    onclick="sw(this,'b9','js')">JS</div>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div id="b9">
+        <div class="pane on" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Injectable</span><span class="pn">,</span> <span class="typ">CanActivate</span><span class="pn">,</span> <span class="typ">ExecutionContext</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">Reflector</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/core'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> Roles <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./roles.decorator'</span><span class="pn">;</span>
+
+<span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">RolesGuard</span> <span class="kw">implements</span> <span class="typ">CanActivate</span> <span class="pn">{</span>
+  <span class="fn">constructor</span><span class="pn">(</span><span class="kw">private</span> reflector<span class="pn">:</span> <span class="cl">Reflector</span><span class="pn">)</span> <span class="pn">{}</span>
+
+  <span class="fn">canActivate</span><span class="pn">(</span>context<span class="pn">:</span> <span class="typ">ExecutionContext</span><span class="pn">):</span> <span class="typ">boolean</span> <span class="pn">{</span>
+    <span class="kw">const</span> roles <span class="pn">=</span> <span class="kw">this</span><span class="pn">.</span>reflector<span class="pn">.</span><span class="fn">get</span><span class="pn">(</span>Roles<span class="pn">,</span> context<span class="pn">.</span><span class="fn">getHandler</span><span class="pn">());</span>
+    <span class="kw">if</span> <span class="pn">(!</span>roles<span class="pn">)</span> <span class="pn">{</span>
+      <span class="kw">return</span> <span class="kw">true</span><span class="pn">;</span> <span class="cm">// không yêu cầu role → cho phép</span>
+    <span class="pn">}</span>
+    <span class="kw">const</span> request <span class="pn">=</span> context<span class="pn">.</span><span class="fn">switchToHttp</span><span class="pn">().</span><span class="fn">getRequest</span><span class="pn">();</span>
+    <span class="kw">const</span> user <span class="pn">=</span> request<span class="pn">.</span>user<span class="pn">;</span>
+    <span class="kw">return</span> <span class="fn">matchRoles</span><span class="pn">(</span>roles<span class="pn">,</span> user<span class="pn">.</span>roles<span class="pn">);</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+        <div class="pane" data-lang="js"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Injectable</span><span class="pn">,</span> <span class="cl">Dependencies</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">Reflector</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/core'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> Roles <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./roles.decorator'</span><span class="pn">;</span>
+
+<span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="dec">@Dependencies</span><span class="pn">(</span><span class="cl">Reflector</span><span class="pn">)</span>
+<span class="kw">export class</span> <span class="cl">RolesGuard</span> <span class="pn">{</span>
+  <span class="fn">constructor</span><span class="pn">(</span>reflector<span class="pn">)</span> <span class="pn">{</span>
+    <span class="kw">this</span><span class="pn">.</span>reflector <span class="pn">=</span> reflector<span class="pn">;</span>
+  <span class="pn">}</span>
+
+  <span class="fn">canActivate</span><span class="pn">(</span>context<span class="pn">)</span> <span class="pn">{</span>
+    <span class="kw">const</span> roles <span class="pn">=</span> <span class="kw">this</span><span class="pn">.</span>reflector<span class="pn">.</span><span class="fn">get</span><span class="pn">(</span>Roles<span class="pn">,</span> context<span class="pn">.</span><span class="fn">getHandler</span><span class="pn">());</span>
+    <span class="kw">if</span> <span class="pn">(!</span>roles<span class="pn">)</span> <span class="pn">{</span>
+      <span class="kw">return</span> <span class="kw">true</span><span class="pn">;</span>
+    <span class="pn">}</span>
+    <span class="kw">const</span> request <span class="pn">=</span> context<span class="pn">.</span><span class="fn">switchToHttp</span><span class="pn">().</span><span class="fn">getRequest</span><span class="pn">();</span>
+    <span class="kw">const</span> user <span class="pn">=</span> request<span class="pn">.</span>user<span class="pn">;</span>
+    <span class="kw">return</span> <span class="fn">matchRoles</span><span class="pn">(</span>roles<span class="pn">,</span> user<span class="pn">.</span>roles<span class="pn">);</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+      </div>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">💡 Hint</span>
+      <p>Trong Node.js, thông thường người ta attach authenticated user vào <code>request</code> object. Do đó trong code mẫu trên, chúng ta giả sử <code>request.user</code> chứa user instance và allowed role. Trong app của bạn, bạn sẽ tạo association đó trong custom <strong>authentication guard</strong> (hoặc middleware). Xem <a href="https://docs.nestjs.com/security/authentication" target="_blank">chương này</a> để biết thêm.</p>
+    </div>
+
+    <div class="warn">
+      <span class="lbl">⚠️ Warning</span>
+      <p>Logic bên trong hàm <code>matchRoles()</code> có thể đơn giản hoặc phức tạp tuỳ ý. Trọng tâm của ví dụ này là minh hoạ cách guard phù hợp vào chu kỳ request/response.</p>
+    </div>
+
+    <p>Tham khảo phần <a href="https://docs.nestjs.com/fundamentals/execution-context#reflection-and-metadata" target="_blank">Reflection and metadata</a> của chương <strong>Execution context</strong> để biết thêm chi tiết về cách dùng <code>Reflector</code> theo context.</p>
+
+    <p>Khi user không có đủ privilege request một endpoint, Nest tự động trả về response sau:</p>
+
+    <div class="json-block">
+      <span class="pn">{</span><br>
+      &nbsp;&nbsp;<span class="json-key">"statusCode"</span><span class="pn">:</span> <span class="json-num">403</span><span class="pn">,</span><br>
+      &nbsp;&nbsp;<span class="json-key">"message"</span><span class="pn">:</span> <span class="json-str">"Forbidden resource"</span><span class="pn">,</span><br>
+      &nbsp;&nbsp;<span class="json-key">"error"</span><span class="pn">:</span> <span class="json-str">"Forbidden"</span><br>
+      <span class="pn">}</span>
+    </div>
+
+    <p>Lưu ý rằng đằng sau hậu trường, khi guard trả về <code>false</code>, framework throw <code>ForbiddenException</code>. Nếu muốn trả về error response khác, bạn nên throw exception cụ thể của mình:</p>
+
+    <div class="cb">
+      <div class="cb-head"><div style="flex:1"></div><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      <div id="b10">
+        <div class="pane on"><pre><span class="kw">throw new</span> <span class="cl">UnauthorizedException</span><span class="pn">();</span></pre></div>
+      </div>
+    </div>
+
+    <p>Mọi exception được throw bởi guard sẽ được xử lý bởi <a href="nestjs-exception-filters-vi.html">exceptions layer</a> (global exceptions filter và bất kỳ exceptions filter nào được áp dụng cho context hiện tại).</p>
+
+    <div class="hint">
+      <span class="lbl">💡 Hint</span>
+      <p>Nếu bạn đang tìm ví dụ thực tế về cách implement authorization, hãy xem <a href="https://docs.nestjs.com/security/authorization" target="_blank">chương này</a>.</p>
+    </div>
+
+    <!-- PAGE NAV -->
+    <div class="page-nav">
+      <a class="pnbtn" href="nestjs-pipes-vi.html">
+        <div class="pnlbl">&larr; Trước</div>
+        <div class="pntitle">Pipes</div>
+      </a>
+      <a class="pnbtn r" href="https://docs.nestjs.com/interceptors" target="_blank">
+        <div class="pnlbl">Tiếp theo &rarr;</div>
+        <div class="pntitle">Interceptors</div>
+      </a>
+    </div>
+
+  </main>
+
+  <!-- ════════════════════ TOC ════════════════════ -->
+  <aside class="toc">
+    <div class="toc-title">Trong trang này</div>
+    <ul>
+      <li><a href="#authorization-guard">Authorization guard</a></li>
+      <li><a href="#execution-context">Execution context</a></li>
+      <li><a href="#role-based-authentication">Role-based authentication</a></li>
+      <li><a href="#binding-guards">Binding guards</a></li>
+      <li><a href="#setting-roles-per-handler">Setting roles per handler</a></li>
+      <li><a href="#putting-it-all-together">Putting it all together</a></li>
+    </ul>
+  </aside>
+
+</div>
+
+<script>
+  function sw(btn, bid, lang) {
+    var c = document.getElementById(bid);
+    if (!c) return;
+    btn.parentElement.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('on'); });
+    btn.classList.add('on');
+    c.querySelectorAll('.pane').forEach(function(p) {
+      p.classList.remove('on');
+      if (p.dataset.lang === lang) p.classList.add('on');
+    });
+  }
+  function cp(btn) {
+    var wrap = btn.closest('.cb');
+    var pane = wrap.querySelector('.pane.on') || wrap.querySelector('.pane');
+    if (!pane) return;
+    navigator.clipboard.writeText(pane.textContent.trim()).then(function() {
+      var o = btn.textContent;
+      btn.textContent = 'Copied!';
+      btn.style.color = '#4ade80';
+      setTimeout(function() { btn.textContent = o; btn.style.color = ''; }, 1500);
+    });
+  }
+  var tocLinks = document.querySelectorAll('.toc a');
+  var heads    = document.querySelectorAll('h3[id]');
+  function hi() {
+    var cur = '';
+    heads.forEach(function(h) { if (scrollY >= h.offsetTop - 110) cur = h.id; });
+    tocLinks.forEach(function(a) {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + cur);
+    });
+  }
+  window.addEventListener('scroll', hi, { passive: true });
+  hi();
+</script>
+</body>
+</html>

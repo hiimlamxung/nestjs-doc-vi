@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Exception filters | NestJS - Tài liệu tiếng Việt</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:       #0e0e0e;
+      --surface:  #1a1a1a;
+      --surface2: #222;
+      --border:   #2a2a2a;
+      --border-l: #333;
+      --red:      #ea2845;
+      --red-l:    #ff4d6a;
+      --red-glow: rgba(234,40,69,.15);
+      --text:     #e8e8e8;
+      --muted:    #888;
+      --sec:      #b0b0b0;
+      --code-bg:  #1e1e1e;
+      --code-bd:  #2d2d2d;
+      --hint-bg:  #0d2a1a;
+      --hint-c:   #4ade80;
+      --warn-bg:  #2a1a0d;
+      --warn-c:   #fb923c;
+      --toc-w:    210px;
+      --font:     'Inter', sans-serif;
+      --mono:     'Source Code Pro', monospace;
+      --r:        6px;
+      --rl:       10px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font); background: var(--bg); color: var(--text); font-size: 15px; line-height: 1.78; }
+
+    .page {
+      max-width: 1060px; margin: 0 auto;
+      padding: 48px 32px 96px;
+      display: flex; gap: 56px; align-items: flex-start;
+    }
+    .content { flex: 1; min-width: 0; }
+
+    /* ── TOC ── */
+    .toc {
+      width: var(--toc-w); flex-shrink: 0;
+      position: sticky; top: 32px; align-self: flex-start;
+      max-height: calc(100vh - 48px); overflow-y: auto;
+    }
+    .toc::-webkit-scrollbar { width: 3px; }
+    .toc::-webkit-scrollbar-thumb { background: var(--border-l); border-radius: 2px; }
+    .toc-title {
+      font-size: 10.5px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .08em; color: var(--muted);
+      padding-bottom: 8px; margin-bottom: 8px; border-bottom: 1px solid var(--border);
+    }
+    .toc ul { list-style: none; }
+    .toc ul li a {
+      display: block; padding: 3.5px 0; font-size: 12.5px;
+      color: var(--muted); text-decoration: none; line-height: 1.5; transition: color .15s;
+    }
+    .toc ul li a:hover, .toc ul li a.active { color: var(--red-l); }
+
+    /* ── BANNER ── */
+    .vi-banner {
+      display: flex; align-items: center; gap: 10px;
+      padding: 11px 16px; border: 1px solid rgba(234,40,69,.3);
+      border-radius: var(--rl);
+      background: linear-gradient(135deg,rgba(234,40,69,.1),rgba(234,40,69,.04));
+      font-size: 13px; color: var(--sec); margin-bottom: 32px;
+    }
+    .vi-banner strong { color: var(--red-l); }
+
+    /* ── TYPOGRAPHY ── */
+    h1 { font-size: 36px; font-weight: 700; letter-spacing: -.5px; line-height: 1.2; margin-bottom: 6px; }
+    h1::after { content:''; display:block; width:44px; height:3px; background:var(--red); border-radius:2px; margin-top:12px; }
+    h3 { font-size: 19px; font-weight: 600; letter-spacing: -.2px; margin: 40px 0 12px; display: flex; align-items: center; gap: 8px; }
+    .anchor { font-size: 14px; color: var(--muted); text-decoration: none; opacity: 0; transition: opacity .2s; }
+    h3:hover .anchor { opacity: 1; }
+    p { color: var(--sec); line-height: 1.82; margin-bottom: 16px; }
+    p:last-child { margin-bottom: 0; }
+    a { color: var(--red-l); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    strong { color: var(--text); font-weight: 600; }
+
+    /* inline code */
+    code {
+      font-family: var(--mono); font-size: 13px;
+      background: var(--code-bg); border: 1px solid var(--code-bd);
+      padding: 1px 6px; border-radius: 4px; color: #f9a8d4;
+    }
+
+    /* ── CALLOUTS ── */
+    .hint, .warn {
+      margin: 18px 0; padding: 12px 16px; border-left: 3px solid;
+      border-radius: var(--r); font-size: 13.5px; line-height: 1.72;
+    }
+    .hint { background: var(--hint-bg); border-color: var(--hint-c); color: #a7f3d0; }
+    .warn { background: var(--warn-bg); border-color: var(--warn-c); color: #fed7aa; }
+    .hint p, .warn p { margin: 0; color: inherit; }
+    .lbl { display: block; font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 4px; }
+    .hint .lbl { color: var(--hint-c); }
+    .warn .lbl  { color: var(--warn-c); }
+
+    /* ── CODE BLOCKS ── */
+    .cb {
+      margin: 18px 0; border: 1px solid var(--code-bd);
+      border-radius: var(--rl); overflow: hidden; background: var(--code-bg);
+    }
+    .cb-head {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 8px 14px; background: #181818; border-bottom: 1px solid var(--code-bd);
+    }
+    .cb-fname {
+      font-family: var(--mono); font-size: 11.5px; color: var(--muted);
+      display: flex; align-items: center; gap: 6px;
+    }
+    .cb-fname::before { content:''; display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--red); }
+    .cb-right { display: flex; align-items: center; gap: 6px; }
+    .tabs { display: flex; gap: 3px; }
+    .tab {
+      padding: 4px 11px; font-size: 11px; font-family: var(--mono); font-weight: 500;
+      border: 1px solid transparent; border-radius: 4px;
+      color: var(--muted); cursor: pointer; user-select: none; transition: all .14s;
+    }
+    .tab.on { color: var(--red-l); background: var(--red-glow); border-color: var(--red); }
+    .tab:hover:not(.on) { color: var(--text); background: rgba(255,255,255,.04); }
+    .cpbtn {
+      padding: 3px 9px; font-size: 10.5px; font-family: var(--mono);
+      background: var(--surface); border: 1px solid var(--border-l);
+      color: var(--muted); border-radius: 4px; cursor: pointer; transition: all .14s;
+    }
+    .cpbtn:hover { background: var(--surface2); color: var(--text); }
+    .pane { display: none; }
+    .pane.on { display: block; }
+    pre {
+      padding: 18px 20px; overflow-x: auto;
+      font-family: var(--mono); font-size: 13.5px; line-height: 1.65; color: #abb2bf;
+    }
+    pre::-webkit-scrollbar { height: 5px; }
+    pre::-webkit-scrollbar-thumb { background: var(--border-l); border-radius: 3px; }
+
+    /* ── JSON RESPONSE BLOCK ── */
+    .json-block {
+      margin: 14px 0; padding: 16px 20px;
+      background: #161616; border: 1px solid var(--code-bd);
+      border-radius: var(--rl); font-family: var(--mono); font-size: 13.5px;
+      line-height: 1.7; color: #abb2bf;
+    }
+    .json-key   { color: #e06c75; }
+    .json-num   { color: #d19a66; }
+    .json-str   { color: #98c379; }
+    .json-label {
+      font-size: 10.5px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .07em; color: var(--muted); margin-bottom: 8px;
+    }
+
+    /* syntax tokens */
+    .kw  { color: #c678dd; }
+    .fn  { color: #61afef; }
+    .str { color: #98c379; }
+    .dec { color: #e5c07b; }
+    .typ { color: #e5c07b; }
+    .cm  { color: #5c6370; font-style: italic; }
+    .pn  { color: #abb2bf; }
+    .num { color: #d19a66; }
+    .cl  { color: #e06c75; }
+    .tmpl{ color: #d19a66; }
+
+    /* ── EXCEPTION LIST ── */
+    .exc-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 8px; margin: 16px 0;
+    }
+    .exc-item {
+      padding: 8px 12px; background: var(--code-bg);
+      border: 1px solid var(--code-bd); border-radius: var(--r);
+      font-family: var(--mono); font-size: 12.5px; color: #f9a8d4;
+      transition: border-color .15s;
+    }
+    .exc-item:hover { border-color: var(--red); }
+
+    /* ── SCOPE BADGES ── */
+    .scope-row {
+      display: flex; gap: 10px; flex-wrap: wrap; margin: 16px 0;
+    }
+    .scope-badge {
+      padding: 6px 14px; border-radius: 20px; font-size: 12.5px; font-weight: 600;
+      border: 1px solid;
+    }
+    .scope-badge.method     { background: rgba(96,160,208,.1); border-color: #2a4a6a; color: #60a0d0; }
+    .scope-badge.controller { background: rgba(234,40,69,.1);  border-color: var(--red); color: var(--red-l); }
+    .scope-badge.global     { background: rgba(74,222,128,.1); border-color: #2a5a2a; color: #4ade80; }
+
+    /* diagram */
+    .filter-diagram {
+      margin: 24px 0; padding: 22px 20px;
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--rl);
+      display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 0;
+    }
+    .fd-box {
+      padding: 10px 16px; border-radius: var(--r); font-size: 13px;
+      font-weight: 600; font-family: var(--mono); border: 1px solid; text-align: center; line-height: 1.4;
+    }
+    .fd-box.app    { background: #1a2a3a; border-color: #2a4a6a; color: #60a0d0; }
+    .fd-box.filter { background: rgba(234,40,69,.12); border-color: var(--red); color: var(--red-l); }
+    .fd-box.resp   { background: #1a2a1a; border-color: #2a5a2a; color: #4ade80; }
+    .fd-arrow { padding: 0 12px; color: var(--muted); font-size: 18px; }
+    .fd-caption { width: 100%; text-align: center; font-size: 11.5px; color: var(--muted); margin-top: 12px; }
+
+    /* page nav */
+    .page-nav { display: flex; justify-content: space-between; margin-top: 52px; gap: 16px; }
+    .pnbtn {
+      display: flex; flex-direction: column; padding: 14px 18px;
+      border: 1px solid var(--border); border-radius: var(--rl);
+      text-decoration: none; transition: all .2s; min-width: 150px;
+    }
+    .pnbtn:hover { border-color: var(--red); background: var(--red-glow); text-decoration: none; }
+    .pnlbl   { font-size: 10.5px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); margin-bottom: 3px; }
+    .pntitle { font-size: 14px; font-weight: 600; color: var(--text); }
+    .pnbtn.r { text-align: right; margin-left: auto; }
+
+    @media (max-width: 860px) { .toc { display: none; } }
+    @media (max-width: 600px) { .page { padding: 24px 16px 64px; } }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ══════════════════ MAIN CONTENT ══════════════════ -->
+  <main class="content">
+
+    <div class="vi-banner">
+      <span style="font-size:17px">🇻🇳</span>
+      <div>Dịch từ <strong><a href="https://docs.nestjs.com/exception-filters" target="_blank">docs.nestjs.com/exception-filters</a></strong>. Thuật ngữ kỹ thuật giữ nguyên tiếng Anh.</div>
+    </div>
+
+    <h1>Exception filters</h1>
+
+    <p style="margin-top:18px">Nest đi kèm với một <strong>exceptions layer</strong> tích hợp sẵn, chịu trách nhiệm xử lý tất cả exception chưa được xử lý trong toàn bộ ứng dụng. Khi một exception không được xử lý bởi code ứng dụng, nó sẽ bị bắt bởi layer này, sau đó tự động gửi về một response thân thiện phù hợp cho người dùng.</p>
+
+    <!-- Diagram -->
+    <div class="filter-diagram">
+      <div class="fd-box app">Unhandled<br><span style="font-size:10px;opacity:.7">Exception</span></div>
+      <div class="fd-arrow">→</div>
+      <div class="fd-box filter">Exception<br>Filter Layer</div>
+      <div class="fd-arrow">→</div>
+      <div class="fd-box resp">JSON<br><span style="font-size:10px;opacity:.7">Response</span></div>
+      <div class="fd-caption">Exception layer tự động bắt và xử lý tất cả exception chưa được xử lý</div>
+    </div>
+
+    <p>Theo mặc định, tác vụ này được thực hiện bởi <strong>global exception filter</strong> tích hợp sẵn, xử lý các exception thuộc type <code>HttpException</code> (và các subclass của nó). Khi một exception <strong>không được nhận dạng</strong> (không phải <code>HttpException</code> và không kế thừa từ <code>HttpException</code>), exception filter tích hợp sẽ tạo ra JSON response mặc định sau:</p>
+
+    <div class="json-block">
+      <div class="json-label">Default error response</div>
+      <span class="pn">{</span><br>
+      &nbsp;&nbsp;<span class="json-key">"statusCode"</span><span class="pn">:</span> <span class="json-num">500</span><span class="pn">,</span><br>
+      &nbsp;&nbsp;<span class="json-key">"message"</span><span class="pn">:</span> <span class="json-str">"Internal server error"</span><br>
+      <span class="pn">}</span>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">💡 Hint</span>
+      <p>Global exception filter có hỗ trợ một phần thư viện <code>http-errors</code>. Về cơ bản, bất kỳ exception nào được throw mà chứa các property <code>statusCode</code> và <code>message</code> sẽ được điền đúng thông tin và gửi về như response (thay vì <code>InternalServerErrorException</code> mặc định cho các exception không nhận dạng được).</p>
+    </div>
+
+    <!-- ── THROWING STANDARD EXCEPTIONS ── -->
+    <h3 id="throwing-standard-exceptions">Throwing standard exceptions <a class="anchor" href="#throwing-standard-exceptions">#</a></h3>
+
+    <p>Nest cung cấp class <code>HttpException</code> tích hợp sẵn, được export từ package <code>@nestjs/common</code>. Đối với các ứng dụng HTTP REST/GraphQL API điển hình, best practice là gửi các HTTP response object chuẩn khi có điều kiện lỗi nhất định xảy ra.</p>
+
+    <p>Ví dụ: trong <code>CatsController</code> có method <code>findAll()</code> (một <code>GET</code> route handler). Giả sử route handler này throw một exception vì lý do nào đó. Để minh hoạ, chúng ta hard-code như sau:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">cats.controller.ts</div>
+        <div class="cb-right">
+          <div class="tabs">
+            <div class="tab on" onclick="sw(this,'b1','ts')">TS</div>
+            <div class="tab"    onclick="sw(this,'b1','js')">JS</div>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div id="b1">
+        <div class="pane on" data-lang="ts"><pre><span class="dec">@Get</span><span class="pn">()</span>
+<span class="kw">async</span> <span class="fn">findAll</span><span class="pn">()</span> <span class="pn">{</span>
+  <span class="kw">throw new</span> <span class="cl">HttpException</span><span class="pn">(</span><span class="str">'Forbidden'</span><span class="pn">,</span> <span class="typ">HttpStatus</span><span class="pn">.</span>FORBIDDEN<span class="pn">);</span>
+<span class="pn">}</span></pre></div>
+        <div class="pane" data-lang="js"><pre><span class="dec">@Get</span><span class="pn">()</span>
+<span class="kw">async</span> <span class="fn">findAll</span><span class="pn">()</span> <span class="pn">{</span>
+  <span class="kw">throw new</span> <span class="cl">HttpException</span><span class="pn">(</span><span class="str">'Forbidden'</span><span class="pn">,</span> <span class="typ">HttpStatus</span><span class="pn">.</span>FORBIDDEN<span class="pn">);</span>
+<span class="pn">}</span></pre></div>
+      </div>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">💡 Hint</span>
+      <p>Chúng ta dùng <code>HttpStatus</code> ở đây — một helper enum được import từ package <code>@nestjs/common</code>.</p>
+    </div>
+
+    <p>Khi client gọi endpoint này, response trông như sau:</p>
+
+    <div class="json-block">
+      <span class="pn">{</span><br>
+      &nbsp;&nbsp;<span class="json-key">"statusCode"</span><span class="pn">:</span> <span class="json-num">403</span><span class="pn">,</span><br>
+      &nbsp;&nbsp;<span class="json-key">"message"</span><span class="pn">:</span> <span class="json-str">"Forbidden"</span><br>
+      <span class="pn">}</span>
+    </div>
+
+    <p>Constructor của <code>HttpException</code> nhận hai argument bắt buộc để xác định response:</p>
+
+    <ul style="color:var(--sec);padding-left:22px;line-height:2.1;margin-bottom:16px;">
+      <li>Argument <code>response</code> — định nghĩa JSON response body. Có thể là <code>string</code> hoặc <code>object</code>.</li>
+      <li>Argument <code>status</code> — định nghĩa <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status" target="_blank">HTTP status code</a>.</li>
+    </ul>
+
+    <p>Theo mặc định, JSON response body chứa hai property: <code>statusCode</code> (mặc định theo HTTP status code trong argument <code>status</code>) và <code>message</code> (mô tả ngắn về HTTP error dựa trên <code>status</code>).</p>
+
+    <p>Để chỉ override phần message, truyền một <code>string</code> vào argument <code>response</code>. Để override toàn bộ JSON response body, truyền một <code>object</code>. Nest sẽ serialize object và trả về như JSON response body.</p>
+
+    <p>Còn có argument constructor <strong>thứ ba</strong> (optional) — <code>options</code> — có thể dùng để cung cấp error <a href="https://nodejs.org/en/blog/release/v16.9.0/#error-cause" target="_blank">cause</a>. Object <code>cause</code> không được serialize vào response object, nhưng hữu ích cho mục đích logging.</p>
+
+    <p>Đây là ví dụ override toàn bộ response body và cung cấp error cause:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">cats.controller.ts</div>
+        <div class="cb-right">
+          <div class="tabs">
+            <div class="tab on" onclick="sw(this,'b2','ts')">TS</div>
+            <div class="tab"    onclick="sw(this,'b2','js')">JS</div>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div id="b2">
+        <div class="pane on" data-lang="ts"><pre><span class="dec">@Get</span><span class="pn">()</span>
+<span class="kw">async</span> <span class="fn">findAll</span><span class="pn">()</span> <span class="pn">{</span>
+  <span class="kw">try</span> <span class="pn">{</span>
+    <span class="kw">await</span> <span class="kw">this</span><span class="pn">.</span>service<span class="pn">.</span><span class="fn">findAll</span><span class="pn">()</span>
+  <span class="pn">}</span> <span class="kw">catch</span> <span class="pn">(</span>error<span class="pn">)</span> <span class="pn">{</span>
+    <span class="kw">throw new</span> <span class="cl">HttpException</span><span class="pn">({</span>
+      status<span class="pn">:</span> <span class="typ">HttpStatus</span><span class="pn">.</span>FORBIDDEN<span class="pn">,</span>
+      error<span class="pn">:</span> <span class="str">'This is a custom message'</span><span class="pn">,</span>
+    <span class="pn">},</span> <span class="typ">HttpStatus</span><span class="pn">.</span>FORBIDDEN<span class="pn">, {</span>
+      cause<span class="pn">:</span> error
+    <span class="pn">});</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+        <div class="pane" data-lang="js"><pre><span class="dec">@Get</span><span class="pn">()</span>
+<span class="kw">async</span> <span class="fn">findAll</span><span class="pn">()</span> <span class="pn">{</span>
+  <span class="kw">try</span> <span class="pn">{</span>
+    <span class="kw">await</span> <span class="kw">this</span><span class="pn">.</span>service<span class="pn">.</span><span class="fn">findAll</span><span class="pn">()</span>
+  <span class="pn">}</span> <span class="kw">catch</span> <span class="pn">(</span>error<span class="pn">)</span> <span class="pn">{</span>
+    <span class="kw">throw new</span> <span class="cl">HttpException</span><span class="pn">({</span>
+      status<span class="pn">:</span> <span class="typ">HttpStatus</span><span class="pn">.</span>FORBIDDEN<span class="pn">,</span>
+      error<span class="pn">:</span> <span class="str">'This is a custom message'</span><span class="pn">,</span>
+    <span class="pn">},</span> <span class="typ">HttpStatus</span><span class="pn">.</span>FORBIDDEN<span class="pn">, {</span>
+      cause<span class="pn">:</span> error
+    <span class="pn">});</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+      </div>
+    </div>
+
+    <p>Với cách trên, response sẽ trông như sau:</p>
+
+    <div class="json-block">
+      <span class="pn">{</span><br>
+      &nbsp;&nbsp;<span class="json-key">"status"</span><span class="pn">:</span> <span class="json-num">403</span><span class="pn">,</span><br>
+      &nbsp;&nbsp;<span class="json-key">"error"</span><span class="pn">:</span> <span class="json-str">"This is a custom message"</span><br>
+      <span class="pn">}</span>
+    </div>
+
+    <!-- ── EXCEPTIONS LOGGING ── -->
+    <h3 id="exceptions-logging">Exceptions logging <a class="anchor" href="#exceptions-logging">#</a></h3>
+
+    <p>Theo mặc định, exception filter không log các exception tích hợp như <code>HttpException</code> (và các exception kế thừa từ nó). Khi các exception này được throw, chúng sẽ không xuất hiện trong console vì chúng được coi là một phần của luồng ứng dụng bình thường. Hành vi tương tự áp dụng cho các exception tích hợp khác như <code>WsException</code> và <code>RpcException</code>.</p>
+
+    <p>Tất cả các exception này đều kế thừa từ base class <code>IntrinsicException</code>, được export từ package <code>@nestjs/common</code>. Class này giúp phân biệt các exception là một phần của vận hành ứng dụng bình thường với các exception không phải vậy.</p>
+
+    <p>Nếu muốn log các exception này, bạn có thể tạo một custom exception filter — sẽ được giải thích trong phần tiếp theo.</p>
+
+    <!-- ── CUSTOM EXCEPTIONS ── -->
+    <h3 id="custom-exceptions">Custom exceptions <a class="anchor" href="#custom-exceptions">#</a></h3>
+
+    <p>Trong nhiều trường hợp, bạn sẽ không cần viết custom exception mà có thể dùng Nest HTTP exception tích hợp sẵn. Nếu cần tạo exception tuỳ biến, practice tốt là tạo <strong>exceptions hierarchy</strong> riêng, nơi các custom exception kế thừa từ base class <code>HttpException</code>. Với cách tiếp cận này, Nest sẽ nhận dạng exception và tự động xử lý error response. Hãy implement một custom exception như sau:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">forbidden.exception.ts</div>
+        <div class="cb-right">
+          <div class="tabs">
+            <div class="tab on" onclick="sw(this,'b3','ts')">TS</div>
+            <div class="tab"    onclick="sw(this,'b3','js')">JS</div>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div id="b3">
+        <div class="pane on" data-lang="ts"><pre><span class="kw">export class</span> <span class="cl">ForbiddenException</span> <span class="kw">extends</span> <span class="cl">HttpException</span> <span class="pn">{</span>
+  <span class="fn">constructor</span><span class="pn">()</span> <span class="pn">{</span>
+    <span class="kw">super</span><span class="pn">(</span><span class="str">'Forbidden'</span><span class="pn">,</span> <span class="typ">HttpStatus</span><span class="pn">.</span>FORBIDDEN<span class="pn">);</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+        <div class="pane" data-lang="js"><pre><span class="kw">export class</span> <span class="cl">ForbiddenException</span> <span class="kw">extends</span> <span class="cl">HttpException</span> <span class="pn">{</span>
+  <span class="fn">constructor</span><span class="pn">()</span> <span class="pn">{</span>
+    <span class="kw">super</span><span class="pn">(</span><span class="str">'Forbidden'</span><span class="pn">,</span> <span class="typ">HttpStatus</span><span class="pn">.</span>FORBIDDEN<span class="pn">);</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+      </div>
+    </div>
+
+    <p>Vì <code>ForbiddenException</code> extend base <code>HttpException</code>, nó sẽ hoạt động liền mạch với exception handler tích hợp sẵn, và do đó chúng ta có thể dùng nó bên trong method <code>findAll()</code>.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">cats.controller.ts</div>
+        <div class="cb-right">
+          <div class="tabs">
+            <div class="tab on" onclick="sw(this,'b4','ts')">TS</div>
+            <div class="tab"    onclick="sw(this,'b4','js')">JS</div>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div id="b4">
+        <div class="pane on" data-lang="ts"><pre><span class="dec">@Get</span><span class="pn">()</span>
+<span class="kw">async</span> <span class="fn">findAll</span><span class="pn">()</span> <span class="pn">{</span>
+  <span class="kw">throw new</span> <span class="cl">ForbiddenException</span><span class="pn">();</span>
+<span class="pn">}</span></pre></div>
+        <div class="pane" data-lang="js"><pre><span class="dec">@Get</span><span class="pn">()</span>
+<span class="kw">async</span> <span class="fn">findAll</span><span class="pn">()</span> <span class="pn">{</span>
+  <span class="kw">throw new</span> <span class="cl">ForbiddenException</span><span class="pn">();</span>
+<span class="pn">}</span></pre></div>
+      </div>
+    </div>
+
+    <!-- ── BUILT-IN HTTP EXCEPTIONS ── -->
+    <h3 id="built-in-http-exceptions">Built-in HTTP exceptions <a class="anchor" href="#built-in-http-exceptions">#</a></h3>
+
+    <p>Nest cung cấp một tập các exception chuẩn kế thừa từ base <code>HttpException</code>. Chúng được export từ package <code>@nestjs/common</code> và đại diện cho nhiều HTTP exception phổ biến nhất:</p>
+
+    <div class="exc-grid">
+      <div class="exc-item">BadRequestException</div>
+      <div class="exc-item">UnauthorizedException</div>
+      <div class="exc-item">NotFoundException</div>
+      <div class="exc-item">ForbiddenException</div>
+      <div class="exc-item">NotAcceptableException</div>
+      <div class="exc-item">RequestTimeoutException</div>
+      <div class="exc-item">ConflictException</div>
+      <div class="exc-item">GoneException</div>
+      <div class="exc-item">HttpVersionNotSupportedException</div>
+      <div class="exc-item">PayloadTooLargeException</div>
+      <div class="exc-item">UnsupportedMediaTypeException</div>
+      <div class="exc-item">UnprocessableEntityException</div>
+      <div class="exc-item">InternalServerErrorException</div>
+      <div class="exc-item">NotImplementedException</div>
+      <div class="exc-item">ImATeapotException</div>
+      <div class="exc-item">MethodNotAllowedException</div>
+      <div class="exc-item">BadGatewayException</div>
+      <div class="exc-item">ServiceUnavailableException</div>
+      <div class="exc-item">GatewayTimeoutException</div>
+      <div class="exc-item">PreconditionFailedException</div>
+    </div>
+
+    <p>Tất cả built-in exception đều có thể cung cấp cả error <code>cause</code> và error description thông qua parameter <code>options</code>:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div style="flex:1"></div>
+        <button class="cpbtn" onclick="cp(this)">Copy</button>
+      </div>
+      <div id="b5">
+        <div class="pane on"><pre><span class="kw">throw new</span> <span class="cl">BadRequestException</span><span class="pn">(</span><span class="str">'Something bad happened'</span><span class="pn">, {</span>
+  cause<span class="pn">:</span> <span class="kw">new</span> <span class="cl">Error</span><span class="pn">(),</span>
+  description<span class="pn">:</span> <span class="str">'Some error description'</span><span class="pn">,</span>
+<span class="pn">});</span></pre></div>
+      </div>
+    </div>
+
+    <p>Với cách trên, response sẽ trông như sau:</p>
+
+    <div class="json-block">
+      <span class="pn">{</span><br>
+      &nbsp;&nbsp;<span class="json-key">"message"</span><span class="pn">:</span> <span class="json-str">"Something bad happened"</span><span class="pn">,</span><br>
+      &nbsp;&nbsp;<span class="json-key">"error"</span><span class="pn">:</span> <span class="json-str">"Some error description"</span><span class="pn">,</span><br>
+      &nbsp;&nbsp;<span class="json-key">"statusCode"</span><span class="pn">:</span> <span class="json-num">400</span><br>
+      <span class="pn">}</span>
+    </div>
+
+    <!-- ── EXCEPTION FILTERS (CUSTOM) ── -->
+    <h3 id="exception-filters-custom">Exception filters <a class="anchor" href="#exception-filters-custom">#</a></h3>
+
+    <p>Trong khi exception filter base (tích hợp sẵn) có thể tự động xử lý nhiều trường hợp, bạn có thể muốn <strong>kiểm soát hoàn toàn</strong> exceptions layer. Ví dụ: thêm logging hoặc dùng JSON schema khác dựa trên một số yếu tố động. <strong>Exception filter</strong> được thiết kế chính xác cho mục đích này — chúng cho phép kiểm soát luồng xử lý và nội dung response gửi về client.</p>
+
+    <p>Hãy tạo một exception filter chịu trách nhiệm bắt exception là instance của class <code>HttpException</code> và implement logic response tuỳ biến cho chúng. Để làm điều này, cần truy cập vào các đối tượng platform <code>Request</code> và <code>Response</code>.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">http-exception.filter.ts</div>
+        <div class="cb-right">
+          <div class="tabs">
+            <div class="tab on" onclick="sw(this,'b6','ts')">TS</div>
+            <div class="tab"    onclick="sw(this,'b6','js')">JS</div>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div id="b6">
+        <div class="pane on" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="typ">ExceptionFilter</span><span class="pn">,</span> <span class="cl">Catch</span><span class="pn">,</span> <span class="typ">ArgumentsHost</span><span class="pn">,</span> <span class="cl">HttpException</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="typ">Request</span><span class="pn">,</span> <span class="typ">Response</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'express'</span><span class="pn">;</span>
+
+<span class="dec">@Catch</span><span class="pn">(</span><span class="cl">HttpException</span><span class="pn">)</span>
+<span class="kw">export class</span> <span class="cl">HttpExceptionFilter</span> <span class="kw">implements</span> <span class="typ">ExceptionFilter</span> <span class="pn">{</span>
+  <span class="fn">catch</span><span class="pn">(</span>exception<span class="pn">:</span> <span class="cl">HttpException</span><span class="pn">,</span> host<span class="pn">:</span> <span class="typ">ArgumentsHost</span><span class="pn">)</span> <span class="pn">{</span>
+    <span class="kw">const</span> ctx      <span class="pn">=</span> host<span class="pn">.</span><span class="fn">switchToHttp</span><span class="pn">();</span>
+    <span class="kw">const</span> response <span class="pn">=</span> ctx<span class="pn">.</span><span class="fn">getResponse</span><span class="pn">&lt;</span><span class="typ">Response</span><span class="pn">&gt;();</span>
+    <span class="kw">const</span> request  <span class="pn">=</span> ctx<span class="pn">.</span><span class="fn">getRequest</span><span class="pn">&lt;</span><span class="typ">Request</span><span class="pn">&gt;();</span>
+    <span class="kw">const</span> status   <span class="pn">=</span> exception<span class="pn">.</span><span class="fn">getStatus</span><span class="pn">();</span>
+
+    response
+      <span class="pn">.</span><span class="fn">status</span><span class="pn">(</span>status<span class="pn">)</span>
+      <span class="pn">.</span><span class="fn">json</span><span class="pn">({</span>
+        statusCode<span class="pn">:</span> status<span class="pn">,</span>
+        timestamp<span class="pn">:</span> <span class="kw">new</span> <span class="cl">Date</span><span class="pn">().</span><span class="fn">toISOString</span><span class="pn">(),</span>
+        path<span class="pn">:</span> request<span class="pn">.</span>url<span class="pn">,</span>
+      <span class="pn">});</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+        <div class="pane" data-lang="js"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Catch</span><span class="pn">,</span> <span class="cl">HttpException</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+
+<span class="dec">@Catch</span><span class="pn">(</span><span class="cl">HttpException</span><span class="pn">)</span>
+<span class="kw">export class</span> <span class="cl">HttpExceptionFilter</span> <span class="pn">{</span>
+  <span class="fn">catch</span><span class="pn">(</span>exception<span class="pn">,</span> host<span class="pn">)</span> <span class="pn">{</span>
+    <span class="kw">const</span> ctx      <span class="pn">=</span> host<span class="pn">.</span><span class="fn">switchToHttp</span><span class="pn">();</span>
+    <span class="kw">const</span> response <span class="pn">=</span> ctx<span class="pn">.</span><span class="fn">getResponse</span><span class="pn">();</span>
+    <span class="kw">const</span> request  <span class="pn">=</span> ctx<span class="pn">.</span><span class="fn">getRequest</span><span class="pn">();</span>
+    <span class="kw">const</span> status   <span class="pn">=</span> exception<span class="pn">.</span><span class="fn">getStatus</span><span class="pn">();</span>
+
+    response
+      <span class="pn">.</span><span class="fn">status</span><span class="pn">(</span>status<span class="pn">)</span>
+      <span class="pn">.</span><span class="fn">json</span><span class="pn">({</span>
+        statusCode<span class="pn">:</span> status<span class="pn">,</span>
+        timestamp<span class="pn">:</span> <span class="kw">new</span> <span class="cl">Date</span><span class="pn">().</span><span class="fn">toISOString</span><span class="pn">(),</span>
+        path<span class="pn">:</span> request<span class="pn">.</span>url<span class="pn">,</span>
+      <span class="pn">});</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+      </div>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">💡 Hint</span>
+      <p>Tất cả exception filter nên implement generic interface <code>ExceptionFilter&lt;T&gt;</code>. Điều này yêu cầu cung cấp method <code>catch(exception: T, host: ArgumentsHost)</code> với chữ ký đã chỉ định. <code>T</code> biểu thị type của exception.</p>
+    </div>
+
+    <div class="warn">
+      <span class="lbl">⚠️ Warning</span>
+      <p>Nếu dùng <code>@nestjs/platform-fastify</code>, có thể dùng <code>response.send()</code> thay vì <code>response.json()</code>. Đừng quên import đúng type từ <code>fastify</code>.</p>
+    </div>
+
+    <p>Decorator <code>@Catch(HttpException)</code> gắn metadata cần thiết vào exception filter, báo cho Nest biết rằng filter cụ thể này tìm kiếm exception thuộc type <code>HttpException</code> và không gì khác. Decorator <code>@Catch()</code> có thể nhận một parameter hoặc danh sách phân cách bởi dấu phẩy — cho phép thiết lập filter cho nhiều type exception cùng lúc.</p>
+
+    <!-- ── ARGUMENTS HOST ── -->
+    <h3 id="arguments-host">Arguments host <a class="anchor" href="#arguments-host">#</a></h3>
+
+    <p>Hãy xem xét các parameter của method <code>catch()</code>. Parameter <code>exception</code> là đối tượng exception đang được xử lý. Parameter <code>host</code> là đối tượng <code>ArgumentsHost</code> — một utility object mạnh mẽ mà chúng ta sẽ tìm hiểu thêm trong <a href="https://docs.nestjs.com/fundamentals/execution-context" target="_blank">chương execution context</a>.</p>
+
+    <p>Trong code mẫu này, chúng ta dùng nó để lấy tham chiếu đến các đối tượng <code>Request</code> và <code>Response</code> đang được truyền đến request handler gốc (trong controller nơi exception phát sinh). Chúng ta dùng một số helper method trên <code>ArgumentsHost</code> để lấy các đối tượng <code>Request</code> và <code>Response</code> mong muốn.</p>
+
+    <p>Lý do cho mức độ trừu tượng này là <code>ArgumentsHost</code> hoạt động trong mọi context (ví dụ: HTTP server context mà chúng ta đang làm việc, nhưng cũng cả Microservices và WebSockets). Trong chương execution context, chúng ta sẽ thấy cách truy cập <a href="https://docs.nestjs.com/fundamentals/execution-context#host-methods" target="_blank">các argument cơ bản phù hợp</a> cho <strong>bất kỳ</strong> execution context nào — điều này cho phép viết các generic exception filter hoạt động trên tất cả context.</p>
+
+    <!-- ── BINDING FILTERS ── -->
+    <h3 id="binding-filters">Binding filters <a class="anchor" href="#binding-filters">#</a></h3>
+
+    <p>Hãy gắn <code>HttpExceptionFilter</code> mới vào method <code>create()</code> của <code>CatsController</code>.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">cats.controller.ts</div>
+        <div class="cb-right">
+          <div class="tabs">
+            <div class="tab on" onclick="sw(this,'b7','ts')">TS</div>
+            <div class="tab"    onclick="sw(this,'b7','js')">JS</div>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div id="b7">
+        <div class="pane on" data-lang="ts"><pre><span class="dec">@Post</span><span class="pn">()</span>
+<span class="dec">@UseFilters</span><span class="pn">(</span><span class="kw">new</span> <span class="cl">HttpExceptionFilter</span><span class="pn">())</span>
+<span class="kw">async</span> <span class="fn">create</span><span class="pn">(</span><span class="dec">@Body</span><span class="pn">()</span> createCatDto<span class="pn">:</span> <span class="cl">CreateCatDto</span><span class="pn">)</span> <span class="pn">{</span>
+  <span class="kw">throw new</span> <span class="cl">ForbiddenException</span><span class="pn">();</span>
+<span class="pn">}</span></pre></div>
+        <div class="pane" data-lang="js"><pre><span class="dec">@Post</span><span class="pn">()</span>
+<span class="dec">@UseFilters</span><span class="pn">(</span><span class="kw">new</span> <span class="cl">HttpExceptionFilter</span><span class="pn">())</span>
+<span class="dec">@Bind</span><span class="pn">(</span><span class="fn">Body</span><span class="pn">())</span>
+<span class="kw">async</span> <span class="fn">create</span><span class="pn">(</span>createCatDto<span class="pn">)</span> <span class="pn">{</span>
+  <span class="kw">throw new</span> <span class="cl">ForbiddenException</span><span class="pn">();</span>
+<span class="pn">}</span></pre></div>
+      </div>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">💡 Hint</span>
+      <p>Decorator <code>@UseFilters()</code> được import từ package <code>@nestjs/common</code>.</p>
+    </div>
+
+    <p>Ở đây chúng ta dùng decorator <code>@UseFilters()</code>. Tương tự <code>@Catch()</code>, nó có thể nhận một filter instance hoặc danh sách phân cách bởi dấu phẩy. Ngoài ra, có thể truyền class (thay vì instance), để framework chịu trách nhiệm khởi tạo và cho phép <strong>dependency injection</strong>.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">cats.controller.ts</div>
+        <div class="cb-right">
+          <div class="tabs">
+            <div class="tab on" onclick="sw(this,'b8','ts')">TS</div>
+            <div class="tab"    onclick="sw(this,'b8','js')">JS</div>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div id="b8">
+        <div class="pane on" data-lang="ts"><pre><span class="dec">@Post</span><span class="pn">()</span>
+<span class="dec">@UseFilters</span><span class="pn">(</span><span class="cl">HttpExceptionFilter</span><span class="pn">)</span>
+<span class="kw">async</span> <span class="fn">create</span><span class="pn">(</span><span class="dec">@Body</span><span class="pn">()</span> createCatDto<span class="pn">:</span> <span class="cl">CreateCatDto</span><span class="pn">)</span> <span class="pn">{</span>
+  <span class="kw">throw new</span> <span class="cl">ForbiddenException</span><span class="pn">();</span>
+<span class="pn">}</span></pre></div>
+        <div class="pane" data-lang="js"><pre><span class="dec">@Post</span><span class="pn">()</span>
+<span class="dec">@UseFilters</span><span class="pn">(</span><span class="cl">HttpExceptionFilter</span><span class="pn">)</span>
+<span class="dec">@Bind</span><span class="pn">(</span><span class="fn">Body</span><span class="pn">())</span>
+<span class="kw">async</span> <span class="fn">create</span><span class="pn">(</span>createCatDto<span class="pn">)</span> <span class="pn">{</span>
+  <span class="kw">throw new</span> <span class="cl">ForbiddenException</span><span class="pn">();</span>
+<span class="pn">}</span></pre></div>
+      </div>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">💡 Hint</span>
+      <p>Ưu tiên áp dụng filter bằng <strong>class</strong> thay vì instance khi có thể. Điều này giảm <strong>memory usage</strong> vì Nest có thể dễ dàng tái sử dụng các instance của cùng một class trong toàn bộ module.</p>
+    </div>
+
+    <p>Exception filter có thể có scope ở các cấp độ khác nhau:</p>
+
+    <div class="scope-row">
+      <div class="scope-badge method">Method-scoped</div>
+      <div class="scope-badge controller">Controller-scoped</div>
+      <div class="scope-badge global">Global-scoped</div>
+    </div>
+
+    <p>Ví dụ, để thiết lập filter ở cấp controller:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">cats.controller.ts</div>
+        <div class="cb-right">
+          <div class="tabs">
+            <div class="tab on" onclick="sw(this,'b9','ts')">TS</div>
+            <div class="tab"    onclick="sw(this,'b9','js')">JS</div>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div id="b9">
+        <div class="pane on" data-lang="ts"><pre><span class="dec">@Controller</span><span class="pn">()</span>
+<span class="dec">@UseFilters</span><span class="pn">(</span><span class="kw">new</span> <span class="cl">HttpExceptionFilter</span><span class="pn">())</span>
+<span class="kw">export class</span> <span class="cl">CatsController</span> <span class="pn">{}</span></pre></div>
+        <div class="pane" data-lang="js"><pre><span class="dec">@Controller</span><span class="pn">()</span>
+<span class="dec">@UseFilters</span><span class="pn">(</span><span class="kw">new</span> <span class="cl">HttpExceptionFilter</span><span class="pn">())</span>
+<span class="kw">export class</span> <span class="cl">CatsController</span> <span class="pn">{}</span></pre></div>
+      </div>
+    </div>
+
+    <p>Để tạo global-scoped filter:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">main.ts</div>
+        <div class="cb-right">
+          <div class="tabs">
+            <div class="tab on" onclick="sw(this,'b10','ts')">TS</div>
+            <div class="tab"    onclick="sw(this,'b10','js')">JS</div>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div id="b10">
+        <div class="pane on" data-lang="ts"><pre><span class="kw">async function</span> <span class="fn">bootstrap</span><span class="pn">()</span> <span class="pn">{</span>
+  <span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> <span class="cl">NestFactory</span><span class="pn">.</span><span class="fn">create</span><span class="pn">(</span><span class="cl">AppModule</span><span class="pn">);</span>
+  app<span class="pn">.</span><span class="fn">useGlobalFilters</span><span class="pn">(</span><span class="kw">new</span> <span class="cl">HttpExceptionFilter</span><span class="pn">());</span>
+  <span class="kw">await</span> app<span class="pn">.</span><span class="fn">listen</span><span class="pn">(</span>process<span class="pn">.</span>env<span class="pn">.</span>PORT <span class="pn">??</span> <span class="num">3000</span><span class="pn">);</span>
+<span class="pn">}</span>
+<span class="fn">bootstrap</span><span class="pn">();</span></pre></div>
+        <div class="pane" data-lang="js"><pre><span class="kw">async function</span> <span class="fn">bootstrap</span><span class="pn">()</span> <span class="pn">{</span>
+  <span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> <span class="cl">NestFactory</span><span class="pn">.</span><span class="fn">create</span><span class="pn">(</span><span class="cl">AppModule</span><span class="pn">);</span>
+  app<span class="pn">.</span><span class="fn">useGlobalFilters</span><span class="pn">(</span><span class="kw">new</span> <span class="cl">HttpExceptionFilter</span><span class="pn">());</span>
+  <span class="kw">await</span> app<span class="pn">.</span><span class="fn">listen</span><span class="pn">(</span>process<span class="pn">.</span>env<span class="pn">.</span>PORT <span class="pn">??</span> <span class="num">3000</span><span class="pn">);</span>
+<span class="pn">}</span>
+<span class="fn">bootstrap</span><span class="pn">();</span></pre></div>
+      </div>
+    </div>
+
+    <div class="warn">
+      <span class="lbl">⚠️ Warning</span>
+      <p>Method <code>useGlobalFilters()</code> không thiết lập filter cho gateway hoặc hybrid application.</p>
+    </div>
+
+    <p>Global filter được đăng ký từ bên ngoài bất kỳ module nào (với <code>useGlobalFilters()</code>) không thể inject dependency vì điều này được thực hiện ngoài context của bất kỳ module nào. Để giải quyết vấn đề này, bạn có thể đăng ký global-scoped filter <strong>trực tiếp từ bất kỳ module nào</strong> bằng cách sau:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">app.module.ts</div>
+        <div class="cb-right">
+          <div class="tabs">
+            <div class="tab on" onclick="sw(this,'b11','ts')">TS</div>
+            <div class="tab"    onclick="sw(this,'b11','js')">JS</div>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div id="b11">
+        <div class="pane on" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Module</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">APP_FILTER</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/core'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  providers<span class="pn">:</span> <span class="pn">[</span>
+    <span class="pn">{</span>
+      provide<span class="pn">:</span>  <span class="cl">APP_FILTER</span><span class="pn">,</span>
+      useClass<span class="pn">:</span> <span class="cl">HttpExceptionFilter</span><span class="pn">,</span>
+    <span class="pn">},</span>
+  <span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="pn">{}</span></pre></div>
+        <div class="pane" data-lang="js"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Module</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">APP_FILTER</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/core'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  providers<span class="pn">:</span> <span class="pn">[</span>
+    <span class="pn">{</span>
+      provide<span class="pn">:</span>  <span class="cl">APP_FILTER</span><span class="pn">,</span>
+      useClass<span class="pn">:</span> <span class="cl">HttpExceptionFilter</span><span class="pn">,</span>
+    <span class="pn">},</span>
+  <span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="pn">{}</span></pre></div>
+      </div>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">💡 Hint</span>
+      <p>Khi dùng cách này để thực hiện dependency injection cho filter, lưu ý rằng bất kể module nào sử dụng cấu trúc này, filter thực chất là global. Nên thực hiện điều này ở module nơi filter được định nghĩa. Ngoài ra, <code>useClass</code> không phải là cách duy nhất để đăng ký custom provider. Tìm hiểu thêm <a href="https://docs.nestjs.com/fundamentals/custom-providers" target="_blank">tại đây</a>.</p>
+    </div>
+
+    <!-- ── CATCH EVERYTHING ── -->
+    <h3 id="catch-everything">Catch everything <a class="anchor" href="#catch-everything">#</a></h3>
+
+    <p>Để bắt <strong>mọi</strong> exception chưa được xử lý (bất kể type exception), hãy để trống danh sách parameter của decorator <code>@Catch()</code>, ví dụ: <code>@Catch()</code>.</p>
+
+    <p>Trong ví dụ dưới, code độc lập với platform vì nó dùng <a href="https://docs.nestjs.com/faq/http-adapter" target="_blank">HTTP adapter</a> để deliver response và không trực tiếp dùng bất kỳ đối tượng platform-specific nào (<code>Request</code> và <code>Response</code>):</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div style="flex:1"></div>
+        <button class="cpbtn" onclick="cp(this)">Copy</button>
+      </div>
+      <div id="b12">
+        <div class="pane on"><pre><span class="kw">import</span> <span class="pn">{</span>
+  <span class="typ">ExceptionFilter</span><span class="pn">,</span> <span class="cl">Catch</span><span class="pn">,</span> <span class="typ">ArgumentsHost</span><span class="pn">,</span>
+  <span class="cl">HttpException</span><span class="pn">,</span> <span class="typ">HttpStatus</span><span class="pn">,</span>
+<span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">HttpAdapterHost</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/core'</span><span class="pn">;</span>
+
+<span class="dec">@Catch</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">CatchEverythingFilter</span> <span class="kw">implements</span> <span class="typ">ExceptionFilter</span> <span class="pn">{</span>
+  <span class="fn">constructor</span><span class="pn">(</span><span class="kw">private readonly</span> httpAdapterHost<span class="pn">:</span> <span class="cl">HttpAdapterHost</span><span class="pn">)</span> <span class="pn">{}</span>
+
+  <span class="fn">catch</span><span class="pn">(</span>exception<span class="pn">:</span> <span class="kw">unknown</span><span class="pn">,</span> host<span class="pn">:</span> <span class="typ">ArgumentsHost</span><span class="pn">):</span> <span class="kw">void</span> <span class="pn">{</span>
+    <span class="cm">// httpAdapter có thể chưa có trong constructor, resolve ở đây</span>
+    <span class="kw">const</span> <span class="pn">{</span> httpAdapter <span class="pn">}</span> <span class="pn">=</span> <span class="kw">this</span><span class="pn">.</span>httpAdapterHost<span class="pn">;</span>
+    <span class="kw">const</span> ctx <span class="pn">=</span> host<span class="pn">.</span><span class="fn">switchToHttp</span><span class="pn">();</span>
+
+    <span class="kw">const</span> httpStatus <span class="pn">=</span>
+      exception <span class="kw">instanceof</span> <span class="cl">HttpException</span>
+        <span class="pn">?</span> exception<span class="pn">.</span><span class="fn">getStatus</span><span class="pn">()</span>
+        <span class="pn">:</span> <span class="typ">HttpStatus</span><span class="pn">.</span>INTERNAL_SERVER_ERROR<span class="pn">;</span>
+
+    <span class="kw">const</span> responseBody <span class="pn">= {</span>
+      statusCode<span class="pn">:</span> httpStatus<span class="pn">,</span>
+      timestamp<span class="pn">:</span> <span class="kw">new</span> <span class="cl">Date</span><span class="pn">().</span><span class="fn">toISOString</span><span class="pn">(),</span>
+      path<span class="pn">:</span> httpAdapter<span class="pn">.</span><span class="fn">getRequestUrl</span><span class="pn">(</span>ctx<span class="pn">.</span><span class="fn">getRequest</span><span class="pn">()),</span>
+    <span class="pn">};</span>
+
+    httpAdapter<span class="pn">.</span><span class="fn">reply</span><span class="pn">(</span>ctx<span class="pn">.</span><span class="fn">getResponse</span><span class="pn">(),</span> responseBody<span class="pn">,</span> httpStatus<span class="pn">);</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+      </div>
+    </div>
+
+    <div class="warn">
+      <span class="lbl">⚠️ Warning</span>
+      <p>Khi kết hợp exception filter bắt tất cả với một filter được gắn vào type cụ thể, filter "Catch anything" nên được khai báo <strong>trước</strong> để cho phép filter cụ thể xử lý đúng type được gắn.</p>
+    </div>
+
+    <!-- ── INHERITANCE ── -->
+    <h3 id="inheritance">Inheritance <a class="anchor" href="#inheritance">#</a></h3>
+
+    <p>Thông thường, bạn sẽ tạo các exception filter tuỳ biến hoàn toàn để đáp ứng yêu cầu ứng dụng. Tuy nhiên, có những trường hợp bạn chỉ muốn extend <strong>global exception filter</strong> mặc định tích hợp sẵn và override hành vi dựa trên một số yếu tố nhất định.</p>
+
+    <p>Để uỷ thác xử lý exception cho base filter, cần extend <code>BaseExceptionFilter</code> và gọi method <code>catch()</code> được kế thừa:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">all-exceptions.filter.ts</div>
+        <div class="cb-right">
+          <div class="tabs">
+            <div class="tab on" onclick="sw(this,'b13','ts')">TS</div>
+            <div class="tab"    onclick="sw(this,'b13','js')">JS</div>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div id="b13">
+        <div class="pane on" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Catch</span><span class="pn">,</span> <span class="typ">ArgumentsHost</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">BaseExceptionFilter</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/core'</span><span class="pn">;</span>
+
+<span class="dec">@Catch</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">AllExceptionsFilter</span> <span class="kw">extends</span> <span class="cl">BaseExceptionFilter</span> <span class="pn">{</span>
+  <span class="fn">catch</span><span class="pn">(</span>exception<span class="pn">:</span> <span class="kw">unknown</span><span class="pn">,</span> host<span class="pn">:</span> <span class="typ">ArgumentsHost</span><span class="pn">)</span> <span class="pn">{</span>
+    <span class="kw">super</span><span class="pn">.</span><span class="fn">catch</span><span class="pn">(</span>exception<span class="pn">,</span> host<span class="pn">);</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+        <div class="pane" data-lang="js"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Catch</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">BaseExceptionFilter</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/core'</span><span class="pn">;</span>
+
+<span class="dec">@Catch</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">AllExceptionsFilter</span> <span class="kw">extends</span> <span class="cl">BaseExceptionFilter</span> <span class="pn">{</span>
+  <span class="fn">catch</span><span class="pn">(</span>exception<span class="pn">,</span> host<span class="pn">)</span> <span class="pn">{</span>
+    <span class="kw">super</span><span class="pn">.</span><span class="fn">catch</span><span class="pn">(</span>exception<span class="pn">,</span> host<span class="pn">);</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+      </div>
+    </div>
+
+    <div class="warn">
+      <span class="lbl">⚠️ Warning</span>
+      <p>Method-scoped và Controller-scoped filter extend <code>BaseExceptionFilter</code> <strong>không nên</strong> được khởi tạo với <code>new</code>. Thay vào đó, hãy để framework tự động khởi tạo chúng.</p>
+    </div>
+
+    <p>Global filter <strong>có thể</strong> extend base filter. Điều này có thể thực hiện theo một trong hai cách. Cách thứ nhất là inject tham chiếu <code>HttpAdapter</code> khi khởi tạo custom global filter:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div style="flex:1"></div>
+        <button class="cpbtn" onclick="cp(this)">Copy</button>
+      </div>
+      <div id="b14">
+        <div class="pane on"><pre><span class="kw">async function</span> <span class="fn">bootstrap</span><span class="pn">()</span> <span class="pn">{</span>
+  <span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> <span class="cl">NestFactory</span><span class="pn">.</span><span class="fn">create</span><span class="pn">(</span><span class="cl">AppModule</span><span class="pn">);</span>
+
+  <span class="kw">const</span> <span class="pn">{</span> httpAdapter <span class="pn">}</span> <span class="pn">=</span> app<span class="pn">.</span><span class="fn">get</span><span class="pn">(</span><span class="cl">HttpAdapterHost</span><span class="pn">);</span>
+  app<span class="pn">.</span><span class="fn">useGlobalFilters</span><span class="pn">(</span><span class="kw">new</span> <span class="cl">AllExceptionsFilter</span><span class="pn">(</span>httpAdapter<span class="pn">));</span>
+
+  <span class="kw">await</span> app<span class="pn">.</span><span class="fn">listen</span><span class="pn">(</span>process<span class="pn">.</span>env<span class="pn">.</span>PORT <span class="pn">??</span> <span class="num">3000</span><span class="pn">);</span>
+<span class="pn">}</span>
+<span class="fn">bootstrap</span><span class="pn">();</span></pre></div>
+      </div>
+    </div>
+
+    <p>Cách thứ hai là dùng token <code>APP_FILTER</code> <a href="#binding-filters">như đã trình bày ở trên</a>.</p>
+
+    <!-- PAGE NAV -->
+    <div class="page-nav">
+      <a class="pnbtn" href="nestjs-middleware-vi.html">
+        <div class="pnlbl">&larr; Trước</div>
+        <div class="pntitle">Middleware</div>
+      </a>
+      <a class="pnbtn r" href="https://docs.nestjs.com/pipes" target="_blank">
+        <div class="pnlbl">Tiếp theo &rarr;</div>
+        <div class="pntitle">Pipes</div>
+      </a>
+    </div>
+
+  </main>
+
+  <!-- ══════════════════ TOC ══════════════════ -->
+  <aside class="toc">
+    <div class="toc-title">Trong trang này</div>
+    <ul>
+      <li><a href="#throwing-standard-exceptions">Throwing standard exceptions</a></li>
+      <li><a href="#exceptions-logging">Exceptions logging</a></li>
+      <li><a href="#custom-exceptions">Custom exceptions</a></li>
+      <li><a href="#built-in-http-exceptions">Built-in HTTP exceptions</a></li>
+      <li><a href="#exception-filters-custom">Exception filters</a></li>
+      <li><a href="#arguments-host">Arguments host</a></li>
+      <li><a href="#binding-filters">Binding filters</a></li>
+      <li><a href="#catch-everything">Catch everything</a></li>
+      <li><a href="#inheritance">Inheritance</a></li>
+    </ul>
+  </aside>
+
+</div>
+
+<script>
+  function sw(btn, bid, lang) {
+    var c = document.getElementById(bid);
+    if (!c) return;
+    btn.parentElement.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('on'); });
+    btn.classList.add('on');
+    c.querySelectorAll('.pane').forEach(function(p) {
+      p.classList.remove('on');
+      if (p.dataset.lang === lang) p.classList.add('on');
+    });
+  }
+
+  function cp(btn) {
+    var wrap = btn.closest('.cb');
+    var pane = wrap.querySelector('.pane.on') || wrap.querySelector('.pane');
+    if (!pane) return;
+    navigator.clipboard.writeText(pane.textContent.trim()).then(function() {
+      var o = btn.textContent;
+      btn.textContent = 'Copied!';
+      btn.style.color = '#4ade80';
+      setTimeout(function() { btn.textContent = o; btn.style.color = ''; }, 1500);
+    });
+  }
+
+  var tocLinks = document.querySelectorAll('.toc a');
+  var heads    = document.querySelectorAll('h3[id]');
+  function hi() {
+    var cur = '';
+    heads.forEach(function(h) { if (scrollY >= h.offsetTop - 110) cur = h.id; });
+    tocLinks.forEach(function(a) {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + cur);
+    });
+  }
+  window.addEventListener('scroll', hi, { passive: true });
+  hi();
+</script>
+</body>
+</html>

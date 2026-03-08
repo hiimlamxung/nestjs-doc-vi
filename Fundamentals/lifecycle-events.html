@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Lifecycle Events | NestJS - Tài liệu tiếng Việt</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+    :root {
+      --bg:       #0e0e0e;
+      --surface:  #1a1a1a;
+      --surface2: #222;
+      --border:   #2a2a2a;
+      --border-l: #333;
+      --red:      #ea2845;
+      --red-l:    #ff4d6a;
+      --red-glow: rgba(234,40,69,.15);
+      --text:     #e8e8e8;
+      --muted:    #888;
+      --sec:      #b0b0b0;
+      --code-bg:  #1e1e1e;
+      --code-bd:  #2d2d2d;
+      --hint-bg:  #0d2a1a;
+      --hint-c:   #4ade80;
+      --warn-bg:  #2a1a0d;
+      --warn-c:   #fb923c;
+      --note-bg:  #0d1a2a;
+      --note-c:   #60a0d0;
+      --toc-w:    220px;
+      --font:     'Inter', sans-serif;
+      --mono:     'Source Code Pro', monospace;
+      --r:        6px;
+      --rl:       10px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font); background: var(--bg); color: var(--text); font-size: 15px; line-height: 1.78; }
+
+    .page { max-width: 1060px; margin: 0 auto; padding: 48px 32px 96px; display: flex; gap: 56px; align-items: flex-start; }
+    .content { flex: 1; min-width: 0; }
+
+    /* TOC */
+    .toc { width: var(--toc-w); flex-shrink: 0; position: sticky; top: 32px; align-self: flex-start; max-height: calc(100vh - 48px); overflow-y: auto; }
+    .toc::-webkit-scrollbar { width: 3px; }
+    .toc::-webkit-scrollbar-thumb { background: var(--border-l); border-radius: 2px; }
+    .toc-title { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); padding-bottom: 8px; margin-bottom: 8px; border-bottom: 1px solid var(--border); }
+    .toc ul { list-style: none; }
+    .toc ul li a { display: block; padding: 3.5px 0; font-size: 12.5px; color: var(--muted); text-decoration: none; line-height: 1.5; transition: color .15s; cursor: pointer; }
+    .toc ul li a:hover, .toc ul li a.active { color: var(--red-l); }
+
+    /* Banner */
+    .vi-banner { display: flex; align-items: center; gap: 10px; padding: 11px 16px; border: 1px solid rgba(234,40,69,.3); border-radius: var(--rl); background: linear-gradient(135deg,rgba(234,40,69,.1),rgba(234,40,69,.04)); font-size: 13px; color: var(--sec); margin-bottom: 32px; }
+    .vi-banner strong { color: var(--red-l); }
+
+    /* Headings */
+    h1 { font-size: 36px; font-weight: 700; letter-spacing: -.5px; line-height: 1.2; margin-bottom: 6px; }
+    h1::after { content:''; display:block; width:44px; height:3px; background:var(--red); border-radius:2px; margin-top:12px; }
+    h3 { font-size: 19px; font-weight: 600; letter-spacing: -.2px; margin: 40px 0 12px; display: flex; align-items: center; gap: 8px; scroll-margin-top: 80px; }
+    .anchor { font-size: 14px; color: var(--muted); text-decoration: none; opacity: 0; transition: opacity .2s; }
+    h3:hover .anchor { opacity: 1; }
+    p { color: var(--sec); line-height: 1.82; margin-bottom: 16px; }
+    p:last-child { margin-bottom: 0; }
+    a { color: var(--red-l); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    strong { color: var(--text); font-weight: 600; }
+    ul { color: var(--sec); padding-left: 22px; line-height: 2.1; margin: 16px 0; }
+
+    /* inline code */
+    code { font-family: var(--mono); font-size: 13px; background: var(--code-bg); border: 1px solid var(--code-bd); padding: 1px 6px; border-radius: 4px; color: #f9a8d4; }
+
+    /* Callouts */
+    .hint, .warn, .note {
+      margin: 18px 0; padding: 12px 16px; border-left: 3px solid;
+      border-radius: var(--r); font-size: 13.5px; line-height: 1.72;
+    }
+    .hint { background: var(--hint-bg); border-color: var(--hint-c); color: #a7f3d0; }
+    .warn { background: var(--warn-bg); border-color: var(--warn-c); color: #fed7aa; }
+    .note { background: var(--note-bg); border-color: var(--note-c); color: #bae6fd; }
+    .hint p, .warn p, .note p { margin: 0; color: inherit; }
+    .lbl { display: block; font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 4px; }
+    .hint .lbl { color: var(--hint-c); }
+    .warn .lbl  { color: var(--warn-c); }
+    .note .lbl  { color: var(--note-c); }
+
+    /* Code blocks */
+    .cb { margin: 18px 0; border: 1px solid var(--code-bd); border-radius: var(--rl); overflow: hidden; background: var(--code-bg); }
+    .cb-head { display: flex; align-items: center; justify-content: space-between; padding: 8px 14px; background: #181818; border-bottom: 1px solid var(--code-bd); min-height: 38px; }
+    .cb-fname { font-family: var(--mono); font-size: 11.5px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+    .cb-fname::before { content:''; display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--red); }
+    .cb-right { display: flex; align-items: center; gap: 6px; }
+    .tabs { display: flex; gap: 3px; }
+    .tab { padding: 4px 11px; font-size: 11px; font-family: var(--mono); font-weight: 500; border: 1px solid transparent; border-radius: 4px; color: var(--muted); cursor: pointer; user-select: none; transition: all .14s; }
+    .tab.on { color: var(--red-l); background: var(--red-glow); border-color: var(--red); }
+    .tab:hover:not(.on) { color: var(--text); background: rgba(255,255,255,.04); }
+    .cpbtn { padding: 3px 9px; font-size: 10.5px; font-family: var(--mono); background: var(--surface); border: 1px solid var(--border-l); color: var(--muted); border-radius: 4px; cursor: pointer; transition: all .14s; }
+    .cpbtn:hover { background: var(--surface2); color: var(--text); }
+    .pane { display: none; }
+    .pane.on { display: block; }
+    pre { padding: 18px 20px; overflow-x: auto; font-family: var(--mono); font-size: 13.5px; line-height: 1.65; color: #abb2bf; }
+    pre::-webkit-scrollbar { height: 5px; }
+    pre::-webkit-scrollbar-thumb { background: var(--border-l); border-radius: 3px; }
+
+    /* syntax */
+    .kw  { color: #c678dd; }
+    .fn  { color: #61afef; }
+    .str { color: #98c379; }
+    .dec { color: #e5c07b; }
+    .typ { color: #e5c07b; }
+    .cm  { color: #5c6370; font-style: italic; }
+    .pn  { color: #abb2bf; }
+    .num { color: #d19a66; }
+    .cl  { color: #e06c75; }
+    .tmpl{ color: #d19a66; }
+
+    /* Page nav */
+    .page-nav { display: flex; justify-content: space-between; margin-top: 52px; gap: 16px; }
+    .pnbtn { display: flex; flex-direction: column; padding: 14px 18px; border: 1px solid var(--border); border-radius: var(--rl); text-decoration: none; transition: all .2s; min-width: 150px; }
+    .pnbtn:hover { border-color: var(--red); background: var(--red-glow); text-decoration: none; }
+    .pnlbl   { font-size: 10.5px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); margin-bottom: 3px; }
+    .pntitle { font-size: 14px; font-weight: 600; color: var(--text); }
+    .pnbtn.r { text-align: right; margin-left: auto; }
+
+    @media (max-width: 860px) { .toc { display: none; } }
+    @media (max-width: 600px) { .page { padding: 24px 16px 64px; } }
+  
+    /* Table */
+    table { width:100%; border-collapse:collapse; margin:18px 0; font-size:14px; }
+    thead { background:var(--surface); }
+    th { text-align:left; padding:10px 14px; font-weight:600; color:var(--text); border-bottom:2px solid var(--border-l); font-size:13px; }
+    td { padding:10px 14px; border-bottom:1px solid var(--border); color:var(--sec); line-height:1.65; vertical-align:top; }
+    td code { font-size:12.5px; }
+    tr:hover td { background:rgba(255,255,255,.02); }
+
+    /* Diagram */
+    .diagram { margin:24px 0; border:1px solid var(--border-l); border-radius:var(--rl); background:var(--surface); overflow:hidden; }
+    .diagram-title { text-align:center; font-weight:600; color:var(--text); padding:16px 20px 4px; font-size:14px; }
+    .dg-row { display:flex; align-items:flex-start; padding:0 20px; gap:0; }
+    .dg-left { width:240px; flex-shrink:0; display:flex; align-items:center; justify-content:center; padding:8px 0; }
+    .dg-right { flex:1; padding:8px 12px; font-size:12.5px; color:var(--muted); line-height:1.7; }
+    .dg-box { display:inline-block; padding:6px 16px; border-radius:5px; font-family:var(--mono); font-size:12px; font-weight:600; text-align:center; min-width:200px; }
+    .dg-box.init { background:rgba(37,99,235,.2); color:#60a5fa; border:1px solid rgba(37,99,235,.35); }
+    .dg-box.run  { background:rgba(34,197,94,.15); color:#4ade80; border:1px solid rgba(34,197,94,.3); }
+    .dg-box.term { background:rgba(239,68,68,.15); color:#f87171; border:1px solid rgba(239,68,68,.3); }
+    .dg-box.neutral { background:var(--surface2); color:var(--sec); border:1px solid var(--border-l); }
+    .dg-label { text-align:center; padding:3px 0; font-size:11px; color:var(--muted); }
+    .dg-signal { text-align:center; padding:6px 20px; }
+    .dg-signal-box { display:inline-block; padding:5px 18px; border-radius:5px; background:rgba(239,68,68,.12); color:#f87171; border:1px dashed rgba(239,68,68,.4); font-size:12px; font-weight:600; }
+    .dg-arrow { text-align:center; color:var(--muted); font-size:12px; padding:2px 0; }
+    .dg-end { text-align:center; padding:12px 20px; font-size:12.5px; color:var(--muted); }
+</style>
+</head>
+<body>
+<div class="page">
+<main class="content">
+
+<div class="vi-banner">
+<span style="font-size:17px">🇻🇳</span>
+<div>Dịch từ <strong><a href="https://docs.nestjs.com/fundamentals/lifecycle-events" target="_blank">docs.nestjs.com/fundamentals/lifecycle-events</a></strong>. Thuật ngữ kỹ thuật giữ nguyên tiếng Anh.</div>
+</div>
+
+<h1>Lifecycle Events</h1>
+
+<p style="margin-top:18px">Một ứng dụng Nest, cũng như mọi phần tử trong ứng dụng, đều có một lifecycle được quản lý bởi Nest. Nest cung cấp các <strong>lifecycle hooks</strong> cho phép bạn quan sát các sự kiện lifecycle quan trọng, và khả năng thực thi code (chạy registered code trên các modules, providers hoặc controllers) khi các sự kiện đó xảy ra.</p>
+
+<h3 id="lifecycle-sequence">Lifecycle sequence <a class="anchor" href="#lifecycle-sequence">#</a></h3>
+
+<p>Sơ đồ sau mô tả trình tự các sự kiện lifecycle chính của ứng dụng, từ thời điểm ứng dụng được bootstrapped cho đến khi tiến trình Node thoát. Toàn bộ lifecycle có thể được chia thành ba giai đoạn: <strong>initializing</strong>, <strong>running</strong> và <strong>terminating</strong>. Sử dụng lifecycle này, bạn có thể lên kế hoạch khởi tạo phù hợp cho modules và services, quản lý các kết nối đang hoạt động, và shutdown ứng dụng một cách graceful khi nhận được tín hiệu termination.</p>
+
+<div class="diagram">
+<div class="diagram-title">Lifecycle Sequence</div>
+
+<div class="dg-row"><div class="dg-left"><span class="dg-box neutral">Bootstrapping starts</span></div><div class="dg-right">Nest core bootstrapping</div></div>
+<div class="dg-arrow">↓</div>
+
+<div class="dg-row"><div class="dg-left"><span class="dg-box init">onModuleInit</span></div><div class="dg-right">Với mỗi module, sau khi module initialization:<br>• await child controller &amp; provider <code>onModuleInit()</code> methods<br>• await module <code>onModuleInit()</code> method</div></div>
+<div class="dg-arrow">↓</div>
+
+<div class="dg-row"><div class="dg-left"><span class="dg-box init">onApplicationBootstrap</span></div><div class="dg-right">Với mỗi module:<br>• await child controller &amp; provider <code>onApplicationBootstrap()</code> methods<br>• await module <code>onApplicationBootstrap()</code> method</div></div>
+<div class="dg-arrow">↓</div>
+
+<div class="dg-row"><div class="dg-left"><span class="dg-box neutral">Start listeners</span></div><div class="dg-right">Với HTTP server, WS server, mỗi microservice:<br>• await connections open/ready</div></div>
+<div class="dg-arrow">↓</div>
+
+<div class="dg-row"><div class="dg-left"><span class="dg-box run">Application is running</span></div><div class="dg-right">Normal application processing</div></div>
+<div class="dg-arrow">↓</div>
+
+<div class="dg-signal"><span class="dg-signal-box">⚡ Termination signal received</span></div>
+<div class="dg-arrow">↓</div>
+
+<div class="dg-row"><div class="dg-left"><span class="dg-box term">onModuleDestroy</span></div><div class="dg-right">Với mỗi module:<br>• await child controller &amp; provider <code>onModuleDestroy()</code> methods<br>• await module <code>onModuleDestroy()</code> method</div></div>
+<div class="dg-arrow">↓</div>
+
+<div class="dg-row"><div class="dg-left"><span class="dg-box term">beforeApplicationShutdown</span></div><div class="dg-right">Với mỗi module:<br>• await child controller &amp; provider <code>beforeApplicationShutdown()</code> methods<br>• await module <code>beforeApplicationShutdown()</code> method</div></div>
+<div class="dg-arrow">↓</div>
+
+<div class="dg-row"><div class="dg-left"><span class="dg-box neutral">Stop listeners</span></div><div class="dg-right">Với HTTP server, WS server, mỗi microservice:<br>• await connection termination</div></div>
+<div class="dg-arrow">↓</div>
+
+<div class="dg-row"><div class="dg-left"><span class="dg-box term">onApplicationShutdown</span></div><div class="dg-right">Với mỗi module:<br>• await child controller &amp; provider <code>onApplicationShutdown()</code> methods<br>• await module <code>onApplicationShutdown()</code> method</div></div>
+<div class="dg-arrow">↓</div>
+
+<div class="dg-end"><strong>Process exits</strong></div>
+</div>
+
+<h3 id="lifecycle-events">Lifecycle events <a class="anchor" href="#lifecycle-events">#</a></h3>
+
+<p>Các lifecycle events xảy ra trong quá trình bootstrapping và shutdown ứng dụng. Nest gọi các lifecycle hook methods đã đăng ký trên modules, providers và controllers tại mỗi sự kiện lifecycle sau đây (các <strong>shutdown hooks</strong> cần được bật trước, như mô tả <a href="#application-shutdown">bên dưới</a>). Như minh họa trong sơ đồ trên, Nest cũng gọi các phương thức nền tảng tương ứng để bắt đầu lắng nghe kết nối, và ngừng lắng nghe kết nối.</p>
+
+<p>Trong bảng dưới đây, <code>onModuleInit</code> và <code>onApplicationBootstrap</code> chỉ được kích hoạt khi bạn gọi rõ ràng <code>app.init()</code> hoặc <code>app.listen()</code>.</p>
+
+<p>Trong bảng dưới đây, <code>onModuleDestroy</code>, <code>beforeApplicationShutdown</code> và <code>onApplicationShutdown</code> chỉ được kích hoạt khi bạn gọi rõ ràng <code>app.close()</code> hoặc nếu tiến trình nhận được một system signal đặc biệt (như SIGTERM) và bạn đã gọi đúng <code>enableShutdownHooks</code> khi application bootstrap (xem phần <strong>Application shutdown</strong> bên dưới).</p>
+
+<table>
+<thead>
+<tr><th>Lifecycle hook method</th><th>Lifecycle event kích hoạt hook method call</th></tr>
+</thead>
+<tbody>
+<tr><td><code>onModuleInit()</code></td><td>Được gọi một lần sau khi các dependencies của host module đã được resolve.</td></tr>
+<tr><td><code>onApplicationBootstrap()</code></td><td>Được gọi một lần sau khi tất cả modules đã được khởi tạo, nhưng trước khi lắng nghe kết nối.</td></tr>
+<tr><td><code>onModuleDestroy()</code>*</td><td>Được gọi sau khi nhận được tín hiệu termination (ví dụ: <code>SIGTERM</code>).</td></tr>
+<tr><td><code>beforeApplicationShutdown()</code>*</td><td>Được gọi sau khi tất cả các handler <code>onModuleDestroy()</code> hoàn thành (Promises resolved hoặc rejected); sau khi hoàn tất (Promises resolved hoặc rejected), tất cả các kết nối hiện tại sẽ được đóng (gọi <code>app.close()</code>).</td></tr>
+<tr><td><code>onApplicationShutdown()</code>*</td><td>Được gọi sau khi các kết nối đã đóng (<code>app.close()</code> resolves).</td></tr>
+</tbody>
+</table>
+
+<p>* Đối với các events này, nếu bạn không gọi <code>app.close()</code> một cách rõ ràng, bạn phải opt-in để chúng hoạt động với các system signals như <code>SIGTERM</code>. Xem phần <strong>Application shutdown</strong> bên dưới.</p>
+
+<div class="warn"><span class="lbl">⚠️ Warning</span><p>Các lifecycle hooks được liệt kê ở trên không được kích hoạt cho các class có scope là <strong>request-scoped</strong>. Các class request-scoped không gắn với application lifecycle và thời gian tồn tại của chúng là không thể đoán trước. Chúng được tạo riêng cho mỗi request và tự động được garbage-collected sau khi response được gửi đi.</p></div>
+
+<div class="hint"><span class="lbl">💡 Hint</span><p>Thứ tự thực thi của <code>onModuleInit()</code> và <code>onApplicationBootstrap()</code> phụ thuộc trực tiếp vào thứ tự import modules, chờ đợi hook trước đó hoàn thành.</p></div>
+
+<h3 id="usage">Usage <a class="anchor" href="#usage">#</a></h3>
+
+<p>Mỗi lifecycle hook được đại diện bởi một interface. Các interfaces về mặt kỹ thuật là tùy chọn vì chúng không tồn tại sau khi TypeScript biên dịch. Tuy nhiên, best practice là sử dụng chúng để có được lợi ích từ strong typing và editor tooling. Để đăng ký một lifecycle hook, hãy implement interface tương ứng. Ví dụ, để đăng ký một method được gọi trong quá trình module initialization trên một class cụ thể (ví dụ: Controller, Provider hoặc Module), hãy implement interface <code>OnModuleInit</code> bằng cách cung cấp phương thức <code>onModuleInit()</code>, như trình bày bên dưới:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">users.service.ts</div><div class="cb-right"><div class="tabs"><div class="tab on" onclick="sw(this,'c0','ts')">TS</div><div class="tab" onclick="sw(this,'c0','js')">JS</div></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div id="c0"><div class="pane on" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">{</span> Injectable<span class="pn">,</span> OnModuleInit <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+
+<span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">UsersService</span> <span class="kw">implements</span> <span class="typ">OnModuleInit</span> <span class="pn">{</span>
+  <span class="fn">onModuleInit</span><span class="pn">() {</span>
+    console<span class="pn">.</span><span class="fn">log</span><span class="pn">(</span><span class="str">`The module has been initialized.`</span><span class="pn">);</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div><div class="pane" data-lang="js"><pre><span class="kw">import</span> <span class="pn">{</span> Injectable <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+
+<span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">UsersService</span> <span class="pn">{</span>
+  <span class="fn">onModuleInit</span><span class="pn">() {</span>
+    console<span class="pn">.</span><span class="fn">log</span><span class="pn">(</span><span class="str">`The module has been initialized.`</span><span class="pn">);</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div></div></div>
+
+<h3 id="asynchronous-initialization">Asynchronous initialization <a class="anchor" href="#asynchronous-initialization">#</a></h3>
+
+<p>Cả hai hooks <code>OnModuleInit</code> và <code>OnApplicationBootstrap</code> đều cho phép bạn trì hoãn quá trình initialization của ứng dụng (trả về một <code>Promise</code> hoặc đánh dấu method là <code>async</code> và <code>await</code> việc hoàn thành một phương thức bất đồng bộ trong thân method).</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><div class="tabs"><div class="tab on" onclick="sw(this,'c1','ts')">TS</div><div class="tab" onclick="sw(this,'c1','js')">JS</div></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div id="c1"><div class="pane on" data-lang="ts"><pre><span class="kw">async</span> <span class="fn">onModuleInit</span><span class="pn">():</span> <span class="typ">Promise</span><span class="pn">&lt;</span><span class="typ">void</span><span class="pn">&gt; {</span>
+  <span class="kw">await</span> <span class="kw">this</span><span class="pn">.</span><span class="fn">fetch</span><span class="pn">();</span>
+<span class="pn">}</span></pre></div><div class="pane" data-lang="js"><pre><span class="kw">async</span> <span class="fn">onModuleInit</span><span class="pn">() {</span>
+  <span class="kw">await</span> <span class="kw">this</span><span class="pn">.</span><span class="fn">fetch</span><span class="pn">();</span>
+<span class="pn">}</span></pre></div></div></div>
+
+<h3 id="application-shutdown">Application shutdown <a class="anchor" href="#application-shutdown">#</a></h3>
+
+<p>Các hooks <code>onModuleDestroy()</code>, <code>beforeApplicationShutdown()</code> và <code>onApplicationShutdown()</code> được gọi trong giai đoạn terminating (để phản hồi lời gọi rõ ràng đến <code>app.close()</code> hoặc khi nhận được các system signals như SIGTERM nếu đã opt-in). Tính năng này thường được sử dụng với <strong>Kubernetes</strong> để quản lý lifecycle của containers, bởi <strong>Heroku</strong> cho dynos hoặc các services tương tự.</p>
+
+<p>Các shutdown hook listeners tiêu thụ tài nguyên hệ thống, nên chúng bị tắt theo mặc định. Để sử dụng shutdown hooks, bạn <strong>phải bật listeners</strong> bằng cách gọi <code>enableShutdownHooks()</code>:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">main.ts</div><div class="cb-right"><div class="tabs"><div class="tab on" onclick="sw(this,'c2','ts')">TS</div><div class="tab" onclick="sw(this,'c2','js')">JS</div></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div id="c2"><div class="pane on" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">{</span> NestFactory <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/core'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> AppModule <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./app.module'</span><span class="pn">;</span>
+
+<span class="kw">async function</span> <span class="fn">bootstrap</span><span class="pn">() {</span>
+  <span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> NestFactory<span class="pn">.</span><span class="fn">create</span><span class="pn">(</span>AppModule<span class="pn">);</span>
+
+  <span class="cm">// Starts listening for shutdown hooks</span>
+  app<span class="pn">.</span><span class="fn">enableShutdownHooks</span><span class="pn">();</span>
+
+  <span class="kw">await</span> app<span class="pn">.</span><span class="fn">listen</span><span class="pn">(</span>process<span class="pn">.</span>env<span class="pn">.</span>PORT <span class="pn">??</span> <span class="num">3000</span><span class="pn">);</span>
+<span class="pn">}</span>
+<span class="fn">bootstrap</span><span class="pn">();</span></pre></div><div class="pane" data-lang="js"><pre><span class="kw">import</span> <span class="pn">{</span> NestFactory <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/core'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> AppModule <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./app.module'</span><span class="pn">;</span>
+
+<span class="kw">async function</span> <span class="fn">bootstrap</span><span class="pn">() {</span>
+  <span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> NestFactory<span class="pn">.</span><span class="fn">create</span><span class="pn">(</span>AppModule<span class="pn">);</span>
+
+  <span class="cm">// Starts listening for shutdown hooks</span>
+  app<span class="pn">.</span><span class="fn">enableShutdownHooks</span><span class="pn">();</span>
+
+  <span class="kw">await</span> app<span class="pn">.</span><span class="fn">listen</span><span class="pn">(</span>process<span class="pn">.</span>env<span class="pn">.</span>PORT <span class="pn">??</span> <span class="num">3000</span><span class="pn">);</span>
+<span class="pn">}</span>
+<span class="fn">bootstrap</span><span class="pn">();</span></pre></div></div></div>
+
+<div class="warn"><span class="lbl">⚠️ Warning</span><p>Do các hạn chế cố hữu của platform, NestJS có hỗ trợ hạn chế cho application shutdown hooks trên Windows. Bạn có thể kỳ vọng <code>SIGINT</code> hoạt động, cũng như <code>SIGBREAK</code> và ở một mức độ nào đó là <code>SIGHUP</code> - <a href="https://nodejs.org/api/process.html#process_signal_events" target="_blank">đọc thêm</a>. Tuy nhiên <code>SIGTERM</code> sẽ không bao giờ hoạt động trên Windows vì việc kill một tiến trình trong task manager là vô điều kiện, "tức là, không có cách nào để bất kỳ ứng dụng nào phát hiện hoặc ngăn chặn điều đó". Đây là một số <a href="https://github.com/libuv/libuv/blob/v1.x/docs/src/signal.rst" target="_blank">tài liệu liên quan</a> từ libuv để tìm hiểu thêm về cách <code>SIGINT</code>, <code>SIGBREAK</code> và các tín hiệu khác được xử lý trên Windows. Ngoài ra, xem tài liệu Node.js về <a href="https://nodejs.org/api/process.html#process_signal_events" target="_blank">Process Signal Events</a></p></div>
+
+<div class="note"><span class="lbl">ℹ️ Info</span><p><code>enableShutdownHooks</code> tiêu thụ bộ nhớ bằng cách khởi động listeners. Trong trường hợp bạn đang chạy nhiều ứng dụng Nest trong một tiến trình Node duy nhất (ví dụ: khi chạy parallel tests với Jest), Node có thể cảnh báo về quá nhiều listener processes. Vì lý do này, <code>enableShutdownHooks</code> không được bật theo mặc định. Hãy lưu ý điều kiện này khi bạn đang chạy nhiều instances trong một tiến trình Node duy nhất.</p></div>
+
+<p>Khi ứng dụng nhận được tín hiệu termination, nó sẽ gọi bất kỳ phương thức <code>onModuleDestroy()</code>, <code>beforeApplicationShutdown()</code>, rồi <code>onApplicationShutdown()</code> đã đăng ký (theo trình tự mô tả ở trên) với signal tương ứng làm tham số đầu tiên. Nếu một function đã đăng ký chờ đợi một lời gọi bất đồng bộ (trả về một promise), Nest sẽ không tiếp tục trình tự cho đến khi promise được resolved hoặc rejected.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><div class="tabs"><div class="tab on" onclick="sw(this,'c3','ts')">TS</div><div class="tab" onclick="sw(this,'c3','js')">JS</div></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div id="c3"><div class="pane on" data-lang="ts"><pre><span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">class</span> <span class="cl">UsersService</span> <span class="kw">implements</span> <span class="typ">OnApplicationShutdown</span> <span class="pn">{</span>
+  <span class="fn">onApplicationShutdown</span><span class="pn">(</span>signal<span class="pn">:</span> <span class="typ">string</span><span class="pn">) {</span>
+    console<span class="pn">.</span><span class="fn">log</span><span class="pn">(</span>signal<span class="pn">);</span> <span class="cm">// e.g. "SIGINT"</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div><div class="pane" data-lang="js"><pre><span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">class</span> <span class="cl">UsersService</span> <span class="pn">{</span>
+  <span class="fn">onApplicationShutdown</span><span class="pn">(</span>signal<span class="pn">) {</span>
+    console<span class="pn">.</span><span class="fn">log</span><span class="pn">(</span>signal<span class="pn">);</span> <span class="cm">// e.g. "SIGINT"</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div></div></div>
+
+<div class="note"><span class="lbl">ℹ️ Info</span><p>Việc gọi <code>app.close()</code> không kết thúc tiến trình Node mà chỉ kích hoạt các hooks <code>onModuleDestroy()</code> và <code>onApplicationShutdown()</code>, nên nếu có một số intervals, long-running background tasks, v.v. thì tiến trình sẽ không tự động được kết thúc.</p></div>
+
+
+<!-- Page navigation -->
+<div class="page-nav">
+<a class="pnbtn" href="execution-context.html">
+<span class="pnlbl">← Trước</span>
+<span class="pntitle">Execution context</span>
+</a>
+<a class="pnbtn r" href="discovery-service.html">
+<span class="pnlbl">Tiếp →</span>
+<span class="pntitle">Discovery service</span>
+</a>
+</div>
+
+</main>
+
+<aside class="toc">
+<div class="toc-title">Nội dung</div>
+<ul>
+<li><a href="#lifecycle-sequence">Lifecycle sequence</a></li>
+<li><a href="#lifecycle-events">Lifecycle events</a></li>
+<li><a href="#usage">Usage</a></li>
+<li><a href="#asynchronous-initialization">Asynchronous initialization</a></li>
+<li><a href="#application-shutdown">Application shutdown</a></li>
+</ul>
+</aside>
+
+</div>
+<script>
+  function sw(btn, bid, lang) {
+    var c = document.getElementById(bid);
+    if (!c) return;
+    btn.parentElement.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('on'); });
+    btn.classList.add('on');
+    c.querySelectorAll('.pane').forEach(function(p) {
+      p.classList.remove('on');
+      if (p.dataset.lang === lang) p.classList.add('on');
+    });
+  }
+  function cp(btn) {
+    var wrap = btn.closest('.cb');
+    var pane = wrap.querySelector('.pane.on') || wrap.querySelector('.pane');
+    if (!pane) return;
+    navigator.clipboard.writeText(pane.textContent.trim()).then(function() {
+      var o = btn.textContent;
+      btn.textContent = 'Copied!';
+      btn.style.color = '#4ade80';
+      setTimeout(function() { btn.textContent = o; btn.style.color = ''; }, 1500);
+    });
+  }
+  
+  document.querySelectorAll('.toc a').forEach(function(link) {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      var target = document.querySelector(this.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
+  var tocLinks = document.querySelectorAll('.toc a');
+  var heads = document.querySelectorAll('h3[id]');
+  function hi() {
+    var cur = '';
+    heads.forEach(function(h) { 
+      if (scrollY >= h.offsetTop - 120) cur = h.id; 
+    });
+    tocLinks.forEach(function(a) {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + cur);
+    });
+  }
+  window.addEventListener('scroll', hi, { passive: true });
+  hi();
+</script>
+</body>
+</html>

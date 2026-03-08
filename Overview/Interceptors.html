@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Interceptors | NestJS - Tài liệu tiếng Việt</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:       #0e0e0e;
+      --surface:  #1a1a1a;
+      --surface2: #222;
+      --border:   #2a2a2a;
+      --border-l: #333;
+      --red:      #ea2845;
+      --red-l:    #ff4d6a;
+      --red-glow: rgba(234,40,69,.15);
+      --text:     #e8e8e8;
+      --muted:    #888;
+      --sec:      #b0b0b0;
+      --code-bg:  #1e1e1e;
+      --code-bd:  #2d2d2d;
+      --hint-bg:  #0d2a1a;
+      --hint-c:   #4ade80;
+      --warn-bg:  #2a1a0d;
+      --warn-c:   #fb923c;
+      --note-bg:  #0d1a2a;
+      --note-c:   #60a0d0;
+      --toc-w:    220px;
+      --font:     'Inter', sans-serif;
+      --mono:     'Source Code Pro', monospace;
+      --r:        6px;
+      --rl:       10px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font); background: var(--bg); color: var(--text); font-size: 15px; line-height: 1.78; }
+
+    .page { max-width: 1060px; margin: 0 auto; padding: 48px 32px 96px; display: flex; gap: 56px; align-items: flex-start; }
+    .content { flex: 1; min-width: 0; }
+
+    /* TOC */
+    .toc { width: var(--toc-w); flex-shrink: 0; position: sticky; top: 32px; align-self: flex-start; max-height: calc(100vh - 48px); overflow-y: auto; }
+    .toc::-webkit-scrollbar { width: 3px; }
+    .toc::-webkit-scrollbar-thumb { background: var(--border-l); border-radius: 2px; }
+    .toc-title { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); padding-bottom: 8px; margin-bottom: 8px; border-bottom: 1px solid var(--border); }
+    .toc ul { list-style: none; }
+    .toc ul li a { display: block; padding: 3.5px 0; font-size: 12.5px; color: var(--muted); text-decoration: none; line-height: 1.5; transition: color .15s; }
+    .toc ul li a:hover, .toc ul li a.active { color: var(--red-l); }
+
+    /* Banner */
+    .vi-banner { display: flex; align-items: center; gap: 10px; padding: 11px 16px; border: 1px solid rgba(234,40,69,.3); border-radius: var(--rl); background: linear-gradient(135deg,rgba(234,40,69,.1),rgba(234,40,69,.04)); font-size: 13px; color: var(--sec); margin-bottom: 32px; }
+    .vi-banner strong { color: var(--red-l); }
+
+    /* Headings */
+    h1 { font-size: 36px; font-weight: 700; letter-spacing: -.5px; line-height: 1.2; margin-bottom: 6px; }
+    h1::after { content:''; display:block; width:44px; height:3px; background:var(--red); border-radius:2px; margin-top:12px; }
+    h3 { font-size: 19px; font-weight: 600; letter-spacing: -.2px; margin: 40px 0 12px; display: flex; align-items: center; gap: 8px; }
+    .anchor { font-size: 14px; color: var(--muted); text-decoration: none; opacity: 0; transition: opacity .2s; }
+    h3:hover .anchor { opacity: 1; }
+    p { color: var(--sec); line-height: 1.82; margin-bottom: 16px; }
+    p:last-child { margin-bottom: 0; }
+    a { color: var(--red-l); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    strong { color: var(--text); font-weight: 600; }
+
+    /* inline code */
+    code { font-family: var(--mono); font-size: 13px; background: var(--code-bg); border: 1px solid var(--code-bd); padding: 1px 6px; border-radius: 4px; color: #f9a8d4; }
+
+    /* Callouts */
+    .hint, .warn, .note {
+      margin: 18px 0; padding: 12px 16px; border-left: 3px solid;
+      border-radius: var(--r); font-size: 13.5px; line-height: 1.72;
+    }
+    .hint { background: var(--hint-bg); border-color: var(--hint-c); color: #a7f3d0; }
+    .warn { background: var(--warn-bg); border-color: var(--warn-c); color: #fed7aa; }
+    .note { background: var(--note-bg); border-color: var(--note-c); color: #bae6fd; }
+    .hint p, .warn p, .note p { margin: 0; color: inherit; }
+    .lbl { display: block; font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 4px; }
+    .hint .lbl { color: var(--hint-c); }
+    .warn .lbl  { color: var(--warn-c); }
+    .note .lbl  { color: var(--note-c); }
+
+    /* Code blocks */
+    .cb { margin: 18px 0; border: 1px solid var(--code-bd); border-radius: var(--rl); overflow: hidden; background: var(--code-bg); }
+    .cb-head { display: flex; align-items: center; justify-content: space-between; padding: 8px 14px; background: #181818; border-bottom: 1px solid var(--code-bd); min-height: 38px; }
+    .cb-fname { font-family: var(--mono); font-size: 11.5px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+    .cb-fname::before { content:''; display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--red); }
+    .cb-right { display: flex; align-items: center; gap: 6px; }
+    .tabs { display: flex; gap: 3px; }
+    .tab { padding: 4px 11px; font-size: 11px; font-family: var(--mono); font-weight: 500; border: 1px solid transparent; border-radius: 4px; color: var(--muted); cursor: pointer; user-select: none; transition: all .14s; }
+    .tab.on { color: var(--red-l); background: var(--red-glow); border-color: var(--red); }
+    .tab:hover:not(.on) { color: var(--text); background: rgba(255,255,255,.04); }
+    .cpbtn { padding: 3px 9px; font-size: 10.5px; font-family: var(--mono); background: var(--surface); border: 1px solid var(--border-l); color: var(--muted); border-radius: 4px; cursor: pointer; transition: all .14s; }
+    .cpbtn:hover { background: var(--surface2); color: var(--text); }
+    .pane { display: none; }
+    .pane.on { display: block; }
+    pre { padding: 18px 20px; overflow-x: auto; font-family: var(--mono); font-size: 13.5px; line-height: 1.65; color: #abb2bf; }
+    pre::-webkit-scrollbar { height: 5px; }
+    pre::-webkit-scrollbar-thumb { background: var(--border-l); border-radius: 3px; }
+
+    /* syntax */
+    .kw  { color: #c678dd; }
+    .fn  { color: #61afef; }
+    .str { color: #98c379; }
+    .dec { color: #e5c07b; }
+    .typ { color: #e5c07b; }
+    .cm  { color: #5c6370; font-style: italic; }
+    .pn  { color: #abb2bf; }
+    .num { color: #d19a66; }
+    .cl  { color: #e06c75; }
+    .tmpl{ color: #d19a66; }
+
+    /* Interceptor diagram */
+    .intercept-diagram { margin: 24px 0 28px; padding: 24px 20px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--rl); }
+    .id-row { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 0; }
+    .id-box { padding: 10px 14px; border-radius: var(--r); font-size: 12px; font-weight: 600; font-family: var(--mono); border: 1px solid; text-align: center; line-height: 1.5; }
+    .id-box.req    { background: #1a2a3a; border-color: #2a4a6a; color: #60a0d0; }
+    .id-box.inter  { background: rgba(234,40,69,.12); border-color: var(--red); color: var(--red-l); }
+    .id-box.hand   { background: #1a2a1a; border-color: #2a5a2a; color: #4ade80; }
+    .id-box.resp   { background: #2a1a2a; border-color: #4a2a5a; color: #c080e0; }
+    .id-arrow { padding: 0 10px; color: var(--muted); font-size: 16px; }
+    .id-caption { text-align: center; font-size: 11.5px; color: var(--muted); margin-top: 14px; }
+
+    /* AOP capability list */
+    .aop-list { margin: 18px 0; display: flex; flex-direction: column; gap: 8px; }
+    .aop-item { display: flex; align-items: flex-start; gap: 12px; padding: 10px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); font-size: 13.5px; color: var(--sec); }
+    .aop-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+    /* output block */
+    .output-block { margin: 14px 0; padding: 14px 18px; background: #0a0a0a; border: 1px solid #1a3a1a; border-radius: var(--rl); font-family: var(--mono); font-size: 13.5px; line-height: 1.8; color: #4ade80; }
+    .output-label { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); margin-bottom: 6px; }
+
+    /* JSON block */
+    .json-block { margin: 14px 0; padding: 16px 20px; background: #161616; border: 1px solid var(--code-bd); border-radius: var(--rl); font-family: var(--mono); font-size: 13.5px; line-height: 1.7; color: #abb2bf; }
+    .json-key { color: #e06c75; }
+    .json-str { color: #98c379; }
+    .json-arr { color: #abb2bf; }
+
+    /* Use-case cards */
+    .usecase-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); gap: 10px; margin: 18px 0; }
+    .usecase-card { padding: 12px 16px; border-radius: var(--rl); border: 1px solid var(--border); background: var(--surface); font-size: 13px; color: var(--sec); line-height: 1.6; }
+    .usecase-card .uc-title { font-weight: 700; color: var(--text); margin-bottom: 4px; font-size: 13px; }
+
+    /* Page nav */
+    .page-nav { display: flex; justify-content: space-between; margin-top: 52px; gap: 16px; }
+    .pnbtn { display: flex; flex-direction: column; padding: 14px 18px; border: 1px solid var(--border); border-radius: var(--rl); text-decoration: none; transition: all .2s; min-width: 150px; }
+    .pnbtn:hover { border-color: var(--red); background: var(--red-glow); text-decoration: none; }
+    .pnlbl   { font-size: 10.5px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); margin-bottom: 3px; }
+    .pntitle { font-size: 14px; font-weight: 600; color: var(--text); }
+    .pnbtn.r { text-align: right; margin-left: auto; }
+
+    @media (max-width: 860px) { .toc { display: none; } }
+    @media (max-width: 600px) { .page { padding: 24px 16px 64px; } }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ════════════════════ MAIN CONTENT ════════════════════ -->
+  <main class="content">
+
+    <div class="vi-banner">
+      <span style="font-size:17px">🇻🇳</span>
+      <div>Dịch từ <strong><a href="https://docs.nestjs.com/interceptors" target="_blank">docs.nestjs.com/interceptors</a></strong>. Thuật ngữ kỹ thuật giữ nguyên tiếng Anh.</div>
+    </div>
+
+    <h1>Interceptors</h1>
+
+    <p style="margin-top:18px">Interceptor là một class được annotate bằng decorator <code>@Injectable()</code> và implement interface <code>NestInterceptor</code>.</p>
+
+    <!-- Diagram -->
+    <div class="intercept-diagram">
+      <div class="id-row">
+        <div class="id-box req">Request<br><span style="font-size:10px;opacity:.7">incoming</span></div>
+        <div class="id-arrow">→</div>
+        <div class="id-box inter">Interceptor<br><span style="font-size:10px;opacity:.7">before handle()</span></div>
+        <div class="id-arrow">→</div>
+        <div class="id-box hand">Route Handler<br><span style="font-size:10px;opacity:.7">controller method</span></div>
+        <div class="id-arrow">→</div>
+        <div class="id-box inter" style="border-style:dashed">Interceptor<br><span style="font-size:10px;opacity:.7">after handle()</span></div>
+        <div class="id-arrow">→</div>
+        <div class="id-box resp">Response<br><span style="font-size:10px;opacity:.7">to client</span></div>
+      </div>
+      <div class="id-caption">Interceptor bọc quanh cả hai phía: trước và sau khi route handler thực thi</div>
+    </div>
+
+    <p>Interceptor có một tập các khả năng hữu ích lấy cảm hứng từ kỹ thuật <a href="https://en.wikipedia.org/wiki/Aspect-oriented_programming" target="_blank">Aspect Oriented Programming (AOP)</a>. Chúng cho phép:</p>
+
+    <div class="aop-list">
+      <div class="aop-item"><span class="aop-icon">⚡</span> Bind thêm logic <strong>trước / sau</strong> khi method được thực thi</div>
+      <div class="aop-item"><span class="aop-icon">🔄</span> <strong>Transform</strong> kết quả trả về từ function</div>
+      <div class="aop-item"><span class="aop-icon">⚠️</span> <strong>Transform</strong> exception được throw từ function</div>
+      <div class="aop-item"><span class="aop-icon">➕</span> <strong>Mở rộng</strong> hành vi cơ bản của function</div>
+      <div class="aop-item"><span class="aop-icon">🔁</span> <strong>Override hoàn toàn</strong> một function tuỳ theo điều kiện cụ thể (ví dụ: caching)</div>
+    </div>
+
+    <!-- ── BASICS ── -->
+    <h3 id="basics">Basics <a class="anchor" href="#basics">#</a></h3>
+
+    <p>Mỗi interceptor implement method <code>intercept()</code>, nhận hai argument. Argument đầu tiên là instance <code>ExecutionContext</code> (cùng đối tượng như ở <a href="nestjs-guards-vi.html">guards</a>). <code>ExecutionContext</code> kế thừa từ <code>ArgumentsHost</code> — chúng ta đã thấy trong chương exception filters, nó là wrapper bao quanh các argument được truyền đến handler gốc.</p>
+
+    <!-- ── EXECUTION CONTEXT ── -->
+    <h3 id="execution-context">Execution context <a class="anchor" href="#execution-context">#</a></h3>
+
+    <p>Bằng cách extend <code>ArgumentsHost</code>, <code>ExecutionContext</code> thêm một số helper method mới cung cấp chi tiết bổ sung về quá trình thực thi hiện tại. Những chi tiết này hữu ích để build các interceptor generic có thể hoạt động trên nhiều loại controller, method và execution context. Tìm hiểu thêm về <code>ExecutionContext</code> <a href="https://docs.nestjs.com/fundamentals/execution-context" target="_blank">tại đây</a>.</p>
+
+    <!-- ── CALL HANDLER ── -->
+    <h3 id="call-handler">Call handler <a class="anchor" href="#call-handler">#</a></h3>
+
+    <p>Argument thứ hai là <code>CallHandler</code>. Interface <code>CallHandler</code> implement method <code>handle()</code>, bạn có thể dùng nó để gọi route handler method tại một điểm nào đó trong interceptor. Nếu bạn không gọi <code>handle()</code> trong implementation của <code>intercept()</code>, route handler sẽ <strong>không được thực thi</strong>.</p>
+
+    <p>Cách tiếp cận này có nghĩa là method <code>intercept()</code> hiệu quả <strong>bọc</strong> request/response stream. Kết quả là bạn có thể implement custom logic <strong>cả trước và sau</strong> khi route handler cuối cùng thực thi.</p>
+
+    <p>Vì <code>handle()</code> trả về RxJS <code>Observable</code>, chúng ta có nhiều operator mạnh mẽ để xử lý response. Sử dụng thuật ngữ AOP, việc gọi route handler (tức gọi <code>handle()</code>) được gọi là <a href="https://en.wikipedia.org/wiki/Pointcut" target="_blank">Pointcut</a> — điểm mà logic bổ sung được chèn vào.</p>
+
+    <p>Ví dụ: với request <code>POST /cats</code> hướng đến handler <code>create()</code> trong <code>CatsController</code> — nếu một interceptor không gọi <code>handle()</code>, method <code>create()</code> sẽ không được thực thi. Khi <code>handle()</code> được gọi và <code>Observable</code> của nó được trả về, handler <code>create()</code> mới được kích hoạt. Và khi response stream được nhận qua <code>Observable</code>, các thao tác bổ sung có thể được thực hiện trên stream.</p>
+
+    <!-- ── ASPECT INTERCEPTION ── -->
+    <h3 id="aspect-interception">Aspect interception <a class="anchor" href="#aspect-interception">#</a></h3>
+
+    <p>Use case đầu tiên là dùng interceptor để log tương tác của user (ví dụ: lưu user call, dispatch event bất đồng bộ hoặc tính timestamp). Dưới đây là <code>LoggingInterceptor</code> đơn giản:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">logging.interceptor.ts</div>
+        <div class="cb-right">
+          <div class="tabs">
+            <div class="tab on" onclick="sw(this,'b1','ts')">TS</div>
+            <div class="tab"    onclick="sw(this,'b1','js')">JS</div>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div id="b1">
+        <div class="pane on" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Injectable</span><span class="pn">,</span> <span class="typ">NestInterceptor</span><span class="pn">,</span> <span class="typ">ExecutionContext</span><span class="pn">,</span> <span class="typ">CallHandler</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="typ">Observable</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'rxjs'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> tap <span class="pn">}</span> <span class="kw">from</span> <span class="str">'rxjs/operators'</span><span class="pn">;</span>
+
+<span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">LoggingInterceptor</span> <span class="kw">implements</span> <span class="typ">NestInterceptor</span> <span class="pn">{</span>
+  <span class="fn">intercept</span><span class="pn">(</span>context<span class="pn">:</span> <span class="typ">ExecutionContext</span><span class="pn">,</span> next<span class="pn">:</span> <span class="typ">CallHandler</span><span class="pn">):</span> <span class="typ">Observable</span><span class="pn">&lt;</span><span class="kw">any</span><span class="pn">&gt;</span> <span class="pn">{</span>
+    <span class="fn">console</span><span class="pn">.</span><span class="fn">log</span><span class="pn">(</span><span class="str">'Before...'</span><span class="pn">);</span>
+
+    <span class="kw">const</span> now <span class="pn">=</span> <span class="cl">Date</span><span class="pn">.</span><span class="fn">now</span><span class="pn">();</span>
+    <span class="kw">return</span> next
+      <span class="pn">.</span><span class="fn">handle</span><span class="pn">()</span>
+      <span class="pn">.</span><span class="fn">pipe</span><span class="pn">(</span>
+        <span class="fn">tap</span><span class="pn">(()</span> <span class="pn">=&gt;</span> <span class="fn">console</span><span class="pn">.</span><span class="fn">log</span><span class="pn">(</span><span class="tmpl">`After... $<span class="pn">{</span><span class="cl">Date</span><span class="pn">.</span><span class="fn">now</span>() - now<span class="pn">}</span>ms`</span><span class="pn">)),</span>
+      <span class="pn">);</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+        <div class="pane" data-lang="js"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Injectable</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="typ">Observable</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'rxjs'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> tap <span class="pn">}</span> <span class="kw">from</span> <span class="str">'rxjs/operators'</span><span class="pn">;</span>
+
+<span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">LoggingInterceptor</span> <span class="pn">{</span>
+  <span class="fn">intercept</span><span class="pn">(</span>context<span class="pn">,</span> next<span class="pn">)</span> <span class="pn">{</span>
+    <span class="fn">console</span><span class="pn">.</span><span class="fn">log</span><span class="pn">(</span><span class="str">'Before...'</span><span class="pn">);</span>
+
+    <span class="kw">const</span> now <span class="pn">=</span> <span class="cl">Date</span><span class="pn">.</span><span class="fn">now</span><span class="pn">();</span>
+    <span class="kw">return</span> next
+      <span class="pn">.</span><span class="fn">handle</span><span class="pn">()</span>
+      <span class="pn">.</span><span class="fn">pipe</span><span class="pn">(</span>
+        <span class="fn">tap</span><span class="pn">(()</span> <span class="pn">=&gt;</span> <span class="fn">console</span><span class="pn">.</span><span class="fn">log</span><span class="pn">(</span><span class="tmpl">`After... $<span class="pn">{</span><span class="cl">Date</span><span class="pn">.</span><span class="fn">now</span>() - now<span class="pn">}</span>ms`</span><span class="pn">)),</span>
+      <span class="pn">);</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+      </div>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">💡 Hint</span>
+      <p><code>NestInterceptor&lt;T, R&gt;</code> là generic interface trong đó <code>T</code> biểu thị type của <code>Observable&lt;T&gt;</code> (hỗ trợ response stream), và <code>R</code> là type của value được wrap bởi <code>Observable&lt;R&gt;</code>.</p>
+    </div>
+
+    <div class="note">
+      <span class="lbl">📌 Notice</span>
+      <p>Interceptor, cũng như controller, provider, guard, v.v., có thể <strong>inject dependency</strong> qua <code>constructor</code>.</p>
+    </div>
+
+    <p>Vì <code>handle()</code> trả về RxJS <code>Observable</code>, chúng ta có nhiều operator để xử lý stream. Trong ví dụ trên, operator <code>tap()</code> gọi logging function ẩn danh khi observable stream kết thúc bình thường hoặc có exception, nhưng không can thiệp vào response cycle.</p>
+
+    <!-- ── BINDING INTERCEPTORS ── -->
+    <h3 id="binding-interceptors">Binding interceptors <a class="anchor" href="#binding-interceptors">#</a></h3>
+
+    <p>Để thiết lập interceptor, dùng decorator <code>@UseInterceptors()</code> được import từ <code>@nestjs/common</code>. Giống như <a href="nestjs-pipes-vi.html">pipe</a> và <a href="nestjs-guards-vi.html">guard</a>, interceptor có thể có scope controller-scoped, method-scoped, hoặc global-scoped.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">cats.controller.ts</div>
+        <div class="cb-right">
+          <div class="tabs">
+            <div class="tab on" onclick="sw(this,'b2','ts')">TS</div>
+            <div class="tab"    onclick="sw(this,'b2','js')">JS</div>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div id="b2">
+        <div class="pane on" data-lang="ts"><pre><span class="dec">@UseInterceptors</span><span class="pn">(</span><span class="cl">LoggingInterceptor</span><span class="pn">)</span>
+<span class="kw">export class</span> <span class="cl">CatsController</span> <span class="pn">{}</span></pre></div>
+        <div class="pane" data-lang="js"><pre><span class="dec">@UseInterceptors</span><span class="pn">(</span><span class="cl">LoggingInterceptor</span><span class="pn">)</span>
+<span class="kw">export class</span> <span class="cl">CatsController</span> <span class="pn">{}</span></pre></div>
+      </div>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">💡 Hint</span>
+      <p>Decorator <code>@UseInterceptors()</code> được import từ package <code>@nestjs/common</code>.</p>
+    </div>
+
+    <p>Với cấu trúc trên, mỗi route handler trong <code>CatsController</code> sẽ dùng <code>LoggingInterceptor</code>. Khi ai đó gọi <code>GET /cats</code>, output sẽ như sau:</p>
+
+    <div class="output-block">
+      <div class="output-label">Console output</div>
+      Before...<br>
+      After... 1ms
+    </div>
+
+    <p>Chúng ta truyền class <code>LoggingInterceptor</code> (không phải instance), để framework đảm nhận khởi tạo và cho phép dependency injection. Cũng có thể truyền in-place instance:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">cats.controller.ts</div>
+        <div class="cb-right">
+          <div class="tabs">
+            <div class="tab on" onclick="sw(this,'b3','ts')">TS</div>
+            <div class="tab"    onclick="sw(this,'b3','js')">JS</div>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div id="b3">
+        <div class="pane on" data-lang="ts"><pre><span class="dec">@UseInterceptors</span><span class="pn">(</span><span class="kw">new</span> <span class="cl">LoggingInterceptor</span><span class="pn">())</span>
+<span class="kw">export class</span> <span class="cl">CatsController</span> <span class="pn">{}</span></pre></div>
+        <div class="pane" data-lang="js"><pre><span class="dec">@UseInterceptors</span><span class="pn">(</span><span class="kw">new</span> <span class="cl">LoggingInterceptor</span><span class="pn">())</span>
+<span class="kw">export class</span> <span class="cl">CatsController</span> <span class="pn">{}</span></pre></div>
+      </div>
+    </div>
+
+    <p>Để giới hạn scope của interceptor cho một method duy nhất, dùng decorator <code>@UseInterceptors()</code> ở <strong>cấp method</strong>. Để thiết lập global interceptor, dùng method <code>useGlobalInterceptors()</code>:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div style="flex:1"></div>
+        <button class="cpbtn" onclick="cp(this)">Copy</button>
+      </div>
+      <div id="b4">
+        <div class="pane on"><pre><span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> <span class="cl">NestFactory</span><span class="pn">.</span><span class="fn">create</span><span class="pn">(</span><span class="cl">AppModule</span><span class="pn">);</span>
+app<span class="pn">.</span><span class="fn">useGlobalInterceptors</span><span class="pn">(</span><span class="kw">new</span> <span class="cl">LoggingInterceptor</span><span class="pn">());</span></pre></div>
+      </div>
+    </div>
+
+    <p>Global interceptor đăng ký từ ngoài module không thể inject dependency. Để giải quyết, dùng token <code>APP_INTERCEPTOR</code> từ bất kỳ module nào:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">app.module.ts</div>
+        <div class="cb-right">
+          <div class="tabs">
+            <div class="tab on" onclick="sw(this,'b5','ts')">TS</div>
+            <div class="tab"    onclick="sw(this,'b5','js')">JS</div>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div id="b5">
+        <div class="pane on" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Module</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">APP_INTERCEPTOR</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/core'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  providers<span class="pn">:</span> <span class="pn">[</span>
+    <span class="pn">{</span>
+      provide<span class="pn">:</span>  <span class="cl">APP_INTERCEPTOR</span><span class="pn">,</span>
+      useClass<span class="pn">:</span> <span class="cl">LoggingInterceptor</span><span class="pn">,</span>
+    <span class="pn">},</span>
+  <span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="pn">{}</span></pre></div>
+        <div class="pane" data-lang="js"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Module</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">APP_INTERCEPTOR</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/core'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  providers<span class="pn">:</span> <span class="pn">[</span>
+    <span class="pn">{</span>
+      provide<span class="pn">:</span>  <span class="cl">APP_INTERCEPTOR</span><span class="pn">,</span>
+      useClass<span class="pn">:</span> <span class="cl">LoggingInterceptor</span><span class="pn">,</span>
+    <span class="pn">},</span>
+  <span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="pn">{}</span></pre></div>
+      </div>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">💡 Hint</span>
+      <p>Khi dùng cách này, interceptor thực chất là global bất kể module nào sử dụng cấu trúc này. Nên đặt ở module nơi interceptor (<code>LoggingInterceptor</code>) được định nghĩa. Ngoài ra, <code>useClass</code> không phải cách duy nhất để đăng ký custom provider. Tìm hiểu thêm <a href="https://docs.nestjs.com/fundamentals/custom-providers" target="_blank">tại đây</a>.</p>
+    </div>
+
+    <!-- ── RESPONSE MAPPING ── -->
+    <h3 id="response-mapping">Response mapping <a class="anchor" href="#response-mapping">#</a></h3>
+
+    <p>Chúng ta đã biết <code>handle()</code> trả về <code>Observable</code>. Stream chứa value được <strong>trả về</strong> từ route handler, vì vậy chúng ta có thể dễ dàng thay đổi nó bằng operator <code>map()</code> của RxJS.</p>
+
+    <div class="warn">
+      <span class="lbl">⚠️ Warning</span>
+      <p>Tính năng response mapping không hoạt động với library-specific response strategy (dùng trực tiếp <code>@Res()</code> object là bị cấm).</p>
+    </div>
+
+    <p>Hãy tạo <code>TransformInterceptor</code> — sẽ wrap mỗi response vào property <code>data</code> của một object mới:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">transform.interceptor.ts</div>
+        <div class="cb-right">
+          <div class="tabs">
+            <div class="tab on" onclick="sw(this,'b6','ts')">TS</div>
+            <div class="tab"    onclick="sw(this,'b6','js')">JS</div>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div id="b6">
+        <div class="pane on" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Injectable</span><span class="pn">,</span> <span class="typ">NestInterceptor</span><span class="pn">,</span> <span class="typ">ExecutionContext</span><span class="pn">,</span> <span class="typ">CallHandler</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="typ">Observable</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'rxjs'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> map <span class="pn">}</span> <span class="kw">from</span> <span class="str">'rxjs/operators'</span><span class="pn">;</span>
+
+<span class="kw">export interface</span> <span class="cl">Response</span><span class="pn">&lt;</span>T<span class="pn">&gt;</span> <span class="pn">{</span>
+  data<span class="pn">:</span> T<span class="pn">;</span>
+<span class="pn">}</span>
+
+<span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">TransformInterceptor</span><span class="pn">&lt;</span>T<span class="pn">&gt;</span> <span class="kw">implements</span> <span class="typ">NestInterceptor</span><span class="pn">&lt;</span>T<span class="pn">,</span> <span class="cl">Response</span><span class="pn">&lt;</span>T<span class="pn">&gt;&gt;</span> <span class="pn">{</span>
+  <span class="fn">intercept</span><span class="pn">(</span>context<span class="pn">:</span> <span class="typ">ExecutionContext</span><span class="pn">,</span> next<span class="pn">:</span> <span class="typ">CallHandler</span><span class="pn">):</span> <span class="typ">Observable</span><span class="pn">&lt;</span><span class="cl">Response</span><span class="pn">&lt;</span>T<span class="pn">&gt;&gt;</span> <span class="pn">{</span>
+    <span class="kw">return</span> next<span class="pn">.</span><span class="fn">handle</span><span class="pn">().</span><span class="fn">pipe</span><span class="pn">(</span><span class="fn">map</span><span class="pn">(</span>data <span class="pn">=&gt; ({</span> data <span class="pn">})));</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+        <div class="pane" data-lang="js"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Injectable</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> map <span class="pn">}</span> <span class="kw">from</span> <span class="str">'rxjs/operators'</span><span class="pn">;</span>
+
+<span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">TransformInterceptor</span> <span class="pn">{</span>
+  <span class="fn">intercept</span><span class="pn">(</span>context<span class="pn">,</span> next<span class="pn">)</span> <span class="pn">{</span>
+    <span class="kw">return</span> next<span class="pn">.</span><span class="fn">handle</span><span class="pn">().</span><span class="fn">pipe</span><span class="pn">(</span><span class="fn">map</span><span class="pn">(</span>data <span class="pn">=&gt; ({</span> data <span class="pn">})));</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+      </div>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">💡 Hint</span>
+      <p>Nest interceptor hoạt động với cả method <code>intercept()</code> đồng bộ và bất đồng bộ. Có thể chuyển sang <code>async</code> nếu cần.</p>
+    </div>
+
+    <p>Với cấu trúc trên, khi ai đó gọi <code>GET /cats</code>, response sẽ như sau (giả sử route handler trả về mảng rỗng <code>[]</code>):</p>
+
+    <div class="json-block">
+      <span class="pn">{</span><br>
+      &nbsp;&nbsp;<span class="json-key">"data"</span><span class="pn">:</span> <span class="json-arr">[]</span><br>
+      <span class="pn">}</span>
+    </div>
+
+    <p>Interceptor có giá trị lớn trong việc tạo các giải pháp tái sử dụng cho các yêu cầu xuyên suốt toàn ứng dụng. Ví dụ: transform tất cả giá trị <code>null</code> thành chuỗi rỗng <code>''</code> chỉ với một dòng code, bind global để tự động áp dụng cho mọi handler:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div style="flex:1"></div>
+        <div class="cb-right">
+          <div class="tabs">
+            <div class="tab on" onclick="sw(this,'b7','ts')">TS</div>
+            <div class="tab"    onclick="sw(this,'b7','js')">JS</div>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div id="b7">
+        <div class="pane on" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Injectable</span><span class="pn">,</span> <span class="typ">NestInterceptor</span><span class="pn">,</span> <span class="typ">ExecutionContext</span><span class="pn">,</span> <span class="typ">CallHandler</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="typ">Observable</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'rxjs'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> map <span class="pn">}</span> <span class="kw">from</span> <span class="str">'rxjs/operators'</span><span class="pn">;</span>
+
+<span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">ExcludeNullInterceptor</span> <span class="kw">implements</span> <span class="typ">NestInterceptor</span> <span class="pn">{</span>
+  <span class="fn">intercept</span><span class="pn">(</span>context<span class="pn">:</span> <span class="typ">ExecutionContext</span><span class="pn">,</span> next<span class="pn">:</span> <span class="typ">CallHandler</span><span class="pn">):</span> <span class="typ">Observable</span><span class="pn">&lt;</span><span class="kw">any</span><span class="pn">&gt;</span> <span class="pn">{</span>
+    <span class="kw">return</span> next
+      <span class="pn">.</span><span class="fn">handle</span><span class="pn">()</span>
+      <span class="pn">.</span><span class="fn">pipe</span><span class="pn">(</span><span class="fn">map</span><span class="pn">(</span>value <span class="pn">=&gt;</span> value <span class="pn">===</span> <span class="kw">null</span> <span class="pn">?</span> <span class="str">''</span> <span class="pn">:</span> value<span class="pn">));</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+        <div class="pane" data-lang="js"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Injectable</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> map <span class="pn">}</span> <span class="kw">from</span> <span class="str">'rxjs/operators'</span><span class="pn">;</span>
+
+<span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">ExcludeNullInterceptor</span> <span class="pn">{</span>
+  <span class="fn">intercept</span><span class="pn">(</span>context<span class="pn">,</span> next<span class="pn">)</span> <span class="pn">{</span>
+    <span class="kw">return</span> next
+      <span class="pn">.</span><span class="fn">handle</span><span class="pn">()</span>
+      <span class="pn">.</span><span class="fn">pipe</span><span class="pn">(</span><span class="fn">map</span><span class="pn">(</span>value <span class="pn">=&gt;</span> value <span class="pn">===</span> <span class="kw">null</span> <span class="pn">?</span> <span class="str">''</span> <span class="pn">:</span> value<span class="pn">));</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+      </div>
+    </div>
+
+    <!-- ── EXCEPTION MAPPING ── -->
+    <h3 id="exception-mapping">Exception mapping <a class="anchor" href="#exception-mapping">#</a></h3>
+
+    <p>Use case thú vị khác là tận dụng operator <code>catchError()</code> của RxJS để override exception được throw:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">errors.interceptor.ts</div>
+        <div class="cb-right">
+          <div class="tabs">
+            <div class="tab on" onclick="sw(this,'b8','ts')">TS</div>
+            <div class="tab"    onclick="sw(this,'b8','js')">JS</div>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div id="b8">
+        <div class="pane on" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">{</span>
+  <span class="cl">Injectable</span><span class="pn">,</span> <span class="typ">NestInterceptor</span><span class="pn">,</span> <span class="typ">ExecutionContext</span><span class="pn">,</span>
+  <span class="cl">BadGatewayException</span><span class="pn">,</span> <span class="typ">CallHandler</span><span class="pn">,</span>
+<span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="typ">Observable</span><span class="pn">,</span> throwError <span class="pn">}</span> <span class="kw">from</span> <span class="str">'rxjs'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> catchError <span class="pn">}</span> <span class="kw">from</span> <span class="str">'rxjs/operators'</span><span class="pn">;</span>
+
+<span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">ErrorsInterceptor</span> <span class="kw">implements</span> <span class="typ">NestInterceptor</span> <span class="pn">{</span>
+  <span class="fn">intercept</span><span class="pn">(</span>context<span class="pn">:</span> <span class="typ">ExecutionContext</span><span class="pn">,</span> next<span class="pn">:</span> <span class="typ">CallHandler</span><span class="pn">):</span> <span class="typ">Observable</span><span class="pn">&lt;</span><span class="kw">any</span><span class="pn">&gt;</span> <span class="pn">{</span>
+    <span class="kw">return</span> next
+      <span class="pn">.</span><span class="fn">handle</span><span class="pn">()</span>
+      <span class="pn">.</span><span class="fn">pipe</span><span class="pn">(</span>
+        <span class="fn">catchError</span><span class="pn">(</span>err <span class="pn">=&gt;</span> <span class="fn">throwError</span><span class="pn">(()</span> <span class="pn">=&gt;</span> <span class="kw">new</span> <span class="cl">BadGatewayException</span><span class="pn">())),</span>
+      <span class="pn">);</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+        <div class="pane" data-lang="js"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Injectable</span><span class="pn">,</span> <span class="cl">BadGatewayException</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> throwError <span class="pn">}</span> <span class="kw">from</span> <span class="str">'rxjs'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> catchError <span class="pn">}</span> <span class="kw">from</span> <span class="str">'rxjs/operators'</span><span class="pn">;</span>
+
+<span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">ErrorsInterceptor</span> <span class="pn">{</span>
+  <span class="fn">intercept</span><span class="pn">(</span>context<span class="pn">,</span> next<span class="pn">)</span> <span class="pn">{</span>
+    <span class="kw">return</span> next
+      <span class="pn">.</span><span class="fn">handle</span><span class="pn">()</span>
+      <span class="pn">.</span><span class="fn">pipe</span><span class="pn">(</span>
+        <span class="fn">catchError</span><span class="pn">(</span>err <span class="pn">=&gt;</span> <span class="fn">throwError</span><span class="pn">(()</span> <span class="pn">=&gt;</span> <span class="kw">new</span> <span class="cl">BadGatewayException</span><span class="pn">())),</span>
+      <span class="pn">);</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+      </div>
+    </div>
+
+    <!-- ── STREAM OVERRIDING ── -->
+    <h3 id="stream-overriding">Stream overriding <a class="anchor" href="#stream-overriding">#</a></h3>
+
+    <p>Đôi khi chúng ta muốn hoàn toàn ngăn việc gọi handler và trả về giá trị khác thay thế. Ví dụ điển hình là implement cache để cải thiện response time. Dưới đây là <strong>cache interceptor</strong> đơn giản trả về response từ cache:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">cache.interceptor.ts</div>
+        <div class="cb-right">
+          <div class="tabs">
+            <div class="tab on" onclick="sw(this,'b9','ts')">TS</div>
+            <div class="tab"    onclick="sw(this,'b9','js')">JS</div>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div id="b9">
+        <div class="pane on" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Injectable</span><span class="pn">,</span> <span class="typ">NestInterceptor</span><span class="pn">,</span> <span class="typ">ExecutionContext</span><span class="pn">,</span> <span class="typ">CallHandler</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="typ">Observable</span><span class="pn">,</span> of <span class="pn">}</span> <span class="kw">from</span> <span class="str">'rxjs'</span><span class="pn">;</span>
+
+<span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">CacheInterceptor</span> <span class="kw">implements</span> <span class="typ">NestInterceptor</span> <span class="pn">{</span>
+  <span class="fn">intercept</span><span class="pn">(</span>context<span class="pn">:</span> <span class="typ">ExecutionContext</span><span class="pn">,</span> next<span class="pn">:</span> <span class="typ">CallHandler</span><span class="pn">):</span> <span class="typ">Observable</span><span class="pn">&lt;</span><span class="kw">any</span><span class="pn">&gt;</span> <span class="pn">{</span>
+    <span class="kw">const</span> isCached <span class="pn">=</span> <span class="kw">true</span><span class="pn">;</span>
+    <span class="kw">if</span> <span class="pn">(</span>isCached<span class="pn">)</span> <span class="pn">{</span>
+      <span class="kw">return</span> <span class="fn">of</span><span class="pn">([]);</span> <span class="cm">// trả về stream mới, route handler không được gọi</span>
+    <span class="pn">}</span>
+    <span class="kw">return</span> next<span class="pn">.</span><span class="fn">handle</span><span class="pn">();</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+        <div class="pane" data-lang="js"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Injectable</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> of <span class="pn">}</span> <span class="kw">from</span> <span class="str">'rxjs'</span><span class="pn">;</span>
+
+<span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">CacheInterceptor</span> <span class="pn">{</span>
+  <span class="fn">intercept</span><span class="pn">(</span>context<span class="pn">,</span> next<span class="pn">)</span> <span class="pn">{</span>
+    <span class="kw">const</span> isCached <span class="pn">=</span> <span class="kw">true</span><span class="pn">;</span>
+    <span class="kw">if</span> <span class="pn">(</span>isCached<span class="pn">)</span> <span class="pn">{</span>
+      <span class="kw">return</span> <span class="fn">of</span><span class="pn">([]);</span>
+    <span class="pn">}</span>
+    <span class="kw">return</span> next<span class="pn">.</span><span class="fn">handle</span><span class="pn">();</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+      </div>
+    </div>
+
+    <p><code>CacheInterceptor</code> có biến <code>isCached</code> và response <code>[]</code> được hard-code. Điểm mấu chốt: chúng ta trả về một stream <strong>mới</strong> được tạo bởi operator <code>of()</code> của RxJS, do đó route handler <strong>sẽ không được gọi</strong>. Để tạo giải pháp generic, có thể tận dụng <code>Reflector</code> và tạo custom decorator — <code>Reflector</code> được mô tả kỹ trong <a href="nestjs-guards-vi.html">chương guards</a>.</p>
+
+    <!-- ── MORE OPERATORS ── -->
+    <h3 id="more-operators">More operators <a class="anchor" href="#more-operators">#</a></h3>
+
+    <p>Khả năng xử lý stream bằng RxJS operator cho chúng ta nhiều tính năng mạnh mẽ. Xét use case phổ biến khác — xử lý <strong>timeout</strong> trên route request. Khi endpoint không trả về gì sau một khoảng thời gian, chúng ta muốn kết thúc với error response:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">timeout.interceptor.ts</div>
+        <div class="cb-right">
+          <div class="tabs">
+            <div class="tab on" onclick="sw(this,'b10','ts')">TS</div>
+            <div class="tab"    onclick="sw(this,'b10','js')">JS</div>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div id="b10">
+        <div class="pane on" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">{</span>
+  <span class="cl">Injectable</span><span class="pn">,</span> <span class="typ">NestInterceptor</span><span class="pn">,</span> <span class="typ">ExecutionContext</span><span class="pn">,</span>
+  <span class="typ">CallHandler</span><span class="pn">,</span> <span class="cl">RequestTimeoutException</span><span class="pn">,</span>
+<span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="typ">Observable</span><span class="pn">,</span> throwError<span class="pn">,</span> <span class="cl">TimeoutError</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'rxjs'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> catchError<span class="pn">,</span> timeout <span class="pn">}</span> <span class="kw">from</span> <span class="str">'rxjs/operators'</span><span class="pn">;</span>
+
+<span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">TimeoutInterceptor</span> <span class="kw">implements</span> <span class="typ">NestInterceptor</span> <span class="pn">{</span>
+  <span class="fn">intercept</span><span class="pn">(</span>context<span class="pn">:</span> <span class="typ">ExecutionContext</span><span class="pn">,</span> next<span class="pn">:</span> <span class="typ">CallHandler</span><span class="pn">):</span> <span class="typ">Observable</span><span class="pn">&lt;</span><span class="kw">any</span><span class="pn">&gt;</span> <span class="pn">{</span>
+    <span class="kw">return</span> next<span class="pn">.</span><span class="fn">handle</span><span class="pn">().</span><span class="fn">pipe</span><span class="pn">(</span>
+      <span class="fn">timeout</span><span class="pn">(</span><span class="num">5000</span><span class="pn">),</span>
+      <span class="fn">catchError</span><span class="pn">(</span>err <span class="pn">=&gt; {</span>
+        <span class="kw">if</span> <span class="pn">(</span>err <span class="kw">instanceof</span> <span class="cl">TimeoutError</span><span class="pn">)</span> <span class="pn">{</span>
+          <span class="kw">return</span> <span class="fn">throwError</span><span class="pn">(()</span> <span class="pn">=&gt;</span> <span class="kw">new</span> <span class="cl">RequestTimeoutException</span><span class="pn">());</span>
+        <span class="pn">}</span>
+        <span class="kw">return</span> <span class="fn">throwError</span><span class="pn">(()</span> <span class="pn">=&gt;</span> err<span class="pn">);</span>
+      <span class="pn">}),</span>
+    <span class="pn">);</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+        <div class="pane" data-lang="js"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Injectable</span><span class="pn">,</span> <span class="cl">RequestTimeoutException</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="typ">Observable</span><span class="pn">,</span> throwError<span class="pn">,</span> <span class="cl">TimeoutError</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'rxjs'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> catchError<span class="pn">,</span> timeout <span class="pn">}</span> <span class="kw">from</span> <span class="str">'rxjs/operators'</span><span class="pn">;</span>
+
+<span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">TimeoutInterceptor</span> <span class="pn">{</span>
+  <span class="fn">intercept</span><span class="pn">(</span>context<span class="pn">,</span> next<span class="pn">)</span> <span class="pn">{</span>
+    <span class="kw">return</span> next<span class="pn">.</span><span class="fn">handle</span><span class="pn">().</span><span class="fn">pipe</span><span class="pn">(</span>
+      <span class="fn">timeout</span><span class="pn">(</span><span class="num">5000</span><span class="pn">),</span>
+      <span class="fn">catchError</span><span class="pn">(</span>err <span class="pn">=&gt; {</span>
+        <span class="kw">if</span> <span class="pn">(</span>err <span class="kw">instanceof</span> <span class="cl">TimeoutError</span><span class="pn">)</span> <span class="pn">{</span>
+          <span class="kw">return</span> <span class="fn">throwError</span><span class="pn">(()</span> <span class="pn">=&gt;</span> <span class="kw">new</span> <span class="cl">RequestTimeoutException</span><span class="pn">());</span>
+        <span class="pn">}</span>
+        <span class="kw">return</span> <span class="fn">throwError</span><span class="pn">(()</span> <span class="pn">=&gt;</span> err<span class="pn">);</span>
+      <span class="pn">}),</span>
+    <span class="pn">);</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+      </div>
+    </div>
+
+    <p>Sau 5 giây, xử lý request sẽ bị hủy. Bạn cũng có thể thêm logic tùy biến trước khi throw <code>RequestTimeoutException</code> (ví dụ: giải phóng tài nguyên).</p>
+
+    <!-- PAGE NAV -->
+    <div class="page-nav">
+      <a class="pnbtn" href="nestjs-guards-vi.html">
+        <div class="pnlbl">&larr; Trước</div>
+        <div class="pntitle">Guards</div>
+      </a>
+      <a class="pnbtn r" href="https://docs.nestjs.com/custom-decorators" target="_blank">
+        <div class="pnlbl">Tiếp theo &rarr;</div>
+        <div class="pntitle">Custom decorators</div>
+      </a>
+    </div>
+
+  </main>
+
+  <!-- ════════════════════ TOC ════════════════════ -->
+  <aside class="toc">
+    <div class="toc-title">Trong trang này</div>
+    <ul>
+      <li><a href="#basics">Basics</a></li>
+      <li><a href="#execution-context">Execution context</a></li>
+      <li><a href="#call-handler">Call handler</a></li>
+      <li><a href="#aspect-interception">Aspect interception</a></li>
+      <li><a href="#binding-interceptors">Binding interceptors</a></li>
+      <li><a href="#response-mapping">Response mapping</a></li>
+      <li><a href="#exception-mapping">Exception mapping</a></li>
+      <li><a href="#stream-overriding">Stream overriding</a></li>
+      <li><a href="#more-operators">More operators</a></li>
+    </ul>
+  </aside>
+
+</div>
+
+<script>
+  function sw(btn, bid, lang) {
+    var c = document.getElementById(bid);
+    if (!c) return;
+    btn.parentElement.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('on'); });
+    btn.classList.add('on');
+    c.querySelectorAll('.pane').forEach(function(p) {
+      p.classList.remove('on');
+      if (p.dataset.lang === lang) p.classList.add('on');
+    });
+  }
+  function cp(btn) {
+    var wrap = btn.closest('.cb');
+    var pane = wrap.querySelector('.pane.on') || wrap.querySelector('.pane');
+    if (!pane) return;
+    navigator.clipboard.writeText(pane.textContent.trim()).then(function() {
+      var o = btn.textContent;
+      btn.textContent = 'Copied!';
+      btn.style.color = '#4ade80';
+      setTimeout(function() { btn.textContent = o; btn.style.color = ''; }, 1500);
+    });
+  }
+  var tocLinks = document.querySelectorAll('.toc a');
+  var heads    = document.querySelectorAll('h3[id]');
+  function hi() {
+    var cur = '';
+    heads.forEach(function(h) { if (scrollY >= h.offsetTop - 110) cur = h.id; });
+    tocLinks.forEach(function(a) {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + cur);
+    });
+  }
+  window.addEventListener('scroll', hi, { passive: true });
+  hi();
+</script>
+</body>
+</html>

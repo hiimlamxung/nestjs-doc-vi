@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Module Reference | NestJS - Tài liệu tiếng Việt</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+    :root {
+      --bg:       #0e0e0e;
+      --surface:  #1a1a1a;
+      --surface2: #222;
+      --border:   #2a2a2a;
+      --border-l: #333;
+      --red:      #ea2845;
+      --red-l:    #ff4d6a;
+      --red-glow: rgba(234,40,69,.15);
+      --text:     #e8e8e8;
+      --muted:    #888;
+      --sec:      #b0b0b0;
+      --code-bg:  #1e1e1e;
+      --code-bd:  #2d2d2d;
+      --hint-bg:  #0d2a1a;
+      --hint-c:   #4ade80;
+      --warn-bg:  #2a1a0d;
+      --warn-c:   #fb923c;
+      --note-bg:  #0d1a2a;
+      --note-c:   #60a0d0;
+      --toc-w:    220px;
+      --font:     'Inter', sans-serif;
+      --mono:     'Source Code Pro', monospace;
+      --r:        6px;
+      --rl:       10px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font); background: var(--bg); color: var(--text); font-size: 15px; line-height: 1.78; }
+
+    .page { max-width: 1060px; margin: 0 auto; padding: 48px 32px 96px; display: flex; gap: 56px; align-items: flex-start; }
+    .content { flex: 1; min-width: 0; }
+
+    /* TOC */
+    .toc { width: var(--toc-w); flex-shrink: 0; position: sticky; top: 32px; align-self: flex-start; max-height: calc(100vh - 48px); overflow-y: auto; }
+    .toc::-webkit-scrollbar { width: 3px; }
+    .toc::-webkit-scrollbar-thumb { background: var(--border-l); border-radius: 2px; }
+    .toc-title { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); padding-bottom: 8px; margin-bottom: 8px; border-bottom: 1px solid var(--border); }
+    .toc ul { list-style: none; }
+    .toc ul li a { display: block; padding: 3.5px 0; font-size: 12.5px; color: var(--muted); text-decoration: none; line-height: 1.5; transition: color .15s; cursor: pointer; }
+    .toc ul li a:hover, .toc ul li a.active { color: var(--red-l); }
+
+    /* Banner */
+    .vi-banner { display: flex; align-items: center; gap: 10px; padding: 11px 16px; border: 1px solid rgba(234,40,69,.3); border-radius: var(--rl); background: linear-gradient(135deg,rgba(234,40,69,.1),rgba(234,40,69,.04)); font-size: 13px; color: var(--sec); margin-bottom: 32px; }
+    .vi-banner strong { color: var(--red-l); }
+
+    /* Headings */
+    h1 { font-size: 36px; font-weight: 700; letter-spacing: -.5px; line-height: 1.2; margin-bottom: 6px; }
+    h1::after { content:''; display:block; width:44px; height:3px; background:var(--red); border-radius:2px; margin-top:12px; }
+    h3 { font-size: 19px; font-weight: 600; letter-spacing: -.2px; margin: 40px 0 12px; display: flex; align-items: center; gap: 8px; scroll-margin-top: 80px; }
+    .anchor { font-size: 14px; color: var(--muted); text-decoration: none; opacity: 0; transition: opacity .2s; }
+    h3:hover .anchor { opacity: 1; }
+    p { color: var(--sec); line-height: 1.82; margin-bottom: 16px; }
+    p:last-child { margin-bottom: 0; }
+    a { color: var(--red-l); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    strong { color: var(--text); font-weight: 600; }
+    ul { color: var(--sec); padding-left: 22px; line-height: 2.1; margin: 16px 0; }
+
+    /* inline code */
+    code { font-family: var(--mono); font-size: 13px; background: var(--code-bg); border: 1px solid var(--code-bd); padding: 1px 6px; border-radius: 4px; color: #f9a8d4; }
+
+    /* Callouts */
+    .hint, .warn, .note {
+      margin: 18px 0; padding: 12px 16px; border-left: 3px solid;
+      border-radius: var(--r); font-size: 13.5px; line-height: 1.72;
+    }
+    .hint { background: var(--hint-bg); border-color: var(--hint-c); color: #a7f3d0; }
+    .warn { background: var(--warn-bg); border-color: var(--warn-c); color: #fed7aa; }
+    .note { background: var(--note-bg); border-color: var(--note-c); color: #bae6fd; }
+    .hint p, .warn p, .note p { margin: 0; color: inherit; }
+    .lbl { display: block; font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 4px; }
+    .hint .lbl { color: var(--hint-c); }
+    .warn .lbl  { color: var(--warn-c); }
+    .note .lbl  { color: var(--note-c); }
+
+    /* Code blocks */
+    .cb { margin: 18px 0; border: 1px solid var(--code-bd); border-radius: var(--rl); overflow: hidden; background: var(--code-bg); }
+    .cb-head { display: flex; align-items: center; justify-content: space-between; padding: 8px 14px; background: #181818; border-bottom: 1px solid var(--code-bd); min-height: 38px; }
+    .cb-fname { font-family: var(--mono); font-size: 11.5px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+    .cb-fname::before { content:''; display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--red); }
+    .cb-right { display: flex; align-items: center; gap: 6px; }
+    .tabs { display: flex; gap: 3px; }
+    .tab { padding: 4px 11px; font-size: 11px; font-family: var(--mono); font-weight: 500; border: 1px solid transparent; border-radius: 4px; color: var(--muted); cursor: pointer; user-select: none; transition: all .14s; }
+    .tab.on { color: var(--red-l); background: var(--red-glow); border-color: var(--red); }
+    .tab:hover:not(.on) { color: var(--text); background: rgba(255,255,255,.04); }
+    .cpbtn { padding: 3px 9px; font-size: 10.5px; font-family: var(--mono); background: var(--surface); border: 1px solid var(--border-l); color: var(--muted); border-radius: 4px; cursor: pointer; transition: all .14s; }
+    .cpbtn:hover { background: var(--surface2); color: var(--text); }
+    .pane { display: none; }
+    .pane.on { display: block; }
+    pre { padding: 18px 20px; overflow-x: auto; font-family: var(--mono); font-size: 13.5px; line-height: 1.65; color: #abb2bf; }
+    pre::-webkit-scrollbar { height: 5px; }
+    pre::-webkit-scrollbar-thumb { background: var(--border-l); border-radius: 3px; }
+
+    /* syntax */
+    .kw  { color: #c678dd; }
+    .fn  { color: #61afef; }
+    .str { color: #98c379; }
+    .dec { color: #e5c07b; }
+    .typ { color: #e5c07b; }
+    .cm  { color: #5c6370; font-style: italic; }
+    .pn  { color: #abb2bf; }
+    .num { color: #d19a66; }
+    .cl  { color: #e06c75; }
+    .tmpl{ color: #d19a66; }
+
+    /* Page nav */
+    .page-nav { display: flex; justify-content: space-between; margin-top: 52px; gap: 16px; }
+    .pnbtn { display: flex; flex-direction: column; padding: 14px 18px; border: 1px solid var(--border); border-radius: var(--rl); text-decoration: none; transition: all .2s; min-width: 150px; }
+    .pnbtn:hover { border-color: var(--red); background: var(--red-glow); text-decoration: none; }
+    .pnlbl   { font-size: 10.5px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); margin-bottom: 3px; }
+    .pntitle { font-size: 14px; font-weight: 600; color: var(--text); }
+    .pnbtn.r { text-align: right; margin-left: auto; }
+
+    @media (max-width: 860px) { .toc { display: none; } }
+    @media (max-width: 600px) { .page { padding: 24px 16px 64px; } }
+  </style>
+</head>
+<body>
+<div class="page">
+<main class="content">
+
+<div class="vi-banner">
+<span style="font-size:17px">🇻🇳</span>
+<div>Dịch từ <strong><a href="https://docs.nestjs.com/fundamentals/module-ref" target="_blank">docs.nestjs.com/fundamentals/module-ref</a></strong>. Thuật ngữ kỹ thuật giữ nguyên tiếng Anh.</div>
+</div>
+
+<h1>Module reference</h1>
+
+<p style="margin-top:18px">Nest cung cấp class <code>ModuleRef</code> để duyệt qua danh sách nội bộ các provider và lấy tham chiếu đến bất kỳ provider nào bằng cách sử dụng injection token của nó làm lookup key. Class <code>ModuleRef</code> cũng cung cấp cách khởi tạo động cả static và scoped provider. <code>ModuleRef</code> có thể được inject vào một class theo cách thông thường:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">cats.service</div><div class="cb-right"><div class="tabs"><div class="tab on" onclick="sw(this,'c0','ts')">TS</div><div class="tab" onclick="sw(this,'c0','js')">JS</div></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div id="c0"><div class="pane on" data-lang="ts"><pre><span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">CatsService</span> <span class="pn">{</span>
+  <span class="fn">constructor</span><span class="pn">(</span><span class="kw">private</span> moduleRef<span class="pn">:</span> <span class="cl">ModuleRef</span><span class="pn">) {}</span>
+<span class="pn">}</span></pre></div><div class="pane" data-lang="js"><pre><span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="dec">@Dependencies</span><span class="pn">(</span><span class="cl">ModuleRef</span><span class="pn">)</span>
+<span class="kw">export class</span> <span class="cl">CatsService</span> <span class="pn">{</span>
+  <span class="fn">constructor</span><span class="pn">(</span>moduleRef<span class="pn">) {</span>
+    <span class="kw">this</span><span class="pn">.</span>moduleRef <span class="pn">=</span> moduleRef<span class="pn">;</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div></div></div>
+
+<div class="hint"><span class="lbl">💡 Hint</span><p>Class <code>ModuleRef</code> được import từ package <code>@nestjs/core</code>.</p></div>
+
+<h3 id="retrieving-instances">Retrieving instances <a class="anchor" href="#retrieving-instances">#</a></h3>
+
+<p>Instance <code>ModuleRef</code> (sau đây gọi là <strong>module reference</strong>) có method <code>get()</code>. Mặc định, method này trả về một provider, controller, hoặc injectable (ví dụ: guard, interceptor, v.v.) đã được đăng ký và khởi tạo trong <strong>module hiện tại</strong> bằng injection token/class name. Nếu không tìm thấy instance, một exception sẽ được throw.</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">cats.service</div><div class="cb-right"><div class="tabs"><div class="tab on" onclick="sw(this,'c1','ts')">TS</div><div class="tab" onclick="sw(this,'c1','js')">JS</div></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div id="c1"><div class="pane on" data-lang="ts"><pre><span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">CatsService</span> <span class="kw">implements</span> <span class="cl">OnModuleInit</span> <span class="pn">{</span>
+  <span class="kw">private</span> service<span class="pn">:</span> <span class="cl">Service</span><span class="pn">;</span>
+  <span class="fn">constructor</span><span class="pn">(</span><span class="kw">private</span> moduleRef<span class="pn">:</span> <span class="cl">ModuleRef</span><span class="pn">) {}</span>
+
+  <span class="fn">onModuleInit</span><span class="pn">() {</span>
+    <span class="kw">this</span><span class="pn">.</span>service <span class="pn">=</span> <span class="kw">this</span><span class="pn">.</span>moduleRef<span class="pn">.</span><span class="fn">get</span><span class="pn">(</span><span class="cl">Service</span><span class="pn">);</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div><div class="pane" data-lang="js"><pre><span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="dec">@Dependencies</span><span class="pn">(</span><span class="cl">ModuleRef</span><span class="pn">)</span>
+<span class="kw">export class</span> <span class="cl">CatsService</span> <span class="pn">{</span>
+  <span class="fn">constructor</span><span class="pn">(</span>moduleRef<span class="pn">) {</span>
+    <span class="kw">this</span><span class="pn">.</span>moduleRef <span class="pn">=</span> moduleRef<span class="pn">;</span>
+  <span class="pn">}</span>
+
+  <span class="fn">onModuleInit</span><span class="pn">() {</span>
+    <span class="kw">this</span><span class="pn">.</span>service <span class="pn">=</span> <span class="kw">this</span><span class="pn">.</span>moduleRef<span class="pn">.</span><span class="fn">get</span><span class="pn">(</span><span class="cl">Service</span><span class="pn">);</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div></div></div>
+
+<div class="warn"><span class="lbl">⚠️ Warning</span><p>Bạn không thể lấy scoped provider (transient hoặc request-scoped) bằng method <code>get()</code>. Thay vào đó, sử dụng kỹ thuật mô tả <a href="#resolving-scoped-providers">bên dưới</a>. Tìm hiểu cách kiểm soát scope <a href="https://docs.nestjs.com/fundamentals/injection-scopes" target="_blank">tại đây</a>.</p></div>
+
+<p>Để lấy provider từ global context (ví dụ: nếu provider đã được inject trong module khác), truyền option <code>{ strict: false }</code> làm đối số thứ hai cho <code>get()</code>.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="kw">this</span><span class="pn">.</span>moduleRef<span class="pn">.</span><span class="fn">get</span><span class="pn">(</span><span class="cl">Service</span><span class="pn">,</span> <span class="pn">{</span> strict<span class="pn">:</span> <span class="kw">false</span> <span class="pn">});</span></pre></div></div></div>
+
+<h3 id="resolving-scoped-providers">Resolving scoped providers <a class="anchor" href="#resolving-scoped-providers">#</a></h3>
+
+<p>Để resolve động một scoped provider (transient hoặc request-scoped), sử dụng method <code>resolve()</code>, truyền injection token của provider làm đối số.</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">cats.service</div><div class="cb-right"><div class="tabs"><div class="tab on" onclick="sw(this,'c2','ts')">TS</div><div class="tab" onclick="sw(this,'c2','js')">JS</div></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div id="c2"><div class="pane on" data-lang="ts"><pre><span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">CatsService</span> <span class="kw">implements</span> <span class="cl">OnModuleInit</span> <span class="pn">{</span>
+  <span class="kw">private</span> transientService<span class="pn">:</span> <span class="cl">TransientService</span><span class="pn">;</span>
+  <span class="fn">constructor</span><span class="pn">(</span><span class="kw">private</span> moduleRef<span class="pn">:</span> <span class="cl">ModuleRef</span><span class="pn">) {}</span>
+
+  <span class="kw">async</span> <span class="fn">onModuleInit</span><span class="pn">() {</span>
+    <span class="kw">this</span><span class="pn">.</span>transientService <span class="pn">=</span> <span class="kw">await</span> <span class="kw">this</span><span class="pn">.</span>moduleRef<span class="pn">.</span><span class="fn">resolve</span><span class="pn">(</span><span class="cl">TransientService</span><span class="pn">);</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div><div class="pane" data-lang="js"><pre><span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="dec">@Dependencies</span><span class="pn">(</span><span class="cl">ModuleRef</span><span class="pn">)</span>
+<span class="kw">export class</span> <span class="cl">CatsService</span> <span class="pn">{</span>
+  <span class="fn">constructor</span><span class="pn">(</span>moduleRef<span class="pn">) {</span>
+    <span class="kw">this</span><span class="pn">.</span>moduleRef <span class="pn">=</span> moduleRef<span class="pn">;</span>
+  <span class="pn">}</span>
+
+  <span class="kw">async</span> <span class="fn">onModuleInit</span><span class="pn">() {</span>
+    <span class="kw">this</span><span class="pn">.</span>transientService <span class="pn">=</span> <span class="kw">await</span> <span class="kw">this</span><span class="pn">.</span>moduleRef<span class="pn">.</span><span class="fn">resolve</span><span class="pn">(</span><span class="cl">TransientService</span><span class="pn">);</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div></div></div>
+
+<p>Method <code>resolve()</code> trả về một instance duy nhất của provider từ <strong>DI container sub-tree</strong> riêng của nó. Mỗi sub-tree có một <strong>context identifier</strong> duy nhất. Do đó, nếu bạn gọi method này hai lần và so sánh các tham chiếu instance, bạn sẽ thấy chúng không bằng nhau.</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">cats.service</div><div class="cb-right"><div class="tabs"><div class="tab on" onclick="sw(this,'c3','ts')">TS</div><div class="tab" onclick="sw(this,'c3','js')">JS</div></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div id="c3"><div class="pane on" data-lang="ts"><pre><span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">CatsService</span> <span class="kw">implements</span> <span class="cl">OnModuleInit</span> <span class="pn">{</span>
+  <span class="fn">constructor</span><span class="pn">(</span><span class="kw">private</span> moduleRef<span class="pn">:</span> <span class="cl">ModuleRef</span><span class="pn">) {}</span>
+
+  <span class="kw">async</span> <span class="fn">onModuleInit</span><span class="pn">() {</span>
+    <span class="kw">const</span> transientServices <span class="pn">=</span> <span class="kw">await</span> Promise<span class="pn">.</span><span class="fn">all</span><span class="pn">([</span>
+      <span class="kw">this</span><span class="pn">.</span>moduleRef<span class="pn">.</span><span class="fn">resolve</span><span class="pn">(</span><span class="cl">TransientService</span><span class="pn">),</span>
+      <span class="kw">this</span><span class="pn">.</span>moduleRef<span class="pn">.</span><span class="fn">resolve</span><span class="pn">(</span><span class="cl">TransientService</span><span class="pn">),</span>
+    <span class="pn">]);</span>
+    console<span class="pn">.</span><span class="fn">log</span><span class="pn">(</span>transientServices<span class="pn">[</span><span class="num">0</span><span class="pn">]</span> <span class="pn">===</span> transientServices<span class="pn">[</span><span class="num">1</span><span class="pn">]);</span> <span class="cm">// false</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div><div class="pane" data-lang="js"><pre><span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="dec">@Dependencies</span><span class="pn">(</span><span class="cl">ModuleRef</span><span class="pn">)</span>
+<span class="kw">export class</span> <span class="cl">CatsService</span> <span class="pn">{</span>
+  <span class="fn">constructor</span><span class="pn">(</span>moduleRef<span class="pn">) {</span>
+    <span class="kw">this</span><span class="pn">.</span>moduleRef <span class="pn">=</span> moduleRef<span class="pn">;</span>
+  <span class="pn">}</span>
+
+  <span class="kw">async</span> <span class="fn">onModuleInit</span><span class="pn">() {</span>
+    <span class="kw">const</span> transientServices <span class="pn">=</span> <span class="kw">await</span> Promise<span class="pn">.</span><span class="fn">all</span><span class="pn">([</span>
+      <span class="kw">this</span><span class="pn">.</span>moduleRef<span class="pn">.</span><span class="fn">resolve</span><span class="pn">(</span><span class="cl">TransientService</span><span class="pn">),</span>
+      <span class="kw">this</span><span class="pn">.</span>moduleRef<span class="pn">.</span><span class="fn">resolve</span><span class="pn">(</span><span class="cl">TransientService</span><span class="pn">),</span>
+    <span class="pn">]);</span>
+    console<span class="pn">.</span><span class="fn">log</span><span class="pn">(</span>transientServices<span class="pn">[</span><span class="num">0</span><span class="pn">]</span> <span class="pn">===</span> transientServices<span class="pn">[</span><span class="num">1</span><span class="pn">]);</span> <span class="cm">// false</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div></div></div>
+
+<p>Để tạo ra một instance duy nhất qua nhiều lần gọi <code>resolve()</code> và đảm bảo chúng chia sẻ cùng một DI container sub-tree đã tạo, bạn có thể truyền một context identifier vào method <code>resolve()</code>. Sử dụng class <code>ContextIdFactory</code> để tạo context identifier. Class này cung cấp method <code>create()</code> trả về một unique identifier phù hợp.</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">cats.service</div><div class="cb-right"><div class="tabs"><div class="tab on" onclick="sw(this,'c4','ts')">TS</div><div class="tab" onclick="sw(this,'c4','js')">JS</div></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div id="c4"><div class="pane on" data-lang="ts"><pre><span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">CatsService</span> <span class="kw">implements</span> <span class="cl">OnModuleInit</span> <span class="pn">{</span>
+  <span class="fn">constructor</span><span class="pn">(</span><span class="kw">private</span> moduleRef<span class="pn">:</span> <span class="cl">ModuleRef</span><span class="pn">) {}</span>
+
+  <span class="kw">async</span> <span class="fn">onModuleInit</span><span class="pn">() {</span>
+    <span class="kw">const</span> contextId <span class="pn">=</span> ContextIdFactory<span class="pn">.</span><span class="fn">create</span><span class="pn">();</span>
+    <span class="kw">const</span> transientServices <span class="pn">=</span> <span class="kw">await</span> Promise<span class="pn">.</span><span class="fn">all</span><span class="pn">([</span>
+      <span class="kw">this</span><span class="pn">.</span>moduleRef<span class="pn">.</span><span class="fn">resolve</span><span class="pn">(</span><span class="cl">TransientService</span><span class="pn">,</span> contextId<span class="pn">),</span>
+      <span class="kw">this</span><span class="pn">.</span>moduleRef<span class="pn">.</span><span class="fn">resolve</span><span class="pn">(</span><span class="cl">TransientService</span><span class="pn">,</span> contextId<span class="pn">),</span>
+    <span class="pn">]);</span>
+    console<span class="pn">.</span><span class="fn">log</span><span class="pn">(</span>transientServices<span class="pn">[</span><span class="num">0</span><span class="pn">]</span> <span class="pn">===</span> transientServices<span class="pn">[</span><span class="num">1</span><span class="pn">]);</span> <span class="cm">// true</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div><div class="pane" data-lang="js"><pre><span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="dec">@Dependencies</span><span class="pn">(</span><span class="cl">ModuleRef</span><span class="pn">)</span>
+<span class="kw">export class</span> <span class="cl">CatsService</span> <span class="pn">{</span>
+  <span class="fn">constructor</span><span class="pn">(</span>moduleRef<span class="pn">) {</span>
+    <span class="kw">this</span><span class="pn">.</span>moduleRef <span class="pn">=</span> moduleRef<span class="pn">;</span>
+  <span class="pn">}</span>
+
+  <span class="kw">async</span> <span class="fn">onModuleInit</span><span class="pn">() {</span>
+    <span class="kw">const</span> contextId <span class="pn">=</span> ContextIdFactory<span class="pn">.</span><span class="fn">create</span><span class="pn">();</span>
+    <span class="kw">const</span> transientServices <span class="pn">=</span> <span class="kw">await</span> Promise<span class="pn">.</span><span class="fn">all</span><span class="pn">([</span>
+      <span class="kw">this</span><span class="pn">.</span>moduleRef<span class="pn">.</span><span class="fn">resolve</span><span class="pn">(</span><span class="cl">TransientService</span><span class="pn">,</span> contextId<span class="pn">),</span>
+      <span class="kw">this</span><span class="pn">.</span>moduleRef<span class="pn">.</span><span class="fn">resolve</span><span class="pn">(</span><span class="cl">TransientService</span><span class="pn">,</span> contextId<span class="pn">),</span>
+    <span class="pn">]);</span>
+    console<span class="pn">.</span><span class="fn">log</span><span class="pn">(</span>transientServices<span class="pn">[</span><span class="num">0</span><span class="pn">]</span> <span class="pn">===</span> transientServices<span class="pn">[</span><span class="num">1</span><span class="pn">]);</span> <span class="cm">// true</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div></div></div>
+
+<div class="hint"><span class="lbl">💡 Hint</span><p>Class <code>ContextIdFactory</code> được import từ package <code>@nestjs/core</code>.</p></div>
+
+<h3 id="registering-request-provider">Registering REQUEST provider <a class="anchor" href="#registering-request-provider">#</a></h3>
+
+<p>Các context identifier được tạo thủ công (với <code>ContextIdFactory.create()</code>) đại diện cho các DI sub-tree trong đó provider <code>REQUEST</code> là <code>undefined</code> vì chúng không được khởi tạo và quản lý bởi hệ thống dependency injection của Nest.</p>
+
+<p>Để đăng ký một custom <code>REQUEST</code> object cho DI sub-tree được tạo thủ công, sử dụng method <code>ModuleRef#registerRequestByContextId()</code>, như sau:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="kw">const</span> contextId <span class="pn">=</span> ContextIdFactory<span class="pn">.</span><span class="fn">create</span><span class="pn">();</span>
+<span class="kw">this</span><span class="pn">.</span>moduleRef<span class="pn">.</span><span class="fn">registerRequestByContextId</span><span class="pn">(</span><span class="cm">/* YOUR_REQUEST_OBJECT */</span><span class="pn">,</span> contextId<span class="pn">);</span></pre></div></div></div>
+
+<h3 id="getting-current-sub-tree">Getting current sub-tree <a class="anchor" href="#getting-current-sub-tree">#</a></h3>
+
+<p>Đôi khi, bạn có thể muốn resolve instance của request-scoped provider trong <strong>request context</strong>. Giả sử <code>CatsService</code> là request-scoped và bạn muốn resolve instance <code>CatsRepository</code> cũng được đánh dấu là request-scoped provider. Để chia sẻ cùng DI container sub-tree, bạn phải lấy context identifier hiện tại thay vì tạo mới. Để lấy context identifier hiện tại, bắt đầu bằng cách inject request object sử dụng decorator <code>@Inject(REQUEST)</code>.</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">cats.service</div><div class="cb-right"><div class="tabs"><div class="tab on" onclick="sw(this,'c5','ts')">TS</div><div class="tab" onclick="sw(this,'c5','js')">JS</div></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div id="c5"><div class="pane on" data-lang="ts"><pre><span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">CatsService</span> <span class="pn">{</span>
+  <span class="fn">constructor</span><span class="pn">(</span>
+    <span class="dec">@Inject</span><span class="pn">(</span>REQUEST<span class="pn">)</span> <span class="kw">private</span> request<span class="pn">:</span> <span class="typ">Record</span><span class="pn">&lt;</span><span class="typ">string</span><span class="pn">,</span> <span class="typ">unknown</span><span class="pn">&gt;,</span>
+  <span class="pn">) {}</span>
+<span class="pn">}</span></pre></div><div class="pane" data-lang="js"><pre><span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="dec">@Dependencies</span><span class="pn">(</span>REQUEST<span class="pn">)</span>
+<span class="kw">export class</span> <span class="cl">CatsService</span> <span class="pn">{</span>
+  <span class="fn">constructor</span><span class="pn">(</span>request<span class="pn">) {</span>
+    <span class="kw">this</span><span class="pn">.</span>request <span class="pn">=</span> request<span class="pn">;</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div></div></div>
+
+<div class="hint"><span class="lbl">💡 Hint</span><p>Tìm hiểu thêm về request provider <a href="https://docs.nestjs.com/fundamentals/injection-scopes#request-provider" target="_blank">tại đây</a>.</p></div>
+
+<p>Bây giờ, sử dụng method <code>getByRequest()</code> của class <code>ContextIdFactory</code> để tạo context id dựa trên request object, và truyền nó vào lệnh gọi <code>resolve()</code>:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="kw">const</span> contextId <span class="pn">=</span> ContextIdFactory<span class="pn">.</span><span class="fn">getByRequest</span><span class="pn">(</span><span class="kw">this</span><span class="pn">.</span>request<span class="pn">);</span>
+<span class="kw">const</span> catsRepository <span class="pn">=</span> <span class="kw">await</span> <span class="kw">this</span><span class="pn">.</span>moduleRef<span class="pn">.</span><span class="fn">resolve</span><span class="pn">(</span><span class="cl">CatsRepository</span><span class="pn">,</span> contextId<span class="pn">);</span></pre></div></div></div>
+
+<h3 id="instantiating-custom-classes-dynamically">Instantiating custom classes dynamically <a class="anchor" href="#instantiating-custom-classes-dynamically">#</a></h3>
+
+<p>Để khởi tạo động một class <strong>chưa từng được đăng ký</strong> làm <strong>provider</strong>, sử dụng method <code>create()</code> của module reference.</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">cats.service</div><div class="cb-right"><div class="tabs"><div class="tab on" onclick="sw(this,'c6','ts')">TS</div><div class="tab" onclick="sw(this,'c6','js')">JS</div></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div id="c6"><div class="pane on" data-lang="ts"><pre><span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">CatsService</span> <span class="kw">implements</span> <span class="cl">OnModuleInit</span> <span class="pn">{</span>
+  <span class="kw">private</span> catsFactory<span class="pn">:</span> <span class="cl">CatsFactory</span><span class="pn">;</span>
+  <span class="fn">constructor</span><span class="pn">(</span><span class="kw">private</span> moduleRef<span class="pn">:</span> <span class="cl">ModuleRef</span><span class="pn">) {}</span>
+
+  <span class="kw">async</span> <span class="fn">onModuleInit</span><span class="pn">() {</span>
+    <span class="kw">this</span><span class="pn">.</span>catsFactory <span class="pn">=</span> <span class="kw">await</span> <span class="kw">this</span><span class="pn">.</span>moduleRef<span class="pn">.</span><span class="fn">create</span><span class="pn">(</span><span class="cl">CatsFactory</span><span class="pn">);</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div><div class="pane" data-lang="js"><pre><span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="dec">@Dependencies</span><span class="pn">(</span><span class="cl">ModuleRef</span><span class="pn">)</span>
+<span class="kw">export class</span> <span class="cl">CatsService</span> <span class="pn">{</span>
+  <span class="fn">constructor</span><span class="pn">(</span>moduleRef<span class="pn">) {</span>
+    <span class="kw">this</span><span class="pn">.</span>moduleRef <span class="pn">=</span> moduleRef<span class="pn">;</span>
+  <span class="pn">}</span>
+
+  <span class="kw">async</span> <span class="fn">onModuleInit</span><span class="pn">() {</span>
+    <span class="kw">this</span><span class="pn">.</span>catsFactory <span class="pn">=</span> <span class="kw">await</span> <span class="kw">this</span><span class="pn">.</span>moduleRef<span class="pn">.</span><span class="fn">create</span><span class="pn">(</span><span class="cl">CatsFactory</span><span class="pn">);</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div></div></div>
+
+<p>Kỹ thuật này cho phép bạn khởi tạo có điều kiện các class khác nhau bên ngoài framework container.</p>
+
+<!-- Page navigation -->
+<div class="page-nav">
+<a class="pnbtn" href="circular-dependency.html">
+<span class="pnlbl">← Trước</span>
+<span class="pntitle">Circular dependency</span>
+</a>
+<a class="pnbtn r" href="lazy-loading-modules.html">
+<span class="pnlbl">Tiếp →</span>
+<span class="pntitle">Lazy-loading modules</span>
+</a>
+</div>
+
+</main>
+
+<aside class="toc">
+<div class="toc-title">Nội dung</div>
+<ul>
+<li><a href="#retrieving-instances">Retrieving instances</a></li>
+<li><a href="#resolving-scoped-providers">Resolving scoped providers</a></li>
+<li><a href="#registering-request-provider">Registering REQUEST provider</a></li>
+<li><a href="#getting-current-sub-tree">Getting current sub-tree</a></li>
+<li><a href="#instantiating-custom-classes-dynamically">Instantiating custom classes dynamically</a></li>
+</ul>
+</aside>
+
+</div>
+<script>
+  function sw(btn, bid, lang) {
+    var c = document.getElementById(bid);
+    if (!c) return;
+    btn.parentElement.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('on'); });
+    btn.classList.add('on');
+    c.querySelectorAll('.pane').forEach(function(p) {
+      p.classList.remove('on');
+      if (p.dataset.lang === lang) p.classList.add('on');
+    });
+  }
+  function cp(btn) {
+    var wrap = btn.closest('.cb');
+    var pane = wrap.querySelector('.pane.on') || wrap.querySelector('.pane');
+    if (!pane) return;
+    navigator.clipboard.writeText(pane.textContent.trim()).then(function() {
+      var o = btn.textContent;
+      btn.textContent = 'Copied!';
+      btn.style.color = '#4ade80';
+      setTimeout(function() { btn.textContent = o; btn.style.color = ''; }, 1500);
+    });
+  }
+  
+  // Smooth scroll on TOC click
+  document.querySelectorAll('.toc a').forEach(function(link) {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      var target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+
+  // Highlight active section
+  var tocLinks = document.querySelectorAll('.toc a');
+  var heads = document.querySelectorAll('h3[id]');
+  function hi() {
+    var cur = '';
+    heads.forEach(function(h) { 
+      if (scrollY >= h.offsetTop - 120) cur = h.id; 
+    });
+    tocLinks.forEach(function(a) {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + cur);
+    });
+  }
+  window.addEventListener('scroll', hi, { passive: true });
+  hi();
+</script>
+</body>
+</html>

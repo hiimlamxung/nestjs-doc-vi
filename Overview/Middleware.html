@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Middleware | NestJS - Tài liệu tiếng Việt</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:       #0e0e0e;
+      --surface:  #1a1a1a;
+      --surface2: #222;
+      --border:   #2a2a2a;
+      --border-l: #333;
+      --red:      #ea2845;
+      --red-l:    #ff4d6a;
+      --red-glow: rgba(234,40,69,.15);
+      --text:     #e8e8e8;
+      --muted:    #888;
+      --sec:      #b0b0b0;
+      --code-bg:  #1e1e1e;
+      --code-bd:  #2d2d2d;
+      --hint-bg:  #0d2a1a;
+      --hint-c:   #4ade80;
+      --warn-bg:  #2a1a0d;
+      --warn-c:   #fb923c;
+      --toc-w:    210px;
+      --font:     'Inter', sans-serif;
+      --mono:     'Source Code Pro', monospace;
+      --r:        6px;
+      --rl:       10px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font); background: var(--bg); color: var(--text); font-size: 15px; line-height: 1.78; }
+
+    .page {
+      max-width: 1060px; margin: 0 auto;
+      padding: 48px 32px 96px;
+      display: flex; gap: 56px; align-items: flex-start;
+    }
+    .content { flex: 1; min-width: 0; }
+
+    /* ── TOC ── */
+    .toc {
+      width: var(--toc-w); flex-shrink: 0;
+      position: sticky; top: 32px; align-self: flex-start;
+      max-height: calc(100vh - 48px); overflow-y: auto;
+    }
+    .toc::-webkit-scrollbar { width: 3px; }
+    .toc::-webkit-scrollbar-thumb { background: var(--border-l); border-radius: 2px; }
+    .toc-title {
+      font-size: 10.5px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .08em; color: var(--muted);
+      padding-bottom: 8px; margin-bottom: 8px; border-bottom: 1px solid var(--border);
+    }
+    .toc ul { list-style: none; }
+    .toc ul li a {
+      display: block; padding: 3.5px 0; font-size: 12.5px;
+      color: var(--muted); text-decoration: none; line-height: 1.5; transition: color .15s;
+    }
+    .toc ul li a:hover, .toc ul li a.active { color: var(--red-l); }
+
+    /* ── BANNER ── */
+    .vi-banner {
+      display: flex; align-items: center; gap: 10px;
+      padding: 11px 16px; border: 1px solid rgba(234,40,69,.3);
+      border-radius: var(--rl);
+      background: linear-gradient(135deg,rgba(234,40,69,.1),rgba(234,40,69,.04));
+      font-size: 13px; color: var(--sec); margin-bottom: 32px;
+    }
+    .vi-banner strong { color: var(--red-l); }
+
+    /* ── TYPOGRAPHY ── */
+    h1 { font-size: 36px; font-weight: 700; letter-spacing: -.5px; line-height: 1.2; margin-bottom: 6px; }
+    h1::after { content:''; display:block; width:44px; height:3px; background:var(--red); border-radius:2px; margin-top:12px; }
+    h3 { font-size: 19px; font-weight: 600; letter-spacing: -.2px; margin: 40px 0 12px; display: flex; align-items: center; gap: 8px; }
+    .anchor { font-size: 14px; color: var(--muted); text-decoration: none; opacity: 0; transition: opacity .2s; }
+    h3:hover .anchor { opacity: 1; }
+    p { color: var(--sec); line-height: 1.82; margin-bottom: 16px; }
+    p:last-child { margin-bottom: 0; }
+    a { color: var(--red-l); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    strong { color: var(--text); font-weight: 600; }
+    ul.doc-list { color: var(--sec); padding-left: 22px; line-height: 2; margin-bottom: 16px; }
+    ul.doc-list li::marker { color: var(--red); }
+
+    /* inline code */
+    code {
+      font-family: var(--mono); font-size: 13px;
+      background: var(--code-bg); border: 1px solid var(--code-bd);
+      padding: 1px 6px; border-radius: 4px; color: #f9a8d4;
+    }
+
+    /* ── CALLOUTS ── */
+    .hint, .warn {
+      margin: 18px 0; padding: 12px 16px; border-left: 3px solid;
+      border-radius: var(--r); font-size: 13.5px; line-height: 1.72;
+    }
+    .hint { background: var(--hint-bg); border-color: var(--hint-c); color: #a7f3d0; }
+    .warn { background: var(--warn-bg); border-color: var(--warn-c); color: #fed7aa; }
+    .hint p, .warn p { margin: 0; color: inherit; }
+    .lbl { display: block; font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 4px; }
+    .hint .lbl { color: var(--hint-c); }
+    .warn .lbl  { color: var(--warn-c); }
+
+    /* ── CODE BLOCKS ── */
+    .cb {
+      margin: 18px 0; border: 1px solid var(--code-bd);
+      border-radius: var(--rl); overflow: hidden; background: var(--code-bg);
+    }
+    .cb-head {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 8px 14px; background: #181818; border-bottom: 1px solid var(--code-bd);
+    }
+    .cb-fname {
+      font-family: var(--mono); font-size: 11.5px; color: var(--muted);
+      display: flex; align-items: center; gap: 6px;
+    }
+    .cb-fname::before { content:''; display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--red); }
+    .cb-right { display: flex; align-items: center; gap: 6px; }
+    .tabs { display: flex; gap: 3px; }
+    .tab {
+      padding: 4px 11px; font-size: 11px; font-family: var(--mono); font-weight: 500;
+      border: 1px solid transparent; border-radius: 4px;
+      color: var(--muted); cursor: pointer; user-select: none; transition: all .14s;
+    }
+    .tab.on { color: var(--red-l); background: var(--red-glow); border-color: var(--red); }
+    .tab:hover:not(.on) { color: var(--text); background: rgba(255,255,255,.04); }
+    .cpbtn {
+      padding: 3px 9px; font-size: 10.5px; font-family: var(--mono);
+      background: var(--surface); border: 1px solid var(--border-l);
+      color: var(--muted); border-radius: 4px; cursor: pointer; transition: all .14s;
+    }
+    .cpbtn:hover { background: var(--surface2); color: var(--text); }
+    .pane { display: none; }
+    .pane.on { display: block; }
+    pre {
+      padding: 18px 20px; overflow-x: auto;
+      font-family: var(--mono); font-size: 13.5px; line-height: 1.65; color: #abb2bf;
+    }
+    pre::-webkit-scrollbar { height: 5px; }
+    pre::-webkit-scrollbar-thumb { background: var(--border-l); border-radius: 3px; }
+
+    /* syntax tokens */
+    .kw  { color: #c678dd; }
+    .fn  { color: #61afef; }
+    .str { color: #98c379; }
+    .dec { color: #e5c07b; }
+    .typ { color: #e5c07b; }
+    .cm  { color: #5c6370; font-style: italic; }
+    .pn  { color: #abb2bf; }
+    .num { color: #d19a66; }
+    .cl  { color: #e06c75; }
+    .tmpl{ color: #d19a66; }
+
+    /* middleware flow diagram */
+    .mw-diagram {
+      margin: 24px 0 28px; padding: 22px 20px;
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--rl);
+      display: flex; align-items: center; justify-content: center;
+      flex-wrap: wrap; gap: 0;
+    }
+    .mw-box {
+      padding: 10px 18px; border-radius: var(--r); font-size: 13px;
+      font-weight: 600; font-family: var(--mono); border: 1px solid; text-align: center;
+      line-height: 1.4;
+    }
+    .mw-box.client  { background: #1a2a3a; border-color: #2a4a6a; color: #60a0d0; }
+    .mw-box.mw      { background: rgba(234,40,69,.12); border-color: var(--red); color: var(--red-l); }
+    .mw-box.handler { background: #1a2a1a; border-color: #2a5a2a; color: #4ade80; }
+    .mw-arrow { padding: 0 12px; color: var(--muted); font-size: 18px; line-height: 1; }
+    .mw-caption { width: 100%; text-align: center; font-size: 11.5px; color: var(--muted); margin-top: 12px; }
+
+    /* page nav */
+    .page-nav { display: flex; justify-content: space-between; margin-top: 52px; gap: 16px; }
+    .pnbtn {
+      display: flex; flex-direction: column; padding: 14px 18px;
+      border: 1px solid var(--border); border-radius: var(--rl);
+      text-decoration: none; transition: all .2s; min-width: 150px;
+    }
+    .pnbtn:hover { border-color: var(--red); background: var(--red-glow); text-decoration: none; }
+    .pnlbl   { font-size: 10.5px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); margin-bottom: 3px; }
+    .pntitle { font-size: 14px; font-weight: 600; color: var(--text); }
+    .pnbtn.r { text-align: right; margin-left: auto; }
+
+    @media (max-width: 860px) { .toc { display: none; } }
+    @media (max-width: 600px) { .page { padding: 24px 16px 64px; } }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ══════════════════ MAIN CONTENT ══════════════════ -->
+  <main class="content">
+
+    <div class="vi-banner">
+      <span style="font-size:17px">🇻🇳</span>
+      <div>Dịch từ <strong><a href="https://docs.nestjs.com/middleware" target="_blank">docs.nestjs.com/middleware</a></strong>. Thuật ngữ kỹ thuật giữ nguyên tiếng Anh.</div>
+    </div>
+
+    <h1>Middleware</h1>
+
+    <p style="margin-top:18px">Middleware là một function được gọi <strong>trước</strong> route handler. Các middleware function có quyền truy cập vào đối tượng <a href="https://expressjs.com/en/4x/api.html#req" target="_blank">request</a> và <a href="https://expressjs.com/en/4x/api.html#res" target="_blank">response</a>, cùng với middleware function <code>next()</code> trong chu kỳ request-response của ứng dụng. Middleware function tiếp theo thường được ký hiệu bằng biến tên <code>next</code>.</p>
+
+    <!-- Diagram -->
+    <div class="mw-diagram">
+      <div class="mw-box client">Client<br><span style="font-size:10px;opacity:.7">Request</span></div>
+      <div class="mw-arrow">→</div>
+      <div class="mw-box mw">Middleware<br><span style="font-size:10px;opacity:.7">logger, auth…</span></div>
+      <div class="mw-arrow">→</div>
+      <div class="mw-box handler">Route Handler<br><span style="font-size:10px;opacity:.7">@Get() @Post()…</span></div>
+      <div class="mw-caption">Middleware được gọi TRƯỚC route handler trong chu kỳ request-response</div>
+    </div>
+
+    <p>Nest middleware mặc định tương đương với <a href="https://expressjs.com/en/guide/using-middleware.html" target="_blank">express</a> middleware. Mô tả từ tài liệu chính thức của express nêu các khả năng của middleware:</p>
+
+    <div style="margin: 16px 0; padding: 14px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--rl);">
+      <p style="margin-bottom: 8px; color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .06em; font-weight: 700;">Middleware function có thể thực hiện các tác vụ sau:</p>
+      <ul class="doc-list" style="margin: 0;">
+        <li>Thực thi bất kỳ đoạn code nào.</li>
+        <li>Thay đổi đối tượng request và response.</li>
+        <li>Kết thúc chu kỳ request-response.</li>
+        <li>Gọi middleware function tiếp theo trong stack.</li>
+        <li>Nếu middleware hiện tại không kết thúc chu kỳ request-response, nó <strong>bắt buộc</strong> phải gọi <code>next()</code> để chuyển điều khiển sang middleware tiếp theo. Nếu không, request sẽ bị treo.</li>
+      </ul>
+    </div>
+
+    <p>Bạn có thể implement custom Nest middleware trong một function, hoặc trong một class với decorator <code>@Injectable()</code>. Class nên implement interface <code>NestMiddleware</code>, trong khi function không có yêu cầu đặc biệt nào. Hãy bắt đầu bằng cách implement một middleware đơn giản sử dụng phương pháp class.</p>
+
+    <div class="warn">
+      <span class="lbl">⚠️ Warning</span>
+      <p><code>Express</code> và <code>fastify</code> xử lý middleware theo cách khác nhau và cung cấp các chữ ký method khác nhau. Đọc thêm <a href="https://docs.nestjs.com/techniques/performance#middleware" target="_blank">tại đây</a>.</p>
+    </div>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">logger.middleware.ts</div>
+        <div class="cb-right">
+          <div class="tabs">
+            <div class="tab on" onclick="sw(this,'b1','ts')">TS</div>
+            <div class="tab"    onclick="sw(this,'b1','js')">JS</div>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div id="b1">
+        <div class="pane on" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Injectable</span><span class="pn">,</span> <span class="typ">NestMiddleware</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="typ">Request</span><span class="pn">,</span> <span class="typ">Response</span><span class="pn">,</span> <span class="typ">NextFunction</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'express'</span><span class="pn">;</span>
+
+<span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">LoggerMiddleware</span> <span class="kw">implements</span> <span class="typ">NestMiddleware</span> <span class="pn">{</span>
+  <span class="fn">use</span><span class="pn">(</span>req<span class="pn">:</span> <span class="typ">Request</span><span class="pn">,</span> res<span class="pn">:</span> <span class="typ">Response</span><span class="pn">,</span> next<span class="pn">:</span> <span class="typ">NextFunction</span><span class="pn">)</span> <span class="pn">{</span>
+    <span class="fn">console</span><span class="pn">.</span><span class="fn">log</span><span class="pn">(</span><span class="str">'Request...'</span><span class="pn">);</span>
+    <span class="fn">next</span><span class="pn">();</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+        <div class="pane" data-lang="js"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Injectable</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+
+<span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">LoggerMiddleware</span> <span class="pn">{</span>
+  <span class="fn">use</span><span class="pn">(</span>req<span class="pn">,</span> res<span class="pn">,</span> next<span class="pn">)</span> <span class="pn">{</span>
+    <span class="fn">console</span><span class="pn">.</span><span class="fn">log</span><span class="pn">(</span><span class="str">'Request...'</span><span class="pn">);</span>
+    <span class="fn">next</span><span class="pn">();</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+      </div>
+    </div>
+
+    <!-- ── DEPENDENCY INJECTION ── -->
+    <h3 id="dependency-injection">Dependency injection <a class="anchor" href="#dependency-injection">#</a></h3>
+
+    <p>Nest middleware hỗ trợ đầy đủ Dependency Injection. Cũng giống như với provider và controller, chúng có thể <strong>inject dependency</strong> khả dụng trong cùng module. Như thường lệ, điều này được thực hiện thông qua <code>constructor</code>.</p>
+
+    <!-- ── APPLYING MIDDLEWARE ── -->
+    <h3 id="applying-middleware">Applying middleware <a class="anchor" href="#applying-middleware">#</a></h3>
+
+    <p>Không có chỗ cho middleware trong decorator <code>@Module()</code>. Thay vào đó, chúng ta thiết lập chúng bằng method <code>configure()</code> của module class. Module chứa middleware phải implement interface <code>NestModule</code>. Hãy thiết lập <code>LoggerMiddleware</code> ở cấp <code>AppModule</code>.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">app.module.ts</div>
+        <div class="cb-right">
+          <div class="tabs">
+            <div class="tab on" onclick="sw(this,'b2','ts')">TS</div>
+            <div class="tab"    onclick="sw(this,'b2','js')">JS</div>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div id="b2">
+        <div class="pane on" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Module</span><span class="pn">,</span> <span class="typ">NestModule</span><span class="pn">,</span> <span class="typ">MiddlewareConsumer</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">LoggerMiddleware</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./common/middleware/logger.middleware'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">CatsModule</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./cats/cats.module'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">:</span> <span class="pn">[</span><span class="cl">CatsModule</span><span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="kw">implements</span> <span class="typ">NestModule</span> <span class="pn">{</span>
+  <span class="fn">configure</span><span class="pn">(</span>consumer<span class="pn">:</span> <span class="typ">MiddlewareConsumer</span><span class="pn">)</span> <span class="pn">{</span>
+    consumer
+      <span class="pn">.</span><span class="fn">apply</span><span class="pn">(</span><span class="cl">LoggerMiddleware</span><span class="pn">)</span>
+      <span class="pn">.</span><span class="fn">forRoutes</span><span class="pn">(</span><span class="str">'cats'</span><span class="pn">);</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+        <div class="pane" data-lang="js"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Module</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">LoggerMiddleware</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./common/middleware/logger.middleware'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">CatsModule</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./cats/cats.module'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">:</span> <span class="pn">[</span><span class="cl">CatsModule</span><span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="pn">{</span>
+  <span class="fn">configure</span><span class="pn">(</span>consumer<span class="pn">)</span> <span class="pn">{</span>
+    consumer
+      <span class="pn">.</span><span class="fn">apply</span><span class="pn">(</span><span class="cl">LoggerMiddleware</span><span class="pn">)</span>
+      <span class="pn">.</span><span class="fn">forRoutes</span><span class="pn">(</span><span class="str">'cats'</span><span class="pn">);</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+      </div>
+    </div>
+
+    <p>Trong ví dụ trên, chúng ta đã thiết lập <code>LoggerMiddleware</code> cho các route handler <code>/cats</code> đã định nghĩa trước đó trong <code>CatsController</code>. Chúng ta cũng có thể giới hạn middleware cho một request method cụ thể bằng cách truyền một object chứa <code>path</code> và <code>method</code> vào method <code>forRoutes()</code> khi cấu hình middleware. Trong ví dụ dưới, lưu ý rằng chúng ta import enum <code>RequestMethod</code> để tham chiếu đến loại request method mong muốn.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">app.module.ts</div>
+        <div class="cb-right">
+          <div class="tabs">
+            <div class="tab on" onclick="sw(this,'b3','ts')">TS</div>
+            <div class="tab"    onclick="sw(this,'b3','js')">JS</div>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div id="b3">
+        <div class="pane on" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Module</span><span class="pn">,</span> <span class="typ">NestModule</span><span class="pn">,</span> <span class="typ">RequestMethod</span><span class="pn">,</span> <span class="typ">MiddlewareConsumer</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">LoggerMiddleware</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./common/middleware/logger.middleware'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">CatsModule</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./cats/cats.module'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">:</span> <span class="pn">[</span><span class="cl">CatsModule</span><span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="kw">implements</span> <span class="typ">NestModule</span> <span class="pn">{</span>
+  <span class="fn">configure</span><span class="pn">(</span>consumer<span class="pn">:</span> <span class="typ">MiddlewareConsumer</span><span class="pn">)</span> <span class="pn">{</span>
+    consumer
+      <span class="pn">.</span><span class="fn">apply</span><span class="pn">(</span><span class="cl">LoggerMiddleware</span><span class="pn">)</span>
+      <span class="pn">.</span><span class="fn">forRoutes</span><span class="pn">({</span> path<span class="pn">:</span> <span class="str">'cats'</span><span class="pn">,</span> method<span class="pn">:</span> <span class="typ">RequestMethod</span><span class="pn">.</span>GET <span class="pn">});</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+        <div class="pane" data-lang="js"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Module</span><span class="pn">,</span> <span class="typ">RequestMethod</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">LoggerMiddleware</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./common/middleware/logger.middleware'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">CatsModule</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./cats/cats.module'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">:</span> <span class="pn">[</span><span class="cl">CatsModule</span><span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="pn">{</span>
+  <span class="fn">configure</span><span class="pn">(</span>consumer<span class="pn">)</span> <span class="pn">{</span>
+    consumer
+      <span class="pn">.</span><span class="fn">apply</span><span class="pn">(</span><span class="cl">LoggerMiddleware</span><span class="pn">)</span>
+      <span class="pn">.</span><span class="fn">forRoutes</span><span class="pn">({</span> path<span class="pn">:</span> <span class="str">'cats'</span><span class="pn">,</span> method<span class="pn">:</span> <span class="typ">RequestMethod</span><span class="pn">.</span>GET <span class="pn">});</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+      </div>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">💡 Hint</span>
+      <p>Method <code>configure()</code> có thể được làm bất đồng bộ bằng <code>async/await</code> (ví dụ: bạn có thể <code>await</code> hoàn thành một thao tác bất đồng bộ bên trong body của <code>configure()</code>).</p>
+    </div>
+
+    <div class="warn">
+      <span class="lbl">⚠️ Warning</span>
+      <p>Khi dùng <code>express</code> adapter, NestJS app sẽ đăng ký <code>json</code> và <code>urlencoded</code> từ package <code>body-parser</code> theo mặc định. Điều này có nghĩa là nếu muốn tuỳ biến middleware đó qua <code>MiddlewareConsumer</code>, bạn cần tắt global middleware bằng cách đặt flag <code>bodyParser</code> thành <code>false</code> khi tạo application với <code>NestFactory.create()</code>.</p>
+    </div>
+
+    <!-- ── ROUTE WILDCARDS ── -->
+    <h3 id="route-wildcards">Route wildcards <a class="anchor" href="#route-wildcards">#</a></h3>
+
+    <p>Route dựa trên pattern cũng được hỗ trợ trong NestJS middleware. Ví dụ: named wildcard (<code>*splat</code>) có thể được dùng để khớp bất kỳ tổ hợp ký tự nào trong một route. Trong ví dụ dưới, middleware sẽ được thực thi cho bất kỳ route nào bắt đầu bằng <code>abcd/</code>, bất kể số lượng ký tự theo sau.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div style="flex:1"></div>
+        <button class="cpbtn" onclick="cp(this)">Copy</button>
+      </div>
+      <div id="b4">
+        <div class="pane on"><pre><span class="fn">forRoutes</span><span class="pn">({</span>
+  path<span class="pn">:</span>   <span class="str">'abcd/*splat'</span><span class="pn">,</span>
+  method<span class="pn">:</span> <span class="typ">RequestMethod</span><span class="pn">.</span>ALL<span class="pn">,</span>
+<span class="pn">});</span></pre></div>
+      </div>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">💡 Hint</span>
+      <p><code>splat</code> chỉ là tên của wildcard parameter và không có ý nghĩa đặc biệt. Bạn có thể đặt tên bất kỳ, ví dụ: <code>*wildcard</code>.</p>
+    </div>
+
+    <p>Route path <code>'abcd/*'</code> sẽ khớp với <code>abcd/1</code>, <code>abcd/123</code>, <code>abcd/abc</code>, v.v. Dấu gạch ngang (<code>-</code>) và dấu chấm (<code>.</code>) được hiểu theo nghĩa đen trong string-based path. Tuy nhiên, <code>abcd/</code> không có ký tự bổ sung sẽ không khớp với route. Để làm điều này, hãy bọc wildcard trong dấu ngoặc nhọn để làm nó optional:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div style="flex:1"></div>
+        <button class="cpbtn" onclick="cp(this)">Copy</button>
+      </div>
+      <div id="b5">
+        <div class="pane on"><pre><span class="fn">forRoutes</span><span class="pn">({</span>
+  path<span class="pn">:</span>   <span class="str">'abcd/{*splat}'</span><span class="pn">,</span>
+  method<span class="pn">:</span> <span class="typ">RequestMethod</span><span class="pn">.</span>ALL<span class="pn">,</span>
+<span class="pn">});</span></pre></div>
+      </div>
+    </div>
+
+    <!-- ── MIDDLEWARE CONSUMER ── -->
+    <h3 id="middleware-consumer">Middleware consumer <a class="anchor" href="#middleware-consumer">#</a></h3>
+
+    <p><code>MiddlewareConsumer</code> là một helper class. Nó cung cấp một số built-in method để quản lý middleware. Tất cả đều có thể được <strong>chain</strong> theo <a href="https://en.wikipedia.org/wiki/Fluent_interface" target="_blank">fluent style</a>. Method <code>forRoutes()</code> có thể nhận một string, nhiều string, một object <code>RouteInfo</code>, một controller class và thậm chí nhiều controller class. Trong hầu hết trường hợp bạn sẽ chỉ truyền danh sách các <strong>controller</strong> phân cách bởi dấu phẩy. Dưới đây là ví dụ với một controller duy nhất:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">app.module.ts</div>
+        <div class="cb-right">
+          <div class="tabs">
+            <div class="tab on" onclick="sw(this,'b6','ts')">TS</div>
+            <div class="tab"    onclick="sw(this,'b6','js')">JS</div>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div id="b6">
+        <div class="pane on" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Module</span><span class="pn">,</span> <span class="typ">NestModule</span><span class="pn">,</span> <span class="typ">MiddlewareConsumer</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">LoggerMiddleware</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./common/middleware/logger.middleware'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">CatsModule</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./cats/cats.module'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">CatsController</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./cats/cats.controller'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">:</span> <span class="pn">[</span><span class="cl">CatsModule</span><span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="kw">implements</span> <span class="typ">NestModule</span> <span class="pn">{</span>
+  <span class="fn">configure</span><span class="pn">(</span>consumer<span class="pn">:</span> <span class="typ">MiddlewareConsumer</span><span class="pn">)</span> <span class="pn">{</span>
+    consumer
+      <span class="pn">.</span><span class="fn">apply</span><span class="pn">(</span><span class="cl">LoggerMiddleware</span><span class="pn">)</span>
+      <span class="pn">.</span><span class="fn">forRoutes</span><span class="pn">(</span><span class="cl">CatsController</span><span class="pn">);</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+        <div class="pane" data-lang="js"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Module</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">LoggerMiddleware</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./common/middleware/logger.middleware'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">CatsModule</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./cats/cats.module'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">CatsController</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./cats/cats.controller'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">:</span> <span class="pn">[</span><span class="cl">CatsModule</span><span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="pn">{</span>
+  <span class="fn">configure</span><span class="pn">(</span>consumer<span class="pn">)</span> <span class="pn">{</span>
+    consumer
+      <span class="pn">.</span><span class="fn">apply</span><span class="pn">(</span><span class="cl">LoggerMiddleware</span><span class="pn">)</span>
+      <span class="pn">.</span><span class="fn">forRoutes</span><span class="pn">(</span><span class="cl">CatsController</span><span class="pn">);</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+      </div>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">💡 Hint</span>
+      <p>Method <code>apply()</code> có thể nhận một middleware duy nhất, hoặc nhiều argument để chỉ định <a href="#multiple-middleware">nhiều middleware</a>.</p>
+    </div>
+
+    <!-- ── EXCLUDING ROUTES ── -->
+    <h3 id="excluding-routes">Excluding routes <a class="anchor" href="#excluding-routes">#</a></h3>
+
+    <p>Đôi khi chúng ta muốn <strong>loại trừ</strong> một số route khỏi việc áp dụng middleware. Điều này có thể dễ dàng thực hiện bằng method <code>exclude()</code>. Method <code>exclude()</code> nhận một string, nhiều string, hoặc một object <code>RouteInfo</code> để xác định các route cần loại trừ.</p>
+
+    <p>Đây là ví dụ về cách sử dụng:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div style="flex:1"></div>
+        <button class="cpbtn" onclick="cp(this)">Copy</button>
+      </div>
+      <div id="b7">
+        <div class="pane on"><pre>consumer
+  <span class="pn">.</span><span class="fn">apply</span><span class="pn">(</span><span class="cl">LoggerMiddleware</span><span class="pn">)</span>
+  <span class="pn">.</span><span class="fn">exclude</span><span class="pn">(</span>
+    <span class="pn">{</span> path<span class="pn">:</span> <span class="str">'cats'</span><span class="pn">,</span> method<span class="pn">:</span> <span class="typ">RequestMethod</span><span class="pn">.</span>GET <span class="pn">},</span>
+    <span class="pn">{</span> path<span class="pn">:</span> <span class="str">'cats'</span><span class="pn">,</span> method<span class="pn">:</span> <span class="typ">RequestMethod</span><span class="pn">.</span>POST <span class="pn">},</span>
+    <span class="str">'cats/{*splat}'</span><span class="pn">,</span>
+  <span class="pn">)</span>
+  <span class="pn">.</span><span class="fn">forRoutes</span><span class="pn">(</span><span class="cl">CatsController</span><span class="pn">);</span></pre></div>
+      </div>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">💡 Hint</span>
+      <p>Method <code>exclude()</code> hỗ trợ wildcard parameter sử dụng package <a href="https://github.com/pillarjs/path-to-regexp#parameters" target="_blank">path-to-regexp</a>.</p>
+    </div>
+
+    <p>Với ví dụ trên, <code>LoggerMiddleware</code> sẽ được gắn vào tất cả route định nghĩa trong <code>CatsController</code> <strong>ngoại trừ</strong> ba route được truyền vào <code>exclude()</code>.</p>
+
+    <p>Cách tiếp cận này cung cấp tính linh hoạt trong việc áp dụng hoặc loại trừ middleware dựa trên các route hoặc pattern route cụ thể.</p>
+
+    <!-- ── FUNCTIONAL MIDDLEWARE ── -->
+    <h3 id="functional-middleware">Functional middleware <a class="anchor" href="#functional-middleware">#</a></h3>
+
+    <p>Class <code>LoggerMiddleware</code> chúng ta đang dùng khá đơn giản. Nó không có member, không có method bổ sung, và không có dependency. Tại sao không định nghĩa nó trong một function đơn giản thay vì class? Trên thực tế, hoàn toàn có thể. Loại middleware này được gọi là <strong>functional middleware</strong>. Hãy chuyển logger middleware từ class-based sang functional middleware để minh hoạ sự khác biệt:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">logger.middleware.ts</div>
+        <div class="cb-right">
+          <div class="tabs">
+            <div class="tab on" onclick="sw(this,'b8','ts')">TS</div>
+            <div class="tab"    onclick="sw(this,'b8','js')">JS</div>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div id="b8">
+        <div class="pane on" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="typ">Request</span><span class="pn">,</span> <span class="typ">Response</span><span class="pn">,</span> <span class="typ">NextFunction</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'express'</span><span class="pn">;</span>
+
+<span class="kw">export function</span> <span class="fn">logger</span><span class="pn">(</span>req<span class="pn">:</span> <span class="typ">Request</span><span class="pn">,</span> res<span class="pn">:</span> <span class="typ">Response</span><span class="pn">,</span> next<span class="pn">:</span> <span class="typ">NextFunction</span><span class="pn">)</span> <span class="pn">{</span>
+  <span class="fn">console</span><span class="pn">.</span><span class="fn">log</span><span class="pn">(</span><span class="tmpl">`Request...`</span><span class="pn">);</span>
+  <span class="fn">next</span><span class="pn">();</span>
+<span class="pn">};</span></pre></div>
+        <div class="pane" data-lang="js"><pre><span class="kw">export function</span> <span class="fn">logger</span><span class="pn">(</span>req<span class="pn">,</span> res<span class="pn">,</span> next<span class="pn">)</span> <span class="pn">{</span>
+  <span class="fn">console</span><span class="pn">.</span><span class="fn">log</span><span class="pn">(</span><span class="tmpl">`Request...`</span><span class="pn">);</span>
+  <span class="fn">next</span><span class="pn">();</span>
+<span class="pn">};</span></pre></div>
+      </div>
+    </div>
+
+    <p>Và sử dụng nó trong <code>AppModule</code>:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">app.module.ts</div>
+        <div class="cb-right">
+          <div class="tabs">
+            <div class="tab on" onclick="sw(this,'b9','ts')">TS</div>
+            <div class="tab"    onclick="sw(this,'b9','js')">JS</div>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div id="b9">
+        <div class="pane on" data-lang="ts"><pre>consumer
+  <span class="pn">.</span><span class="fn">apply</span><span class="pn">(</span>logger<span class="pn">)</span>
+  <span class="pn">.</span><span class="fn">forRoutes</span><span class="pn">(</span><span class="cl">CatsController</span><span class="pn">);</span></pre></div>
+        <div class="pane" data-lang="js"><pre>consumer
+  <span class="pn">.</span><span class="fn">apply</span><span class="pn">(</span>logger<span class="pn">)</span>
+  <span class="pn">.</span><span class="fn">forRoutes</span><span class="pn">(</span><span class="cl">CatsController</span><span class="pn">);</span></pre></div>
+      </div>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">💡 Hint</span>
+      <p>Hãy xem xét dùng <strong>functional middleware</strong> đơn giản hơn bất cứ khi nào middleware của bạn không cần bất kỳ dependency nào.</p>
+    </div>
+
+    <!-- ── MULTIPLE MIDDLEWARE ── -->
+    <h3 id="multiple-middleware">Multiple middleware <a class="anchor" href="#multiple-middleware">#</a></h3>
+
+    <p>Như đã đề cập ở trên, để gắn nhiều middleware thực thi tuần tự, chỉ cần cung cấp danh sách phân cách bằng dấu phẩy bên trong method <code>apply()</code>:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div style="flex:1"></div>
+        <button class="cpbtn" onclick="cp(this)">Copy</button>
+      </div>
+      <div id="b10">
+        <div class="pane on"><pre>consumer<span class="pn">.</span><span class="fn">apply</span><span class="pn">(</span><span class="fn">cors</span><span class="pn">(),</span> <span class="fn">helmet</span><span class="pn">(),</span> logger<span class="pn">).</span><span class="fn">forRoutes</span><span class="pn">(</span><span class="cl">CatsController</span><span class="pn">);</span></pre></div>
+      </div>
+    </div>
+
+    <!-- ── GLOBAL MIDDLEWARE ── -->
+    <h3 id="global-middleware">Global middleware <a class="anchor" href="#global-middleware">#</a></h3>
+
+    <p>Nếu muốn gắn middleware vào tất cả route đã đăng ký cùng một lúc, có thể dùng method <code>use()</code> được cung cấp bởi instance <code>INestApplication</code>:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">main.ts</div>
+        <div class="cb-right">
+          <div class="tabs">
+            <div class="tab on" onclick="sw(this,'b11','ts')">TS</div>
+            <div class="tab"    onclick="sw(this,'b11','js')">JS</div>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div id="b11">
+        <div class="pane on" data-lang="ts"><pre><span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> <span class="cl">NestFactory</span><span class="pn">.</span><span class="fn">create</span><span class="pn">(</span><span class="cl">AppModule</span><span class="pn">);</span>
+app<span class="pn">.</span><span class="fn">use</span><span class="pn">(</span>logger<span class="pn">);</span>
+<span class="kw">await</span> app<span class="pn">.</span><span class="fn">listen</span><span class="pn">(</span>process<span class="pn">.</span>env<span class="pn">.</span>PORT <span class="pn">??</span> <span class="num">3000</span><span class="pn">);</span></pre></div>
+        <div class="pane" data-lang="js"><pre><span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> <span class="cl">NestFactory</span><span class="pn">.</span><span class="fn">create</span><span class="pn">(</span><span class="cl">AppModule</span><span class="pn">);</span>
+app<span class="pn">.</span><span class="fn">use</span><span class="pn">(</span>logger<span class="pn">);</span>
+<span class="kw">await</span> app<span class="pn">.</span><span class="fn">listen</span><span class="pn">(</span>process<span class="pn">.</span>env<span class="pn">.</span>PORT <span class="pn">??</span> <span class="num">3000</span><span class="pn">);</span></pre></div>
+      </div>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">💡 Hint</span>
+      <p>Không thể truy cập DI container trong global middleware. Bạn có thể dùng <a href="#functional-middleware">functional middleware</a> khi sử dụng <code>app.use()</code>. Hoặc, có thể dùng class middleware và consume nó bằng <code>.forRoutes('*')</code> trong <code>AppModule</code> (hoặc bất kỳ module nào khác).</p>
+    </div>
+
+    <!-- PAGE NAV -->
+    <div class="page-nav">
+      <a class="pnbtn" href="nestjs-modules-vi.html">
+        <div class="pnlbl">&larr; Trước</div>
+        <div class="pntitle">Modules</div>
+      </a>
+      <a class="pnbtn r" href="https://docs.nestjs.com/exception-filters" target="_blank">
+        <div class="pnlbl">Tiếp theo &rarr;</div>
+        <div class="pntitle">Exception filters</div>
+      </a>
+    </div>
+
+  </main>
+
+  <!-- ══════════════════ TOC ══════════════════ -->
+  <aside class="toc">
+    <div class="toc-title">Trong trang này</div>
+    <ul>
+      <li><a href="#dependency-injection">Dependency injection</a></li>
+      <li><a href="#applying-middleware">Applying middleware</a></li>
+      <li><a href="#route-wildcards">Route wildcards</a></li>
+      <li><a href="#middleware-consumer">Middleware consumer</a></li>
+      <li><a href="#excluding-routes">Excluding routes</a></li>
+      <li><a href="#functional-middleware">Functional middleware</a></li>
+      <li><a href="#multiple-middleware">Multiple middleware</a></li>
+      <li><a href="#global-middleware">Global middleware</a></li>
+    </ul>
+  </aside>
+
+</div>
+
+<script>
+  function sw(btn, bid, lang) {
+    var c = document.getElementById(bid);
+    if (!c) return;
+    btn.parentElement.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('on'); });
+    btn.classList.add('on');
+    c.querySelectorAll('.pane').forEach(function(p) {
+      p.classList.remove('on');
+      if (p.dataset.lang === lang) p.classList.add('on');
+    });
+  }
+
+  function cp(btn) {
+    var wrap = btn.closest('.cb');
+    var pane = wrap.querySelector('.pane.on') || wrap.querySelector('.pane');
+    if (!pane) return;
+    navigator.clipboard.writeText(pane.textContent.trim()).then(function() {
+      var o = btn.textContent;
+      btn.textContent = 'Copied!';
+      btn.style.color = '#4ade80';
+      setTimeout(function() { btn.textContent = o; btn.style.color = ''; }, 1500);
+    });
+  }
+
+  var tocLinks = document.querySelectorAll('.toc a');
+  var heads    = document.querySelectorAll('h3[id]');
+  function hi() {
+    var cur = '';
+    heads.forEach(function(h) { if (scrollY >= h.offsetTop - 110) cur = h.id; });
+    tocLinks.forEach(function(a) {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + cur);
+    });
+  }
+  window.addEventListener('scroll', hi, { passive: true });
+  hi();
+</script>
+</body>
+</html>

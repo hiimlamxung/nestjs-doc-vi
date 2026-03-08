@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Modules | NestJS - Tài liệu tiếng Việt</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:       #0e0e0e;
+      --surface:  #1a1a1a;
+      --surface2: #222;
+      --border:   #2a2a2a;
+      --border-l: #333;
+      --red:      #ea2845;
+      --red-l:    #ff4d6a;
+      --red-glow: rgba(234,40,69,.15);
+      --text:     #e8e8e8;
+      --muted:    #888;
+      --sec:      #b0b0b0;
+      --code-bg:  #1e1e1e;
+      --code-bd:  #2d2d2d;
+      --hint-bg:  #0d2a1a;
+      --hint-c:   #4ade80;
+      --warn-bg:  #2a1a0d;
+      --warn-c:   #fb923c;
+      --toc-w:    210px;
+      --font:     'Inter', sans-serif;
+      --mono:     'Source Code Pro', monospace;
+      --r:        6px;
+      --rl:       10px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font); background: var(--bg); color: var(--text); font-size: 15px; line-height: 1.78; }
+
+    .page {
+      max-width: 1060px;
+      margin: 0 auto;
+      padding: 48px 32px 96px;
+      display: flex;
+      gap: 56px;
+      align-items: flex-start;
+    }
+    .content { flex: 1; min-width: 0; }
+
+    /* TOC */
+    .toc {
+      width: var(--toc-w);
+      flex-shrink: 0;
+      position: sticky;
+      top: 32px;
+      align-self: flex-start;
+      max-height: calc(100vh - 48px);
+      overflow-y: auto;
+    }
+    .toc::-webkit-scrollbar { width: 3px; }
+    .toc::-webkit-scrollbar-thumb { background: var(--border-l); border-radius: 2px; }
+    .toc-title {
+      font-size: 10.5px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .08em; color: var(--muted);
+      padding-bottom: 8px; margin-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    .toc ul { list-style: none; }
+    .toc ul li a {
+      display: block; padding: 3.5px 0;
+      font-size: 12.5px; color: var(--muted);
+      text-decoration: none; line-height: 1.5; transition: color .15s;
+    }
+    .toc ul li a:hover, .toc ul li a.active { color: var(--red-l); }
+
+    /* Banner */
+    .vi-banner {
+      display: flex; align-items: center; gap: 10px;
+      padding: 11px 16px; border: 1px solid rgba(234,40,69,.3);
+      border-radius: var(--rl);
+      background: linear-gradient(135deg,rgba(234,40,69,.1),rgba(234,40,69,.04));
+      font-size: 13px; color: var(--sec); margin-bottom: 32px;
+    }
+    .vi-banner strong { color: var(--red-l); }
+
+    /* Headings */
+    h1 { font-size: 36px; font-weight: 700; letter-spacing: -.5px; line-height: 1.2; margin-bottom: 6px; }
+    h1::after { content:''; display:block; width:44px; height:3px; background:var(--red); border-radius:2px; margin-top:12px; }
+    h3 { font-size: 19px; font-weight: 600; letter-spacing: -.2px; margin: 40px 0 12px; display: flex; align-items: center; gap: 8px; }
+    .anchor { font-size: 14px; color: var(--muted); text-decoration: none; opacity: 0; transition: opacity .2s; }
+    h3:hover .anchor { opacity: 1; }
+
+    p { color: var(--sec); line-height: 1.82; margin-bottom: 16px; }
+    p:last-child { margin-bottom: 0; }
+    a { color: var(--red-l); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    strong { color: var(--text); font-weight: 600; }
+
+    /* Inline code */
+    code {
+      font-family: var(--mono); font-size: 13px;
+      background: var(--code-bg); border: 1px solid var(--code-bd);
+      padding: 1px 6px; border-radius: 4px; color: #f9a8d4;
+    }
+
+    /* Callouts */
+    .hint, .warn {
+      margin: 18px 0; padding: 12px 16px;
+      border-left: 3px solid; border-radius: var(--r);
+      font-size: 13.5px; line-height: 1.72;
+    }
+    .hint { background: var(--hint-bg); border-color: var(--hint-c); color: #a7f3d0; }
+    .warn { background: var(--warn-bg); border-color: var(--warn-c); color: #fed7aa; }
+    .hint p, .warn p { margin: 0; color: inherit; }
+    .lbl { display: block; font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 4px; }
+    .hint .lbl { color: var(--hint-c); }
+    .warn .lbl  { color: var(--warn-c); }
+
+    /* Code blocks */
+    .cb {
+      margin: 18px 0; border: 1px solid var(--code-bd);
+      border-radius: var(--rl); overflow: hidden; background: var(--code-bg);
+    }
+    .cb-head {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 8px 14px; background: #181818; border-bottom: 1px solid var(--code-bd);
+    }
+    .cb-fname {
+      font-family: var(--mono); font-size: 11.5px; color: var(--muted);
+      display: flex; align-items: center; gap: 6px;
+    }
+    .cb-fname::before { content:''; display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--red); }
+    .cb-right { display: flex; align-items: center; gap: 6px; }
+    .tabs { display: flex; gap: 3px; }
+    .tab {
+      padding: 4px 11px; font-size: 11px; font-family: var(--mono); font-weight: 500;
+      border: 1px solid transparent; border-radius: 4px; color: var(--muted);
+      cursor: pointer; user-select: none; transition: all .14s;
+    }
+    .tab.on { color: var(--red-l); background: var(--red-glow); border-color: var(--red); }
+    .tab:hover:not(.on) { color: var(--text); background: rgba(255,255,255,.04); }
+    .cpbtn {
+      padding: 3px 9px; font-size: 10.5px; font-family: var(--mono);
+      background: var(--surface); border: 1px solid var(--border-l);
+      color: var(--muted); border-radius: 4px; cursor: pointer; transition: all .14s;
+    }
+    .cpbtn:hover { background: var(--surface2); color: var(--text); }
+    .pane { display: none; }
+    .pane.on { display: block; }
+    pre {
+      padding: 18px 20px; overflow-x: auto;
+      font-family: var(--mono); font-size: 13.5px; line-height: 1.65; color: #abb2bf;
+    }
+    pre::-webkit-scrollbar { height: 5px; }
+    pre::-webkit-scrollbar-thumb { background: var(--border-l); border-radius: 3px; }
+
+    /* Syntax */
+    .kw  { color: #c678dd; }
+    .fn  { color: #61afef; }
+    .str { color: #98c379; }
+    .dec { color: #e5c07b; }
+    .typ { color: #e5c07b; }
+    .cm  { color: #5c6370; font-style: italic; }
+    .pn  { color: #abb2bf; }
+    .num { color: #d19a66; }
+    .cl  { color: #e06c75; }
+    .pr  { color: #abb2bf; }
+
+    /* Module properties table */
+    .prop-table {
+      width: 100%; border-collapse: collapse;
+      margin: 18px 0; font-size: 13.5px;
+      border: 1px solid var(--border);
+      border-radius: var(--rl); overflow: hidden;
+    }
+    .prop-table thead th {
+      padding: 10px 16px; text-align: left;
+      background: #1e1e1e; color: var(--text);
+      font-size: 11.5px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .05em; border-bottom: 1px solid var(--border);
+    }
+    .prop-table tbody tr { border-bottom: 1px solid var(--border); }
+    .prop-table tbody tr:last-child { border-bottom: none; }
+    .prop-table tbody tr:nth-child(odd)  { background: #181818; }
+    .prop-table tbody tr:nth-child(even) { background: #1c1c1c; }
+    .prop-table tbody tr:hover { background: var(--surface2); }
+    .prop-table td { padding: 10px 16px; color: var(--sec); vertical-align: top; line-height: 1.7; }
+    .prop-table td:first-child { font-family: var(--mono); font-size: 12.5px; color: #f9a8d4; white-space: nowrap; }
+
+    /* Module diagram */
+    .mod-diagram {
+      margin: 24px 0 28px;
+      padding: 24px 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--rl);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+    .mod-row { display: flex; align-items: center; gap: 0; flex-wrap: wrap; justify-content: center; }
+    .mod-box {
+      padding: 9px 18px; border-radius: var(--r);
+      font-size: 13px; font-weight: 600; font-family: var(--mono);
+      border: 1px solid; text-align: center;
+    }
+    .mod-box.root   { background: rgba(234,40,69,.12); border-color: var(--red);   color: var(--red-l); }
+    .mod-box.feat   { background: #1a2a3a; border-color: #2a4a6a; color: #60a0d0; }
+    .mod-box.shared { background: #1a2a1a; border-color: #2a5a2a; color: #4ade80; }
+    .mod-arrow { padding: 0 12px; color: var(--muted); font-size: 16px; }
+    .mod-caption { font-size: 12px; color: var(--muted); text-align: center; margin-top: 4px; }
+
+    /* Shared module diagram */
+    .shared-diagram {
+      margin: 20px 0 24px;
+      padding: 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--rl);
+      display: flex; flex-direction: column; align-items: center; gap: 12px;
+    }
+    .shared-center {
+      padding: 10px 22px; border-radius: var(--r);
+      background: rgba(234,40,69,.12); border: 1px solid var(--red);
+      color: var(--red-l); font-family: var(--mono); font-size: 13px; font-weight: 600;
+    }
+    .shared-consumers { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+    .shared-consumer {
+      padding: 8px 16px; border-radius: var(--r);
+      background: #1a2a3a; border: 1px solid #2a4a6a;
+      color: #60a0d0; font-family: var(--mono); font-size: 12px; font-weight: 500;
+    }
+    .shared-lines { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; align-items: center; }
+
+    /* File tree */
+    .filetree {
+      margin: 16px 0; padding: 16px 20px;
+      background: var(--code-bg); border: 1px solid var(--code-bd);
+      border-radius: var(--rl); font-family: var(--mono); font-size: 13px;
+      color: var(--sec); line-height: 1.9;
+    }
+    .filetree .dir  { color: #61afef; font-weight: 500; }
+    .filetree .file { color: #abb2bf; }
+    .filetree .hi   { color: var(--red-l); font-weight: 500; }
+
+    /* Page nav */
+    .page-nav { display: flex; justify-content: space-between; margin-top: 52px; gap: 16px; }
+    .pnbtn {
+      display: flex; flex-direction: column; padding: 14px 18px;
+      border: 1px solid var(--border); border-radius: var(--rl);
+      text-decoration: none; transition: all .2s; min-width: 150px;
+    }
+    .pnbtn:hover { border-color: var(--red); background: var(--red-glow); text-decoration: none; }
+    .pnlbl   { font-size: 10.5px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); margin-bottom: 3px; }
+    .pntitle { font-size: 14px; font-weight: 600; color: var(--text); }
+    .pnbtn.r { text-align: right; margin-left: auto; }
+
+    @media (max-width: 860px) { .toc { display: none; } }
+    @media (max-width: 600px) { .page { padding: 24px 16px 64px; } }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ══════════════ MAIN CONTENT ══════════════ -->
+  <main class="content">
+
+    <div class="vi-banner">
+      <span style="font-size:17px">🇻🇳</span>
+      <div>Dịch từ <strong><a href="https://docs.nestjs.com/modules" target="_blank">docs.nestjs.com/modules</a></strong>. Thuật ngữ kỹ thuật giữ nguyên tiếng Anh.</div>
+    </div>
+
+    <h1>Modules</h1>
+
+    <p style="margin-top:18px">Module là một class được annotate bằng decorator <code>@Module()</code>. Decorator này cung cấp metadata mà <strong>Nest</strong> sử dụng để tổ chức và quản lý cấu trúc ứng dụng một cách hiệu quả.</p>
+
+    <!-- Diagram -->
+    <div class="mod-diagram">
+      <div class="mod-row">
+        <div class="mod-box root">AppModule<br><span style="font-size:10px;opacity:.7">Root Module</span></div>
+        <div class="mod-arrow">→</div>
+        <div class="mod-box feat">CatsModule<br><span style="font-size:10px;opacity:.7">Feature Module</span></div>
+        <div class="mod-arrow">→</div>
+        <div class="mod-box shared">SharedModule<br><span style="font-size:10px;opacity:.7">Shared Module</span></div>
+      </div>
+      <p class="mod-caption">Application graph — Nest dùng để resolve mối quan hệ và dependencies giữa các module</p>
+    </div>
+
+    <p>Mọi ứng dụng Nest đều có ít nhất một module — <strong>root module</strong>, dùng làm điểm khởi đầu để Nest xây dựng <strong>application graph</strong>. Đây là cấu trúc nội bộ Nest dùng để resolve các mối quan hệ và dependency giữa module và provider. Trong khi ứng dụng nhỏ có thể chỉ cần root module, nhìn chung thì không phải như vậy. Module được <strong>khuyến khích dùng</strong> như một cách hiệu quả để tổ chức component. Với hầu hết ứng dụng, bạn sẽ có nhiều module, mỗi module đóng gói một tập các <strong>tính năng</strong> liên quan chặt chẽ với nhau.</p>
+
+    <p>Decorator <code>@Module()</code> nhận một object với các property mô tả module:</p>
+
+    <div style="overflow-x:auto;margin:18px 0;border-radius:var(--rl);border:1px solid var(--border)">
+      <table class="prop-table" style="border:none;border-radius:0">
+        <thead>
+          <tr>
+            <th>Property</th>
+            <th>Mô tả</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>providers</td>
+            <td>Các provider sẽ được Nest injector khởi tạo và có thể được chia sẻ ít nhất trong module này.</td>
+          </tr>
+          <tr>
+            <td>controllers</td>
+            <td>Tập các controller được định nghĩa trong module này, cần được khởi tạo.</td>
+          </tr>
+          <tr>
+            <td>imports</td>
+            <td>Danh sách các module được import — các module này export các provider mà module hiện tại cần dùng.</td>
+          </tr>
+          <tr>
+            <td>exports</td>
+            <td>Tập con của <code>providers</code> được cung cấp bởi module này và cần khả dụng trong các module khác khi import module này. Có thể dùng chính provider hoặc chỉ token (<code>provide</code> value) của nó.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>Module <strong>đóng gói</strong> provider theo mặc định — nghĩa là bạn chỉ có thể inject các provider thuộc module hiện tại hoặc được export rõ ràng từ các module được import. Các provider được export từ một module về bản chất là public interface hay API của module đó.</p>
+
+    <!-- ── FEATURE MODULES ── -->
+    <h3 id="feature-modules">Feature modules <a class="anchor" href="#feature-modules">#</a></h3>
+
+    <p>Trong ví dụ của chúng ta, <code>CatsController</code> và <code>CatsService</code> có liên quan chặt chẽ và phục vụ cùng một domain của ứng dụng. Việc nhóm chúng vào một feature module là hợp lý. Feature module tổ chức code liên quan đến một tính năng cụ thể, giúp duy trì ranh giới rõ ràng và tổ chức tốt hơn. Điều này đặc biệt quan trọng khi ứng dụng hoặc team phát triển lớn dần, và phù hợp với các nguyên tắc <a href="https://en.wikipedia.org/wiki/SOLID" target="_blank">SOLID</a>.</p>
+
+    <p>Tiếp theo, chúng ta sẽ tạo <code>CatsModule</code> để minh hoạ cách nhóm controller và service.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">cats/cats.module.ts</div>
+        <div class="cb-right">
+          <div class="tabs">
+            <div class="tab on" onclick="sw(this,'b1','ts')">TS</div>
+            <div class="tab"    onclick="sw(this,'b1','js')">JS</div>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div id="b1">
+        <div class="pane on" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Module</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">CatsController</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./cats.controller'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">CatsService</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./cats.service'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  controllers<span class="pn">:</span> <span class="pn">[</span><span class="cl">CatsController</span><span class="pn">],</span>
+  providers<span class="pn">:</span>   <span class="pn">[</span><span class="cl">CatsService</span><span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">CatsModule</span> <span class="pn">{}</span></pre></div>
+        <div class="pane" data-lang="js"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Module</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">CatsController</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./cats.controller'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">CatsService</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./cats.service'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  controllers<span class="pn">:</span> <span class="pn">[</span><span class="cl">CatsController</span><span class="pn">],</span>
+  providers<span class="pn">:</span>   <span class="pn">[</span><span class="cl">CatsService</span><span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">CatsModule</span> <span class="pn">{}</span></pre></div>
+      </div>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">💡 Hint</span>
+      <p>Để tạo module bằng CLI, chạy lệnh <code>$ nest g module cats</code>.</p>
+    </div>
+
+    <p>Ở trên, chúng ta đã định nghĩa <code>CatsModule</code> trong file <code>cats.module.ts</code> và chuyển tất cả những gì liên quan đến module này vào thư mục <code>cats</code>. Việc cuối cùng cần làm là import module này vào root module (<code>AppModule</code>, định nghĩa trong <code>app.module.ts</code>).</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">app.module.ts</div>
+        <div class="cb-right">
+          <div class="tabs">
+            <div class="tab on" onclick="sw(this,'b2','ts')">TS</div>
+            <div class="tab"    onclick="sw(this,'b2','js')">JS</div>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div id="b2">
+        <div class="pane on" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Module</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">CatsModule</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./cats/cats.module'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">:</span> <span class="pn">[</span><span class="cl">CatsModule</span><span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="pn">{}</span></pre></div>
+        <div class="pane" data-lang="js"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Module</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">CatsModule</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./cats/cats.module'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">:</span> <span class="pn">[</span><span class="cl">CatsModule</span><span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="pn">{}</span></pre></div>
+      </div>
+    </div>
+
+    <p>Đây là cấu trúc thư mục hiện tại của chúng ta:</p>
+
+    <div class="filetree">
+      <div><span class="dir">src</span></div>
+      <div>&nbsp;&nbsp;<span class="dir">cats</span></div>
+      <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="dir">dto</span></div>
+      <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">create-cat.dto.ts</span></div>
+      <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="dir">interfaces</span></div>
+      <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">cat.interface.ts</span></div>
+      <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">cats.controller.ts</span></div>
+      <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="hi">cats.module.ts</span></div>
+      <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">cats.service.ts</span></div>
+      <div>&nbsp;&nbsp;<span class="file">app.module.ts</span></div>
+      <div>&nbsp;&nbsp;<span class="file">main.ts</span></div>
+    </div>
+
+    <!-- ── SHARED MODULES ── -->
+    <h3 id="shared-modules">Shared modules <a class="anchor" href="#shared-modules">#</a></h3>
+
+    <p>Trong Nest, module là <strong>singleton</strong> theo mặc định — do đó bạn có thể dễ dàng chia sẻ cùng một instance của bất kỳ provider nào giữa nhiều module.</p>
+
+    <!-- Shared diagram -->
+    <div class="shared-diagram">
+      <div class="shared-center">CatsModule (exports: CatsService)</div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--muted);font-size:13px">
+        <span>↙&nbsp;&nbsp;&nbsp;↓&nbsp;&nbsp;&nbsp;↘</span>
+        <span style="font-size:11px">chia sẻ cùng 1 instance</span>
+      </div>
+      <div class="shared-consumers">
+        <div class="shared-consumer">ModuleA</div>
+        <div class="shared-consumer">ModuleB</div>
+        <div class="shared-consumer">ModuleC</div>
+      </div>
+    </div>
+
+    <p>Mọi module đều tự động là một <strong>shared module</strong>. Một khi được tạo, nó có thể được tái sử dụng bởi bất kỳ module nào. Giả sử chúng ta muốn chia sẻ một instance của <code>CatsService</code> giữa nhiều module khác. Để làm điều đó, trước tiên cần <strong>export</strong> provider <code>CatsService</code> bằng cách thêm nó vào mảng <code>exports</code> của module:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">cats.module.ts</div>
+        <div class="cb-right">
+          <div class="tabs">
+            <div class="tab on" onclick="sw(this,'b3','ts')">TS</div>
+            <div class="tab"    onclick="sw(this,'b3','js')">JS</div>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div id="b3">
+        <div class="pane on" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Module</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">CatsController</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./cats.controller'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">CatsService</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./cats.service'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  controllers<span class="pn">:</span> <span class="pn">[</span><span class="cl">CatsController</span><span class="pn">],</span>
+  providers<span class="pn">:</span>   <span class="pn">[</span><span class="cl">CatsService</span><span class="pn">],</span>
+  exports<span class="pn">:</span>     <span class="pn">[</span><span class="cl">CatsService</span><span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">CatsModule</span> <span class="pn">{}</span></pre></div>
+        <div class="pane" data-lang="js"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Module</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">CatsController</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./cats.controller'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">CatsService</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./cats.service'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  controllers<span class="pn">:</span> <span class="pn">[</span><span class="cl">CatsController</span><span class="pn">],</span>
+  providers<span class="pn">:</span>   <span class="pn">[</span><span class="cl">CatsService</span><span class="pn">],</span>
+  exports<span class="pn">:</span>     <span class="pn">[</span><span class="cl">CatsService</span><span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">CatsModule</span> <span class="pn">{}</span></pre></div>
+      </div>
+    </div>
+
+    <p>Bây giờ bất kỳ module nào import <code>CatsModule</code> đều có quyền truy cập <code>CatsService</code> và sẽ chia sẻ cùng một instance với tất cả các module khác cũng import nó.</p>
+
+    <p>Nếu đăng ký trực tiếp <code>CatsService</code> vào từng module riêng lẻ, điều đó sẽ hoạt động nhưng mỗi module sẽ nhận một instance <code>CatsService</code> riêng biệt. Điều này dẫn đến tốn bộ nhớ hơn vì nhiều instance của cùng một service được tạo ra, và có thể gây ra các hành vi không mong đợi như state không nhất quán nếu service duy trì trạng thái nội bộ.</p>
+
+    <p>Bằng cách đóng gói <code>CatsService</code> vào <code>CatsModule</code> và export nó, chúng ta đảm bảo rằng cùng một instance của <code>CatsService</code> được tái sử dụng trên tất cả các module import <code>CatsModule</code>. Điều này không chỉ giảm tiêu thụ bộ nhớ mà còn dẫn đến hành vi dễ dự đoán hơn — đây là một trong những lợi ích chính của tính module hoá và dependency injection trong NestJS.</p>
+
+    <!-- ── MODULE RE-EXPORTING ── -->
+    <h3 id="module-re-exporting">Module re-exporting <a class="anchor" href="#module-re-exporting">#</a></h3>
+
+    <p>Như đã thấy ở trên, module có thể export các provider nội bộ của mình. Ngoài ra, chúng cũng có thể re-export các module mà chúng import. Trong ví dụ dưới, <code>CommonModule</code> vừa được import vào <strong>và</strong> export từ <code>CoreModule</code>, làm cho nó khả dụng cho các module khác import <code>CoreModule</code>.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div style="flex:1"></div>
+        <button class="cpbtn" onclick="cp(this)">Copy</button>
+      </div>
+      <div id="b4">
+        <div class="pane on"><pre><span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">:</span> <span class="pn">[</span><span class="cl">CommonModule</span><span class="pn">],</span>
+  exports<span class="pn">:</span> <span class="pn">[</span><span class="cl">CommonModule</span><span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">CoreModule</span> <span class="pn">{}</span></pre></div>
+      </div>
+    </div>
+
+    <!-- ── DEPENDENCY INJECTION ── -->
+    <h3 id="dependency-injection">Dependency injection <a class="anchor" href="#dependency-injection">#</a></h3>
+
+    <p>Bản thân module class cũng có thể <strong>inject</strong> provider (ví dụ: phục vụ mục đích cấu hình):</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">cats.module.ts</div>
+        <div class="cb-right">
+          <div class="tabs">
+            <div class="tab on" onclick="sw(this,'b5','ts')">TS</div>
+            <div class="tab"    onclick="sw(this,'b5','js')">JS</div>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div id="b5">
+        <div class="pane on" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Module</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">CatsController</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./cats.controller'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">CatsService</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./cats.service'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  controllers<span class="pn">:</span> <span class="pn">[</span><span class="cl">CatsController</span><span class="pn">],</span>
+  providers<span class="pn">:</span>   <span class="pn">[</span><span class="cl">CatsService</span><span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">CatsModule</span> <span class="pn">{</span>
+  <span class="fn">constructor</span><span class="pn">(</span><span class="kw">private</span> catsService<span class="pn">:</span> <span class="cl">CatsService</span><span class="pn">)</span> <span class="pn">{}</span>
+<span class="pn">}</span></pre></div>
+        <div class="pane" data-lang="js"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Module</span><span class="pn">,</span> <span class="cl">Dependencies</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">CatsController</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./cats.controller'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">CatsService</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./cats.service'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  controllers<span class="pn">:</span> <span class="pn">[</span><span class="cl">CatsController</span><span class="pn">],</span>
+  providers<span class="pn">:</span>   <span class="pn">[</span><span class="cl">CatsService</span><span class="pn">],</span>
+<span class="pn">})</span>
+<span class="dec">@Dependencies</span><span class="pn">(</span><span class="cl">CatsService</span><span class="pn">)</span>
+<span class="kw">export class</span> <span class="cl">CatsModule</span> <span class="pn">{</span>
+  <span class="fn">constructor</span><span class="pn">(</span>catsService<span class="pn">)</span> <span class="pn">{</span>
+    <span class="kw">this</span><span class="pn">.</span>catsService <span class="pn">=</span> catsService<span class="pn">;</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+      </div>
+    </div>
+
+    <p>Tuy nhiên, bản thân module class <strong>không thể</strong> được inject như một provider do vấn đề <a href="https://docs.nestjs.com/fundamentals/circular-dependency" target="_blank">circular dependency</a>.</p>
+
+    <!-- ── GLOBAL MODULES ── -->
+    <h3 id="global-modules">Global modules <a class="anchor" href="#global-modules">#</a></h3>
+
+    <p>Nếu bạn phải import cùng một tập module ở khắp nơi, điều đó có thể trở nên lặp đi lặp lại. Không giống như <a href="https://angular.dev" target="_blank">Angular</a> — nơi <code>providers</code> được đăng ký ở global scope và khả dụng ở mọi nơi — Nest đóng gói provider bên trong module scope. Bạn không thể dùng provider của một module ở nơi khác nếu không import module đó trước.</p>
+
+    <p>Khi muốn cung cấp một tập provider nên khả dụng ở mọi nơi (ví dụ: helper, database connection, v.v.), hãy làm module đó thành <strong>global</strong> bằng decorator <code>@Global()</code>.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div style="flex:1"></div>
+        <button class="cpbtn" onclick="cp(this)">Copy</button>
+      </div>
+      <div id="b6">
+        <div class="pane on"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Module</span><span class="pn">,</span> <span class="cl">Global</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">CatsController</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./cats.controller'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">CatsService</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./cats.service'</span><span class="pn">;</span>
+
+<span class="dec">@Global</span><span class="pn">()</span>
+<span class="dec">@Module</span><span class="pn">({</span>
+  controllers<span class="pn">:</span> <span class="pn">[</span><span class="cl">CatsController</span><span class="pn">],</span>
+  providers<span class="pn">:</span>   <span class="pn">[</span><span class="cl">CatsService</span><span class="pn">],</span>
+  exports<span class="pn">:</span>     <span class="pn">[</span><span class="cl">CatsService</span><span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">CatsModule</span> <span class="pn">{}</span></pre></div>
+      </div>
+    </div>
+
+    <p>Decorator <code>@Global()</code> làm cho module có global scope. Global module chỉ nên được đăng ký <strong>một lần duy nhất</strong>, thường là bởi root hoặc core module. Trong ví dụ trên, provider <code>CatsService</code> sẽ có mặt ở khắp nơi — các module muốn inject service này sẽ không cần import <code>CatsModule</code> vào mảng <code>imports</code> của chúng.</p>
+
+    <div class="hint">
+      <span class="lbl">💡 Hint</span>
+      <p>Làm mọi thứ thành global <strong>không được khuyến khích</strong> như một thực hành thiết kế. Mặc dù global module có thể giúp giảm boilerplate, nhìn chung tốt hơn nên dùng mảng <code>imports</code> để cung cấp API của module cho các module khác một cách có kiểm soát và rõ ràng. Cách tiếp cận này mang lại cấu trúc và khả năng bảo trì tốt hơn, đảm bảo chỉ những phần cần thiết của module được chia sẻ và tránh coupling không cần thiết giữa các phần không liên quan.</p>
+    </div>
+
+    <!-- ── DYNAMIC MODULES ── -->
+    <h3 id="dynamic-modules">Dynamic modules <a class="anchor" href="#dynamic-modules">#</a></h3>
+
+    <p>Dynamic module trong Nest cho phép bạn tạo ra các module có thể được cấu hình tại runtime. Điều này đặc biệt hữu ích khi cần cung cấp các module linh hoạt, có thể tuỳ biến — nơi provider có thể được tạo dựa trên một số tuỳ chọn hoặc cấu hình nhất định. Đây là tổng quan ngắn gọn về cách <strong>dynamic module</strong> hoạt động.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div style="flex:1"></div>
+        <div class="cb-right">
+          <div class="tabs">
+            <div class="tab on" onclick="sw(this,'b7','ts')">TS</div>
+            <div class="tab"    onclick="sw(this,'b7','js')">JS</div>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div id="b7">
+        <div class="pane on" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Module</span><span class="pn">,</span> <span class="typ">DynamicModule</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="fn">createDatabaseProviders</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./database.providers'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">Connection</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./connection.provider'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  providers<span class="pn">:</span> <span class="pn">[</span><span class="cl">Connection</span><span class="pn">],</span>
+  exports<span class="pn">:</span>   <span class="pn">[</span><span class="cl">Connection</span><span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">DatabaseModule</span> <span class="pn">{</span>
+  <span class="kw">static</span> <span class="fn">forRoot</span><span class="pn">(</span>entities <span class="pn">=</span> <span class="pn">[],</span> options<span class="pn">?):</span> <span class="typ">DynamicModule</span> <span class="pn">{</span>
+    <span class="kw">const</span> providers <span class="pn">=</span> <span class="fn">createDatabaseProviders</span><span class="pn">(</span>options<span class="pn">,</span> entities<span class="pn">);</span>
+    <span class="kw">return</span> <span class="pn">{</span>
+      module<span class="pn">:</span>    <span class="cl">DatabaseModule</span><span class="pn">,</span>
+      providers<span class="pn">:</span> providers<span class="pn">,</span>
+      exports<span class="pn">:</span>   providers<span class="pn">,</span>
+    <span class="pn">};</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+        <div class="pane" data-lang="js"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Module</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="fn">createDatabaseProviders</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./database.providers'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">Connection</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./connection.provider'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  providers<span class="pn">:</span> <span class="pn">[</span><span class="cl">Connection</span><span class="pn">],</span>
+  exports<span class="pn">:</span>   <span class="pn">[</span><span class="cl">Connection</span><span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">DatabaseModule</span> <span class="pn">{</span>
+  <span class="kw">static</span> <span class="fn">forRoot</span><span class="pn">(</span>entities <span class="pn">=</span> <span class="pn">[],</span> options<span class="pn">)</span> <span class="pn">{</span>
+    <span class="kw">const</span> providers <span class="pn">=</span> <span class="fn">createDatabaseProviders</span><span class="pn">(</span>options<span class="pn">,</span> entities<span class="pn">);</span>
+    <span class="kw">return</span> <span class="pn">{</span>
+      module<span class="pn">:</span>    <span class="cl">DatabaseModule</span><span class="pn">,</span>
+      providers<span class="pn">:</span> providers<span class="pn">,</span>
+      exports<span class="pn">:</span>   providers<span class="pn">,</span>
+    <span class="pn">};</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+      </div>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">💡 Hint</span>
+      <p>Phương thức <code>forRoot()</code> có thể return dynamic module synchronously hoặc asynchronously (ví dụ: qua <code>Promise</code>).</p>
+    </div>
+
+    <p>Module này định nghĩa provider <code>Connection</code> theo mặc định (trong metadata của decorator <code>@Module()</code>), nhưng ngoài ra — tuỳ thuộc vào các object <code>entities</code> và <code>options</code> truyền vào <code>forRoot()</code> — nó còn expose một tập các provider bổ sung, ví dụ như repository. Lưu ý rằng các property trả về từ dynamic module <strong>mở rộng</strong> (thay vì ghi đè) metadata module cơ bản định nghĩa trong decorator <code>@Module()</code>. Đó là lý do cả provider <code>Connection</code> khai báo tĩnh lẫn các repository provider được tạo động đều được export từ module.</p>
+
+    <p>Nếu muốn đăng ký dynamic module trong global scope, set property <code>global</code> thành <code>true</code>:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div style="flex:1"></div>
+        <button class="cpbtn" onclick="cp(this)">Copy</button>
+      </div>
+      <div id="b8">
+        <div class="pane on"><pre><span class="pn">{</span>
+  global<span class="pn">:</span>    <span class="kw">true</span><span class="pn">,</span>
+  module<span class="pn">:</span>    <span class="cl">DatabaseModule</span><span class="pn">,</span>
+  providers<span class="pn">:</span> providers<span class="pn">,</span>
+  exports<span class="pn">:</span>   providers<span class="pn">,</span>
+<span class="pn">}</span></pre></div>
+      </div>
+    </div>
+
+    <div class="warn">
+      <span class="lbl">⚠️ Warning</span>
+      <p>Như đã đề cập ở trên, làm mọi thứ thành global <strong>không phải là quyết định thiết kế tốt</strong>.</p>
+    </div>
+
+    <p><code>DatabaseModule</code> có thể được import và cấu hình theo cách sau:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div style="flex:1"></div>
+        <button class="cpbtn" onclick="cp(this)">Copy</button>
+      </div>
+      <div id="b9">
+        <div class="pane on"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Module</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">DatabaseModule</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./database/database.module'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">User</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./users/entities/user.entity'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">:</span> <span class="pn">[</span><span class="cl">DatabaseModule</span><span class="pn">.</span><span class="fn">forRoot</span><span class="pn">([</span><span class="cl">User</span><span class="pn">])],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="pn">{}</span></pre></div>
+      </div>
+    </div>
+
+    <p>Nếu muốn re-export dynamic module, bạn có thể bỏ qua lời gọi <code>forRoot()</code> trong mảng exports:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div style="flex:1"></div>
+        <button class="cpbtn" onclick="cp(this)">Copy</button>
+      </div>
+      <div id="b10">
+        <div class="pane on"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Module</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">DatabaseModule</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./database/database.module'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">User</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./users/entities/user.entity'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">:</span> <span class="pn">[</span><span class="cl">DatabaseModule</span><span class="pn">.</span><span class="fn">forRoot</span><span class="pn">([</span><span class="cl">User</span><span class="pn">])],</span>
+  exports<span class="pn">:</span> <span class="pn">[</span><span class="cl">DatabaseModule</span><span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="pn">{}</span></pre></div>
+      </div>
+    </div>
+
+    <p>Chương <a href="https://docs.nestjs.com/fundamentals/dynamic-modules" target="_blank">Dynamic modules</a> đề cập chủ đề này chi tiết hơn và bao gồm <a href="https://github.com/nestjs/nest/tree/master/sample/25-dynamic-modules" target="_blank">ví dụ hoạt động thực tế</a>.</p>
+
+    <div class="hint">
+      <span class="lbl">💡 Hint</span>
+      <p>Tìm hiểu cách build dynamic module có thể tuỳ biến cao với <code>ConfigurableModuleBuilder</code> trong <a href="https://docs.nestjs.com/fundamentals/dynamic-modules#configurable-module-builder" target="_blank">chương này</a>.</p>
+    </div>
+
+    <!-- PAGE NAV -->
+    <div class="page-nav">
+      <a class="pnbtn" href="nestjs-providers-vi.html">
+        <div class="pnlbl">&larr; Trước</div>
+        <div class="pntitle">Providers</div>
+      </a>
+      <a class="pnbtn r" href="https://docs.nestjs.com/middleware" target="_blank">
+        <div class="pnlbl">Tiếp theo &rarr;</div>
+        <div class="pntitle">Middleware</div>
+      </a>
+    </div>
+
+  </main>
+
+  <!-- ══════════════ TOC ══════════════ -->
+  <aside class="toc">
+    <div class="toc-title">Trong trang này</div>
+    <ul>
+      <li><a href="#feature-modules">Feature modules</a></li>
+      <li><a href="#shared-modules">Shared modules</a></li>
+      <li><a href="#module-re-exporting">Module re-exporting</a></li>
+      <li><a href="#dependency-injection">Dependency injection</a></li>
+      <li><a href="#global-modules">Global modules</a></li>
+      <li><a href="#dynamic-modules">Dynamic modules</a></li>
+    </ul>
+  </aside>
+
+</div>
+
+<script>
+  function sw(btn, bid, lang) {
+    var c = document.getElementById(bid);
+    if (!c) return;
+    btn.parentElement.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('on'); });
+    btn.classList.add('on');
+    c.querySelectorAll('.pane').forEach(function(p) {
+      p.classList.remove('on');
+      if (p.dataset.lang === lang) p.classList.add('on');
+    });
+  }
+
+  function cp(btn) {
+    var wrap = btn.closest('.cb');
+    var pane = wrap.querySelector('.pane.on') || wrap.querySelector('.pane');
+    if (!pane) return;
+    navigator.clipboard.writeText(pane.textContent.trim()).then(function() {
+      var o = btn.textContent;
+      btn.textContent = 'Copied!';
+      btn.style.color = '#4ade80';
+      setTimeout(function() { btn.textContent = o; btn.style.color = ''; }, 1500);
+    });
+  }
+
+  var tocLinks = document.querySelectorAll('.toc a');
+  var heads    = document.querySelectorAll('h3[id]');
+  function hi() {
+    var cur = '';
+    heads.forEach(function(h) { if (scrollY >= h.offsetTop - 110) cur = h.id; });
+    tocLinks.forEach(function(a) {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + cur);
+    });
+  }
+  window.addEventListener('scroll', hi, { passive: true });
+  hi();
+</script>
+</body>
+</html>

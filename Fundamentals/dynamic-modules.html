@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Dynamic Modules | NestJS - Tài liệu tiếng Việt</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+    :root {
+      --bg:       #0e0e0e;
+      --surface:  #1a1a1a;
+      --surface2: #222;
+      --border:   #2a2a2a;
+      --border-l: #333;
+      --red:      #ea2845;
+      --red-l:    #ff4d6a;
+      --red-glow: rgba(234,40,69,.15);
+      --text:     #e8e8e8;
+      --muted:    #888;
+      --sec:      #b0b0b0;
+      --code-bg:  #1e1e1e;
+      --code-bd:  #2d2d2d;
+      --hint-bg:  #0d2a1a;
+      --hint-c:   #4ade80;
+      --warn-bg:  #2a1a0d;
+      --warn-c:   #fb923c;
+      --note-bg:  #0d1a2a;
+      --note-c:   #60a0d0;
+      --toc-w:    220px;
+      --font:     'Inter', sans-serif;
+      --mono:     'Source Code Pro', monospace;
+      --r:        6px;
+      --rl:       10px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font); background: var(--bg); color: var(--text); font-size: 15px; line-height: 1.78; }
+
+    .page { max-width: 1060px; margin: 0 auto; padding: 48px 32px 96px; display: flex; gap: 56px; align-items: flex-start; }
+    .content { flex: 1; min-width: 0; }
+
+    /* TOC */
+    .toc { width: var(--toc-w); flex-shrink: 0; position: sticky; top: 32px; align-self: flex-start; max-height: calc(100vh - 48px); overflow-y: auto; }
+    .toc::-webkit-scrollbar { width: 3px; }
+    .toc::-webkit-scrollbar-thumb { background: var(--border-l); border-radius: 2px; }
+    .toc-title { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); padding-bottom: 8px; margin-bottom: 8px; border-bottom: 1px solid var(--border); }
+    .toc ul { list-style: none; }
+    .toc ul li a { display: block; padding: 3.5px 0; font-size: 12.5px; color: var(--muted); text-decoration: none; line-height: 1.5; transition: color .15s; cursor: pointer; }
+    .toc ul li a:hover, .toc ul li a.active { color: var(--red-l); }
+
+    /* Banner */
+    .vi-banner { display: flex; align-items: center; gap: 10px; padding: 11px 16px; border: 1px solid rgba(234,40,69,.3); border-radius: var(--rl); background: linear-gradient(135deg,rgba(234,40,69,.1),rgba(234,40,69,.04)); font-size: 13px; color: var(--sec); margin-bottom: 32px; }
+    .vi-banner strong { color: var(--red-l); }
+
+    /* Headings */
+    h1 { font-size: 36px; font-weight: 700; letter-spacing: -.5px; line-height: 1.2; margin-bottom: 6px; }
+    h1::after { content:''; display:block; width:44px; height:3px; background:var(--red); border-radius:2px; margin-top:12px; }
+    h3 { font-size: 19px; font-weight: 600; letter-spacing: -.2px; margin: 40px 0 12px; display: flex; align-items: center; gap: 8px; scroll-margin-top: 80px; }
+    .anchor { font-size: 14px; color: var(--muted); text-decoration: none; opacity: 0; transition: opacity .2s; }
+    h3:hover .anchor { opacity: 1; }
+    p { color: var(--sec); line-height: 1.82; margin-bottom: 16px; }
+    p:last-child { margin-bottom: 0; }
+    a { color: var(--red-l); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    strong { color: var(--text); font-weight: 600; }
+    ul { color: var(--sec); padding-left: 22px; line-height: 2.1; margin: 16px 0; }
+
+    /* inline code */
+    code { font-family: var(--mono); font-size: 13px; background: var(--code-bg); border: 1px solid var(--code-bd); padding: 1px 6px; border-radius: 4px; color: #f9a8d4; }
+
+    /* Callouts */
+    .hint, .warn, .note {
+      margin: 18px 0; padding: 12px 16px; border-left: 3px solid;
+      border-radius: var(--r); font-size: 13.5px; line-height: 1.72;
+    }
+    .hint { background: var(--hint-bg); border-color: var(--hint-c); color: #a7f3d0; }
+    .warn { background: var(--warn-bg); border-color: var(--warn-c); color: #fed7aa; }
+    .note { background: var(--note-bg); border-color: var(--note-c); color: #bae6fd; }
+    .hint p, .warn p, .note p { margin: 0; color: inherit; }
+    .lbl { display: block; font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 4px; }
+    .hint .lbl { color: var(--hint-c); }
+    .warn .lbl  { color: var(--warn-c); }
+    .note .lbl  { color: var(--note-c); }
+
+    /* Code blocks */
+    .cb { margin: 18px 0; border: 1px solid var(--code-bd); border-radius: var(--rl); overflow: hidden; background: var(--code-bg); }
+    .cb-head { display: flex; align-items: center; justify-content: space-between; padding: 8px 14px; background: #181818; border-bottom: 1px solid var(--code-bd); min-height: 38px; }
+    .cb-fname { font-family: var(--mono); font-size: 11.5px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+    .cb-fname::before { content:''; display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--red); }
+    .cb-right { display: flex; align-items: center; gap: 6px; }
+    .tabs { display: flex; gap: 3px; }
+    .tab { padding: 4px 11px; font-size: 11px; font-family: var(--mono); font-weight: 500; border: 1px solid transparent; border-radius: 4px; color: var(--muted); cursor: pointer; user-select: none; transition: all .14s; }
+    .tab.on { color: var(--red-l); background: var(--red-glow); border-color: var(--red); }
+    .tab:hover:not(.on) { color: var(--text); background: rgba(255,255,255,.04); }
+    .cpbtn { padding: 3px 9px; font-size: 10.5px; font-family: var(--mono); background: var(--surface); border: 1px solid var(--border-l); color: var(--muted); border-radius: 4px; cursor: pointer; transition: all .14s; }
+    .cpbtn:hover { background: var(--surface2); color: var(--text); }
+    .pane { display: none; }
+    .pane.on { display: block; }
+    pre { padding: 18px 20px; overflow-x: auto; font-family: var(--mono); font-size: 13.5px; line-height: 1.65; color: #abb2bf; }
+    pre::-webkit-scrollbar { height: 5px; }
+    pre::-webkit-scrollbar-thumb { background: var(--border-l); border-radius: 3px; }
+
+    /* syntax */
+    .kw  { color: #c678dd; }
+    .fn  { color: #61afef; }
+    .str { color: #98c379; }
+    .dec { color: #e5c07b; }
+    .typ { color: #e5c07b; }
+    .cm  { color: #5c6370; font-style: italic; }
+    .pn  { color: #abb2bf; }
+    .num { color: #d19a66; }
+    .cl  { color: #e06c75; }
+    .tmpl{ color: #d19a66; }
+
+    /* Page nav */
+    .page-nav { display: flex; justify-content: space-between; margin-top: 52px; gap: 16px; }
+    .pnbtn { display: flex; flex-direction: column; padding: 14px 18px; border: 1px solid var(--border); border-radius: var(--rl); text-decoration: none; transition: all .2s; min-width: 150px; }
+    .pnbtn:hover { border-color: var(--red); background: var(--red-glow); text-decoration: none; }
+    .pnlbl   { font-size: 10.5px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); margin-bottom: 3px; }
+    .pntitle { font-size: 14px; font-weight: 600; color: var(--text); }
+    .pnbtn.r { text-align: right; margin-left: auto; }
+
+    @media (max-width: 860px) { .toc { display: none; } }
+    @media (max-width: 600px) { .page { padding: 24px 16px 64px; } }
+  </style>
+</head>
+<body>
+<div class="page">
+<main class="content">
+
+<div class="vi-banner">
+<span style="font-size:17px">🇻🇳</span>
+<div>Dịch từ <strong><a href="https://docs.nestjs.com/fundamentals/dynamic-modules" target="_blank">docs.nestjs.com/fundamentals/dynamic-modules</a></strong>. Thuật ngữ kỹ thuật giữ nguyên tiếng Anh.</div>
+</div>
+
+<h1>Dynamic modules</h1>
+
+<p style="margin-top:18px">Chương <a href="https://docs.nestjs.com/modules" target="_blank">Modules</a> bao gồm các khái niệm cơ bản về Nest module, và có giới thiệu sơ lược về <a href="https://docs.nestjs.com/modules#dynamic-modules" target="_blank">dynamic modules</a>. Chương này mở rộng chủ đề dynamic modules. Sau khi hoàn thành, bạn sẽ hiểu rõ chúng là gì và cách thức cũng như khi nào nên sử dụng chúng.</p>
+
+<h3 id="introduction">Introduction <a class="anchor" href="#introduction">#</a></h3>
+
+<p>Hầu hết các ví dụ code trong phần <strong>Overview</strong> của tài liệu sử dụng module thông thường, hay còn gọi là <strong>static module</strong>. Module định nghĩa các nhóm component như <a href="https://docs.nestjs.com/providers" target="_blank">provider</a> và <a href="https://docs.nestjs.com/controllers" target="_blank">controller</a> kết hợp thành phần module của ứng dụng tổng thể. Chúng cung cấp execution context, hay scope, cho các component này. Ví dụ, các provider được định nghĩa trong module sẽ hiển thị với các thành viên khác trong module mà không cần export. Khi provider cần hiển thị bên ngoài module, trước tiên nó được export từ host module, sau đó import vào consuming module.</p>
+
+<p>Hãy đi qua ví dụ quen thuộc.</p>
+
+<p>Đầu tiên, chúng ta định nghĩa <code>UsersModule</code> để cung cấp và export <code>UsersService</code>. <code>UsersModule</code> là <strong>host module</strong> của <code>UsersService</code>.</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">users.module.ts</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="kw">import</span> <span class="pn">{</span> Module <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> UsersService <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./users.service'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  providers<span class="pn">:</span> <span class="pn">[</span><span class="cl">UsersService</span><span class="pn">],</span>
+  exports<span class="pn">:</span> <span class="pn">[</span><span class="cl">UsersService</span><span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">UsersModule</span> <span class="pn">{}</span></pre></div></div></div>
+
+<p>Tiếp theo, chúng ta định nghĩa <code>AuthModule</code>, import <code>UsersModule</code>, giúp exported provider của <code>UsersModule</code> khả dụng bên trong <code>AuthModule</code>:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">auth.module.ts</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="kw">import</span> <span class="pn">{</span> Module <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> AuthService <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./auth.service'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> UsersModule <span class="pn">}</span> <span class="kw">from</span> <span class="str">'../users/users.module'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">:</span> <span class="pn">[</span><span class="cl">UsersModule</span><span class="pn">],</span>
+  providers<span class="pn">:</span> <span class="pn">[</span><span class="cl">AuthService</span><span class="pn">],</span>
+  exports<span class="pn">:</span> <span class="pn">[</span><span class="cl">AuthService</span><span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">AuthModule</span> <span class="pn">{}</span></pre></div></div></div>
+
+<p>Cấu trúc này cho phép chúng ta inject <code>UsersService</code> vào, ví dụ, <code>AuthService</code> được host trong <code>AuthModule</code>:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">auth.service.ts</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="kw">import</span> <span class="pn">{</span> Injectable <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> UsersService <span class="pn">}</span> <span class="kw">from</span> <span class="str">'../users/users.service'</span><span class="pn">;</span>
+
+<span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">AuthService</span> <span class="pn">{</span>
+  <span class="fn">constructor</span><span class="pn">(</span><span class="kw">private</span> usersService<span class="pn">:</span> <span class="cl">UsersService</span><span class="pn">) {}</span>
+  <span class="cm">/*
+    implementation that makes use of this.usersService
+  */</span>
+<span class="pn">}</span></pre></div></div></div>
+
+<p>Chúng ta gọi đây là <strong>static module binding</strong>. Tất cả thông tin Nest cần để kết nối các module đã được khai báo sẵn trong host module và consuming module. Hãy xem điều gì xảy ra trong quá trình này. Nest làm cho <code>UsersService</code> khả dụng bên trong <code>AuthModule</code> bằng cách:</p>
+
+<ol>
+<li>Khởi tạo <code>UsersModule</code>, bao gồm import transitive các module khác mà <code>UsersModule</code> consume, và resolve transitive bất kỳ dependency nào (xem <a href="https://docs.nestjs.com/fundamentals/custom-providers" target="_blank">Custom providers</a>).</li>
+<li>Khởi tạo <code>AuthModule</code>, và làm cho exported provider của <code>UsersModule</code> khả dụng cho các component trong <code>AuthModule</code> (giống như chúng đã được khai báo trong <code>AuthModule</code>).</li>
+<li>Inject instance của <code>UsersService</code> vào <code>AuthService</code>.</li>
+</ol>
+
+<h3 id="dynamic-module-use-case">Dynamic module use case <a class="anchor" href="#dynamic-module-use-case">#</a></h3>
+
+<p>Với static module binding, consuming module không có cơ hội <strong>ảnh hưởng</strong> đến cách provider từ host module được cấu hình. Tại sao điều này quan trọng? Xem xét trường hợp chúng ta có module đa năng cần hoạt động khác nhau trong các use case khác nhau. Tương tự khái niệm "plugin" trong nhiều hệ thống, nơi tiện ích chung cần cấu hình trước khi consumer sử dụng.</p>
+
+<p>Ví dụ tốt với Nest là <strong>configuration module</strong>. Nhiều ứng dụng thấy hữu ích khi externalize chi tiết cấu hình qua configuration module. Điều này giúp thay đổi application setting linh hoạt cho các môi trường khác nhau: database development, database staging/testing, database production, v.v. Bằng cách ủy thác quản lý configuration parameter cho configuration module, application source code độc lập với configuration parameter.</p>
+
+<p>Thách thức là bản thân configuration module, vì nó là <strong>generic</strong>, cần được tùy chỉnh bởi consuming module. Đây là lúc <strong>dynamic module</strong> phát huy tác dụng. Sử dụng tính năng dynamic module, chúng ta có thể làm configuration module trở nên <strong>dynamic</strong> để consuming module sử dụng API truyền cấu hình vào khi import.</p>
+
+<p>Nói cách khác, dynamic module cung cấp API để import module vào module khác, và tùy chỉnh property cũng như behavior của module đó khi import, trái ngược với static binding đã thấy trước đó.</p>
+
+<h3 id="config-module-example">Config module example <a class="anchor" href="#config-module-example">#</a></h3>
+
+<p>Chúng ta sẽ sử dụng phiên bản cơ bản của <code>ConfigModule</code> trong section này. Đây là bản đơn giản hóa — nếu cần version đầy đủ, hãy tham khảo <code>@nestjs/config</code> package (xem chương <a href="https://docs.nestjs.com/techniques/configuration" target="_blank">Configuration</a>).</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">config.service.ts</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="kw">import</span> <span class="pn">{</span> Injectable <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">*</span> <span class="kw">as</span> dotenv <span class="kw">from</span> <span class="str">'dotenv'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">*</span> <span class="kw">as</span> fs <span class="kw">from</span> <span class="str">'fs'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> EnvConfig <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./interfaces'</span><span class="pn">;</span>
+
+<span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">ConfigService</span> <span class="pn">{</span>
+  <span class="kw">private readonly</span> envConfig<span class="pn">:</span> <span class="typ">EnvConfig</span><span class="pn">;</span>
+
+  <span class="fn">constructor</span><span class="pn">() {</span>
+    <span class="kw">const</span> options <span class="pn">= {</span> folder<span class="pn">:</span> <span class="str">'./config'</span> <span class="pn">};</span>
+    <span class="kw">const</span> filePath <span class="pn">=</span> <span class="str">`${options.folder}/${process.env.NODE_ENV || 'development'}.env`</span><span class="pn">;</span>
+    <span class="kw">this</span><span class="pn">.</span>envConfig <span class="pn">=</span> dotenv<span class="pn">.</span><span class="fn">parse</span><span class="pn">(</span>fs<span class="pn">.</span><span class="fn">readFileSync</span><span class="pn">(</span>filePath<span class="pn">));</span>
+  <span class="pn">}</span>
+
+  <span class="fn">get</span><span class="pn">(</span>key<span class="pn">:</span> <span class="typ">string</span><span class="pn">):</span> <span class="typ">string</span> <span class="pn">{</span>
+    <span class="kw">return</span> <span class="kw">this</span><span class="pn">.</span>envConfig<span class="pn">[</span>key<span class="pn">];</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div></div></div>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">config.module.ts</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="kw">import</span> <span class="pn">{</span> Module <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> ConfigService <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./config.service'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  providers<span class="pn">:</span> <span class="pn">[</span><span class="cl">ConfigService</span><span class="pn">],</span>
+  exports<span class="pn">:</span> <span class="pn">[</span><span class="cl">ConfigService</span><span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">ConfigModule</span> <span class="pn">{}</span></pre></div></div></div>
+
+<p>Đây là static module đơn giản. Đường dẫn đến file <code>.env</code> đang bị hardcode. Mục tiêu là làm cho nó dynamic, để đường dẫn có thể tùy chỉnh được.</p>
+
+<h3 id="dynamic-module-config">Configurable module builder <a class="anchor" href="#dynamic-module-config">#</a></h3>
+
+<p>Để làm <code>ConfigModule</code> trở nên dynamic, chúng ta cần thêm <strong>static method</strong> trả về object <code>DynamicModule</code>. Static method đó theo convention thường được đặt tên là <code>register</code> hoặc <code>forRoot</code>.</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">config.module.ts</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="kw">import</span> <span class="pn">{</span> DynamicModule<span class="pn">,</span> Module <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> ConfigService <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./config.service'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({})</span>
+<span class="kw">export class</span> <span class="cl">ConfigModule</span> <span class="pn">{</span>
+  <span class="kw">static</span> <span class="fn">register</span><span class="pn">():</span> <span class="typ">DynamicModule</span> <span class="pn">{</span>
+    <span class="kw">return</span> <span class="pn">{</span>
+      module<span class="pn">:</span> <span class="cl">ConfigModule</span><span class="pn">,</span>
+      providers<span class="pn">:</span> <span class="pn">[</span><span class="cl">ConfigService</span><span class="pn">],</span>
+      exports<span class="pn">:</span> <span class="pn">[</span><span class="cl">ConfigService</span><span class="pn">],</span>
+    <span class="pn">};</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div></div></div>
+
+<div class="hint"><span class="lbl">💡 Hint</span><p>Dynamic module phải trả về object có chính xác cùng interface với <code>@Module()</code> decorator, cộng thêm property <code>module</code> bổ sung — chính là class module đó.</p></div>
+
+<p>Method <code>register()</code> nhận argument tùy chỉnh. Trong ví dụ này, nó nhận object <code>options</code>. Chúng ta sẽ tạo <code>CONFIG_OPTIONS</code> provider với <code>useValue</code>:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">config.module.ts</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="dec">@Module</span><span class="pn">({})</span>
+<span class="kw">export class</span> <span class="cl">ConfigModule</span> <span class="pn">{</span>
+  <span class="kw">static</span> <span class="fn">register</span><span class="pn">(</span>options<span class="pn">):</span> <span class="typ">DynamicModule</span> <span class="pn">{</span>
+    <span class="kw">return</span> <span class="pn">{</span>
+      module<span class="pn">:</span> <span class="cl">ConfigModule</span><span class="pn">,</span>
+      providers<span class="pn">:</span> <span class="pn">[</span>
+        <span class="pn">{</span>
+          provide<span class="pn">:</span> <span class="str">'CONFIG_OPTIONS'</span><span class="pn">,</span>
+          useValue<span class="pn">:</span> options<span class="pn">,</span>
+        <span class="pn">},</span>
+        <span class="cl">ConfigService</span><span class="pn">,</span>
+      <span class="pn">],</span>
+      exports<span class="pn">:</span> <span class="pn">[</span><span class="cl">ConfigService</span><span class="pn">],</span>
+    <span class="pn">};</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div></div></div>
+
+<p>Bây giờ chúng ta inject <code>'CONFIG_OPTIONS'</code> provider vào <code>ConfigService</code>:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">config.service.ts</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">ConfigService</span> <span class="pn">{</span>
+  <span class="kw">private readonly</span> envConfig<span class="pn">:</span> <span class="typ">EnvConfig</span><span class="pn">;</span>
+
+  <span class="fn">constructor</span><span class="pn">(</span><span class="dec">@Inject</span><span class="pn">(</span><span class="str">'CONFIG_OPTIONS'</span><span class="pn">)</span> <span class="kw">private</span> options<span class="pn">) {</span>
+    <span class="kw">const</span> filePath <span class="pn">=</span> <span class="str">`${options.folder}/${process.env.NODE_ENV || 'development'}.env`</span><span class="pn">;</span>
+    <span class="kw">this</span><span class="pn">.</span>envConfig <span class="pn">=</span> dotenv<span class="pn">.</span><span class="fn">parse</span><span class="pn">(</span>fs<span class="pn">.</span><span class="fn">readFileSync</span><span class="pn">(</span>filePath<span class="pn">));</span>
+  <span class="pn">}</span>
+
+  <span class="fn">get</span><span class="pn">(</span>key<span class="pn">:</span> <span class="typ">string</span><span class="pn">):</span> <span class="typ">string</span> <span class="pn">{</span>
+    <span class="kw">return</span> <span class="kw">this</span><span class="pn">.</span>envConfig<span class="pn">[</span>key<span class="pn">];</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div></div></div>
+
+<p>Cuối cùng, sử dụng dynamic module trong <code>AppModule</code>:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">app.module.ts</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="kw">import</span> <span class="pn">{</span> Module <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> AppController <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./app.controller'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> AppService <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./app.service'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> ConfigModule <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./config/config.module'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">:</span> <span class="pn">[</span><span class="cl">ConfigModule</span><span class="pn">.</span><span class="fn">register</span><span class="pn">({</span> folder<span class="pn">:</span> <span class="str">'./config'</span> <span class="pn">})],</span>
+  controllers<span class="pn">:</span> <span class="pn">[</span><span class="cl">AppController</span><span class="pn">],</span>
+  providers<span class="pn">:</span> <span class="pn">[</span><span class="cl">AppService</span><span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="pn">{}</span></pre></div></div></div>
+
+<h3 id="community-guidelines">Community guidelines <a class="anchor" href="#community-guidelines">#</a></h3>
+
+<p>Bạn có thể đã thấy phương thức như <code>forRoot</code>, <code>register</code>, <code>forFeature</code> ở một số package <code>@nestjs/</code> và tự hỏi sự khác biệt giữa chúng. Không có convention cứng nào, nhưng <code>@nestjs/</code> package tuân theo các guideline sau:</p>
+
+<ul>
+<li>Khi bạn expect sử dụng <code>register</code>, nghĩa là bạn đang cấu hình dynamic module với cấu hình cụ thể chỉ cho calling module sử dụng.</li>
+<li>Khi bạn expect sử dụng <code>forRoot</code>, bạn đang cấu hình dynamic module một lần và tái sử dụng cấu hình đó ở nhiều nơi (mặc dù có thể không ý thức được).</li>
+<li>Khi bạn expect sử dụng <code>forFeature</code>, bạn đang sử dụng cấu hình từ <code>forRoot</code> của dynamic module, nhưng cần modify một số cấu hình cụ thể cho nhu cầu của calling module.</li>
+</ul>
+
+<p>Tất cả chúng thường có counterpart <code>async</code> tương ứng: <code>registerAsync</code>, <code>forRootAsync</code>, <code>forFeatureAsync</code>, có cùng ý nghĩa nhưng sử dụng Nest Dependency Injection cho cấu hình.</p>
+
+<h3 id="configurable-module-builder">ConfigurableModuleBuilder <a class="anchor" href="#configurable-module-builder">#</a></h3>
+
+<p>Vì việc tạo thủ công dynamic module có tính cấu hình cao với async provider khá phức tạp, Nest cung cấp class <code>ConfigurableModuleBuilder</code> giúp xử lý boilerplate và xây dựng module interface chỉ trong vài dòng code.</p>
+
+<p>Ví dụ, sử dụng <code>ConfigurableModuleBuilder</code> để tạo <code>ConfigModule</code>:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">config.module-definition.ts</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="kw">import</span> <span class="pn">{</span> ConfigurableModuleBuilder <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+
+<span class="kw">export const</span> <span class="pn">{</span> ConfigurableModuleClass<span class="pn">,</span> MODULE_OPTIONS_TOKEN <span class="pn">} =</span>
+  <span class="kw">new</span> <span class="cl">ConfigurableModuleBuilder</span><span class="pn">&lt;</span><span class="typ">ConfigModuleOptions</span><span class="pn">&gt;().</span><span class="fn">build</span><span class="pn">();</span></pre></div></div></div>
+
+<p>Cấu trúc này tự động tạo class <code>ConfigurableModuleClass</code> cung cấp cả method <code>register</code> (phương thức đồng bộ) và <code>registerAsync</code> (phương thức bất đồng bộ):</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">config.module.ts</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="kw">import</span> <span class="pn">{</span> Module <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> ConfigService <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./config.service'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> ConfigurableModuleClass <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./config.module-definition'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  providers<span class="pn">:</span> <span class="pn">[</span><span class="cl">ConfigService</span><span class="pn">],</span>
+  exports<span class="pn">:</span> <span class="pn">[</span><span class="cl">ConfigService</span><span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">ConfigModule</span> <span class="kw">extends</span> <span class="cl">ConfigurableModuleClass</span> <span class="pn">{}</span></pre></div></div></div>
+
+<p>Extending <code>ConfigurableModuleClass</code> nghĩa là <code>ConfigModule</code> giờ không chỉ cung cấp method <code>register</code> mà còn <code>registerAsync</code> cho consumer cấu hình module bất đồng bộ:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><button class="cpbtn" onclick="cp(this)">Copy</button></div><div><div class="pane on"><pre><span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">:</span> <span class="pn">[</span>
+    <span class="cl">ConfigModule</span><span class="pn">.</span><span class="fn">register</span><span class="pn">({</span> folder<span class="pn">:</span> <span class="str">'./config'</span> <span class="pn">}),</span>
+    <span class="cm">// hoặc alternatively:</span>
+    <span class="cm">// ConfigModule.registerAsync({</span>
+    <span class="cm">//   useFactory: () =&gt; {</span>
+    <span class="cm">//     return { folder: './config' }</span>
+    <span class="cm">//   },</span>
+    <span class="cm">//   inject: [...any dependencies that factory may need]</span>
+    <span class="cm">// }),</span>
+  <span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="pn">{}</span></pre></div></div></div>
+
+<h3 id="custom-method-key">Custom method key <a class="anchor" href="#custom-method-key">#</a></h3>
+
+<p><code>ConfigurableModuleClass</code> theo mặc định cung cấp method <code>register</code> và counterpart <code>registerAsync</code> tương ứng. Để sử dụng tên method khác, hãy dùng method <code>ConfigurableModuleBuilder#setClassMethodName</code>, như sau:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">config.module-definition.ts</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="kw">export const</span> <span class="pn">{</span> ConfigurableModuleClass<span class="pn">,</span> MODULE_OPTIONS_TOKEN <span class="pn">} =</span>
+  <span class="kw">new</span> <span class="cl">ConfigurableModuleBuilder</span><span class="pn">&lt;</span><span class="typ">ConfigModuleOptions</span><span class="pn">&gt;()</span>
+    <span class="pn">.</span><span class="fn">setClassMethodName</span><span class="pn">(</span><span class="str">'forRoot'</span><span class="pn">)</span>
+    <span class="pn">.</span><span class="fn">build</span><span class="pn">();</span></pre></div></div></div>
+
+<p>Cấu trúc này sẽ hướng dẫn <code>ConfigurableModuleBuilder</code> tạo ra class cung cấp <code>forRoot</code> và <code>forRootAsync</code> thay thế. Ví dụ sử dụng:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">app.module.ts</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">:</span> <span class="pn">[</span>
+    <span class="cl">ConfigModule</span><span class="pn">.</span><span class="fn">forRoot</span><span class="pn">({</span> folder<span class="pn">:</span> <span class="str">'./config'</span> <span class="pn">}),</span>
+  <span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="pn">{}</span></pre></div></div></div>
+
+<div class="hint"><span class="lbl">💡 Hint</span><p>Nếu bạn muốn sử dụng <code>forRoot</code> thay vì <code>register</code>, hãy xem phần <a href="#community-guidelines">Community guidelines</a> ở trên.</p></div>
+
+<h3 id="custom-options-factory-class">Custom options factory class <a class="anchor" href="#custom-options-factory-class">#</a></h3>
+
+<p>Vì method <code>registerAsync</code> (hoặc <code>forRootAsync</code> hoặc tên tùy chỉnh khác tùy cấu hình) cho phép consumer truyền provider definition tham chiếu đến class factory, theo mặc định class factory đó phải cung cấp method <code>create()</code> trả về options object. Tuy nhiên, nếu convention tên khác, bạn có thể thay đổi behavior này bằng method <code>ConfigurableModuleBuilder#setFactoryMethodName</code>, và hướng dẫn <code>ConfigurableModuleBuilder</code> mong đợi method khác, ví dụ <code>createConfigOptions</code>:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">config.module-definition.ts</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="kw">export const</span> <span class="pn">{</span> ConfigurableModuleClass<span class="pn">,</span> MODULE_OPTIONS_TOKEN <span class="pn">} =</span>
+  <span class="kw">new</span> <span class="cl">ConfigurableModuleBuilder</span><span class="pn">&lt;</span><span class="typ">ConfigModuleOptions</span><span class="pn">&gt;()</span>
+    <span class="pn">.</span><span class="fn">setFactoryMethodName</span><span class="pn">(</span><span class="str">'createConfigOptions'</span><span class="pn">)</span>
+    <span class="pn">.</span><span class="fn">build</span><span class="pn">();</span></pre></div></div></div>
+
+<p>Bây giờ, class <code>ConfigModuleOptionsFactory</code> phải cung cấp method <code>createConfigOptions</code> (thay vì <code>create</code>):</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">app.module.ts</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">:</span> <span class="pn">[</span>
+    <span class="cl">ConfigModule</span><span class="pn">.</span><span class="fn">registerAsync</span><span class="pn">({</span>
+      useClass<span class="pn">:</span> <span class="cl">ConfigModuleOptionsFactory</span><span class="pn">,</span>
+    <span class="pn">}),</span>
+  <span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="pn">{}</span></pre></div></div></div>
+
+<h3 id="extra-options">Extra options <a class="anchor" href="#extra-options">#</a></h3>
+
+<p>Có những trường hợp bạn muốn truyền extra option chỉ dùng bởi module (ví dụ: flag <code>isGlobal</code> xác định module có phải global hay không) nhưng <strong>không nên</strong> được include trong <code>MODULE_OPTIONS_TOKEN</code> provider (vì chúng không liên quan đến service/provider bên trong module, ví dụ <code>ConfigService</code> không cần biết module có global hay không). Trong trường hợp đó, sử dụng method <code>ConfigurableModuleBuilder#setExtras</code>:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">config.module-definition.ts</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="kw">export const</span> <span class="pn">{</span> ConfigurableModuleClass<span class="pn">,</span> MODULE_OPTIONS_TOKEN <span class="pn">} =</span>
+  <span class="kw">new</span> <span class="cl">ConfigurableModuleBuilder</span><span class="pn">&lt;</span><span class="typ">ConfigModuleOptions</span><span class="pn">&gt;()</span>
+    <span class="pn">.</span><span class="fn">setExtras</span><span class="pn">(</span>
+      <span class="pn">{</span>
+        isGlobal<span class="pn">:</span> <span class="kw">true</span><span class="pn">,</span>
+      <span class="pn">},</span>
+      <span class="pn">(</span>definition<span class="pn">,</span> extras<span class="pn">) =&gt; ({</span>
+        <span class="pn">...</span>definition<span class="pn">,</span>
+        global<span class="pn">:</span> extras<span class="pn">.</span>isGlobal<span class="pn">,</span>
+      <span class="pn">}),</span>
+    <span class="pn">)</span>
+    <span class="pn">.</span><span class="fn">build</span><span class="pn">();</span></pre></div></div></div>
+
+<p>Trong ví dụ trên, argument đầu tiên của <code>setExtras</code> là object chứa giá trị mặc định cho các property "extra". Argument thứ hai là function nhận auto-generated module definition (với <code>provider</code>, <code>exports</code>, v.v.) và object <code>extras</code> đại diện cho extra properties (do consumer chỉ định hoặc lấy giá trị mặc định). Giá trị trả về của function này là module definition đã được modify. Trong ví dụ cụ thể này, chúng ta lấy property <code>extras.isGlobal</code> và gán vào property <code>global</code> của module definition (xác định module có phải là global hay không, đọc thêm tại <a href="https://docs.nestjs.com/modules#global-modules" target="_blank">đây</a>).</p>
+
+<p>Bây giờ khi sử dụng module này, flag <code>isGlobal</code> có thể được truyền cùng:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">app.module.ts</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">:</span> <span class="pn">[</span>
+    <span class="cl">ConfigModule</span><span class="pn">.</span><span class="fn">register</span><span class="pn">({</span>
+      isGlobal<span class="pn">:</span> <span class="kw">true</span><span class="pn">,</span>
+      folder<span class="pn">:</span> <span class="str">'./config'</span><span class="pn">,</span>
+    <span class="pn">}),</span>
+  <span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="pn">{}</span></pre></div></div></div>
+
+<h3 id="extending-auto-generated-methods">Extending auto-generated methods <a class="anchor" href="#extending-auto-generated-methods">#</a></h3>
+
+<p>Các static method được tạo tự động (<code>register</code>, <code>registerAsync</code>, v.v.) có thể được extend nếu cần, như sau:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">config.module.ts</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="kw">import</span> <span class="pn">{</span> DynamicModule<span class="pn">,</span> Module <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> ConfigService <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./config.service'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span>
+  ConfigurableModuleClass<span class="pn">,</span>
+  MODULE_OPTIONS_TOKEN<span class="pn">,</span>
+  OPTIONS_TYPE<span class="pn">,</span>
+  ASYNC_OPTIONS_TYPE<span class="pn">,</span>
+<span class="pn">}</span> <span class="kw">from</span> <span class="str">'./config.module-definition'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  providers<span class="pn">:</span> <span class="pn">[</span><span class="cl">ConfigService</span><span class="pn">],</span>
+  exports<span class="pn">:</span> <span class="pn">[</span><span class="cl">ConfigService</span><span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">ConfigModule</span> <span class="kw">extends</span> <span class="cl">ConfigurableModuleClass</span> <span class="pn">{</span>
+  <span class="kw">static</span> <span class="fn">register</span><span class="pn">(</span>options<span class="pn">:</span> <span class="kw">typeof</span> OPTIONS_TYPE<span class="pn">):</span> <span class="typ">DynamicModule</span> <span class="pn">{</span>
+    <span class="kw">return</span> <span class="pn">{</span>
+      <span class="pn">...</span><span class="kw">super</span><span class="pn">.</span><span class="fn">register</span><span class="pn">(</span>options<span class="pn">),</span>
+      <span class="cm">// custom logic here</span>
+    <span class="pn">};</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div></div></div>
+
+<p>Lưu ý việc sử dụng type <code>OPTIONS_TYPE</code> và <code>ASYNC_OPTIONS_TYPE</code> — chúng phải được export từ module definition file:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">config.module-definition.ts</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="kw">export const</span> <span class="pn">{</span>
+  ConfigurableModuleClass<span class="pn">,</span>
+  MODULE_OPTIONS_TOKEN<span class="pn">,</span>
+  OPTIONS_TYPE<span class="pn">,</span>
+  ASYNC_OPTIONS_TYPE<span class="pn">,</span>
+<span class="pn">} =</span> <span class="kw">new</span> <span class="cl">ConfigurableModuleBuilder</span><span class="pn">&lt;</span><span class="typ">ConfigModuleOptions</span><span class="pn">&gt;()</span>
+  <span class="pn">.</span><span class="fn">build</span><span class="pn">();</span></pre></div></div></div>
+
+<!-- Page navigation -->
+<div class="page-nav">
+<a class="pnbtn" href="async-providers.html">
+<span class="pnlbl">← Trước</span>
+<span class="pntitle">Async providers</span>
+</a>
+<a class="pnbtn r" href="injection-scopes.html">
+<span class="pnlbl">Tiếp →</span>
+<span class="pntitle">Injection scopes</span>
+</a>
+</div>
+
+</main>
+
+<aside class="toc">
+<div class="toc-title">Nội dung</div>
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#dynamic-module-use-case">Dynamic module use case</a></li>
+<li><a href="#config-module-example">Config module example</a></li>
+<li><a href="#dynamic-module-config">Configurable module builder</a></li>
+<li><a href="#community-guidelines">Community guidelines</a></li>
+<li><a href="#configurable-module-builder">ConfigurableModuleBuilder</a></li>
+<li><a href="#custom-method-key">Custom method key</a></li>
+<li><a href="#custom-options-factory-class">Custom options factory class</a></li>
+<li><a href="#extra-options">Extra options</a></li>
+<li><a href="#extending-auto-generated-methods">Extending auto-generated methods</a></li>
+</ul>
+</aside>
+
+</div>
+<script>
+  function sw(btn, bid, lang) {
+    var c = document.getElementById(bid);
+    if (!c) return;
+    btn.parentElement.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('on'); });
+    btn.classList.add('on');
+    c.querySelectorAll('.pane').forEach(function(p) {
+      p.classList.remove('on');
+      if (p.dataset.lang === lang) p.classList.add('on');
+    });
+  }
+  function cp(btn) {
+    var wrap = btn.closest('.cb');
+    var pane = wrap.querySelector('.pane.on') || wrap.querySelector('.pane');
+    if (!pane) return;
+    navigator.clipboard.writeText(pane.textContent.trim()).then(function() {
+      var o = btn.textContent;
+      btn.textContent = 'Copied!';
+      btn.style.color = '#4ade80';
+      setTimeout(function() { btn.textContent = o; btn.style.color = ''; }, 1500);
+    });
+  }
+  
+  // Smooth scroll on TOC click
+  document.querySelectorAll('.toc a').forEach(function(link) {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      var target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+
+  // Highlight active section
+  var tocLinks = document.querySelectorAll('.toc a');
+  var heads = document.querySelectorAll('h3[id]');
+  function hi() {
+    var cur = '';
+    heads.forEach(function(h) { 
+      if (scrollY >= h.offsetTop - 120) cur = h.id; 
+    });
+    tocLinks.forEach(function(a) {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + cur);
+    });
+  }
+  window.addEventListener('scroll', hi, { passive: true });
+  hi();
+</script>
+</body>
+</html>
