@@ -132,15 +132,20 @@ tr:hover td{background:rgba(255,255,255,.02)}
 .shell::before{content:'$ ';color:#6b7280}
 </style></head><body><div class="page"><main class="content">
 <div class="vi-banner"><span style="font-size:17px">🇻🇳</span><div>Dịch từ <strong><a href="https://docs.nestjs.com/fundamentals/testing" target="_blank">docs.nestjs.com/fundamentals/testing</a></strong>. Thuật ngữ kỹ thuật giữ nguyên tiếng Anh.</div></div>
+
 <h1>Testing</h1>
+
 <p style="margin-top:18px">Automated testing được coi là một phần thiết yếu của bất kỳ nỗ lực phát triển phần mềm nghiêm túc nào. Automation giúp dễ dàng lặp lại các test riêng lẻ hoặc test suites một cách nhanh chóng và dễ dàng trong quá trình phát triển. Điều này giúp đảm bảo rằng các bản release đáp ứng các mục tiêu chất lượng và hiệu năng. Automation giúp tăng coverage và cung cấp feedback loop nhanh hơn cho developers. Automation vừa tăng năng suất của từng developer vừa đảm bảo rằng các tests được chạy tại các thời điểm quan trọng trong development lifecycle, chẳng hạn như source code control check-in, feature integration, và version release.</p>
+
 <p>Các tests này thường bao gồm nhiều loại, bao gồm unit tests, end-to-end (e2e) tests, integration tests, v.v. Mặc dù lợi ích là không thể phủ nhận, nhưng việc thiết lập chúng có thể rất tẻ nhạt. Nest cố gắng thúc đẩy các best practices phát triển, bao gồm testing hiệu quả, vì vậy nó bao gồm các tính năng sau để giúp developers và teams xây dựng và tự động hóa tests. Nest:</p>
+
 <ul>
 <li>tự động scaffold các default unit tests cho components và e2e tests cho applications</li>
 <li>cung cấp default tooling (chẳng hạn như test runner xây dựng một isolated module/application loader)</li>
 <li>cung cấp tích hợp với <a href="https://jestjs.io/" target="_blank">Jest</a> và <a href="https://github.com/ladjs/supertest" target="_blank">Supertest</a> out-of-the-box, trong khi vẫn giữ tính agnostic với testing tools</li>
 <li>cung cấp Nest dependency injection system trong testing environment để dễ dàng mocking components</li>
 </ul>
+
 <p>Như đã đề cập, bạn có thể sử dụng bất kỳ <strong>testing framework</strong> nào bạn thích, vì Nest không ép buộc bất kỳ tooling cụ thể nào. Chỉ cần thay thế các thành phần cần thiết (chẳng hạn như test runner), và bạn vẫn tận hưởng được lợi ích của các testing facilities sẵn có của Nest.</p>
 
 <h3 id="installation">Installation <a class="anchor" href="#installation">#</a></h3>
@@ -148,130 +153,297 @@ tr:hover td{background:rgba(255,255,255,.02)}
 <div class="shell">npm i --save-dev @nestjs/testing</div>
 
 <h3 id="unit-testing">Unit testing <a class="anchor" href="#unit-testing">#</a></h3>
+
 <p>Trong ví dụ sau, chúng ta test hai classes: <code>CatsController</code> và <code>CatsService</code>. Như đã đề cập, <a href="https://jestjs.io/" target="_blank">Jest</a> được cung cấp làm testing framework mặc định. Nó đóng vai trò test-runner và cũng cung cấp assert functions và test-double utilities hỗ trợ mocking, spying, v.v. Trong bài test cơ bản sau, chúng ta khởi tạo thủ công các classes này, và đảm bảo rằng controller và service thực hiện đúng API contract của chúng.</p>
-<div class="cb"><div class="cb-head"><div class="cb-fname">cats.controller.spec.ts</div><div class="cb-right"><div class="tabs"><div class="tab on" onclick="sw(this,'c0','ts')">TS</div><div class="tab" onclick="sw(this,'c0','js')">JS</div></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div id="c0"><div class="pane on" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">{</span> CatsController <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./cats.controller'</span><span class="pn">;</span>
-<span class="kw">import</span> <span class="pn">{</span> CatsService <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./cats.service'</span><span class="pn">;</span>
 
-<span class="fn">describe</span><span class="pn">(</span><span class="str">'CatsController'</span><span class="pn">,</span> <span class="pn">() =&gt; {</span>
-  <span class="kw">let</span> catsController<span class="pn">:</span> <span class="typ">CatsController</span><span class="pn">;</span>
-  <span class="kw">let</span> catsService<span class="pn">:</span> <span class="typ">CatsService</span><span class="pn">;</span>
+<div class="cb"><div class="cb-head"><div class="cb-fname">cats.controller.spec.ts</div><div class="cb-right"><div class="tabs"><div class="tab on" onclick="sw(this,'c0','ts')">TS</div><div class="tab" onclick="sw(this,'c0','js')">JS</div></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div id="c0"><div class="pane on" data-lang="ts"><pre><span class="kw">import</span> { CatsController } <span class="kw">from</span> <span class="str">'./cats.controller'</span>;
+<span class="kw">import</span> { CatsService } <span class="kw">from</span> <span class="str">'./cats.service'</span>;
 
-  <span class="fn">beforeEach</span><span class="pn">(() =&gt; {</span>
-    catsService <span class="pn">=</span> <span class="kw">new</span> <span class="cl">CatsService</span><span class="pn">();</span>
-    catsController <span class="pn">=</span> <span class="kw">new</span> <span class="cl">CatsController</span><span class="pn">(</span>catsService<span class="pn">);</span>
-  <span class="pn">});</span>
+<span class="fn">describe</span>(<span class="str">'CatsController'</span>, () =&gt; {
+  <span class="kw">let</span> catsController: <span class="typ">CatsController</span>;
+  <span class="kw">let</span> catsService: <span class="typ">CatsService</span>;
 
-  <span class="fn">describe</span><span class="pn">(</span><span class="str">'findAll'</span><span class="pn">,</span> <span class="pn">() =&gt; {</span>
-    <span class="fn">it</span><span class="pn">(</span><span class="str">'should return an array of cats'</span><span class="pn">,</span> <span class="kw">async</span> <span class="pn">() =&gt; {</span>
-      <span class="kw">const</span> result <span class="pn">=</span> <span class="pn">[</span><span class="str">'test'</span><span class="pn">];</span>
-      jest<span class="pn">.</span><span class="fn">spyOn</span><span class="pn">(</span>catsService<span class="pn">,</span> <span class="str">'findAll'</span><span class="pn">).</span><span class="fn">mockImplementation</span><span class="pn">(() =&gt;</span> result<span class="pn">);</span>
+  <span class="fn">beforeEach</span>(() =&gt; {
+    catsService = <span class="kw">new</span> <span class="cl">CatsService</span>();
+    catsController = <span class="kw">new</span> <span class="cl">CatsController</span>(catsService);
+  });
 
-      <span class="fn">expect</span><span class="pn">(</span><span class="kw">await</span> catsController<span class="pn">.</span><span class="fn">findAll</span><span class="pn">()).</span><span class="fn">toBe</span><span class="pn">(</span>result<span class="pn">);</span>
-    <span class="pn">});</span>
-  <span class="pn">});</span>
-<span class="pn">});</span></pre></div><div class="pane" data-lang="js"><pre><span class="kw">import</span> <span class="pn">{</span> CatsController <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./cats.controller'</span><span class="pn">;</span>
-<span class="kw">import</span> <span class="pn">{</span> CatsService <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./cats.service'</span><span class="pn">;</span>
+  <span class="fn">describe</span>(<span class="str">'findAll'</span>, () =&gt; {
+    <span class="fn">it</span>(<span class="str">'should return an array of cats'</span>, <span class="kw">async</span> () =&gt; {
+      <span class="kw">const</span> result = [<span class="str">'test'</span>];
+      jest.<span class="fn">spyOn</span>(catsService, <span class="str">'findAll'</span>).<span class="fn">mockImplementation</span>(() =&gt; result);
 
-<span class="fn">describe</span><span class="pn">(</span><span class="str">'CatsController'</span><span class="pn">,</span> <span class="pn">() =&gt; {</span>
-  <span class="kw">let</span> catsController<span class="pn">;</span>
-  <span class="kw">let</span> catsService<span class="pn">;</span>
+      <span class="fn">expect</span>(<span class="kw">await</span> catsController.<span class="fn">findAll</span>()).<span class="fn">toBe</span>(result);
+    });
+  });
+});</pre></div><div class="pane" data-lang="js"><pre><span class="kw">import</span> { CatsController } <span class="kw">from</span> <span class="str">'./cats.controller'</span>;
+<span class="kw">import</span> { CatsService } <span class="kw">from</span> <span class="str">'./cats.service'</span>;
 
-  <span class="fn">beforeEach</span><span class="pn">(() =&gt; {</span>
-    catsService <span class="pn">=</span> <span class="kw">new</span> <span class="cl">CatsService</span><span class="pn">();</span>
-    catsController <span class="pn">=</span> <span class="kw">new</span> <span class="cl">CatsController</span><span class="pn">(</span>catsService<span class="pn">);</span>
-  <span class="pn">});</span>
+<span class="fn">describe</span>(<span class="str">'CatsController'</span>, () =&gt; {
+  <span class="kw">let</span> catsController;
+  <span class="kw">let</span> catsService;
 
-  <span class="fn">describe</span><span class="pn">(</span><span class="str">'findAll'</span><span class="pn">,</span> <span class="pn">() =&gt; {</span>
-    <span class="fn">it</span><span class="pn">(</span><span class="str">'should return an array of cats'</span><span class="pn">,</span> <span class="kw">async</span> <span class="pn">() =&gt; {</span>
-      <span class="kw">const</span> result <span class="pn">=</span> <span class="pn">[</span><span class="str">'test'</span><span class="pn">];</span>
-      jest<span class="pn">.</span><span class="fn">spyOn</span><span class="pn">(</span>catsService<span class="pn">,</span> <span class="str">'findAll'</span><span class="pn">).</span><span class="fn">mockImplementation</span><span class="pn">(() =&gt;</span> result<span class="pn">);</span>
+  <span class="fn">beforeEach</span>(() =&gt; {
+    catsService = <span class="kw">new</span> <span class="cl">CatsService</span>();
+    catsController = <span class="kw">new</span> <span class="cl">CatsController</span>(catsService);
+  });
 
-      <span class="fn">expect</span><span class="pn">(</span><span class="kw">await</span> catsController<span class="pn">.</span><span class="fn">findAll</span><span class="pn">()).</span><span class="fn">toBe</span><span class="pn">(</span>result<span class="pn">);</span>
-    <span class="pn">});</span>
-  <span class="pn">});</span>
-<span class="pn">});</span></pre></div></div></div>
+  <span class="fn">describe</span>(<span class="str">'findAll'</span>, () =&gt; {
+    <span class="fn">it</span>(<span class="str">'should return an array of cats'</span>, <span class="kw">async</span> () =&gt; {
+      <span class="kw">const</span> result = [<span class="str">'test'</span>];
+      jest.<span class="fn">spyOn</span>(catsService, <span class="str">'findAll'</span>).<span class="fn">mockImplementation</span>(() =&gt; result);
+
+      <span class="fn">expect</span>(<span class="kw">await</span> catsController.<span class="fn">findAll</span>()).<span class="fn">toBe</span>(result);
+    });
+  });
+});</pre></div></div></div>
 
 <div class="hint"><span class="lbl">💡 Hint</span><p>Đặt các test files gần các classes mà chúng test. Các testing files nên có đuôi <code>.spec</code> hoặc <code>.test</code>.</p></div>
 
-<p>Vì chúng ta đã thiết lập ví dụ trên thủ công, chúng ta không thực sự sử dụng bất kỳ thứ gì liên quan đến testing từ <code>@nestjs/testing</code>. Testing framework mặc định (Jest) cung cấp assert functions và test utilities sẵn có. Trong trường hợp cơ bản như trên, chúng ta không cần các Nest testing tools. Khi phần mềm sử dụng dependency injection nhiều hơn, chúng ta sẽ cần dùng <code>@nestjs/testing</code>.</p>
+<p>Vì ví dụ trên được thiết lập thủ công, chúng ta thực sự không sử dụng bất kỳ thứ gì liên quan đến testing từ <code>@nestjs/testing</code>. Thật vậy, chúng ta thậm chí không sử dụng dependency injection (lưu ý rằng chúng ta truyền một instance của <code>CatsService</code> vào <code>catsController</code>). Hình thức testing này - nơi chúng ta khởi tạo thủ công các classes được test - thường được gọi là <strong>isolated testing</strong> vì nó độc lập với framework. Hãy giới thiệu một số khả năng nâng cao hơn giúp bạn test ứng dụng sử dụng nhiều tính năng của Nest hơn.</p>
 
 <h3 id="testing-utilities">Testing utilities <a class="anchor" href="#testing-utilities">#</a></h3>
 
 <p>Package <code>@nestjs/testing</code> cung cấp một tập hợp các utilities cho phép xây dựng một quy trình testing mạnh mẽ hơn. Hãy viết lại ví dụ trước sử dụng class <code>Test</code> có sẵn:</p>
-<div class="cb"><div class="cb-head"><div class="cb-fname">cats.controller.spec.ts</div><div class="cb-right"><div class="tabs"><div class="tab on" onclick="sw(this,'c1','ts')">TS</div><div class="tab" onclick="sw(this,'c1','js')">JS</div></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div id="c1"><div class="pane on" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">{</span> Test <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/testing'</span><span class="pn">;</span>
-<span class="kw">import</span> <span class="pn">{</span> CatsController <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./cats.controller'</span><span class="pn">;</span>
-<span class="kw">import</span> <span class="pn">{</span> CatsService <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./cats.service'</span><span class="pn">;</span>
 
-<span class="fn">describe</span><span class="pn">(</span><span class="str">'CatsController'</span><span class="pn">,</span> <span class="pn">() =&gt; {</span>
-  <span class="kw">let</span> catsController<span class="pn">:</span> <span class="typ">CatsController</span><span class="pn">;</span>
-  <span class="kw">let</span> catsService<span class="pn">:</span> <span class="typ">CatsService</span><span class="pn">;</span>
+<div class="cb"><div class="cb-head"><div class="cb-fname">cats.controller.spec.ts</div><div class="cb-right"><div class="tabs"><div class="tab on" onclick="sw(this,'c1','ts')">TS</div><div class="tab" onclick="sw(this,'c1','js')">JS</div></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div id="c1"><div class="pane on" data-lang="ts"><pre><span class="kw">import</span> { Test } <span class="kw">from</span> <span class="str">'@nestjs/testing'</span>;
+<span class="kw">import</span> { CatsController } <span class="kw">from</span> <span class="str">'./cats.controller'</span>;
+<span class="kw">import</span> { CatsService } <span class="kw">from</span> <span class="str">'./cats.service'</span>;
 
-  <span class="fn">beforeEach</span><span class="pn">(</span><span class="kw">async</span> <span class="pn">() =&gt; {</span>
-    <span class="kw">const</span> moduleRef <span class="pn">=</span> <span class="kw">await</span> Test<span class="pn">.</span><span class="fn">createTestingModule</span><span class="pn">({</span>
-      controllers<span class="pn">: [</span>CatsController<span class="pn">],</span>
-      providers<span class="pn">: [</span>CatsService<span class="pn">],</span>
-    <span class="pn">}).</span><span class="fn">compile</span><span class="pn">();</span>
+<span class="fn">describe</span>(<span class="str">'CatsController'</span>, () =&gt; {
+  <span class="kw">let</span> catsController: <span class="typ">CatsController</span>;
+  <span class="kw">let</span> catsService: <span class="typ">CatsService</span>;
 
-    catsService <span class="pn">=</span> moduleRef<span class="pn">.</span><span class="fn">get</span><span class="pn">&lt;</span><span class="typ">CatsService</span><span class="pn">&gt;(</span>CatsService<span class="pn">);</span>
-    catsController <span class="pn">=</span> moduleRef<span class="pn">.</span><span class="fn">get</span><span class="pn">&lt;</span><span class="typ">CatsController</span><span class="pn">&gt;(</span>CatsController<span class="pn">);</span>
-  <span class="pn">});</span>
+  <span class="fn">beforeEach</span>(<span class="kw">async</span> () =&gt; {
+    <span class="kw">const</span> moduleRef = <span class="kw">await</span> Test.<span class="fn">createTestingModule</span>({
+      controllers: [CatsController],
+      providers: [CatsService],
+    }).<span class="fn">compile</span>();
 
-  <span class="fn">describe</span><span class="pn">(</span><span class="str">'findAll'</span><span class="pn">,</span> <span class="pn">() =&gt; {</span>
-    <span class="fn">it</span><span class="pn">(</span><span class="str">'should return an array of cats'</span><span class="pn">,</span> <span class="kw">async</span> <span class="pn">() =&gt; {</span>
-      <span class="kw">const</span> result <span class="pn">=</span> <span class="pn">[</span><span class="str">'test'</span><span class="pn">];</span>
-      jest<span class="pn">.</span><span class="fn">spyOn</span><span class="pn">(</span>catsService<span class="pn">,</span> <span class="str">'findAll'</span><span class="pn">).</span><span class="fn">mockImplementation</span><span class="pn">(() =&gt;</span> result<span class="pn">);</span>
+    catsService = moduleRef.<span class="fn">get</span>&lt;<span class="typ">CatsService</span>&gt;(CatsService);
+    catsController = moduleRef.<span class="fn">get</span>&lt;<span class="typ">CatsController</span>&gt;(CatsController);
+  });
 
-      <span class="fn">expect</span><span class="pn">(</span><span class="kw">await</span> catsController<span class="pn">.</span><span class="fn">findAll</span><span class="pn">()).</span><span class="fn">toBe</span><span class="pn">(</span>result<span class="pn">);</span>
-    <span class="pn">});</span>
-  <span class="pn">});</span>
-<span class="pn">});</span></pre></div><div class="pane" data-lang="js"><pre><span class="kw">import</span> <span class="pn">{</span> Test <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/testing'</span><span class="pn">;</span>
-<span class="kw">import</span> <span class="pn">{</span> CatsController <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./cats.controller'</span><span class="pn">;</span>
-<span class="kw">import</span> <span class="pn">{</span> CatsService <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./cats.service'</span><span class="pn">;</span>
+  <span class="fn">describe</span>(<span class="str">'findAll'</span>, () =&gt; {
+    <span class="fn">it</span>(<span class="str">'should return an array of cats'</span>, <span class="kw">async</span> () =&gt; {
+      <span class="kw">const</span> result = [<span class="str">'test'</span>];
+      jest.<span class="fn">spyOn</span>(catsService, <span class="str">'findAll'</span>).<span class="fn">mockImplementation</span>(() =&gt; result);
 
-<span class="fn">describe</span><span class="pn">(</span><span class="str">'CatsController'</span><span class="pn">,</span> <span class="pn">() =&gt; {</span>
-  <span class="kw">let</span> catsController<span class="pn">;</span>
-  <span class="kw">let</span> catsService<span class="pn">;</span>
+      <span class="fn">expect</span>(<span class="kw">await</span> catsController.<span class="fn">findAll</span>()).<span class="fn">toBe</span>(result);
+    });
+  });
+});</pre></div><div class="pane" data-lang="js"><pre><span class="kw">import</span> { Test } <span class="kw">from</span> <span class="str">'@nestjs/testing'</span>;
+<span class="kw">import</span> { CatsController } <span class="kw">from</span> <span class="str">'./cats.controller'</span>;
+<span class="kw">import</span> { CatsService } <span class="kw">from</span> <span class="str">'./cats.service'</span>;
 
-  <span class="fn">beforeEach</span><span class="pn">(</span><span class="kw">async</span> <span class="pn">() =&gt; {</span>
-    <span class="kw">const</span> moduleRef <span class="pn">=</span> <span class="kw">await</span> Test<span class="pn">.</span><span class="fn">createTestingModule</span><span class="pn">({</span>
-      controllers<span class="pn">: [</span>CatsController<span class="pn">],</span>
-      providers<span class="pn">: [</span>CatsService<span class="pn">],</span>
-    <span class="pn">}).</span><span class="fn">compile</span><span class="pn">();</span>
+<span class="fn">describe</span>(<span class="str">'CatsController'</span>, () =&gt; {
+  <span class="kw">let</span> catsController;
+  <span class="kw">let</span> catsService;
 
-    catsService <span class="pn">=</span> moduleRef<span class="pn">.</span><span class="fn">get</span><span class="pn">(</span>CatsService<span class="pn">);</span>
-    catsController <span class="pn">=</span> moduleRef<span class="pn">.</span><span class="fn">get</span><span class="pn">(</span>CatsController<span class="pn">);</span>
-  <span class="pn">});</span>
+  <span class="fn">beforeEach</span>(<span class="kw">async</span> () =&gt; {
+    <span class="kw">const</span> moduleRef = <span class="kw">await</span> Test.<span class="fn">createTestingModule</span>({
+      controllers: [CatsController],
+      providers: [CatsService],
+    }).<span class="fn">compile</span>();
 
-  <span class="fn">describe</span><span class="pn">(</span><span class="str">'findAll'</span><span class="pn">,</span> <span class="pn">() =&gt; {</span>
-    <span class="fn">it</span><span class="pn">(</span><span class="str">'should return an array of cats'</span><span class="pn">,</span> <span class="kw">async</span> <span class="pn">() =&gt; {</span>
-      <span class="kw">const</span> result <span class="pn">=</span> <span class="pn">[</span><span class="str">'test'</span><span class="pn">];</span>
-      jest<span class="pn">.</span><span class="fn">spyOn</span><span class="pn">(</span>catsService<span class="pn">,</span> <span class="str">'findAll'</span><span class="pn">).</span><span class="fn">mockImplementation</span><span class="pn">(() =&gt;</span> result<span class="pn">);</span>
+    catsService = moduleRef.<span class="fn">get</span>(CatsService);
+    catsController = moduleRef.<span class="fn">get</span>(CatsController);
+  });
 
-      <span class="fn">expect</span><span class="pn">(</span><span class="kw">await</span> catsController<span class="pn">.</span><span class="fn">findAll</span><span class="pn">()).</span><span class="fn">toBe</span><span class="pn">(</span>result<span class="pn">);</span>
-    <span class="pn">});</span>
-  <span class="pn">});</span>
-<span class="pn">});</span></pre></div></div></div>
+  <span class="fn">describe</span>(<span class="str">'findAll'</span>, () =&gt; {
+    <span class="fn">it</span>(<span class="str">'should return an array of cats'</span>, <span class="kw">async</span> () =&gt; {
+      <span class="kw">const</span> result = [<span class="str">'test'</span>];
+      jest.<span class="fn">spyOn</span>(catsService, <span class="str">'findAll'</span>).<span class="fn">mockImplementation</span>(() =&gt; result);
+
+      <span class="fn">expect</span>(<span class="kw">await</span> catsController.<span class="fn">findAll</span>()).<span class="fn">toBe</span>(result);
+    });
+  });
+});</pre></div></div></div>
 
 <p>Class <code>Test</code> hữu ích trong việc cung cấp một application execution context mô phỏng toàn bộ Nest runtime, nhưng cho phép bạn dễ dàng quản lý class instances, bao gồm mocking và overriding. Class <code>Test</code> có phương thức <code>createTestingModule()</code> nhận module metadata object làm đối số (cùng object mà bạn truyền vào <code>@Module()</code> decorator). Phương thức này trả về một instance của <code>TestingModule</code> mà lần lượt cung cấp một số methods. Đối với unit tests, method quan trọng là <code>compile()</code>. Method này bootstraps một module cùng với các dependencies của nó (tương tự cách ứng dụng được bootstrapped trong file <code>main.ts</code> thông thường sử dụng <code>NestFactory.create()</code>), và trả về module đã sẵn sàng cho testing.</p>
 
 <div class="hint"><span class="lbl">💡 Hint</span><p>Phương thức <code>compile()</code> là <strong>asynchronous</strong> và do đó phải được awaited. Khi module đã được compiled, bạn có thể truy xuất bất kỳ <strong>static</strong> instance nào nó khai báo (controllers và providers) sử dụng phương thức <code>get()</code>.</p></div>
 
 <p><code>TestingModule</code> kế thừa từ <a href="https://docs.nestjs.com/fundamentals/module-reference" target="_blank">module reference</a> class, và do đó có khả năng resolve dynamically các scoped providers (transient hoặc request-scoped). Làm điều này với phương thức <code>resolve()</code> (phương thức <code>get()</code> chỉ có thể truy xuất static instances).</p>
-<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="kw">const</span> moduleRef <span class="pn">=</span> <span class="kw">await</span> Test<span class="pn">.</span><span class="fn">createTestingModule</span><span class="pn">({</span>
-  controllers<span class="pn">: [</span>CatsController<span class="pn">],</span>
-  providers<span class="pn">: [</span>CatsService<span class="pn">],</span>
-<span class="pn">}).</span><span class="fn">compile</span><span class="pn">();</span>
 
-catsService <span class="pn">=</span> <span class="kw">await</span> moduleRef<span class="pn">.</span><span class="fn">resolve</span><span class="pn">(</span>CatsService<span class="pn">);</span></pre></div></div></div>
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="kw">const</span> moduleRef = <span class="kw">await</span> Test.<span class="fn">createTestingModule</span>({
+  controllers: [CatsController],
+  providers: [CatsService],
+}).<span class="fn">compile</span>();
+
+catsService = <span class="kw">await</span> moduleRef.<span class="fn">resolve</span>(CatsService);</pre></div></div></div>
 
 <div class="warn"><span class="lbl">⚠️ Warning</span><p>Phương thức <code>resolve()</code> trả về một unique instance của provider, từ DI container sub-tree của chính nó. Mỗi sub-tree có một unique context identifier. Do đó, nếu bạn gọi method này nhiều lần và so sánh instance references, bạn sẽ thấy chúng không bằng nhau.</p></div>
 
 <div class="hint"><span class="lbl">💡 Hint</span><p>Tìm hiểu thêm về các tính năng module reference <a href="https://docs.nestjs.com/fundamentals/module-reference" target="_blank">tại đây</a>.</p></div>
 
 <p>Thay vì sử dụng production version của bất kỳ provider nào, bạn có thể override nó bằng một <a href="https://docs.nestjs.com/fundamentals/custom-providers" target="_blank">custom provider</a> cho mục đích testing. Ví dụ, bạn có thể mock một database service thay vì kết nối đến live database. Chúng ta sẽ đề cập đến overrides trong phần tiếp theo, nhưng chúng cũng có sẵn cho unit tests.</p>
+<h3 id="auto-mocking">Auto mocking <a class="anchor" href="#auto-mocking">#</a></h3>
+<p>Nest cũng cho phép bạn định nghĩa một mock factory để áp dụng cho tất cả các dependencies bị thiếu. Điều này hữu ích cho các trường hợp bạn có một số lượng lớn dependencies trong một class và việc mock tất cả chúng sẽ mất nhiều thời gian và thiết lập. Để sử dụng tính năng này, <code>createTestingModule()</code> cần được kết nối với phương thức <code>useMocker()</code>, truyền vào một factory cho các dependency mocks của bạn. Factory này có thể nhận một token tùy chọn, đó là một instance token, bất kỳ token nào hợp lệ cho một Nest provider, và trả về một mock implementation. Dưới đây là ví dụ tạo mock chung sử dụng <a href="https://www.npmjs.com/package/jest-mock-extended" target="_blank"><code>jest-mock-extended</code></a> và một mock cụ thể cho <code>CatsService</code> sử dụng <code>jest.fn()</code>.</p>
 
-<p>Class <code>TestingModule</code> cung cấp các methods sau:</p>
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="cmt">// ...</span>
+<span class="kw">import</span> { createMock } <span class="kw">from</span> <span class="str">'jest-mock-extended'</span>;
 
+<span class="kw">const</span> moduleRef = <span class="kw">await</span> Test.<span class="fn">createTestingModule</span>({
+  controllers: [CatsController],
+})
+  .<span class="fn">useMocker</span>((token) =&gt; {
+    <span class="kw">if</span> (token === CatsService) {
+      <span class="kw">return</span> {
+        findAll: jest.<span class="fn">fn</span>().<span class="fn">mockResolvedValue</span>(catArray),
+      };
+    }
+    <span class="kw">if</span> (<span class="kw">typeof</span> token === <span class="str">'function'</span>) {
+      <span class="kw">const</span> mockMetadata = jest.<span class="fn">requireActual</span>(<span class="str">'jest-mock'</span>);
+      <span class="kw">return new</span> (mockMetadata.<span class="cl">ModuleMocker</span>(global).<span class="fn">generateFromMetadata</span>(
+        mockMetadata.<span class="cl">ModuleMocker</span>(global).<span class="fn">getMetadata</span>(token),
+      ))();
+    }
+  })
+  .<span class="fn">compile</span>();</pre></div></div></div>
+
+<p>Bạn cũng có thể truy xuất các custom mocks này từ testing container như thông thường với các custom providers, ví dụ <code>moduleRef.get(CatsService)</code>.</p>
+
+<div class="hint"><span class="lbl">💡 Hint</span><p>Một generic mock factory tổng quát, như <code>createMock</code> từ <a href="https://www.npmjs.com/package/@golevelup/ts-jest" target="_blank"><code>@golevelup/ts-jest</code></a>, cũng có thể được truyền trực tiếp.</p></div>
+
+<div class="hint"><span class="lbl">💡 Hint</span><p><code>REQUEST</code> và <code>INQUIRER</code> providers không thể được tự động mock vì chúng đã được chỉ định sẵn là context-scoped providers. Tuy nhiên, chúng có thể được overwritten bằng cách sử dụng custom provider syntax, ví dụ <code>.overrideProvider(REQUEST).useValue({})</code>.</p></div>
+
+<h3 id="end-to-end-testing">End-to-end testing <a class="anchor" href="#end-to-end-testing">#</a></h3>
+
+<p>Không giống unit tests tập trung vào các modules và classes riêng lẻ, end-to-end (e2e) testing bao phủ sự tương tác của các classes và modules ở mức tổng thể hơn -- gần với loại tương tác mà end-users sẽ có với production system. Khi một ứng dụng phát triển, rất khó để kiểm tra thủ công end-to-end behavior của mỗi API endpoint. Automated end-to-end tests giúp chúng ta đảm bảo rằng overall behavior của hệ thống là chính xác và đáp ứng project requirements. Để thực hiện e2e tests, chúng ta sử dụng cấu hình tương tự như chúng ta vừa đề cập trong <strong>unit testing</strong>. Ngoài ra, Nest giúp dễ dàng sử dụng thư viện <a href="https://github.com/ladjs/supertest" target="_blank">Supertest</a> để mô phỏng HTTP requests.</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">cats.e2e-spec.ts</div><div class="cb-right"><div class="tabs"><div class="tab on" onclick="sw(this,'c4','ts')">TS</div><div class="tab" onclick="sw(this,'c4','js')">JS</div></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div id="c4"><div class="pane on" data-lang="ts"><pre><span class="kw">import</span> * <span class="kw">as</span> request <span class="kw">from</span> <span class="str">'supertest'</span>;
+<span class="kw">import</span> { Test } <span class="kw">from</span> <span class="str">'@nestjs/testing'</span>;
+<span class="kw">import</span> { CatsModule } <span class="kw">from</span> <span class="str">'../../src/cats/cats.module'</span>;
+<span class="kw">import</span> { CatsService } <span class="kw">from</span> <span class="str">'../../src/cats/cats.service'</span>;
+<span class="kw">import</span> { INestApplication } <span class="kw">from</span> <span class="str">'@nestjs/common'</span>;
+
+<span class="fn">describe</span>(<span class="str">'Cats'</span>, () =&gt; {
+  <span class="kw">let</span> app: <span class="typ">INestApplication</span>;
+  <span class="kw">let</span> catsService = { findAll: () =&gt; [<span class="str">'test'</span>] };
+
+  <span class="fn">beforeAll</span>(<span class="kw">async</span> () =&gt; {
+    <span class="kw">const</span> moduleRef = <span class="kw">await</span> Test.<span class="fn">createTestingModule</span>({
+      imports: [CatsModule],
+    })
+      .<span class="fn">overrideProvider</span>(CatsService)
+      .<span class="fn">useValue</span>(catsService)
+      .<span class="fn">compile</span>();
+
+    app = moduleRef.<span class="fn">createNestApplication</span>();
+    <span class="kw">await</span> app.<span class="fn">init</span>();
+  });
+
+  <span class="fn">it</span>(<span class="str">`/GET cats`</span>, () =&gt; {
+    <span class="kw">return</span> <span class="fn">request</span>(app.<span class="fn">getHttpServer</span>())
+      .<span class="fn">get</span>(<span class="str">'/cats'</span>)
+      .<span class="fn">expect</span>(<span class="num">200</span>)
+      .<span class="fn">expect</span>({
+        data: catsService.<span class="fn">findAll</span>(),
+      });
+  });
+
+  <span class="fn">afterAll</span>(<span class="kw">async</span> () =&gt; {
+    <span class="kw">await</span> app.<span class="fn">close</span>();
+  });
+});</pre></div><div class="pane" data-lang="js"><pre><span class="kw">import</span> * <span class="kw">as</span> request <span class="kw">from</span> <span class="str">'supertest'</span>;
+<span class="kw">import</span> { Test } <span class="kw">from</span> <span class="str">'@nestjs/testing'</span>;
+<span class="kw">import</span> { CatsModule } <span class="kw">from</span> <span class="str">'../../src/cats/cats.module'</span>;
+<span class="kw">import</span> { CatsService } <span class="kw">from</span> <span class="str">'../../src/cats/cats.service'</span>;
+
+<span class="fn">describe</span>(<span class="str">'Cats'</span>, () =&gt; {
+  <span class="kw">let</span> app;
+  <span class="kw">let</span> catsService = { findAll: () =&gt; [<span class="str">'test'</span>] };
+
+  <span class="fn">beforeAll</span>(<span class="kw">async</span> () =&gt; {
+    <span class="kw">const</span> moduleRef = <span class="kw">await</span> Test.<span class="fn">createTestingModule</span>({
+      imports: [CatsModule],
+    })
+      .<span class="fn">overrideProvider</span>(CatsService)
+      .<span class="fn">useValue</span>(catsService)
+      .<span class="fn">compile</span>();
+
+    app = moduleRef.<span class="fn">createNestApplication</span>();
+    <span class="kw">await</span> app.<span class="fn">init</span>();
+  });
+
+  <span class="fn">it</span>(<span class="str">`/GET cats`</span>, () =&gt; {
+    <span class="kw">return</span> <span class="fn">request</span>(app.<span class="fn">getHttpServer</span>())
+      .<span class="fn">get</span>(<span class="str">'/cats'</span>)
+      .<span class="fn">expect</span>(<span class="num">200</span>)
+      .<span class="fn">expect</span>({
+        data: catsService.<span class="fn">findAll</span>(),
+      });
+  });
+
+  <span class="fn">afterAll</span>(<span class="kw">async</span> () =&gt; {
+    <span class="kw">await</span> app.<span class="fn">close</span>();
+  });
+});</pre></div></div></div>
+
+<div class="hint"><span class="lbl">💡 Hint</span><p>Nếu bạn đang sử dụng <a href="https://www.fastify.io/" target="_blank">Fastify</a> làm HTTP adapter, nó yêu cầu cấu hình hơi khác và có built-in testing capabilities:</p></div>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="kw">let</span> app: <span class="typ">NestFastifyApplication</span>;
+
+<span class="fn">beforeAll</span>(<span class="kw">async</span> () =&gt; {
+  app = moduleRef.<span class="fn">createNestApplication</span>&lt;<span class="typ">NestFastifyApplication</span>&gt;(
+    <span class="kw">new</span> <span class="cl">FastifyAdapter</span>(),
+  );
+
+  <span class="kw">await</span> app.<span class="fn">init</span>();
+  <span class="kw">await</span> app.<span class="fn">getHttpAdapter</span>().<span class="fn">getInstance</span>().<span class="fn">ready</span>();
+});
+
+<span class="fn">it</span>(<span class="str">'/GET cats'</span>, () =&gt; {
+  <span class="kw">return</span> app
+    .<span class="fn">inject</span>({
+      method: <span class="str">'GET'</span>,
+      url: <span class="str">'/cats'</span>,
+    })
+    .<span class="fn">then</span>((result) =&gt; {
+      <span class="fn">expect</span>(result.statusCode).<span class="fn">toEqual</span>(<span class="num">200</span>);
+      <span class="fn">expect</span>(result.payload).<span class="fn">toEqual</span>(<span class="cmt">/* expectedPayload */</span>);
+    });
+});
+
+<span class="fn">afterAll</span>(<span class="kw">async</span> () =&gt; {
+  <span class="kw">await</span> app.<span class="fn">close</span>();
+});</pre></div></div></div>
+
+<p>Trong ví dụ này, chúng ta xây dựng trên một số khái niệm đã mô tả trước đó. Ngoài phương thức <code>compile()</code> mà chúng ta đã sử dụng trước đó, giờ đây chúng ta sử dụng phương thức <code>createNestApplication()</code> để khởi tạo một Nest runtime environment đầy đủ.</p>
+
+<p>Một lưu ý cần xem xét là khi ứng dụng của bạn được compiled sử dụng phương thức <code>compile()</code>, <code>HttpAdapterHost#httpAdapter</code> sẽ là undefined tại thời điểm đó. Điều này là vì chưa có HTTP adapter hoặc server nào được tạo trong giai đoạn compilation này. Nếu test của bạn yêu cầu <code>httpAdapter</code>, bạn nên sử dụng phương thức <code>createNestApplication()</code> để tạo application instance, hoặc refactor project của bạn để tránh dependency này khi khởi tạo dependencies graph.</p>
+
+<p>Được rồi, hãy phân tích ví dụ:</p>
+
+<p>Chúng ta lưu reference đến running app trong biến <code>app</code> để có thể sử dụng nó mô phỏng HTTP requests.</p>
+
+<p>Chúng ta mô phỏng HTTP tests sử dụng hàm <code>request()</code> từ Supertest. Chúng ta muốn các HTTP requests này route đến running Nest app, vì vậy chúng ta truyền hàm <code>request()</code> một reference đến HTTP listener nằm bên dưới Nest (mà lần lượt, có thể được cung cấp bởi Express platform). Do đó construction <code>request(app.getHttpServer())</code>. Lời gọi <code>request()</code> đưa cho chúng ta một wrapped HTTP Server, giờ đã kết nối với Nest app, cung cấp các methods để mô phỏng actual HTTP request. Ví dụ, sử dụng <code>request(...).get('/cats')</code> sẽ khởi tạo một request giống hệt HTTP request thực tế như <code>get '/cats'</code> đến qua network.</p>
+
+<p>Trong ví dụ này, chúng ta cũng cung cấp một alternate (test-double) implementation của <code>CatsService</code> mà đơn giản trả về một giá trị hard-coded mà chúng ta có thể test. Sử dụng <code>overrideProvider()</code> để cung cấp alternate implementation như vậy. Tương tự, Nest cung cấp các methods để override modules, guards, interceptors, filters và pipes tương ứng với các phương thức <code>overrideModule()</code>, <code>overrideGuard()</code>, <code>overrideInterceptor()</code>, <code>overrideFilter()</code>, và <code>overridePipe()</code>.</p>
+
+<p>Mỗi phương thức override (ngoại trừ <code>overrideModule()</code>) trả về một object với 3 methods khác nhau phản chiếu những methods đã mô tả cho <a href="https://docs.nestjs.com/fundamentals/custom-providers" target="_blank">custom providers</a>:</p>
+
+<ul>
+<li><code>useClass</code>: bạn cung cấp một class sẽ được instantiated để provide instance thay thế object (provider, guard, v.v.).</li>
+<li><code>useValue</code>: bạn cung cấp một instance sẽ override object.</li>
+<li><code>useFactory</code>: bạn cung cấp một function trả về một instance sẽ override object.</li>
+</ul>
+
+<p>Mặt khác, <code>overrideModule()</code> trả về một object với phương thức <code>useModule()</code>, mà bạn có thể sử dụng để cung cấp một module sẽ override module gốc, như sau:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="kw">const</span> moduleRef = <span class="kw">await</span> Test.<span class="fn">createTestingModule</span>({
+  imports: [AppModule],
+})
+  .<span class="fn">overrideModule</span>(CatsModule)
+  .<span class="fn">useModule</span>(AlternateCatsModule)
+  .<span class="fn">compile</span>();</pre></div></div></div>
+
+<p>Mỗi loại phương thức override, nối tiếp nhau, trả về instance của <code>TestingModule</code>, và do đó có thể kết nối chuỗi với các method khác theo <a href="https://en.wikipedia.org/wiki/Fluent_interface" target="_blank">fluent style</a>. Bạn nên sử dụng <code>compile()</code> ở cuối chuỗi như vậy để Nest khởi tạo và trả về module.</p>
+
+<p>Ngoài ra, đôi khi bạn có thể muốn cung cấp một custom logger (ví dụ, khi tests chạy trên CI server). Sử dụng phương thức <code>setLogger()</code> và truyền vào một object thực hiện <code>LoggerService</code> interface để hướng dẫn <code>TestModuleBuilder</code> cách log trong quá trình tests (mặc định, chỉ "error" logs được log ra console).</p>
+
+<p>Module đã compiled có một số methods hữu ích, như mô tả trong bảng sau:</p>
 <table>
 <thead><tr><th>Method</th><th>Mô tả</th></tr></thead>
 <tbody>
@@ -283,4 +455,125 @@ catsService <span class="pn">=</span> <span class="kw">await</span> moduleRef<sp
 </tbody>
 </table>
 
-<div class="hint"><span class="lbl">💡 Hint</span><p>Đặt các e2e test files trong thư mục <code>test</code>. Các testing files nên có đuôi <code>.e2e-spec</code>.</p></div>
+<div class="hint"><span class="lbl">💡 Hint</span><p>Đặt các e2e test files trong thư mục <code>test</code>. Các testing files nên có đuôi <code>.e2e-spec</code>. Ngoài ra, nhớ cập nhật file <code>jest-e2e.json</code> trong thư mục root với regex chính xác để include các files này.</p></div>
+
+<h3 id="overriding-globally-registered-enhancers">Overriding globally registered enhancers <a class="anchor" href="#overriding-globally-registered-enhancers">#</a></h3>
+
+<p>Nếu bạn có một globally registered guard (hoặc pipe, interceptor, hoặc filter), bạn cần thực hiện thêm một vài bước để override enhancer đó. Để ôn lại, registration ban đầu trông như thế này:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre>providers: [
+  {
+    provide: APP_GUARD,
+    useClass: JwtAuthGuard,
+  },
+],</pre></div></div></div>
+
+<p>Đây là việc đăng ký guard dưới dạng "multi"-provider thông qua token <code>APP_*</code>. Để có thể thay thế <code>JwtAuthGuard</code> ở đây, registration cần sử dụng một existing provider trong slot này:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre>providers: [
+  {
+    provide: APP_GUARD,
+    useExisting: JwtAuthGuard,
+  },
+  JwtAuthGuard,
+],</pre></div></div></div>
+
+<div class="hint"><span class="lbl">💡 Hint</span><p>Thay đổi <code>useClass</code> thành <code>useExisting</code> để tham chiếu một registered provider thay vì để Nest khởi tạo nó đằng sau token.</p></div>
+
+<p>Bây giờ <code>JwtAuthGuard</code> là một regular provider có thể nhìn thấy bởi Nest khi tạo <code>TestingModule</code>:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="kw">const</span> moduleRef = <span class="kw">await</span> Test.<span class="fn">createTestingModule</span>({
+  imports: [AppModule],
+})
+  .<span class="fn">overrideProvider</span>(JwtAuthGuard)
+  .<span class="fn">useClass</span>(MockAuthGuard)
+  .<span class="fn">compile</span>();</pre></div></div></div>
+
+<p>Bây giờ tất cả các tests sẽ sử dụng <code>MockAuthGuard</code> trên mọi request.</p>
+
+<h3 id="testing-request-scoped-instances">Testing request-scoped instances <a class="anchor" href="#testing-request-scoped-instances">#</a></h3>
+
+<p><a href="https://docs.nestjs.com/fundamentals/injection-scopes" target="_blank">Request-scoped</a> providers được tạo uniquely cho mỗi <strong>request</strong> đến. Instance được garbage-collected sau khi request đã hoàn tất quá trình xử lý. Điều này đặt ra một vấn đề, bởi vì chúng ta không thể truy cập một dependency injection sub-tree được tạo cụ thể cho một tested request.</p>
+
+<p>Chúng ta biết (dựa trên các phần trên) rằng phương thức <code>resolve()</code> có thể được sử dụng để truy xuất một dynamically instantiated class. Ngoài ra, như đã mô tả <a href="https://docs.nestjs.com/fundamentals/module-reference#resolving-scoped-providers" target="_blank">tại đây</a>, chúng ta biết rằng có thể truyền một unique context identifier để kiểm soát lifecycle của một DI container sub-tree. Làm cách nào sử dụng điều này trong testing context?</p>
+
+<p>Chiến lược là tạo một context identifier trước và buộc Nest sử dụng ID cụ thể này để tạo sub-tree cho tất cả incoming requests. Bằng cách này, chúng ta sẽ có thể truy xuất instances được tạo cho một tested request.</p>
+
+<p>Để thực hiện điều này, sử dụng <code>jest.spyOn()</code> trên <code>ContextIdFactory</code>:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><div class="tabs"><div class="tab on" onclick="sw(this,'c8','ts')">TS</div><div class="tab" onclick="sw(this,'c8','js')">JS</div></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div id="c8"><div class="pane on" data-lang="ts"><pre><span class="kw">const</span> contextId = ContextIdFactory.<span class="fn">create</span>();
+jest
+  .<span class="fn">spyOn</span>(ContextIdFactory, <span class="str">'getByRequest'</span>)
+  .<span class="fn">mockImplementation</span>(() =&gt; contextId);</pre></div><div class="pane" data-lang="js"><pre><span class="kw">const</span> contextId = ContextIdFactory.<span class="fn">create</span>();
+jest
+  .<span class="fn">spyOn</span>(ContextIdFactory, <span class="str">'getByRequest'</span>)
+  .<span class="fn">mockImplementation</span>(() =&gt; contextId);</pre></div></div></div>
+
+<p>Bây giờ bạn có thể sử dụng <code>contextId</code> để truy cập một unique DI container sub-tree được tạo cho bất kỳ subsequent request nào.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><div class="tabs"><div class="tab on" onclick="sw(this,'c9','ts')">TS</div><div class="tab" onclick="sw(this,'c9','js')">JS</div></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div id="c9"><div class="pane on" data-lang="ts"><pre>catsService = <span class="kw">await</span> moduleRef.<span class="fn">resolve</span>(CatsService, contextId);</pre></div><div class="pane" data-lang="js"><pre>catsService = <span class="kw">await</span> moduleRef.<span class="fn">resolve</span>(CatsService, contextId);</pre></div></div></div>
+
+<!-- Page navigation -->
+<div class="page-nav">
+<a class="pnbtn" href="platform-agnosticism.html">
+<span class="pnlbl">← Trước</span>
+<span class="pntitle">Platform agnosticism</span>
+</a>
+</div>
+
+</main>
+
+<aside class="toc">
+<div class="toc-title">Nội dung</div>
+<ul>
+<li><a href="#installation">Installation</a></li>
+<li><a href="#unit-testing">Unit testing</a></li>
+<li><a href="#testing-utilities">Testing utilities</a></li>
+<li><a href="#auto-mocking">Auto mocking</a></li>
+<li><a href="#end-to-end-testing">End-to-end testing</a></li>
+<li><a href="#overriding-globally-registered-enhancers">Overriding globally registered enhancers</a></li>
+<li><a href="#testing-request-scoped-instances">Testing request-scoped instances</a></li>
+</ul>
+</aside>
+
+</div>
+<script>
+  function sw(btn, bid, lang) {
+    var c = document.getElementById(bid);
+    if (!c) return;
+    btn.parentElement.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('on'); });
+    btn.classList.add('on');
+    c.querySelectorAll('.pane').forEach(function(p) {
+      p.classList.remove('on');
+      if (p.dataset.lang === lang) p.classList.add('on');
+    });
+  }
+  function cp(btn) {
+    var wrap = btn.closest('.cb');
+    var pane = wrap.querySelector('.pane.on') || wrap.querySelector('.pane');
+    if (!pane) return;
+    navigator.clipboard.writeText(pane.textContent.trim()).then(function() {
+      var o = btn.textContent;
+      btn.textContent = 'Copied!';
+      btn.style.color = '#4ade80';
+      setTimeout(function() { btn.textContent = o; btn.style.color = ''; }, 1500);
+    });
+  }
+  document.querySelectorAll('.toc a').forEach(function(link) {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      var target = document.querySelector(this.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+  var tocLinks = document.querySelectorAll('.toc a');
+  var heads = document.querySelectorAll('h3[id]');
+  function hi() {
+    var cur = '';
+    heads.forEach(function(h) { if (scrollY >= h.offsetTop - 120) cur = h.id; });
+    tocLinks.forEach(function(a) { a.classList.toggle('active', a.getAttribute('href') === '#' + cur); });
+  }
+  window.addEventListener('scroll', hi, { passive: true });
+  hi();
+</script>
+</body></html>

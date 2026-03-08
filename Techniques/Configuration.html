@@ -256,6 +256,70 @@ DATABASE_PORT=5432</pre></div></div></div>
 
 <div class="note"><span class="lbl">📘 Notice</span><p>Giá trị được gán cho property <code>load</code> là một array, cho phép bạn load nhiều configuration file (ví dụ: <code>load: [databaseConfig, authConfig]</code>).</p></div>
 
+<p>Với custom configuration file, chúng ta cũng có thể quản lý các file tùy chỉnh như YAML file. Dưới đây là ví dụ về configuration sử dụng định dạng YAML:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">config.yaml</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre>http:
+  host: 'localhost'
+  port: 8080
+
+db:
+  postgres:
+    url: 'localhost'
+    port: 5432
+    database: 'yaml-db'
+
+  sqlite:
+    database: 'sqlite.db'</pre></div></div></div>
+
+<p>Để đọc và parse file YAML, chúng ta có thể sử dụng package <code>js-yaml</code>.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre>$ npm i js-yaml
+$ npm i -D @types/js-yaml</pre></div></div></div>
+
+<p>Khi package đã được cài đặt, chúng ta sử dụng <code>yaml#load</code> function để load file YAML vừa tạo ở trên.</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">config/configuration.ts</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="kw">import</span> <span class="pn">{</span> readFileSync <span class="pn">}</span> <span class="kw">from</span> <span class="str">'fs'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">*</span> <span class="kw">as</span> yaml <span class="kw">from</span> <span class="str">'js-yaml'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> join <span class="pn">}</span> <span class="kw">from</span> <span class="str">'path'</span><span class="pn">;</span>
+
+<span class="kw">const</span> YAML_CONFIG_FILENAME <span class="pn">=</span> <span class="str">'config.yaml'</span><span class="pn">;</span>
+
+<span class="kw">export default</span> <span class="pn">() =&gt; {</span>
+  <span class="kw">return</span> yaml<span class="pn">.</span><span class="fn">load</span><span class="pn">(</span>
+    <span class="fn">readFileSync</span><span class="pn">(</span><span class="fn">join</span><span class="pn">(</span>__dirname<span class="pn">,</span> YAML_CONFIG_FILENAME<span class="pn">),</span> <span class="str">'utf8'</span><span class="pn">),</span>
+  <span class="pn">)</span> <span class="kw">as</span> <span class="typ">Record</span><span class="pn">&lt;</span><span class="typ">string</span><span class="pn">,</span> <span class="typ">any</span><span class="pn">&gt;;</span>
+<span class="pn">};</span></pre></div></div></div>
+
+<div class="note"><span class="lbl">📘 Notice</span><p>Nest CLI không tự động di chuyển các "assets" (file không phải TS) sang thư mục <code>dist</code> trong quá trình build. Để đảm bảo các file YAML được copy, bạn phải chỉ định điều này trong object <code>compilerOptions#assets</code> trong file <code>nest-cli.json</code>. Ví dụ, nếu thư mục <code>config</code> nằm cùng cấp với thư mục <code>src</code>, thêm <code>"assets": [{"include": "../config/*.yaml", "outDir": "./dist/config"}]</code> làm giá trị của <code>compilerOptions#assets</code>. Xem thêm <a href="https://docs.nestjs.com/cli/monorepo#assets" target="_blank">tại đây</a>.</p></div>
+
+<p>Lưu ý nhanh - các configuration file không được tự động validate, ngay cả khi bạn đang sử dụng option <code>validationSchema</code> trong <code>ConfigModule</code> của NestJS. Nếu bạn cần validation hoặc muốn áp dụng bất kỳ transformation nào, bạn sẽ phải xử lý điều đó bên trong factory function nơi bạn có toàn quyền kiểm soát configuration object. Điều này cho phép bạn triển khai bất kỳ custom validation logic nào theo ý muốn.</p>
+
+<p>Ví dụ, nếu bạn muốn đảm bảo rằng port nằm trong một khoảng nhất định, bạn có thể thêm một bước validation vào factory function:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">config/configuration.ts</div><div class="cb-right"><div class="tabs"><div class="tab on" onclick="sw(this,'c1b','ts')">TS</div><div class="tab" onclick="sw(this,'c1b','js')">JS</div></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div id="c1b"><div class="pane on" data-lang="ts"><pre><span class="kw">export default</span> <span class="pn">() =&gt; {</span>
+  <span class="kw">const</span> config <span class="pn">=</span> yaml<span class="pn">.</span><span class="fn">load</span><span class="pn">(</span>
+    <span class="fn">readFileSync</span><span class="pn">(</span><span class="fn">join</span><span class="pn">(</span>__dirname<span class="pn">,</span> YAML_CONFIG_FILENAME<span class="pn">),</span> <span class="str">'utf8'</span><span class="pn">),</span>
+  <span class="pn">)</span> <span class="kw">as</span> <span class="typ">Record</span><span class="pn">&lt;</span><span class="typ">string</span><span class="pn">,</span> <span class="typ">any</span><span class="pn">&gt;;</span>
+
+  <span class="kw">if</span> <span class="pn">(</span>config<span class="pn">.</span>http<span class="pn">.</span>port <span class="pn">&lt;</span> <span class="num">1024</span> <span class="pn">||</span> config<span class="pn">.</span>http<span class="pn">.</span>port <span class="pn">&gt;</span> <span class="num">49151</span><span class="pn">) {</span>
+    <span class="kw">throw new</span> <span class="cl">Error</span><span class="pn">(</span><span class="str">'HTTP port must be between 1024 and 49151'</span><span class="pn">);</span>
+  <span class="pn">}</span>
+
+  <span class="kw">return</span> config<span class="pn">;</span>
+<span class="pn">};</span></pre></div><div class="pane" data-lang="js"><pre><span class="kw">export default</span> <span class="pn">() =&gt; {</span>
+  <span class="kw">const</span> config <span class="pn">=</span> yaml<span class="pn">.</span><span class="fn">load</span><span class="pn">(</span>
+    <span class="fn">readFileSync</span><span class="pn">(</span><span class="fn">join</span><span class="pn">(</span>__dirname<span class="pn">,</span> YAML_CONFIG_FILENAME<span class="pn">),</span> <span class="str">'utf8'</span><span class="pn">),</span>
+  <span class="pn">);</span>
+
+  <span class="kw">if</span> <span class="pn">(</span>config<span class="pn">.</span>http<span class="pn">.</span>port <span class="pn">&lt;</span> <span class="num">1024</span> <span class="pn">||</span> config<span class="pn">.</span>http<span class="pn">.</span>port <span class="pn">&gt;</span> <span class="num">49151</span><span class="pn">) {</span>
+    <span class="kw">throw new</span> <span class="cl">Error</span><span class="pn">(</span><span class="str">'HTTP port must be between 1024 and 49151'</span><span class="pn">);</span>
+  <span class="pn">}</span>
+
+  <span class="kw">return</span> config<span class="pn">;</span>
+<span class="pn">};</span></pre></div></div></div>
+
+<p>Bây giờ, nếu port nằm ngoài khoảng đã chỉ định, ứng dụng sẽ throw error trong quá trình khởi động.</p>
+
 <h3 id="using-the-configservice">Using the ConfigService <a class="anchor" href="#using-the-configservice">#</a></h3>
 
 <p>Để truy cập các giá trị cấu hình từ <code>ConfigService</code>, trước tiên chúng ta cần inject <code>ConfigService</code>. Như với bất kỳ provider nào, chúng ta cần import module chứa nó — <code>ConfigModule</code> — vào module sử dụng nó (trừ khi bạn set property <code>isGlobal</code> trong object options được truyền vào method <code>ConfigModule.forRoot()</code> thành <code>true</code>). Import nó vào feature module như dưới đây.</p>
@@ -294,6 +358,41 @@ DATABASE_PORT=5432</pre></div></div></div>
 <div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="cm">// throw nếu "database.host" không được định nghĩa</span>
 <span class="kw">const</span> dbHost <span class="pn">=</span> <span class="kw">this</span><span class="pn">.</span>configService<span class="pn">.</span><span class="fn">getOrThrow</span><span class="pn">&lt;</span><span class="typ">string</span><span class="pn">&gt;(</span><span class="str">'database.host'</span><span class="pn">);</span></pre></div></div></div>
 
+<p><code>ConfigService</code> có hai generic tùy chọn (type argument). Generic đầu tiên giúp ngăn việc truy cập config property không tồn tại. Sử dụng nó như dưới đây:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="kw">interface</span> <span class="cl">EnvironmentVariables</span> <span class="pn">{</span>
+  PORT<span class="pn">:</span> <span class="typ">number</span><span class="pn">;</span>
+  TIMEOUT<span class="pn">:</span> <span class="typ">string</span><span class="pn">;</span>
+<span class="pn">}</span>
+
+<span class="cm">// somewhere in our code</span>
+<span class="fn">constructor</span><span class="pn">(</span><span class="kw">private</span> configService<span class="pn">:</span> <span class="cl">ConfigService</span><span class="pn">&lt;</span><span class="cl">EnvironmentVariables</span><span class="pn">&gt;) {</span>
+  <span class="kw">const</span> port <span class="pn">=</span> <span class="kw">this</span><span class="pn">.</span>configService<span class="pn">.</span><span class="fn">get</span><span class="pn">(</span><span class="str">'PORT'</span><span class="pn">,</span> <span class="pn">{</span> infer<span class="pn">:</span> <span class="kw">true</span> <span class="pn">});</span>
+
+  <span class="cm">// typeof port === "number" (as expected)</span>
+<span class="pn">}</span></pre></div></div></div>
+
+<p>Với property <code>infer</code> được set thành <code>true</code>, method <code>ConfigService#get</code> sẽ tự động suy luận kiểu property dựa trên interface, vì vậy ví dụ, <code>typeof port === "number"</code> (nếu bạn không sử dụng flag <code>strictNullChecks</code> từ TypeScript) vì <code>PORT</code> có kiểu <code>number</code> trong interface <code>EnvironmentVariables</code>.</p>
+
+<p>Ngoài ra, với tính năng <code>infer</code>, bạn có thể suy luận kiểu của property trong nested custom configuration object, ngay cả khi sử dụng dot notation, như sau:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="fn">constructor</span><span class="pn">(</span><span class="kw">private</span> configService<span class="pn">:</span> <span class="cl">ConfigService</span><span class="pn">&lt;{</span> database<span class="pn">:</span> <span class="pn">{</span> host<span class="pn">:</span> <span class="typ">string</span> <span class="pn">}</span> <span class="pn">}&gt;) {</span>
+  <span class="kw">const</span> dbHost <span class="pn">=</span> <span class="kw">this</span><span class="pn">.</span>configService<span class="pn">.</span><span class="fn">get</span><span class="pn">(</span><span class="str">'database.host'</span><span class="pn">,</span> <span class="pn">{</span> infer<span class="pn">:</span> <span class="kw">true</span> <span class="pn">})!;</span>
+  <span class="cm">// typeof dbHost === "string"                                          |</span>
+  <span class="cm">//                                                                     +--&gt; non-null assertion operator</span>
+<span class="pn">}</span></pre></div></div></div>
+
+<p>Generic thứ hai phụ thuộc vào generic đầu tiên, hoạt động như một type assertion để loại bỏ tất cả kiểu <code>undefined</code> mà các method của <code>ConfigService</code> có thể trả về khi <code>strictNullChecks</code> được bật. Ví dụ:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="cm">// ...</span>
+<span class="fn">constructor</span><span class="pn">(</span><span class="kw">private</span> configService<span class="pn">:</span> <span class="cl">ConfigService</span><span class="pn">&lt;{</span> PORT<span class="pn">:</span> <span class="typ">number</span> <span class="pn">},</span> <span class="kw">true</span><span class="pn">&gt;) {</span>
+<span class="cm">//                                                                ^^^^</span>
+  <span class="kw">const</span> port <span class="pn">=</span> <span class="kw">this</span><span class="pn">.</span>configService<span class="pn">.</span><span class="fn">get</span><span class="pn">(</span><span class="str">'PORT'</span><span class="pn">,</span> <span class="pn">{</span> infer<span class="pn">:</span> <span class="kw">true</span> <span class="pn">});</span>
+<span class="cm">//      ^^^ The type of port will be 'number' thus you don't need TS type assertions anymore</span>
+<span class="pn">}</span></pre></div></div></div>
+
+<div class="hint"><span class="lbl">💡 Hint</span><p>Để đảm bảo method <code>ConfigService#get</code> chỉ lấy giá trị từ custom configuration file và bỏ qua các biến <code>process.env</code>, set option <code>skipProcessEnv</code> thành <code>true</code> trong object options của method <code>forRoot()</code> của <code>ConfigModule</code>.</p></div>
+
 <h3 id="configuration-namespaces">Configuration namespaces <a class="anchor" href="#configuration-namespaces">#</a></h3>
 
 <p>Class <code>ConfigModule</code> cho phép bạn định nghĩa và load nhiều custom configuration file, như trong <a href="#custom-configuration-files">Custom configuration files</a> ở trên. Bạn có thể quản lý hierarchies phức tạp của configuration object với nested configuration object như trong section đó. Ngoài ra, bạn có thể trả về "namespaced" configuration object với function <code>registerAs()</code> như dưới đây:</p>
@@ -331,6 +430,31 @@ DATABASE_PORT=5432</pre></div></div></div>
 <span class="pn">) {}</span></pre></div></div></div>
 
 <div class="hint"><span class="lbl">💡 Hint</span><p>Import <code>ConfigType</code> từ package <code>@nestjs/config</code>.</p></div>
+
+<h3 id="namespaced-configurations-in-modules">Namespaced configurations in modules <a class="anchor" href="#namespaced-configurations-in-modules">#</a></h3>
+
+<p>Để sử dụng namespaced configuration như một configuration object cho module khác trong ứng dụng của bạn, bạn có thể sử dụng phương thức <code>.asProvider()</code> của configuration object. Phương thức này chuyển đổi namespaced configuration của bạn thành một provider, sau đó có thể được truyền vào <code>forRootAsync()</code> (hoặc bất kỳ phương thức tương đương nào) của module bạn muốn sử dụng.</p>
+
+<p>Đây là một ví dụ:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="kw">import</span> databaseConfig <span class="kw">from</span> <span class="str">'./config/database.config'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">:</span> <span class="pn">[</span>
+    TypeOrmModule<span class="pn">.</span><span class="fn">forRootAsync</span><span class="pn">(</span>databaseConfig<span class="pn">.</span><span class="fn">asProvider</span><span class="pn">()),</span>
+  <span class="pn">],</span>
+<span class="pn">})</span></pre></div></div></div>
+
+<p>Để hiểu cách phương thức <code>.asProvider()</code> hoạt động, hãy xem xét giá trị trả về:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="cm">// Return value of the .asProvider() method</span>
+<span class="pn">{</span>
+  imports<span class="pn">:</span> <span class="pn">[</span>ConfigModule<span class="pn">.</span><span class="fn">forFeature</span><span class="pn">(</span>databaseConfig<span class="pn">)],</span>
+  useFactory<span class="pn">:</span> <span class="pn">(</span>configuration<span class="pn">:</span> <span class="cl">ConfigType</span><span class="pn">&lt;</span><span class="kw">typeof</span> databaseConfig<span class="pn">&gt;)</span> <span class="pn">=&gt;</span> configuration<span class="pn">,</span>
+  inject<span class="pn">:</span> <span class="pn">[</span>databaseConfig<span class="pn">.</span>KEY<span class="pn">]</span>
+<span class="pn">}</span></pre></div></div></div>
+
+<p>Cấu trúc này cho phép bạn tích hợp namespaced configuration vào các module một cách liền mạch, đảm bảo rằng ứng dụng của bạn vẫn được tổ chức tốt và modular, mà không cần viết code boilerplate lặp đi lặp lại.</p>
 
 <h3 id="cache-environment-variables">Cache environment variables <a class="anchor" href="#cache-environment-variables">#</a></h3>
 
@@ -398,18 +522,63 @@ DATABASE_PORT=5432</pre></div></div></div>
 <span class="pn">})</span>
 <span class="kw">export class</span> <span class="cl">AppModule</span> <span class="pn">{}</span></pre></div></div></div>
 
-<p>Mặc định, tất cả environment variable được coi là tùy chọn. Ở đây, chúng ta set giá trị mặc định cho <code>NODE_ENV</code> và <code>PORT</code>, đó thường là đủ khi bạn không cung cấp chúng trong file <code>.env</code>. Ngoài ra, bạn có thể sử dụng validation method <code>required()</code> để yêu cầu bắt buộc một giá trị phải được định nghĩa trong environment (file <code>.env</code> hoặc process environment).</p>
+<p>Mặc định, tất cả schema key được coi là tùy chọn. Ở đây, chúng ta set giá trị mặc định cho <code>NODE_ENV</code> và <code>PORT</code> sẽ được sử dụng nếu chúng ta không cung cấp chúng trong environment (file <code>.env</code> hoặc process environment). Ngoài ra, chúng ta có thể sử dụng validation method <code>required()</code> để yêu cầu bắt buộc một giá trị phải được định nghĩa trong environment (file <code>.env</code> hoặc process environment). Trong trường hợp này, bước validation sẽ throw exception nếu chúng ta không cung cấp biến đó. Xem thêm <a href="https://joi.dev/api/?v=17.6.0#example" target="_blank">Joi validation methods</a> để biết thêm cách construct validation schema.</p>
 
-<div class="hint"><span class="lbl">💡 Hint</span><p>Mặc định, các unknown environment variable (biến không có mặt trong schema) được cho phép và không kích hoạt validation exception. Mặc định, tất cả validation error đều được báo cáo. Bạn có thể thay đổi các behavior này bằng cách truyền object <code>validationOptions</code> qua key <code>validationOptions</code> của object options <code>forRoot()</code>. Object validation options tuân theo <a href="https://joi.dev/api/?v=17.6.0#anyvalidatevalue-options" target="_blank">Joi validation options</a> tiêu chuẩn.</p></div>
+<p>Mặc định, các unknown environment variable (biến có key không có mặt trong schema) được cho phép và không kích hoạt validation exception. Mặc định, tất cả validation error đều được báo cáo. Bạn có thể thay đổi các behavior này bằng cách truyền object options qua key <code>validationOptions</code> của object options <code>forRoot()</code>. Object options này có thể chứa bất kỳ property validation options tiêu chuẩn nào được cung cấp bởi <a href="https://joi.dev/api/?v=17.6.0#anyvalidatevalue-options" target="_blank">Joi validation options</a>. Ví dụ, để đảo ngược hai setting trên, truyền options như sau:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">app.module.ts</div><div class="cb-right"><div class="tabs"><div class="tab on" onclick="sw(this,'c5b','ts')">TS</div><div class="tab" onclick="sw(this,'c5b','js')">JS</div></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div id="c5b"><div class="pane on" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">*</span> <span class="kw">as</span> Joi <span class="kw">from</span> <span class="str">'joi'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">:</span> <span class="pn">[</span>
+    ConfigModule<span class="pn">.</span><span class="fn">forRoot</span><span class="pn">({</span>
+      validationSchema<span class="pn">:</span> Joi<span class="pn">.</span><span class="fn">object</span><span class="pn">({</span>
+        NODE_ENV<span class="pn">:</span> Joi<span class="pn">.</span><span class="fn">string</span><span class="pn">()</span>
+          <span class="pn">.</span><span class="fn">valid</span><span class="pn">(</span><span class="str">'development'</span><span class="pn">,</span> <span class="str">'production'</span><span class="pn">,</span> <span class="str">'test'</span><span class="pn">,</span> <span class="str">'provision'</span><span class="pn">)</span>
+          <span class="pn">.</span><span class="fn">default</span><span class="pn">(</span><span class="str">'development'</span><span class="pn">),</span>
+        PORT<span class="pn">:</span> Joi<span class="pn">.</span><span class="fn">number</span><span class="pn">().</span><span class="fn">port</span><span class="pn">().</span><span class="fn">default</span><span class="pn">(</span><span class="num">3000</span><span class="pn">),</span>
+      <span class="pn">}),</span>
+      validationOptions<span class="pn">:</span> <span class="pn">{</span>
+        allowUnknown<span class="pn">:</span> <span class="kw">false</span><span class="pn">,</span>
+        abortEarly<span class="pn">:</span> <span class="kw">true</span><span class="pn">,</span>
+      <span class="pn">},</span>
+    <span class="pn">}),</span>
+  <span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="pn">{}</span></pre></div><div class="pane" data-lang="js"><pre><span class="kw">const</span> Joi <span class="pn">=</span> <span class="fn">require</span><span class="pn">(</span><span class="str">'joi'</span><span class="pn">);</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">:</span> <span class="pn">[</span>
+    ConfigModule<span class="pn">.</span><span class="fn">forRoot</span><span class="pn">({</span>
+      validationSchema<span class="pn">:</span> Joi<span class="pn">.</span><span class="fn">object</span><span class="pn">({</span>
+        NODE_ENV<span class="pn">:</span> Joi<span class="pn">.</span><span class="fn">string</span><span class="pn">()</span>
+          <span class="pn">.</span><span class="fn">valid</span><span class="pn">(</span><span class="str">'development'</span><span class="pn">,</span> <span class="str">'production'</span><span class="pn">,</span> <span class="str">'test'</span><span class="pn">,</span> <span class="str">'provision'</span><span class="pn">)</span>
+          <span class="pn">.</span><span class="fn">default</span><span class="pn">(</span><span class="str">'development'</span><span class="pn">),</span>
+        PORT<span class="pn">:</span> Joi<span class="pn">.</span><span class="fn">number</span><span class="pn">().</span><span class="fn">port</span><span class="pn">().</span><span class="fn">default</span><span class="pn">(</span><span class="num">3000</span><span class="pn">),</span>
+      <span class="pn">}),</span>
+      validationOptions<span class="pn">:</span> <span class="pn">{</span>
+        allowUnknown<span class="pn">:</span> <span class="kw">false</span><span class="pn">,</span>
+        abortEarly<span class="pn">:</span> <span class="kw">true</span><span class="pn">,</span>
+      <span class="pn">},</span>
+    <span class="pn">}),</span>
+  <span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="pn">{}</span></pre></div></div></div>
+
+<div class="hint"><span class="lbl">💡 Hint</span><p>Để vô hiệu hóa validation của các predefined environment variable, set attribute <code>validatePredefined</code> thành <code>false</code> trong object options của method <code>forRoot()</code>. Predefined environment variable là các process variable (<code>process.env</code> variable) đã được set trước khi module được import. Ví dụ, nếu bạn khởi động ứng dụng với <code>PORT=3000 node main.js</code>, thì <code>PORT</code> là predefined environment variable.</p></div>
 
 <h3 id="custom-validate-function">Custom validate function <a class="anchor" href="#custom-validate-function">#</a></h3>
 
 <p>Ngoài ra, bạn có thể chỉ định một <strong>synchronous</strong> <code>validate</code> function nhận một object chứa các environment variable (từ env file và process) và trả về một object chứa các environment variable đã validate để bạn có thể convert/mutate chúng nếu cần. Nếu function throw error, nó sẽ ngăn ứng dụng bootstrap.</p>
 
-<p>Trong ví dụ này, chúng ta sẽ sử dụng <code>class-transformer</code> và <code>class-validator</code> package:</p>
+<p>Trong ví dụ này, chúng ta sẽ sử dụng <code>class-transformer</code> và <code>class-validator</code> package. Trước tiên, chúng ta cần định nghĩa:</p>
+
+<ul>
+<li>một class với validation constraint,</li>
+<li>một validate function sử dụng các function <code>plainToInstance</code> và <code>validateSync</code>.</li>
+</ul>
 
 <div class="cb"><div class="cb-head"><div class="cb-fname">env.validation.ts</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="kw">import</span> <span class="pn">{</span> plainToInstance <span class="pn">}</span> <span class="kw">from</span> <span class="str">'class-transformer'</span><span class="pn">;</span>
-<span class="kw">import</span> <span class="pn">{</span> IsEnum<span class="pn">,</span> IsNumber<span class="pn">,</span> validateSync <span class="pn">}</span> <span class="kw">from</span> <span class="str">'class-validator'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> IsEnum<span class="pn">,</span> IsNumber<span class="pn">,</span> Max<span class="pn">,</span> Min<span class="pn">,</span> validateSync <span class="pn">}</span> <span class="kw">from</span> <span class="str">'class-validator'</span><span class="pn">;</span>
 
 <span class="kw">enum</span> <span class="cl">Environment</span> <span class="pn">{</span>
   Development <span class="pn">=</span> <span class="str">'development'</span><span class="pn">,</span>
@@ -576,6 +745,7 @@ SUPPORT_EMAIL=support@${APP_URL}</pre></div></div></div>
 <li><a href="#custom-configuration-files">Custom configuration files</a></li>
 <li><a href="#using-the-configservice">Using the ConfigService</a></li>
 <li><a href="#configuration-namespaces">Configuration namespaces</a></li>
+<li><a href="#namespaced-configurations-in-modules">Namespaced configurations in modules</a></li>
 <li><a href="#cache-environment-variables">Cache environment variables</a></li>
 <li><a href="#partial-registration">Partial registration</a></li>
 <li><a href="#schema-validation">Schema validation</a></li>
