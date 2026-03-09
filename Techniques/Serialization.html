@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Serialization | NestJS - Tài liệu tiếng Việt</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:       #0e0e0e;
+      --surface:  #1a1a1a;
+      --surface2: #222;
+      --border:   #2a2a2a;
+      --border-l: #333;
+      --red:      #ea2845;
+      --red-l:    #ff4d6a;
+      --red-glow: rgba(234,40,69,.15);
+      --text:     #e8e8e8;
+      --muted:    #888;
+      --sec:      #b0b0b0;
+      --code-bg:  #1e1e1e;
+      --code-bd:  #2d2d2d;
+      --hint-bg:  #0d2a1a;
+      --hint-c:   #4ade80;
+      --warn-bg:  #2a1a0d;
+      --warn-c:   #fb923c;
+      --note-bg:  #0d1a2a;
+      --note-c:   #60a0d0;
+      --toc-w:    220px;
+      --font:     'Inter', sans-serif;
+      --mono:     'Source Code Pro', monospace;
+      --r:        6px;
+      --rl:       10px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font); background: var(--bg); color: var(--text); font-size: 15px; line-height: 1.78; }
+
+    .page { max-width: 1060px; margin: 0 auto; padding: 48px 32px 96px; display: flex; gap: 56px; align-items: flex-start; }
+    .content { flex: 1; min-width: 0; }
+
+    /* TOC */
+    .toc { width: var(--toc-w); flex-shrink: 0; position: sticky; top: 32px; align-self: flex-start; max-height: calc(100vh - 48px); overflow-y: auto; }
+    .toc::-webkit-scrollbar { width: 3px; }
+    .toc::-webkit-scrollbar-thumb { background: var(--border-l); border-radius: 2px; }
+    .toc-title { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); padding-bottom: 8px; margin-bottom: 8px; border-bottom: 1px solid var(--border); }
+    .toc ul { list-style: none; }
+    .toc ul li a { display: block; padding: 3.5px 0; font-size: 12.5px; color: var(--muted); text-decoration: none; line-height: 1.5; transition: color .15s; cursor: pointer; }
+    .toc ul li a:hover, .toc ul li a.active { color: var(--red-l); }
+
+    /* Banner */
+    .vi-banner { display: flex; align-items: center; gap: 10px; padding: 11px 16px; border: 1px solid rgba(234,40,69,.3); border-radius: var(--rl); background: linear-gradient(135deg,rgba(234,40,69,.1),rgba(234,40,69,.04)); font-size: 13px; color: var(--sec); margin-bottom: 32px; }
+    .vi-banner strong { color: var(--red-l); }
+
+    /* Headings */
+    h1 { font-size: 36px; font-weight: 700; letter-spacing: -.5px; line-height: 1.2; margin-bottom: 6px; }
+    h1::after { content:''; display:block; width:44px; height:3px; background:var(--red); border-radius:2px; margin-top:12px; }
+    h3 { font-size: 19px; font-weight: 600; letter-spacing: -.2px; margin: 40px 0 12px; display: flex; align-items: center; gap: 8px; scroll-margin-top: 80px; }
+    .anchor { font-size: 14px; color: var(--muted); text-decoration: none; opacity: 0; transition: opacity .2s; }
+    h3:hover .anchor { opacity: 1; }
+    p { color: var(--sec); line-height: 1.82; margin-bottom: 16px; }
+    p:last-child { margin-bottom: 0; }
+    a { color: var(--red-l); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    strong { color: var(--text); font-weight: 600; }
+    ul { color: var(--sec); padding-left: 22px; line-height: 2.1; margin: 16px 0; }
+
+    /* inline code */
+    code { font-family: var(--mono); font-size: 13px; background: var(--code-bg); border: 1px solid var(--code-bd); padding: 1px 6px; border-radius: 4px; color: #f9a8d4; }
+
+    /* Callouts */
+    .hint, .warn, .note {
+      margin: 18px 0; padding: 12px 16px; border-left: 3px solid;
+      border-radius: var(--r); font-size: 13.5px; line-height: 1.72;
+    }
+    .hint { background: var(--hint-bg); border-color: var(--hint-c); color: #a7f3d0; }
+    .warn { background: var(--warn-bg); border-color: var(--warn-c); color: #fed7aa; }
+    .note { background: var(--note-bg); border-color: var(--note-c); color: #bae6fd; }
+    .hint p, .warn p, .note p { margin: 0; color: inherit; }
+    .lbl { display: block; font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 4px; }
+    .hint .lbl { color: var(--hint-c); }
+    .warn .lbl  { color: var(--warn-c); }
+    .note .lbl  { color: var(--note-c); }
+
+    /* Code blocks */
+    .cb { margin: 18px 0; border: 1px solid var(--code-bd); border-radius: var(--rl); overflow: hidden; background: var(--code-bg); }
+    .cb-head { display: flex; align-items: center; justify-content: space-between; padding: 8px 14px; background: #181818; border-bottom: 1px solid var(--code-bd); min-height: 38px; }
+    .cb-fname { font-family: var(--mono); font-size: 11.5px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+    .cb-fname::before { content:''; display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--red); }
+    .cb-right { display: flex; align-items: center; gap: 6px; }
+    .tabs { display: flex; gap: 3px; }
+    .tab { padding: 4px 11px; font-size: 11px; font-family: var(--mono); font-weight: 500; border: 1px solid transparent; border-radius: 4px; color: var(--muted); cursor: pointer; user-select: none; transition: all .14s; }
+    .tab.on { color: var(--red-l); background: var(--red-glow); border-color: var(--red); }
+    .tab:hover:not(.on) { color: var(--text); background: rgba(255,255,255,.04); }
+    .cpbtn { padding: 3px 9px; font-size: 10.5px; font-family: var(--mono); background: var(--surface); border: 1px solid var(--border-l); color: var(--muted); border-radius: 4px; cursor: pointer; transition: all .14s; }
+    .cpbtn:hover { background: var(--surface2); color: var(--text); }
+    .pane { display: none; }
+    .pane.on { display: block; }
+    pre { font-family: var(--mono); font-size: 13px; line-height: 1.75; color: #d4d4d4; padding: 16px 18px; margin: 0; overflow-x: auto; }
+    pre code { background: none; border: none; padding: 0; font-size: inherit; color: inherit; border-radius: 0; }
+
+    /* Syntax colours */
+    .kw  { color: #c586c0; }
+    .dec { color: #dcdcaa; }
+    .fn  { color: #dcdcaa; }
+    .cl  { color: #4ec9b0; }
+    .typ { color: #4ec9b0; }
+    .str { color: #ce9178; }
+    .num { color: #b5cea8; }
+    .pn  { color: #d4d4d4; }
+    .cm  { color: #6a9955; }
+
+    /* Page nav */
+    .page-nav { display: flex; justify-content: space-between; margin-top: 56px; padding-top: 28px; border-top: 1px solid var(--border); }
+    .pnbtn { display: flex; flex-direction: column; gap: 2px; text-decoration: none; padding: 10px 16px; border: 1px solid var(--border-l); border-radius: var(--rl); min-width: 160px; transition: all .15s; }
+    .pnbtn:hover { border-color: var(--red); background: var(--red-glow); }
+    .pnbtn.r { align-items: flex-end; margin-left: auto; }
+    .pnlbl { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+    .pntitle { font-size: 14px; color: var(--red-l); font-weight: 600; }
+
+    @media (max-width: 860px) {
+      .page { flex-direction: column; gap: 32px; padding: 28px 16px 64px; }
+      .toc { width: 100%; position: static; order: -1; max-height: none; border: 1px solid var(--border); padding: 14px; border-radius: var(--rl); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page">
+
+  <main class="content">
+
+    <div class="vi-banner">
+      🇻🇳 <strong>Tài liệu dịch</strong> — Bản dịch tiếng Việt từ <a href="https://docs.nestjs.com/techniques/serialization" target="_blank">docs.nestjs.com/techniques/serialization</a>
+    </div>
+
+    <h1>Serialization</h1>
+
+    <p>Serialization là một quá trình xảy ra trước khi object được trả về trong network response. Đây là nơi thích hợp để cung cấp các rule cho việc transform và sanitize data sẽ được trả về cho client. Ví dụ, sensitive data như password nên luôn được exclude khỏi response. Hoặc, một số property nhất định có thể yêu cầu additional transformation, chẳng hạn như chỉ gửi một subset các property của entity. Thực hiện các transformation này một cách thủ công có thể tẻ nhạt và dễ lỗi, và có thể khiến bạn không chắc chắn rằng tất cả các trường hợp đã được bao phủ.</p>
+
+    <!-- ═══════════════════════ OVERVIEW ═══════════════════════ -->
+    <h3 id="overview">Overview <a class="anchor" href="#overview">#</a></h3>
+
+    <p>Nest cung cấp một built-in capability để giúp đảm bảo rằng các operation này có thể được thực hiện một cách đơn giản. <code>ClassSerializerInterceptor</code> interceptor sử dụng package <a href="https://github.com/typestack/class-transformer" target="_blank"><strong>class-transformer</strong></a> mạnh mẽ để cung cấp cách khai báo và mở rộng cho việc transform object. Basic operation mà nó thực hiện là lấy giá trị được trả về bởi method handler và áp dụng function <code>instanceToPlain()</code> từ <a href="https://github.com/typestack/class-transformer" target="_blank"><strong>class-transformer</strong></a>. Khi làm như vậy, nó có thể áp dụng các rule được biểu thị bởi <a href="https://github.com/typestack/class-transformer" target="_blank"><strong>class-transformer</strong></a> decorator trên entity/DTO class, như mô tả bên dưới.</p>
+
+<div class="hint"><span class="lbl">💡 Hint</span><p>Serialization không áp dụng cho <a href="https://docs.nestjs.com/techniques/streaming-files#streamable-file-class" target="_blank"><strong>StreamableFile</strong></a> response.</p></div>
+
+    <!-- ═══════════════════════ EXCLUDE PROPERTIES ═══════════════════════ -->
+    <h3 id="exclude-properties">Exclude properties <a class="anchor" href="#exclude-properties">#</a></h3>
+
+    <p>Giả sử chúng ta muốn tự động exclude property <code>password</code> khỏi user entity. Chúng ta annotate entity như sau:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="kw">import</span> <span class="pn">{</span> Exclude <span class="pn">}</span> <span class="kw">from</span> <span class="str">'class-transformer'</span><span class="pn">;</span>
+
+<span class="kw">export class</span> <span class="cl">UserEntity</span> <span class="pn">{</span>
+  id<span class="pn">:</span> <span class="typ">number</span><span class="pn">;</span>
+  firstName<span class="pn">:</span> <span class="typ">string</span><span class="pn">;</span>
+  lastName<span class="pn">:</span> <span class="typ">string</span><span class="pn">;</span>
+
+  <span class="dec">@Exclude</span><span class="pn">()</span>
+  password<span class="pn">:</span> <span class="typ">string</span><span class="pn">;</span>
+
+  <span class="fn">constructor</span><span class="pn">(</span>partial<span class="pn">:</span> <span class="typ">Partial</span><span class="pn">&lt;</span><span class="cl">UserEntity</span><span class="pn">&gt;) {</span>
+    Object<span class="pn">.</span><span class="fn">assign</span><span class="pn">(</span><span class="kw">this</span><span class="pn">,</span> partial<span class="pn">);</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div></div></div>
+
+    <p>Bây giờ hãy xem xét một controller với method handler trả về một instance của class này.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="dec">@UseInterceptors</span><span class="pn">(</span><span class="cl">ClassSerializerInterceptor</span><span class="pn">)</span>
+<span class="dec">@Get</span><span class="pn">()</span>
+<span class="fn">findOne</span><span class="pn">():</span> <span class="cl">UserEntity</span> <span class="pn">{</span>
+  <span class="kw">return new</span> <span class="cl">UserEntity</span><span class="pn">({</span>
+    id<span class="pn">:</span> <span class="num">1</span><span class="pn">,</span>
+    firstName<span class="pn">:</span> <span class="str">'John'</span><span class="pn">,</span>
+    lastName<span class="pn">:</span> <span class="str">'Doe'</span><span class="pn">,</span>
+    password<span class="pn">:</span> <span class="str">'password'</span><span class="pn">,</span>
+  <span class="pn">});</span>
+<span class="pn">}</span></pre></div></div></div>
+
+<div class="warn"><span class="lbl">⚠️ Warning</span><p>Lưu ý rằng chúng ta phải trả về một instance của class. Nếu bạn trả về một plain JavaScript object, ví dụ, <code>{ user: new UserEntity() }</code>, object sẽ không được serialize đúng cách.</p></div>
+
+<div class="hint"><span class="lbl">💡 Hint</span><p><code>ClassSerializerInterceptor</code> được import từ <code>@nestjs/common</code>.</p></div>
+
+    <p>Khi endpoint này được request, client nhận được response sau:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="pn">{</span>
+  <span class="str">"id"</span><span class="pn">:</span> <span class="num">1</span><span class="pn">,</span>
+  <span class="str">"firstName"</span><span class="pn">:</span> <span class="str">"John"</span><span class="pn">,</span>
+  <span class="str">"lastName"</span><span class="pn">:</span> <span class="str">"Doe"</span>
+<span class="pn">}</span></pre></div></div></div>
+
+    <p>Lưu ý rằng interceptor có thể được áp dụng cho toàn bộ application (như đã đề cập <a href="https://docs.nestjs.com/interceptors#binding-interceptors" target="_blank"><strong>tại đây</strong></a>). Sự kết hợp giữa interceptor và entity class declaration đảm bảo rằng <strong>bất kỳ</strong> method nào trả về <code>UserEntity</code> sẽ chắc chắn loại bỏ property <code>password</code>. Điều này giúp bạn có một mức độ centralized enforcement cho business rule này.</p>
+
+    <!-- ═══════════════════════ EXPOSE PROPERTIES ═══════════════════════ -->
+    <h3 id="expose-properties">Expose properties <a class="anchor" href="#expose-properties">#</a></h3>
+
+    <p>Bạn có thể sử dụng decorator <code>@Expose()</code> để cung cấp alias name cho property, hoặc để thực thi một function để tính toán property value (tương tự như <strong>getter</strong> function), như bên dưới.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="dec">@Expose</span><span class="pn">()</span>
+<span class="kw">get</span> <span class="fn">fullName</span><span class="pn">():</span> <span class="typ">string</span> <span class="pn">{</span>
+  <span class="kw">return</span> <span class="str">`${this.firstName} ${this.lastName}`</span><span class="pn">;</span>
+<span class="pn">}</span></pre></div></div></div>
+
+    <!-- ═══════════════════════ TRANSFORM ═══════════════════════ -->
+    <h3 id="transform">Transform <a class="anchor" href="#transform">#</a></h3>
+
+    <p>Bạn có thể thực hiện additional data transformation sử dụng decorator <code>@Transform()</code>. Ví dụ, construct sau đây trả về name property của <code>RoleEntity</code> thay vì trả về toàn bộ object.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="dec">@Transform</span><span class="pn">(({</span> value <span class="pn">})</span> <span class="pn">=&gt;</span> value<span class="pn">.</span>name<span class="pn">)</span>
+role<span class="pn">:</span> <span class="cl">RoleEntity</span><span class="pn">;</span></pre></div></div></div>
+
+    <!-- ═══════════════════════ PASS OPTIONS ═══════════════════════ -->
+    <h3 id="pass-options">Pass options <a class="anchor" href="#pass-options">#</a></h3>
+
+    <p>Bạn có thể muốn modify default behavior của transformation function. Để override default setting, truyền chúng trong <code>options</code> object với decorator <code>@SerializeOptions()</code>.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="dec">@SerializeOptions</span><span class="pn">({</span>
+  excludePrefixes<span class="pn">:</span> <span class="pn">[</span><span class="str">'_'</span><span class="pn">],</span>
+<span class="pn">})</span>
+<span class="dec">@Get</span><span class="pn">()</span>
+<span class="fn">findOne</span><span class="pn">():</span> <span class="cl">UserEntity</span> <span class="pn">{</span>
+  <span class="kw">return new</span> <span class="cl">UserEntity</span><span class="pn">();</span>
+<span class="pn">}</span></pre></div></div></div>
+
+<div class="hint"><span class="lbl">💡 Hint</span><p>Decorator <code>@SerializeOptions()</code> được import từ <code>@nestjs/common</code>.</p></div>
+
+    <p>Các option được truyền qua <code>@SerializeOptions()</code> được truyền dưới dạng second argument của function <code>instanceToPlain()</code> bên dưới. Trong ví dụ này, chúng ta tự động excluding tất cả property bắt đầu bằng prefix <code>_</code>.</p>
+
+    <!-- ═══════════════════════ TRANSFORM PLAIN OBJECTS ═══════════════════════ -->
+    <h3 id="transform-plain-objects">Transform plain objects <a class="anchor" href="#transform-plain-objects">#</a></h3>
+
+    <p>Bạn có thể enforce transformation ở controller level bằng cách sử dụng decorator <code>@SerializeOptions</code>. Điều này đảm bảo rằng tất cả response được transform thành instance của specified class, áp dụng bất kỳ decorator nào từ class-validator hoặc class-transformer, ngay cả khi plain object được trả về. Approach này giúp code sạch hơn mà không cần phải liên tục instantiate class hoặc gọi <code>plainToInstance</code>.</p>
+
+    <p>Trong ví dụ bên dưới, mặc dù trả về plain JavaScript object trong cả hai conditional branch, chúng sẽ được tự động convert thành <code>UserEntity</code> instance, với các relevant decorator được áp dụng:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="dec">@UseInterceptors</span><span class="pn">(</span><span class="cl">ClassSerializerInterceptor</span><span class="pn">)</span>
+<span class="dec">@SerializeOptions</span><span class="pn">({</span> type<span class="pn">:</span> <span class="cl">UserEntity</span> <span class="pn">})</span>
+<span class="dec">@Get</span><span class="pn">()</span>
+<span class="fn">findOne</span><span class="pn">(</span><span class="dec">@Query</span><span class="pn">()</span> <span class="pn">{</span> id <span class="pn">}:</span> <span class="pn">{</span> id<span class="pn">:</span> <span class="typ">number</span> <span class="pn">}):</span> <span class="cl">UserEntity</span> <span class="pn">{</span>
+  <span class="kw">if</span> <span class="pn">(</span>id <span class="pn">===</span> <span class="num">1</span><span class="pn">) {</span>
+    <span class="kw">return</span> <span class="pn">{</span>
+      id<span class="pn">:</span> <span class="num">1</span><span class="pn">,</span>
+      firstName<span class="pn">:</span> <span class="str">'John'</span><span class="pn">,</span>
+      lastName<span class="pn">:</span> <span class="str">'Doe'</span><span class="pn">,</span>
+      password<span class="pn">:</span> <span class="str">'password'</span><span class="pn">,</span>
+    <span class="pn">};</span>
+  <span class="pn">}</span>
+
+  <span class="kw">return</span> <span class="pn">{</span>
+    id<span class="pn">:</span> <span class="num">2</span><span class="pn">,</span>
+    firstName<span class="pn">:</span> <span class="str">'Kamil'</span><span class="pn">,</span>
+    lastName<span class="pn">:</span> <span class="str">'Mysliwiec'</span><span class="pn">,</span>
+    password<span class="pn">:</span> <span class="str">'password2'</span><span class="pn">,</span>
+  <span class="pn">};</span>
+<span class="pn">}</span></pre></div></div></div>
+
+<div class="hint"><span class="lbl">💡 Hint</span><p>Bằng cách chỉ định expected return type cho controller, bạn có thể tận dụng khả năng type-checking của TypeScript để đảm bảo rằng returned plain object tuân thủ shape của DTO hoặc entity. Function <code>plainToInstance</code> không cung cấp mức độ type hinting này, điều này có thể dẫn đến potential bug nếu plain object không match với expected DTO hoặc entity structure.</p></div>
+
+    <!-- ═══════════════════════ EXAMPLE ═══════════════════════ -->
+    <h3 id="example">Example <a class="anchor" href="#example">#</a></h3>
+
+    <p>Một working example có sẵn <a href="https://github.com/nestjs/nest/tree/master/sample/21-serializer" target="_blank">tại đây</a>.</p>
+
+    <!-- ═══════════════════════ WEBSOCKETS AND MICROSERVICES ═══════════════════════ -->
+    <h3 id="websockets-and-microservices">WebSockets and Microservices <a class="anchor" href="#websockets-and-microservices">#</a></h3>
+
+    <p>Mặc dù chapter này trình bày ví dụ sử dụng HTTP style application (v.d., Express hoặc Fastify), <code>ClassSerializerInterceptor</code> hoạt động tương tự cho WebSockets và Microservices, bất kể transport method nào đang được sử dụng.</p>
+
+    <!-- ═══════════════════════ LEARN MORE ═══════════════════════ -->
+    <h3 id="learn-more">Learn more <a class="anchor" href="#learn-more">#</a></h3>
+
+    <p>Đọc thêm về các available decorator và option được cung cấp bởi package <code>class-transformer</code> <a href="https://github.com/typestack/class-transformer" target="_blank">tại đây</a>.</p>
+
+    <!-- Page Navigation -->
+    <div class="page-nav">
+      <a href="Caching.html" class="pnbtn">
+        <span class="pnlbl">← Trước</span>
+        <span class="pntitle">Caching</span>
+      </a>
+      <a href="Versioning.html" class="pnbtn r">
+        <span class="pnlbl">Tiếp →</span>
+        <span class="pntitle">Versioning</span>
+      </a>
+    </div>
+
+  </main>
+
+  <!-- TOC -->
+  <aside class="toc">
+    <div class="toc-title">Nội dung</div>
+    <ul>
+      <li><a href="#overview">Overview</a></li>
+      <li><a href="#exclude-properties">Exclude properties</a></li>
+      <li><a href="#expose-properties">Expose properties</a></li>
+      <li><a href="#transform">Transform</a></li>
+      <li><a href="#pass-options">Pass options</a></li>
+      <li><a href="#transform-plain-objects">Transform plain objects</a></li>
+      <li><a href="#example">Example</a></li>
+      <li><a href="#websockets-and-microservices">WebSockets &amp; Microservices</a></li>
+      <li><a href="#learn-more">Learn more</a></li>
+    </ul>
+  </aside>
+
+</div>
+
+<script>
+  function cp(btn) {
+    var wrap = btn.closest('.cb');
+    var pane = wrap.querySelector('.pane.on') || wrap.querySelector('.pane');
+    if (!pane) return;
+    navigator.clipboard.writeText(pane.textContent.trim()).then(function() {
+      var o = btn.textContent;
+      btn.textContent = 'Copied!';
+      btn.style.color = '#4ade80';
+      setTimeout(function() { btn.textContent = o; btn.style.color = ''; }, 1500);
+    });
+  }
+  document.querySelectorAll('.toc a').forEach(function(link) {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      var target = document.querySelector(this.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+  var tocLinks = document.querySelectorAll('.toc a');
+  var heads = document.querySelectorAll('h3[id]');
+  function hi() {
+    var cur = '';
+    heads.forEach(function(h) { if (scrollY >= h.offsetTop - 120) cur = h.id; });
+    tocLinks.forEach(function(a) { a.classList.toggle('active', a.getAttribute('href') === '#' + cur); });
+  }
+  window.addEventListener('scroll', hi, { passive: true });
+  hi();
+</script>
+</body>
+</html>

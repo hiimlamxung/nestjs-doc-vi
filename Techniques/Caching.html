@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Caching | NestJS - Tài liệu tiếng Việt</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:       #0e0e0e;
+      --surface:  #1a1a1a;
+      --surface2: #222;
+      --border:   #2a2a2a;
+      --border-l: #333;
+      --red:      #ea2845;
+      --red-l:    #ff4d6a;
+      --red-glow: rgba(234,40,69,.15);
+      --text:     #e8e8e8;
+      --muted:    #888;
+      --sec:      #b0b0b0;
+      --code-bg:  #1e1e1e;
+      --code-bd:  #2d2d2d;
+      --hint-bg:  #0d2a1a;
+      --hint-c:   #4ade80;
+      --warn-bg:  #2a1a0d;
+      --warn-c:   #fb923c;
+      --note-bg:  #0d1a2a;
+      --note-c:   #60a0d0;
+      --toc-w:    220px;
+      --font:     'Inter', sans-serif;
+      --mono:     'Source Code Pro', monospace;
+      --r:        6px;
+      --rl:       10px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font); background: var(--bg); color: var(--text); font-size: 15px; line-height: 1.78; }
+
+    .page { max-width: 1060px; margin: 0 auto; padding: 48px 32px 96px; display: flex; gap: 56px; align-items: flex-start; }
+    .content { flex: 1; min-width: 0; }
+
+    /* TOC */
+    .toc { width: var(--toc-w); flex-shrink: 0; position: sticky; top: 32px; align-self: flex-start; max-height: calc(100vh - 48px); overflow-y: auto; }
+    .toc::-webkit-scrollbar { width: 3px; }
+    .toc::-webkit-scrollbar-thumb { background: var(--border-l); border-radius: 2px; }
+    .toc-title { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); padding-bottom: 8px; margin-bottom: 8px; border-bottom: 1px solid var(--border); }
+    .toc ul { list-style: none; }
+    .toc ul li a { display: block; padding: 3.5px 0; font-size: 12.5px; color: var(--muted); text-decoration: none; line-height: 1.5; transition: color .15s; cursor: pointer; }
+    .toc ul li a:hover, .toc ul li a.active { color: var(--red-l); }
+
+    /* Banner */
+    .vi-banner { display: flex; align-items: center; gap: 10px; padding: 11px 16px; border: 1px solid rgba(234,40,69,.3); border-radius: var(--rl); background: linear-gradient(135deg,rgba(234,40,69,.1),rgba(234,40,69,.04)); font-size: 13px; color: var(--sec); margin-bottom: 32px; }
+    .vi-banner strong { color: var(--red-l); }
+
+    /* Headings */
+    h1 { font-size: 36px; font-weight: 700; letter-spacing: -.5px; line-height: 1.2; margin-bottom: 6px; }
+    h1::after { content:''; display:block; width:44px; height:3px; background:var(--red); border-radius:2px; margin-top:12px; }
+    h3 { font-size: 19px; font-weight: 600; letter-spacing: -.2px; margin: 40px 0 12px; display: flex; align-items: center; gap: 8px; scroll-margin-top: 80px; }
+    .anchor { font-size: 14px; color: var(--muted); text-decoration: none; opacity: 0; transition: opacity .2s; }
+    h3:hover .anchor { opacity: 1; }
+    p { color: var(--sec); line-height: 1.82; margin-bottom: 16px; }
+    p:last-child { margin-bottom: 0; }
+    a { color: var(--red-l); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    strong { color: var(--text); font-weight: 600; }
+    ul { color: var(--sec); padding-left: 22px; line-height: 2.1; margin: 16px 0; }
+
+    /* inline code */
+    code { font-family: var(--mono); font-size: 13px; background: var(--code-bg); border: 1px solid var(--code-bd); padding: 1px 6px; border-radius: 4px; color: #f9a8d4; }
+
+    /* Callouts */
+    .hint, .warn, .note {
+      margin: 18px 0; padding: 12px 16px; border-left: 3px solid;
+      border-radius: var(--r); font-size: 13.5px; line-height: 1.72;
+    }
+    .hint { background: var(--hint-bg); border-color: var(--hint-c); color: #a7f3d0; }
+    .warn { background: var(--warn-bg); border-color: var(--warn-c); color: #fed7aa; }
+    .note { background: var(--note-bg); border-color: var(--note-c); color: #bae6fd; }
+    .hint p, .warn p, .note p { margin: 0; color: inherit; }
+    .lbl { display: block; font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 4px; }
+    .hint .lbl { color: var(--hint-c); }
+    .warn .lbl  { color: var(--warn-c); }
+    .note .lbl  { color: var(--note-c); }
+
+    /* Code blocks */
+    .cb { margin: 18px 0; border: 1px solid var(--code-bd); border-radius: var(--rl); overflow: hidden; background: var(--code-bg); }
+    .cb-head { display: flex; align-items: center; justify-content: space-between; padding: 8px 14px; background: #181818; border-bottom: 1px solid var(--code-bd); min-height: 38px; }
+    .cb-fname { font-family: var(--mono); font-size: 11.5px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+    .cb-fname::before { content:''; display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--red); }
+    .cb-right { display: flex; align-items: center; gap: 6px; }
+    .tabs { display: flex; gap: 3px; }
+    .tab { padding: 4px 11px; font-size: 11px; font-family: var(--mono); font-weight: 500; border: 1px solid transparent; border-radius: 4px; color: var(--muted); cursor: pointer; user-select: none; transition: all .14s; }
+    .tab.on { color: var(--red-l); background: var(--red-glow); border-color: var(--red); }
+    .tab:hover:not(.on) { color: var(--text); background: rgba(255,255,255,.04); }
+    .cpbtn { padding: 3px 9px; font-size: 10.5px; font-family: var(--mono); background: var(--surface); border: 1px solid var(--border-l); color: var(--muted); border-radius: 4px; cursor: pointer; transition: all .14s; }
+    .cpbtn:hover { background: var(--surface2); color: var(--text); }
+    .pane { display: none; }
+    .pane.on { display: block; }
+    pre { padding: 18px 20px; overflow-x: auto; font-family: var(--mono); font-size: 13.5px; line-height: 1.65; color: #abb2bf; }
+    pre::-webkit-scrollbar { height: 5px; }
+    pre::-webkit-scrollbar-thumb { background: var(--border-l); border-radius: 3px; }
+
+    /* syntax */
+    .kw  { color: #c678dd; }
+    .fn  { color: #61afef; }
+    .str { color: #98c379; }
+    .dec { color: #e5c07b; }
+    .typ { color: #e5c07b; }
+    .cm  { color: #5c6370; font-style: italic; }
+    .pn  { color: #abb2bf; }
+    .num { color: #d19a66; }
+    .cl  { color: #e06c75; }
+    .tmpl{ color: #d19a66; }
+
+    /* Page nav */
+    .page-nav { display: flex; justify-content: space-between; margin-top: 52px; gap: 16px; }
+    .pnbtn { display: flex; flex-direction: column; padding: 14px 18px; border: 1px solid var(--border); border-radius: var(--rl); text-decoration: none; transition: all .2s; min-width: 150px; }
+    .pnbtn:hover { border-color: var(--red); background: var(--red-glow); text-decoration: none; }
+    .pnlbl   { font-size: 10.5px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); margin-bottom: 3px; }
+    .pntitle { font-size: 14px; font-weight: 600; color: var(--text); }
+    .pnbtn.r { text-align: right; margin-left: auto; }
+
+    @media (max-width: 860px) { .toc { display: none; } }
+    @media (max-width: 600px) { .page { padding: 24px 16px 64px; } }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <main class="content">
+
+    <div class="vi-banner">
+      <span style="font-size:17px">🇻🇳</span>
+      <div>Dịch từ <strong><a href="https://docs.nestjs.com/techniques/caching" target="_blank">docs.nestjs.com/techniques/caching</a></strong>. Thuật ngữ kỹ thuật giữ nguyên tiếng Anh.</div>
+    </div>
+
+    <h1>Caching</h1>
+
+    <p style="margin-top:18px">Caching là một kỹ thuật mạnh mẽ và đơn giản giúp nâng cao hiệu năng ứng dụng của bạn. Bằng cách hoạt động như một lớp lưu trữ tạm thời, nó cho phép truy cập nhanh hơn đến dữ liệu được sử dụng thường xuyên, giảm nhu cầu phải lặp lại việc lấy hoặc tính toán cùng một thông tin. Điều này mang lại thời gian phản hồi nhanh hơn và cải thiện hiệu quả tổng thể.</p>
+
+    <!-- ═══════════════════════ INSTALLATION ═══════════════════════ -->
+    <h3 id="installation">Installation <a class="anchor" href="#installation">#</a></h3>
+
+    <p>Để bắt đầu sử dụng caching trong Nest, bạn cần cài đặt package <code>@nestjs/cache-manager</code> cùng với package <code>cache-manager</code>.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre>$ npm install @nestjs/cache-manager cache-manager</pre></div></div></div>
+
+    <p>Mặc định, mọi thứ được lưu trữ trong bộ nhớ in-memory. Vì <code>cache-manager</code> sử dụng <strong>Keyv</strong> bên dưới, bạn có thể dễ dàng chuyển sang giải pháp lưu trữ nâng cao hơn, chẳng hạn Redis, bằng cách cài đặt package adapter thích hợp. Chúng ta sẽ đề cập chi tiết hơn ở phần sau.</p>
+
+    <!-- ═══════════════════════ IN-MEMORY CACHE ═══════════════════════ -->
+    <h3 id="in-memory-cache">In-memory cache <a class="anchor" href="#in-memory-cache">#</a></h3>
+
+    <p>Để kích hoạt caching trong ứng dụng của bạn, import <code>CacheModule</code> và cấu hình nó bằng method <code>register()</code>:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">app.module.ts</div><div class="cb-right"><div class="tabs"><div class="tab on" onclick="sw(this,'c1','ts')">TS</div><div class="tab" onclick="sw(this,'c1','js')">JS</div></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div id="c1"><div class="pane on" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">{</span> Module <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> CacheModule <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/cache-manager'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> AppController <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./app.controller'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">:</span> <span class="pn">[</span>CacheModule<span class="pn">.</span><span class="fn">register</span><span class="pn">()],</span>
+  controllers<span class="pn">:</span> <span class="pn">[</span>AppController<span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="pn">{}</span></pre></div><div class="pane" data-lang="js"><pre><span class="kw">import</span> <span class="pn">{</span> Module <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> CacheModule <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/cache-manager'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> AppController <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./app.controller'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">:</span> <span class="pn">[</span>CacheModule<span class="pn">.</span><span class="fn">register</span><span class="pn">()],</span>
+  controllers<span class="pn">:</span> <span class="pn">[</span>AppController<span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="pn">{}</span></pre></div></div></div>
+
+    <p>Thiết lập này khởi tạo in-memory caching với cài đặt mặc định, cho phép bạn bắt đầu caching data ngay lập tức.</p>
+
+    <!-- ═══════════════════════ INTERACTING WITH CACHE STORE ═══════════════════════ -->
+    <h3 id="interacting-with-the-cache-store">Interacting with the Cache store <a class="anchor" href="#interacting-with-the-cache-store">#</a></h3>
+
+    <p>Để tương tác với cache manager instance, inject nó vào class của bạn bằng token <code>CACHE_MANAGER</code>, như sau:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="fn">constructor</span><span class="pn">(</span><span class="dec">@Inject</span><span class="pn">(</span>CACHE_MANAGER<span class="pn">)</span> <span class="kw">private</span> cacheManager<span class="pn">:</span> <span class="cl">Cache</span><span class="pn">) {}</span></pre></div></div></div>
+
+<div class="hint"><span class="lbl">💡 Hint</span><p>Class <code>Cache</code> và token <code>CACHE_MANAGER</code> đều được import từ package <code>@nestjs/cache-manager</code>.</p></div>
+
+    <p>Method <code>get</code> trên instance <code>Cache</code> (từ package <code>cache-manager</code>) được sử dụng để lấy item từ cache. Nếu item không tồn tại trong cache, <code>null</code> sẽ được trả về.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="kw">const</span> value <span class="pn">=</span> <span class="kw">await</span> <span class="kw">this</span><span class="pn">.</span>cacheManager<span class="pn">.</span><span class="fn">get</span><span class="pn">(</span><span class="str">'key'</span><span class="pn">);</span></pre></div></div></div>
+
+    <p>Để thêm item vào cache, sử dụng method <code>set</code>:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="kw">await</span> <span class="kw">this</span><span class="pn">.</span>cacheManager<span class="pn">.</span><span class="fn">set</span><span class="pn">(</span><span class="str">'key'</span><span class="pn">,</span> <span class="str">'value'</span><span class="pn">);</span></pre></div></div></div>
+
+<div class="note"><span class="lbl">📘 Note</span><p>In-memory cache storage chỉ có thể lưu trữ các giá trị có kiểu được hỗ trợ bởi <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Structured_clone_algorithm" target="_blank"><strong>structured clone algorithm</strong></a>.</p></div>
+
+    <p>Bạn có thể chỉ định TTL (expiration time tính bằng milliseconds) thủ công cho key cụ thể, như sau:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="kw">await</span> <span class="kw">this</span><span class="pn">.</span>cacheManager<span class="pn">.</span><span class="fn">set</span><span class="pn">(</span><span class="str">'key'</span><span class="pn">,</span> <span class="str">'value'</span><span class="pn">,</span> <span class="num">1000</span><span class="pn">);</span></pre></div></div></div>
+
+    <p>Trong đó <code>1000</code> là TTL tính bằng milliseconds - trong trường hợp này, cache item sẽ hết hạn sau một giây.</p>
+
+    <p>Để vô hiệu hóa expiration của cache, set configuration property <code>ttl</code> thành <code>0</code>:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="kw">await</span> <span class="kw">this</span><span class="pn">.</span>cacheManager<span class="pn">.</span><span class="fn">set</span><span class="pn">(</span><span class="str">'key'</span><span class="pn">,</span> <span class="str">'value'</span><span class="pn">,</span> <span class="num">0</span><span class="pn">);</span></pre></div></div></div>
+
+    <p>Để xóa một item khỏi cache, sử dụng method <code>del</code>:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="kw">await</span> <span class="kw">this</span><span class="pn">.</span>cacheManager<span class="pn">.</span><span class="fn">del</span><span class="pn">(</span><span class="str">'key'</span><span class="pn">);</span></pre></div></div></div>
+
+    <p>Để xóa toàn bộ cache, sử dụng method <code>clear</code>:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="kw">await</span> <span class="kw">this</span><span class="pn">.</span>cacheManager<span class="pn">.</span><span class="fn">clear</span><span class="pn">();</span></pre></div></div></div>
+
+    <!-- ═══════════════════════ AUTO-CACHING RESPONSES ═══════════════════════ -->
+    <h3 id="auto-caching-responses">Auto-caching responses <a class="anchor" href="#auto-caching-responses">#</a></h3>
+
+<div class="warn"><span class="lbl">⚠️ Warning</span><p>Trong các ứng dụng <a href="https://docs.nestjs.com/graphql/quick-start" target="_blank">GraphQL</a>, interceptor được thực thi riêng biệt cho từng field resolver. Do đó, <code>CacheModule</code> (sử dụng interceptor để cache response) sẽ không hoạt động đúng cách.</p></div>
+
+    <p>Để kích hoạt auto-caching response, chỉ cần bind <code>CacheInterceptor</code> vào nơi bạn muốn cache data.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="dec">@Controller</span><span class="pn">()</span>
+<span class="dec">@UseInterceptors</span><span class="pn">(</span><span class="cl">CacheInterceptor</span><span class="pn">)</span>
+<span class="kw">export class</span> <span class="cl">AppController</span> <span class="pn">{</span>
+  <span class="dec">@Get</span><span class="pn">()</span>
+  <span class="fn">findAll</span><span class="pn">():</span> <span class="typ">string</span><span class="pn">[] {</span>
+    <span class="kw">return</span> <span class="pn">[];</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div></div></div>
+
+<div class="warn"><span class="lbl">⚠️ Warning</span><p>Chỉ có <code>GET</code> endpoint mới được cache. Ngoài ra, các HTTP server route mà inject native response object (<code>@Res()</code>) không thể sử dụng Cache Interceptor. Xem <a href="https://docs.nestjs.com/interceptors#response-mapping" target="_blank">response mapping</a> để biết thêm chi tiết.</p></div>
+
+    <p>Để giảm lượng boilerplate cần thiết, bạn có thể bind <code>CacheInterceptor</code> cho tất cả endpoint globally:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">app.module.ts</div><div class="cb-right"><div class="tabs"><div class="tab on" onclick="sw(this,'c2','ts')">TS</div><div class="tab" onclick="sw(this,'c2','js')">JS</div></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div id="c2"><div class="pane on" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">{</span> Module <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> CacheModule<span class="pn">,</span> CacheInterceptor <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/cache-manager'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> AppController <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./app.controller'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> APP_INTERCEPTOR <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/core'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">:</span> <span class="pn">[</span>CacheModule<span class="pn">.</span><span class="fn">register</span><span class="pn">()],</span>
+  controllers<span class="pn">:</span> <span class="pn">[</span>AppController<span class="pn">],</span>
+  providers<span class="pn">:</span> <span class="pn">[</span>
+    <span class="pn">{</span>
+      provide<span class="pn">:</span> APP_INTERCEPTOR<span class="pn">,</span>
+      useClass<span class="pn">:</span> CacheInterceptor<span class="pn">,</span>
+    <span class="pn">},</span>
+  <span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="pn">{}</span></pre></div><div class="pane" data-lang="js"><pre><span class="kw">import</span> <span class="pn">{</span> Module <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> CacheModule<span class="pn">,</span> CacheInterceptor <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/cache-manager'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> AppController <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./app.controller'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> APP_INTERCEPTOR <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/core'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">:</span> <span class="pn">[</span>CacheModule<span class="pn">.</span><span class="fn">register</span><span class="pn">()],</span>
+  controllers<span class="pn">:</span> <span class="pn">[</span>AppController<span class="pn">],</span>
+  providers<span class="pn">:</span> <span class="pn">[</span>
+    <span class="pn">{</span>
+      provide<span class="pn">:</span> APP_INTERCEPTOR<span class="pn">,</span>
+      useClass<span class="pn">:</span> CacheInterceptor<span class="pn">,</span>
+    <span class="pn">},</span>
+  <span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="pn">{}</span></pre></div></div></div>
+
+    <!-- ═══════════════════════ TIME-TO-LIVE (TTL) ═══════════════════════ -->
+    <h3 id="ttl">Time-to-live (TTL) <a class="anchor" href="#ttl">#</a></h3>
+
+    <p>Giá trị mặc định cho <code>ttl</code> là <code>0</code>, nghĩa là cache sẽ không bao giờ hết hạn. Để chỉ định TTL tùy chỉnh, bạn có thể cung cấp option <code>ttl</code> trong method <code>register()</code>, như minh họa bên dưới:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre>CacheModule<span class="pn">.</span><span class="fn">register</span><span class="pn">({</span>
+  ttl<span class="pn">:</span> <span class="num">5000</span><span class="pn">,</span> <span class="cm">// milliseconds</span>
+<span class="pn">});</span></pre></div></div></div>
+
+    <!-- ═══════════════════════ USE MODULE GLOBALLY ═══════════════════════ -->
+    <h3 id="use-module-globally">Use module globally <a class="anchor" href="#use-module-globally">#</a></h3>
+
+    <p>Khi bạn muốn sử dụng <code>CacheModule</code> trong các module khác, bạn sẽ cần import nó (như tiêu chuẩn với bất kỳ Nest module nào). Ngoài ra, hãy khai báo nó như một <a href="https://docs.nestjs.com/modules#global-modules" target="_blank"><strong>global module</strong></a> bằng cách set property <code>isGlobal</code> trong options object thành <code>true</code> như bên dưới. Trong trường hợp đó, bạn sẽ không cần import <code>CacheModule</code> trong các module khác sau khi nó đã được load trong root module (v.d., <code>AppModule</code>).</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre>CacheModule<span class="pn">.</span><span class="fn">register</span><span class="pn">({</span>
+  isGlobal<span class="pn">:</span> <span class="kw">true</span><span class="pn">,</span>
+<span class="pn">});</span></pre></div></div></div>
+
+    <!-- ═══════════════════════ GLOBAL CACHE OVERRIDES ═══════════════════════ -->
+    <h3 id="global-cache-overrides">Global cache overrides <a class="anchor" href="#global-cache-overrides">#</a></h3>
+
+    <p>Trong khi global cache được enable, cache entry được lưu dưới <code>CacheKey</code> được tự động tạo dựa trên route path. Bạn có thể override một số cache setting nhất định (<code>@CacheKey()</code> và <code>@CacheTTL()</code>) trên cơ sở per-method, cho phép tùy chỉnh caching strategy cho từng controller method riêng lẻ. Điều này có thể hữu ích nhất khi sử dụng <a href="#different-stores"><strong>different cache stores</strong></a>.</p>
+
+    <p>Bạn có thể áp dụng decorator <code>@CacheTTL()</code> trên cơ sở per-controller để set caching TTL cho toàn bộ controller. Trong trường hợp cả controller-level và method-level cache TTL setting đều được định nghĩa, cache TTL setting được chỉ định ở method level sẽ được ưu tiên hơn so với setting ở controller level.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="dec">@Controller</span><span class="pn">()</span>
+<span class="dec">@CacheTTL</span><span class="pn">(</span><span class="num">50</span><span class="pn">)</span>
+<span class="kw">export class</span> <span class="cl">AppController</span> <span class="pn">{</span>
+  <span class="dec">@CacheKey</span><span class="pn">(</span><span class="str">'custom_key'</span><span class="pn">)</span>
+  <span class="dec">@CacheTTL</span><span class="pn">(</span><span class="num">20</span><span class="pn">)</span>
+  <span class="dec">@Get</span><span class="pn">()</span>
+  <span class="fn">findAll</span><span class="pn">():</span> <span class="typ">string</span><span class="pn">[] {</span>
+    <span class="kw">return</span> <span class="pn">[];</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div></div></div>
+
+<div class="hint"><span class="lbl">💡 Hint</span><p>Decorator <code>@CacheKey()</code> và <code>@CacheTTL()</code> được import từ package <code>@nestjs/cache-manager</code>.</p></div>
+
+    <p>Decorator <code>@CacheKey()</code> có thể được sử dụng có hoặc không có decorator <code>@CacheTTL()</code> tương ứng và ngược lại. Bạn có thể chọn chỉ override <code>@CacheKey()</code> hoặc chỉ <code>@CacheTTL()</code>. Setting nào không được override bằng decorator sẽ sử dụng giá trị mặc định đã đăng ký globally (xem <a href="#auto-caching-responses"><strong>Customize caching</strong></a>).</p>
+
+    <!-- ═══════════════════════ WEBSOCKETS AND MICROSERVICES ═══════════════════════ -->
+    <h3 id="websockets-and-microservices">WebSockets and Microservices <a class="anchor" href="#websockets-and-microservices">#</a></h3>
+
+    <p>Bạn cũng có thể áp dụng <code>CacheInterceptor</code> cho WebSocket subscriber cũng như Microservice's pattern (bất kể transport method nào đang được sử dụng).</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><div class="tabs"><div class="tab on" onclick="sw(this,'c3','ts')">TS</div><div class="tab" onclick="sw(this,'c3','js')">JS</div></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div id="c3"><div class="pane on" data-lang="ts"><pre><span class="dec">@CacheKey</span><span class="pn">(</span><span class="str">'events'</span><span class="pn">)</span>
+<span class="dec">@UseInterceptors</span><span class="pn">(</span><span class="cl">CacheInterceptor</span><span class="pn">)</span>
+<span class="dec">@SubscribeMessage</span><span class="pn">(</span><span class="str">'events'</span><span class="pn">)</span>
+<span class="fn">handleEvent</span><span class="pn">(</span>client<span class="pn">:</span> <span class="cl">Client</span><span class="pn">,</span> data<span class="pn">:</span> <span class="typ">string</span><span class="pn">[]):</span> <span class="typ">Observable</span><span class="pn">&lt;</span><span class="typ">string</span><span class="pn">[]&gt; {</span>
+  <span class="kw">return</span> <span class="pn">[];</span>
+<span class="pn">}</span></pre></div><div class="pane" data-lang="js"><pre><span class="dec">@CacheKey</span><span class="pn">(</span><span class="str">'events'</span><span class="pn">)</span>
+<span class="dec">@UseInterceptors</span><span class="pn">(</span><span class="cl">CacheInterceptor</span><span class="pn">)</span>
+<span class="dec">@SubscribeMessage</span><span class="pn">(</span><span class="str">'events'</span><span class="pn">)</span>
+<span class="fn">handleEvent</span><span class="pn">(</span>client<span class="pn">:</span> <span class="cl">Client</span><span class="pn">,</span> data<span class="pn">:</span> <span class="typ">string</span><span class="pn">[]):</span> <span class="typ">Observable</span><span class="pn">&lt;</span><span class="typ">string</span><span class="pn">[]&gt; {</span>
+  <span class="kw">return</span> <span class="pn">[];</span>
+<span class="pn">}</span></pre></div></div></div>
+
+    <p>Tuy nhiên, decorator <code>@CacheKey()</code> bổ sung là bắt buộc để chỉ định key được sử dụng để lưu trữ và truy xuất cached data sau đó. Ngoài ra, xin lưu ý rằng bạn <strong>không nên cache mọi thứ</strong>. Các action thực hiện business operation thay vì chỉ đơn giản query data thì không bao giờ nên được cache.</p>
+
+    <p>Ngoài ra, bạn có thể chỉ định cache expiration time (TTL) bằng cách sử dụng decorator <code>@CacheTTL()</code>, decorator này sẽ override giá trị TTL mặc định global.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><div class="tabs"><div class="tab on" onclick="sw(this,'c4','ts')">TS</div><div class="tab" onclick="sw(this,'c4','js')">JS</div></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div id="c4"><div class="pane on" data-lang="ts"><pre><span class="dec">@CacheTTL</span><span class="pn">(</span><span class="num">10</span><span class="pn">)</span>
+<span class="dec">@UseInterceptors</span><span class="pn">(</span><span class="cl">CacheInterceptor</span><span class="pn">)</span>
+<span class="dec">@SubscribeMessage</span><span class="pn">(</span><span class="str">'events'</span><span class="pn">)</span>
+<span class="fn">handleEvent</span><span class="pn">(</span>client<span class="pn">:</span> <span class="cl">Client</span><span class="pn">,</span> data<span class="pn">:</span> <span class="typ">string</span><span class="pn">[]):</span> <span class="typ">Observable</span><span class="pn">&lt;</span><span class="typ">string</span><span class="pn">[]&gt; {</span>
+  <span class="kw">return</span> <span class="pn">[];</span>
+<span class="pn">}</span></pre></div><div class="pane" data-lang="js"><pre><span class="dec">@CacheTTL</span><span class="pn">(</span><span class="num">10</span><span class="pn">)</span>
+<span class="dec">@UseInterceptors</span><span class="pn">(</span><span class="cl">CacheInterceptor</span><span class="pn">)</span>
+<span class="dec">@SubscribeMessage</span><span class="pn">(</span><span class="str">'events'</span><span class="pn">)</span>
+<span class="fn">handleEvent</span><span class="pn">(</span>client<span class="pn">:</span> <span class="cl">Client</span><span class="pn">,</span> data<span class="pn">:</span> <span class="typ">string</span><span class="pn">[]):</span> <span class="typ">Observable</span><span class="pn">&lt;</span><span class="typ">string</span><span class="pn">[]&gt; {</span>
+  <span class="kw">return</span> <span class="pn">[];</span>
+<span class="pn">}</span></pre></div></div></div>
+
+<div class="hint"><span class="lbl">💡 Hint</span><p>Decorator <code>@CacheTTL()</code> có thể được sử dụng có hoặc không có decorator <code>@CacheKey()</code> tương ứng.</p></div>
+
+    <!-- ═══════════════════════ ADJUST TRACKING ═══════════════════════ -->
+    <h3 id="adjust-tracking">Adjust tracking <a class="anchor" href="#adjust-tracking">#</a></h3>
+
+    <p>Mặc định, Nest sử dụng request URL (trong HTTP app) hoặc cache key (trong websockets và microservices app, được set thông qua decorator <code>@CacheKey()</code>) để liên kết cache record với endpoint của bạn. Tuy nhiên, đôi khi bạn có thể muốn thiết lập tracking dựa trên các yếu tố khác nhau, ví dụ, sử dụng HTTP header (v.d. <code>Authorization</code> để xác định đúng <code>profile</code> endpoint).</p>
+
+    <p>Để thực hiện điều đó, tạo một subclass của <code>CacheInterceptor</code> và override method <code>trackBy()</code>.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">class</span> <span class="cl">HttpCacheInterceptor</span> <span class="kw">extends</span> <span class="cl">CacheInterceptor</span> <span class="pn">{</span>
+  <span class="fn">trackBy</span><span class="pn">(</span>context<span class="pn">:</span> <span class="typ">ExecutionContext</span><span class="pn">):</span> <span class="typ">string</span> <span class="pn">|</span> <span class="typ">undefined</span> <span class="pn">{</span>
+    <span class="kw">return</span> <span class="str">'key'</span><span class="pn">;</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div></div></div>
+
+    <!-- ═══════════════════════ USING ALTERNATIVE CACHE STORES ═══════════════════════ -->
+    <h3 id="different-stores">Using alternative Cache stores <a class="anchor" href="#different-stores">#</a></h3>
+
+    <p>Chuyển sang cache store khác rất đơn giản. Đầu tiên, cài đặt package thích hợp. Ví dụ, để sử dụng Redis, cài đặt package <code>@keyv/redis</code>:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre>$ npm install @keyv/redis</pre></div></div></div>
+
+    <p>Với package đã cài đặt, bạn có thể đăng ký <code>CacheModule</code> với multiple store như bên dưới:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="kw">import</span> <span class="pn">{</span> Module <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> CacheModule <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/cache-manager'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> AppController <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./app.controller'</span><span class="pn">;</span>
+<span class="kw">import</span> KeyvRedis <span class="kw">from</span> <span class="str">'@keyv/redis'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> Keyv <span class="pn">}</span> <span class="kw">from</span> <span class="str">'keyv'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> CacheableMemory <span class="pn">}</span> <span class="kw">from</span> <span class="str">'cacheable'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">:</span> <span class="pn">[</span>
+    CacheModule<span class="pn">.</span><span class="fn">registerAsync</span><span class="pn">({</span>
+      <span class="fn">useFactory</span><span class="pn">:</span> <span class="kw">async</span> <span class="pn">() =&gt; {</span>
+        <span class="kw">return</span> <span class="pn">{</span>
+          stores<span class="pn">:</span> <span class="pn">[</span>
+            <span class="kw">new</span> <span class="cl">Keyv</span><span class="pn">({</span>
+              store<span class="pn">:</span> <span class="kw">new</span> <span class="cl">CacheableMemory</span><span class="pn">({</span> ttl<span class="pn">:</span> <span class="num">60000</span><span class="pn">,</span> lruSize<span class="pn">:</span> <span class="num">5000</span> <span class="pn">}),</span>
+            <span class="pn">}),</span>
+            <span class="kw">new</span> <span class="cl">KeyvRedis</span><span class="pn">(</span><span class="str">'redis://localhost:6379'</span><span class="pn">),</span>
+          <span class="pn">],</span>
+        <span class="pn">};</span>
+      <span class="pn">},</span>
+    <span class="pn">}),</span>
+  <span class="pn">],</span>
+  controllers<span class="pn">:</span> <span class="pn">[</span>AppController<span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="pn">{}</span></pre></div></div></div>
+
+    <p>Trong ví dụ này, chúng ta đã đăng ký hai store: <code>CacheableMemory</code> và <code>KeyvRedis</code>. <code>CacheableMemory</code> store là một in-memory store đơn giản, trong khi <code>KeyvRedis</code> là Redis store. Mảng <code>stores</code> được sử dụng để chỉ định các store bạn muốn sử dụng. Store đầu tiên trong mảng là store mặc định, và phần còn lại là các fallback store.</p>
+
+    <p>Xem <a href="https://keyv.org/" target="_blank"><strong>Keyv documentation</strong></a> để biết thêm thông tin về các store có sẵn.</p>
+
+    <!-- ═══════════════════════ ASYNC CONFIGURATION ═══════════════════════ -->
+    <h3 id="async-configuration">Async configuration <a class="anchor" href="#async-configuration">#</a></h3>
+
+    <p>Bạn có thể muốn truyền module option một cách bất đồng bộ thay vì truyền tĩnh tại compile time. Trong trường hợp này, sử dụng method <code>registerAsync()</code>, cung cấp nhiều cách để xử lý async configuration.</p>
+
+    <p>Một cách tiếp cận là sử dụng factory function:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre>CacheModule<span class="pn">.</span><span class="fn">registerAsync</span><span class="pn">({</span>
+  <span class="fn">useFactory</span><span class="pn">:</span> <span class="pn">() =&gt; ({</span>
+    ttl<span class="pn">:</span> <span class="num">5</span><span class="pn">,</span>
+  <span class="pn">}),</span>
+<span class="pn">});</span></pre></div></div></div>
+
+    <p>Factory của chúng ta hoạt động giống như tất cả các asynchronous module factory khác (nó có thể là <code>async</code> và có thể inject dependency thông qua <code>inject</code>).</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre>CacheModule<span class="pn">.</span><span class="fn">registerAsync</span><span class="pn">({</span>
+  imports<span class="pn">:</span> <span class="pn">[</span><span class="cl">ConfigModule</span><span class="pn">],</span>
+  <span class="fn">useFactory</span><span class="pn">:</span> <span class="kw">async</span> <span class="pn">(</span>configService<span class="pn">:</span> <span class="cl">ConfigService</span><span class="pn">) =&gt; ({</span>
+    ttl<span class="pn">:</span> configService<span class="pn">.</span><span class="fn">get</span><span class="pn">(</span><span class="str">'CACHE_TTL'</span><span class="pn">),</span>
+  <span class="pn">}),</span>
+  inject<span class="pn">:</span> <span class="pn">[</span><span class="cl">ConfigService</span><span class="pn">],</span>
+<span class="pn">});</span></pre></div></div></div>
+
+    <p>Ngoài ra, bạn có thể sử dụng method <code>useClass</code>:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre>CacheModule<span class="pn">.</span><span class="fn">registerAsync</span><span class="pn">({</span>
+  useClass<span class="pn">:</span> <span class="cl">CacheConfigService</span><span class="pn">,</span>
+<span class="pn">});</span></pre></div></div></div>
+
+    <p>Đoạn trên sẽ instantiate <code>CacheConfigService</code> bên trong <code>CacheModule</code> và sẽ sử dụng nó để lấy options object. <code>CacheConfigService</code> phải implement interface <code>CacheOptionsFactory</code> để cung cấp configuration option:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre><span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">class</span> <span class="cl">CacheConfigService</span> <span class="kw">implements</span> <span class="typ">CacheOptionsFactory</span> <span class="pn">{</span>
+  <span class="fn">createCacheOptions</span><span class="pn">():</span> <span class="typ">CacheModuleOptions</span> <span class="pn">{</span>
+    <span class="kw">return</span> <span class="pn">{</span>
+      ttl<span class="pn">:</span> <span class="num">5</span><span class="pn">,</span>
+    <span class="pn">};</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div></div></div>
+
+    <p>Nếu bạn muốn sử dụng configuration provider hiện có được import từ module khác, sử dụng cú pháp <code>useExisting</code>:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre>CacheModule<span class="pn">.</span><span class="fn">registerAsync</span><span class="pn">({</span>
+  imports<span class="pn">:</span> <span class="pn">[</span><span class="cl">ConfigModule</span><span class="pn">],</span>
+  useExisting<span class="pn">:</span> <span class="cl">ConfigService</span><span class="pn">,</span>
+<span class="pn">});</span></pre></div></div></div>
+
+    <p>Điều này hoạt động giống như <code>useClass</code> với một điểm khác biệt quan trọng - <code>CacheModule</code> sẽ tìm kiếm các module đã import để tái sử dụng bất kỳ <code>ConfigService</code> nào đã được tạo, thay vì instantiate một bản mới.</p>
+
+<div class="hint"><span class="lbl">💡 Hint</span><p><code>CacheModule#register</code>, <code>CacheModule#registerAsync</code> và <code>CacheOptionsFactory</code> có optional generic (type argument) để thu hẹp store-specific configuration option, giúp đảm bảo type safe.</p></div>
+
+    <p>Bạn cũng có thể truyền <code>extraProviders</code> vào method <code>registerAsync()</code>. Các provider này sẽ được merge với module provider.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div><div class="pane on"><pre>CacheModule<span class="pn">.</span><span class="fn">registerAsync</span><span class="pn">({</span>
+  imports<span class="pn">:</span> <span class="pn">[</span><span class="cl">ConfigModule</span><span class="pn">],</span>
+  <span class="fn">useFactory</span><span class="pn">:</span> <span class="kw">async</span> <span class="pn">(</span>configService<span class="pn">:</span> <span class="cl">ConfigService</span><span class="pn">) =&gt; ({</span>
+    ttl<span class="pn">:</span> configService<span class="pn">.</span><span class="fn">get</span><span class="pn">(</span><span class="str">'CACHE_TTL'</span><span class="pn">),</span>
+  <span class="pn">}),</span>
+  inject<span class="pn">:</span> <span class="pn">[</span><span class="cl">ConfigService</span><span class="pn">],</span>
+  extraProviders<span class="pn">:</span> <span class="pn">[</span><span class="cl">MyAdditionalProvider</span><span class="pn">],</span>
+<span class="pn">});</span></pre></div></div></div>
+
+    <!-- ═══════════════════════ EXAMPLE ═══════════════════════ -->
+    <h3 id="example">Example <a class="anchor" href="#example">#</a></h3>
+
+    <p>Một ví dụ thực tế có sẵn <a href="https://github.com/nestjs/nest/tree/master/sample/20-cache" target="_blank">tại đây</a>.</p>
+
+    <!-- Page Navigation -->
+    <div class="page-nav">
+      <a href="Validation.html" class="pnbtn">
+        <span class="pnlbl">← Trước</span>
+        <span class="pntitle">Validation</span>
+      </a>
+      <a href="Serialization.html" class="pnbtn r">
+        <span class="pnlbl">Tiếp →</span>
+        <span class="pntitle">Serialization</span>
+      </a>
+    </div>
+
+  </main>
+
+  <!-- TOC -->
+  <aside class="toc">
+    <div class="toc-title">Nội dung</div>
+    <ul>
+      <li><a href="#installation">Installation</a></li>
+      <li><a href="#in-memory-cache">In-memory cache</a></li>
+      <li><a href="#interacting-with-the-cache-store">Interacting with the Cache store</a></li>
+      <li><a href="#auto-caching-responses">Auto-caching responses</a></li>
+      <li><a href="#ttl">Time-to-live (TTL)</a></li>
+      <li><a href="#use-module-globally">Use module globally</a></li>
+      <li><a href="#global-cache-overrides">Global cache overrides</a></li>
+      <li><a href="#websockets-and-microservices">WebSockets &amp; Microservices</a></li>
+      <li><a href="#adjust-tracking">Adjust tracking</a></li>
+      <li><a href="#different-stores">Using alternative Cache stores</a></li>
+      <li><a href="#async-configuration">Async configuration</a></li>
+      <li><a href="#example">Example</a></li>
+    </ul>
+  </aside>
+
+</div>
+
+<script>
+  function sw(btn, bid, lang) {
+    var c = document.getElementById(bid);
+    if (!c) return;
+    btn.parentElement.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('on'); });
+    btn.classList.add('on');
+    c.querySelectorAll('.pane').forEach(function(p) {
+      p.classList.remove('on');
+      if (p.dataset.lang === lang) p.classList.add('on');
+    });
+  }
+  function cp(btn) {
+    var wrap = btn.closest('.cb');
+    var pane = wrap.querySelector('.pane.on') || wrap.querySelector('.pane');
+    if (!pane) return;
+    navigator.clipboard.writeText(pane.textContent.trim()).then(function() {
+      var o = btn.textContent;
+      btn.textContent = 'Copied!';
+      btn.style.color = '#4ade80';
+      setTimeout(function() { btn.textContent = o; btn.style.color = ''; }, 1500);
+    });
+  }
+  document.querySelectorAll('.toc a').forEach(function(link) {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      var target = document.querySelector(this.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+  var tocLinks = document.querySelectorAll('.toc a');
+  var heads = document.querySelectorAll('h3[id]');
+  function hi() {
+    var cur = '';
+    heads.forEach(function(h) { if (scrollY >= h.offsetTop - 120) cur = h.id; });
+    tocLinks.forEach(function(a) { a.classList.toggle('active', a.getAttribute('href') === '#' + cur); });
+  }
+  window.addEventListener('scroll', hi, { passive: true });
+  hi();
+</script>
+</body>
+</html>
