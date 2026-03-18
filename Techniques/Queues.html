@@ -1,0 +1,2077 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>Queues | NestJS - Tài liệu tiếng Việt</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <style>
+        :root {
+            --bg: #0e0e0e;
+            --surface: #1a1a1a;
+            --surface2: #222;
+            --border: #2a2a2a;
+            --border-l: #333;
+            --red: #ea2845;
+            --red-l: #ff4d6a;
+            --red-glow: rgba(234, 40, 69, .15);
+            --text: #e8e8e8;
+            --muted: #888;
+            --sec: #b0b0b0;
+            --code-bg: #1e1e1e;
+            --code-bd: #2d2d2d;
+            --hint-bg: #0d2a1a;
+            --hint-c: #4ade80;
+            --warn-bg: #2a1a0d;
+            --warn-c: #fb923c;
+            --note-bg: #0d1a2a;
+            --note-c: #60a0d0;
+            --toc-w: 220px;
+            --font: 'Inter', sans-serif;
+            --mono: 'Source Code Pro', monospace;
+            --r: 6px;
+            --rl: 10px
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        html {
+            scroll-behavior: smooth
+        }
+
+        body {
+            font-family: var(--font);
+            background: var(--bg);
+            color: var(--text);
+            font-size: 15px;
+            line-height: 1.78
+        }
+
+        .page {
+            max-width: 1060px;
+            margin: 0 auto;
+            padding: 48px 32px 96px;
+            display: flex;
+            gap: 56px;
+            align-items: flex-start
+        }
+
+        .content {
+            flex: 1;
+            min-width: 0
+        }
+
+        .toc {
+            width: var(--toc-w);
+            flex-shrink: 0;
+            position: sticky;
+            top: 32px;
+            align-self: flex-start;
+            max-height: calc(100vh - 48px);
+            overflow-y: auto
+        }
+
+        .toc::-webkit-scrollbar {
+            width: 3px
+        }
+
+        .toc::-webkit-scrollbar-thumb {
+            background: var(--border-l);
+            border-radius: 2px
+        }
+
+        .toc-title {
+            font-size: 10.5px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            color: var(--muted);
+            padding-bottom: 8px;
+            margin-bottom: 8px;
+            border-bottom: 1px solid var(--border)
+        }
+
+        .toc ul {
+            list-style: none
+        }
+
+        .toc ul li a {
+            display: block;
+            padding: 3.5px 0;
+            font-size: 12.5px;
+            color: var(--muted);
+            text-decoration: none;
+            line-height: 1.5;
+            transition: color .15s;
+            cursor: pointer
+        }
+
+        .toc ul li a:hover,
+        .toc ul li a.active {
+            color: var(--red-l)
+        }
+
+        .toc .sub {
+            padding-left: 14px;
+            font-size: 11.5px
+        }
+
+        .toc .grp {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            color: var(--red-l);
+            margin-top: 10px;
+            margin-bottom: 2px
+        }
+
+        .vi-banner {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 11px 16px;
+            border: 1px solid rgba(234, 40, 69, .3);
+            border-radius: var(--rl);
+            background: linear-gradient(135deg, rgba(234, 40, 69, .1), rgba(234, 40, 69, .04));
+            font-size: 13px;
+            color: var(--sec);
+            margin-bottom: 32px
+        }
+
+        .vi-banner strong {
+            color: var(--red-l)
+        }
+
+        h1 {
+            font-size: 36px;
+            font-weight: 700;
+            letter-spacing: -.5px;
+            line-height: 1.2;
+            margin-bottom: 6px
+        }
+
+        h1::after {
+            content: '';
+            display: block;
+            width: 44px;
+            height: 3px;
+            background: var(--red);
+            border-radius: 2px;
+            margin-top: 12px
+        }
+
+        h2 {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -.3px;
+            margin: 48px 0 16px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+            color: var(--red-l)
+        }
+
+        h3 {
+            font-size: 19px;
+            font-weight: 600;
+            letter-spacing: -.2px;
+            margin: 40px 0 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            scroll-margin-top: 80px
+        }
+
+        .anchor {
+            font-size: 14px;
+            color: var(--muted);
+            text-decoration: none;
+            opacity: 0;
+            transition: opacity .2s
+        }
+
+        h3:hover .anchor {
+            opacity: 1
+        }
+
+        p {
+            color: var(--sec);
+            line-height: 1.82;
+            margin-bottom: 16px
+        }
+
+        p:last-child {
+            margin-bottom: 0
+        }
+
+        a {
+            color: var(--red-l);
+            text-decoration: none
+        }
+
+        a:hover {
+            text-decoration: underline
+        }
+
+        strong {
+            color: var(--text);
+            font-weight: 600
+        }
+
+        ul {
+            color: var(--sec);
+            padding-left: 22px;
+            line-height: 2.1;
+            margin: 16px 0
+        }
+
+        code {
+            font-family: var(--mono);
+            font-size: 13px;
+            background: var(--code-bg);
+            border: 1px solid var(--code-bd);
+            padding: 1px 6px;
+            border-radius: 4px;
+            color: #f9a8d4
+        }
+
+        .hint,
+        .warn,
+        .note {
+            margin: 18px 0;
+            padding: 12px 16px;
+            border-left: 3px solid;
+            border-radius: var(--r);
+            font-size: 13.5px;
+            line-height: 1.72
+        }
+
+        .hint {
+            background: var(--hint-bg);
+            border-color: var(--hint-c);
+            color: #a7f3d0
+        }
+
+        .warn {
+            background: var(--warn-bg);
+            border-color: var(--warn-c);
+            color: #fed7aa
+        }
+
+        .note {
+            background: var(--note-bg);
+            border-color: var(--note-c);
+            color: #bae6fd
+        }
+
+        .hint p,
+        .warn p,
+        .note p {
+            margin: 0;
+            color: inherit
+        }
+
+        .lbl {
+            display: block;
+            font-size: 10.5px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .07em;
+            margin-bottom: 4px
+        }
+
+        .hint .lbl {
+            color: var(--hint-c)
+        }
+
+        .warn .lbl {
+            color: var(--warn-c)
+        }
+
+        .note .lbl {
+            color: var(--note-c)
+        }
+
+        .cb {
+            margin: 18px 0;
+            border: 1px solid var(--code-bd);
+            border-radius: var(--rl);
+            overflow: hidden;
+            background: var(--code-bg)
+        }
+
+        .cb-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 14px;
+            background: #181818;
+            border-bottom: 1px solid var(--code-bd);
+            min-height: 38px
+        }
+
+        .cb-fname {
+            font-family: var(--mono);
+            font-size: 11.5px;
+            color: var(--muted);
+            display: flex;
+            align-items: center;
+            gap: 6px
+        }
+
+        .cb-fname::before {
+            content: '';
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--red)
+        }
+
+        .cb-right {
+            display: flex;
+            align-items: center;
+            gap: 6px
+        }
+
+        .tabs {
+            display: flex;
+            gap: 3px
+        }
+
+        .tab {
+            padding: 4px 11px;
+            font-size: 11px;
+            font-family: var(--mono);
+            font-weight: 500;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            color: var(--muted);
+            cursor: pointer;
+            user-select: none;
+            transition: all .14s
+        }
+
+        .tab.on {
+            color: var(--red-l);
+            background: var(--red-glow);
+            border-color: var(--red)
+        }
+
+        .cpbtn {
+            padding: 3px 9px;
+            font-size: 10.5px;
+            font-family: var(--mono);
+            background: var(--surface);
+            border: 1px solid var(--border-l);
+            color: var(--muted);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all .14s
+        }
+
+        .cpbtn:hover {
+            background: var(--surface2);
+            color: var(--text)
+        }
+
+        pre {
+            font-family: var(--mono);
+            font-size: 13px;
+            line-height: 1.75;
+            color: #d4d4d4;
+            padding: 16px 18px;
+            margin: 0;
+            overflow-x: auto
+        }
+
+        pre code {
+            background: none;
+            border: none;
+            padding: 0;
+            font-size: inherit;
+            color: inherit;
+            border-radius: 0
+        }
+
+        .kw {
+            color: #c586c0
+        }
+
+        .dec {
+            color: #dcdcaa
+        }
+
+        .fn {
+            color: #dcdcaa
+        }
+
+        .cl {
+            color: #4ec9b0
+        }
+
+        .typ {
+            color: #4ec9b0
+        }
+
+        .str {
+            color: #ce9178
+        }
+
+        .num {
+            color: #b5cea8
+        }
+
+        .pn {
+            color: #d4d4d4
+        }
+
+        .cm {
+            color: #6a9955
+        }
+
+        .page-nav {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 56px;
+            padding-top: 28px;
+            border-top: 1px solid var(--border)
+        }
+
+        .pnbtn {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            text-decoration: none;
+            padding: 10px 16px;
+            border: 1px solid var(--border-l);
+            border-radius: var(--rl);
+            min-width: 160px;
+            transition: all .15s
+        }
+
+        .pnbtn:hover {
+            border-color: var(--red);
+            background: var(--red-glow)
+        }
+
+        .pnbtn.r {
+            align-items: flex-end;
+            margin-left: auto
+        }
+
+        .pnlbl {
+            font-size: 11px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: .06em
+        }
+
+        .pntitle {
+            font-size: 14px;
+            color: var(--red-l);
+            font-weight: 600
+        }
+
+        @media(max-width:860px) {
+            .page {
+                flex-direction: column;
+                gap: 32px;
+                padding: 28px 16px 64px
+            }
+
+            .toc {
+                width: 100%;
+                position: static;
+                order: -1;
+                max-height: none;
+                border: 1px solid var(--border);
+                padding: 14px;
+                border-radius: var(--rl)
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page">
+        <main class="content">
+
+            <div class="vi-banner">🇻🇳 <strong>Tài liệu dịch</strong> — Bản dịch tiếng Việt từ <a
+                    href="https://docs.nestjs.com/techniques/queues"
+                    target="_blank">docs.nestjs.com/techniques/queues</a></div>
+
+            <h1>Queues</h1>
+
+            <p>Queues là một design pattern mạnh mẽ giúp bạn xử lý các thách thức phổ biến về application scaling và
+                performance. Một số ví dụ về các vấn đề mà Queues có thể giúp bạn giải quyết:</p>
+            <ul>
+                <li>Làm mượt các đỉnh xử lý (processing peak). Ví dụ, nếu người dùng có thể khởi tạo các task tốn tài
+                    nguyên vào thời điểm bất kỳ, bạn có thể add các task này vào queue thay vì thực hiện chúng đồng bộ.
+                    Sau đó, bạn có thể có các worker process lấy task từ queue theo cách có kiểm soát. Bạn có thể dễ
+                    dàng thêm Queue consumer mới để scale up việc xử lý backend khi ứng dụng mở rộng.</li>
+                <li>Chia nhỏ các monolithic task mà nếu không sẽ block Node.js event loop. Ví dụ, nếu một user request
+                    cần xử lý tốn CPU intensive như audio transcoding, bạn có thể delegate task này sang các process
+                    khác, giải phóng các user-facing process để duy trì tính responsive.</li>
+                <li>Cung cấp một kênh giao tiếp đáng tin cậy giữa các service khác nhau. Ví dụ, bạn có thể queue task
+                    (job) trong một process hoặc service, và consume chúng trong một process hoặc service khác. Bạn có
+                    thể được thông báo (bằng cách lắng nghe status event) khi completion, error hoặc các state change
+                    khác trong job life cycle từ bất kỳ process hoặc service nào. Khi Queue producer hoặc consumer gặp
+                    lỗi, state của chúng được bảo toàn và việc xử lý task có thể tự động restart khi các node được khởi
+                    động lại.</li>
+            </ul>
+
+            <p>Nest cung cấp package <code>@nestjs/bullmq</code> cho BullMQ integration và <code>@nestjs/bull</code> cho
+                Bull integration. Cả hai package đều là abstraction/wrapper trên top of các thư viện tương ứng, được
+                phát triển bởi cùng một team. Bull hiện đang ở chế độ maintenance, trong khi BullMQ đang được phát triển
+                tích cực, với một TypeScript implementation hiện đại và bộ tính năng khác biệt. Nếu Bull đáp ứng yêu cầu
+                của bạn, nó vẫn là một lựa chọn đáng tin cậy và đã được thử nghiệm kỹ. Nest package giúp dễ dàng tích
+                hợp cả BullMQ lẫn Bull Queues vào ứng dụng Nest của bạn một cách thân thiện.</p>
+
+            <p>Cả BullMQ và Bull đều sử dụng <a href="https://redis.io/" target="_blank"><strong>Redis</strong></a> để
+                lưu trữ job data, vì vậy bạn cần cài đặt Redis trên hệ thống của mình. Vì chúng được hỗ trợ bởi Redis,
+                kiến trúc Queue của bạn có thể được phân tán hoàn toàn và không phụ thuộc vào platform. Ví dụ, bạn có
+                thể có một số Queue <a href="#producers"><strong>producer</strong></a> và <a
+                    href="#consumers"><strong>consumer</strong></a> và <a
+                    href="#event-listeners"><strong>listener</strong></a> chạy trong Nest trên một (hoặc nhiều) node, và
+                các producer, consumer và listener khác chạy trên các Node.js platform khác trên các network node khác.
+            </p>
+
+            <p>Chapter này bao gồm các package <code>@nestjs/bullmq</code> và <code>@nestjs/bull</code>. Chúng tôi cũng
+                khuyến nghị đọc tài liệu <a href="https://docs.bullmq.io/" target="_blank"><strong>BullMQ</strong></a>
+                và <a href="https://github.com/OptimalBits/bull/blob/master/REFERENCE.md"
+                    target="_blank"><strong>Bull</strong></a> để biết thêm thông tin nền và chi tiết implementation cụ
+                thể.</p>
+
+            <!-- ═══════════ BULLMQ INSTALLATION ═══════════ -->
+            <h2 id="bullmq-installation">BullMQ installation</h2>
+
+            <p>Để bắt đầu sử dụng BullMQ, chúng ta trước tiên cài đặt các dependency cần thiết.</p>
+
+            <div class="cb">
+                <div class="cb-head">
+                    <div class="cb-fname">bash</div>
+                    <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+                </div>
+                <pre>$ npm install --save @nestjs/bullmq bullmq</pre>
+            </div>
+
+            <p>Sau khi quá trình cài đặt hoàn tất, chúng ta có thể import <code>BullModule</code> vào root
+                <code>AppModule</code>.
+            </p>
+
+            <div class="cb">
+                <div class="cb-head">
+                    <div class="cb-fname">app.module.ts</div>
+                    <div class="cb-right">
+                        <div class="tabs">
+                            <div class="tab on">JS</div>
+                        </div><button class="cpbtn" onclick="cp(this)">Copy</button>
+                    </div>
+                </div>
+                <pre><span class="kw">import</span> { Module } <span class="kw">from</span> <span class="str">'@nestjs/common'</span>;
+<span class="kw">import</span> { BullModule } <span class="kw">from</span> <span class="str">'@nestjs/bullmq'</span>;
+
+<span class="dec">@Module</span>({
+  imports: [
+    BullModule.<span class="fn">forRoot</span>({
+      connection: {
+        host: <span class="str">'localhost'</span>,
+        port: <span class="num">6379</span>,
+      },
+    }),
+  ],
+})
+<span class="kw">export class</span> <span class="cl">AppModule</span> {}</pre>
+            </div>
+
+            <p>Method <code>forRoot()</code> được sử dụng để đăng ký một <code>bullmq</code> package configuration
+                object sẽ được sử dụng bởi tất cả queue đã đăng ký trong application (trừ khi được chỉ định khác). Để
+                tham khảo, sau đây là một số properties trong configuration object:</p>
+
+            <ul>
+                <li><code>connection: ConnectionOptions</code> - Options để configure Redis connection. Xem <a
+                        href="https://docs.bullmq.io/guide/connections" target="_blank"><strong>Connections</strong></a>
+                    để biết thêm. Optional.</li>
+                <li><code>prefix: string</code> - Prefix cho tất cả queue key. Optional.</li>
+                <li><code>defaultJobOptions: JobOpts</code> - Options để control default settings cho new job. Xem <a
+                        href="https://api.docs.bullmq.io/interfaces/v5.BaseJobOptions.html"
+                        target="_blank"><strong>JobOpts</strong></a> để biết thêm. Optional.</li>
+                <li><code>settings: AdvancedSettings</code> - Advanced Queue configuration settings. Thông thường không
+                    nên thay đổi. Xem <a href="https://api.docs.bullmq.io/interfaces/v5.AdvancedOptions.html"
+                        target="_blank"><strong>AdvancedSettings</strong></a> để biết thêm. Optional.</li>
+                <li><code>extraOptions</code> - Extra options cho module init. Xem <a
+                        href="#manual-registration"><strong>Manual Registration</strong></a>.</li>
+            </ul>
+
+            <p>Tất cả options đều là optional, cung cấp quyền kiểm soát chi tiết hành vi của queue. Chúng được truyền
+                trực tiếp cho BullMQ <code>Queue</code> constructor. Đọc thêm về các option này và các option khác <a
+                    href="https://api.docs.bullmq.io/classes/v5.Queue.html" target="_blank"><strong>tại
+                        đây</strong></a>.</p>
+
+            <p>Để đăng ký một queue, import <code>BullModule.registerQueue()</code> dynamic module, như sau:</p>
+
+            <div class="cb">
+                <div class="cb-head">
+                    <div class="cb-fname"></div>
+                    <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+                </div>
+                <pre>BullModule.<span class="fn">registerQueue</span>({
+  name: <span class="str">'audio'</span>,
+});</pre>
+            </div>
+
+            <div class="hint"><span class="lbl">💡 Hint</span>
+                <p>Tạo nhiều queue bằng cách truyền nhiều comma-separated configuration object cho method
+                    <code>registerQueue()</code>.
+                </p>
+            </div>
+
+            <p>Method <code>registerQueue()</code> được sử dụng để instantiate và/hoặc đăng ký queue. Queue được chia sẻ
+                giữa các module và process kết nối đến cùng Redis database cơ bản với cùng credential. Mỗi queue là duy
+                nhất theo property name của nó. Tên queue được sử dụng vừa là injection token (để inject queue vào
+                controller/provider), vừa là argument cho decorator để liên kết consumer class và listener với queue.
+            </p>
+
+            <p>Bạn cũng có thể override một số pre-configured option cho một queue cụ thể, như sau:</p>
+
+            <div class="cb">
+                <div class="cb-head">
+                    <div class="cb-fname"></div>
+                    <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+                </div>
+                <pre>BullModule.<span class="fn">registerQueue</span>({
+  name: <span class="str">'audio'</span>,
+  connection: {
+    port: <span class="num">6380</span>,
+  },
+});</pre>
+            </div>
+
+            <p>BullMQ cũng hỗ trợ quan hệ parent - child giữa các job. Chức năng này cho phép tạo các flow trong đó job
+                là node của tree có độ sâu tùy ý. Để đọc thêm về chúng, xem <a href="https://docs.bullmq.io/guide/flows"
+                    target="_blank"><strong>tại đây</strong></a>.</p>
+
+            <p>Để thêm một flow, bạn có thể làm như sau:</p>
+
+            <div class="cb">
+                <div class="cb-head">
+                    <div class="cb-fname"></div>
+                    <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+                </div>
+                <pre>BullModule.<span class="fn">registerFlowProducer</span>({
+  name: <span class="str">'flowProducerName'</span>,
+});</pre>
+            </div>
+
+            <p>Vì job được lưu trong Redis, mỗi khi một specific named queue được instantiate (ví dụ: khi app được
+                start/restart), nó sẽ cố gắng xử lý bất kỳ old job nào có thể tồn tại từ session trước chưa hoàn thành.
+            </p>
+
+            <p>Mỗi queue có thể có một hoặc nhiều producer, consumer, và listener. Consumer lấy job từ queue theo một
+                thứ tự cụ thể: FIFO (mặc định), LIFO, hoặc theo priority. Điều khiển thứ tự xử lý queue được thảo luận
+                <a href="https://docs.bullmq.io/guide/jobs/fifo" target="_blank"><strong>tại đây</strong></a>.
+            </p>
+
+            <!-- ═══════════ NAMED CONFIGURATIONS ═══════════ -->
+            <h3 id="named-configurations">Named configurations <a class="anchor" href="#named-configurations">#</a></h3>
+
+            <p>Nếu queue của bạn kết nối đến nhiều Redis instance khác nhau, bạn có thể sử dụng kỹ thuật gọi là
+                <strong>named configurations</strong>. Tính năng này cho phép bạn đăng ký nhiều configuration dưới các
+                key được chỉ định, sau đó bạn có thể tham chiếu trong queue option.
+            </p>
+
+            <p>Ví dụ, giả sử rằng bạn có một Redis instance bổ sung (ngoài instance mặc định) được sử dụng bởi một vài
+                queue đã đăng ký trong application, bạn có thể đăng ký configuration của nó như sau:</p>
+
+            <div class="cb">
+                <div class="cb-head">
+                    <div class="cb-fname"></div>
+                    <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+                </div>
+                <pre>BullModule.<span class="fn">forRoot</span>(<span class="str">'alternative-config'</span>, {
+  connection: {
+    port: <span class="num">6381</span>,
+  },
+});</pre>
+            </div>
+
+            <p>Trong ví dụ trên, <code>'alternative-config'</code> chỉ là một configuration key (có thể là bất kỳ
+                arbitrary string nào).</p>
+
+            <p>Với thiết lập này, bạn bây giờ có thể trỏ đến configuration này trong <code>registerQueue()</code>
+                options object:</p>
+
+            <div class="cb">
+                <div class="cb-head">
+                    <div class="cb-fname"></div>
+                    <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+                </div>
+                <pre>BullModule.<span class="fn">registerQueue</span>({
+  configKey: <span class="str">'alternative-config'</span>,
+  name: <span class="str">'video'</span>,
+});</pre>
+            </div>
+
+            <!-- ═══════════ PRODUCERS ═══════════ -->
+            <h3 id="producers">Producers <a class="anchor" href="#producers">#</a></h3>
+
+            <p>Job producer add job vào queue. Producer thường là application service (Nest <a
+                    href="https://docs.nestjs.com/providers" target="_blank"><strong>provider</strong></a>). Để add job
+                vào queue, trước tiên inject queue vào service như sau:</p>
+
+            <div class="cb">
+                <div class="cb-head">
+                    <div class="cb-fname"></div>
+                    <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+                </div>
+                <pre><span class="kw">import</span> { Injectable } <span class="kw">from</span> <span class="str">'@nestjs/common'</span>;
+<span class="kw">import</span> { Queue } <span class="kw">from</span> <span class="str">'bullmq'</span>;
+<span class="kw">import</span> { InjectQueue } <span class="kw">from</span> <span class="str">'@nestjs/bullmq'</span>;
+
+<span class="dec">@Injectable</span>()
+<span class="kw">export class</span> <span class="cl">AudioService</span> {
+  <span class="fn">constructor</span>(<span class="dec">@InjectQueue</span>(<span class="str">'audio'</span>) <span class="kw">private</span> audioQueue: Queue) {}
+}</pre>
+            </div>
+
+            <div class="hint"><span class="lbl">💡 Hint</span>
+                <p>Decorator <code>@InjectQueue()</code> xác định queue theo tên của nó, như đã cung cấp trong lệnh gọi
+                    method <code>registerQueue()</code> (ví dụ: <code>'audio'</code>).</p>
+            </div>
+
+            <p>Bây giờ, add một job bằng cách gọi method <code>add()</code> của queue, truyền một user-defined job
+                object. Job được biểu diễn dưới dạng serializable JavaScript object (vì đó là cách chúng được lưu trong
+                Redis database). Hình dạng của job bạn truyền là tùy ý; sử dụng nó để biểu diễn semantics của job
+                object. Bạn cũng cần đặt tên cho nó. Điều này cho phép bạn tạo các <a
+                    href="#consumers"><strong>consumer</strong></a> chuyên biệt chỉ xử lý job với tên đã cho.</p>
+
+            <div class="cb">
+                <div class="cb-head">
+                    <div class="cb-fname"></div>
+                    <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+                </div>
+                <pre><span class="kw">const</span> job = <span class="kw">await</span> <span class="kw">this</span>.audioQueue.<span class="fn">add</span>(<span class="str">'transcode'</span>, {
+  foo: <span class="str">'bar'</span>,
+});</pre>
+            </div>
+
+            <!-- ═══════════ JOB OPTIONS ═══════════ -->
+            <h3 id="job-options">Job options <a class="anchor" href="#job-options">#</a></h3>
+
+            <p>Job có thể có các option bổ sung đi kèm. Truyền một options object sau argument <code>job</code> trong
+                method <code>Queue.add()</code>. Một số job options properties bao gồm:</p>
+
+            <ul>
+                <li><code>priority: number</code> - Optional priority value. Ranges from 1 (highest priority) to MAX_INT
+                    (lowest priority). Lưu ý rằng việc sử dụng priority có ảnh hưởng nhẹ đến performance, vì vậy hãy sử
+                    dụng chúng cẩn thận.</li>
+                <li><code>delay: number</code> - Khoảng thời gian (millisecond) chờ trước khi job có thể được xử lý. Lưu
+                    ý rằng để delay chính xác, cả server và client nên có clock đồng bộ.</li>
+                <li><code>attempts: number</code> - Tổng số lần thử để thực hiện job cho đến khi hoàn thành.</li>
+                <li><code>repeat: RepeatOpts</code> - Lặp lại job theo cron specification. Xem <a
+                        href="https://api.docs.bullmq.io/interfaces/v5.RepeatOptions.html"
+                        target="_blank"><strong>RepeatOpts</strong></a>.</li>
+                <li><code>backoff: number | BackoffOpts</code> - Backoff setting cho automatic retry khi job fail. Xem
+                    <a href="https://api.docs.bullmq.io/interfaces/v5.BackoffOptions.html"
+                        target="_blank"><strong>BackoffOpts</strong></a>.
+                </li>
+                <li><code>lifo: boolean</code> - Nếu true, add job vào right end của queue thay vì left (mặc định
+                    false).</li>
+                <li><code>jobId: number | string</code> - Override job ID - mặc định, job ID là một unique integer,
+                    nhưng bạn có thể sử dụng setting này để override nó. Nếu sử dụng option này, bạn phải đảm bảo jobId
+                    duy nhất. Nếu bạn cố add job với id đã tồn tại, nó sẽ không được thêm.</li>
+                <li><code>removeOnComplete: boolean | number</code> - Nếu true, xóa job khi nó hoàn thành thành công.
+                    Nếu là number, chỉ định số lượng job cần giữ. Default behavior là giữ job trong completed set.</li>
+                <li><code>removeOnFail: boolean | number</code> - Nếu true, xóa job khi nó fail sau tất cả attempt. Nếu
+                    là number, chỉ định số lượng job cần giữ. Default behavior là giữ job trong failed set.</li>
+                <li><code>stackTraceLimit: number</code> - Giới hạn số dòng stack trace sẽ được ghi lại trong
+                    stacktrace.</li>
+            </ul>
+
+            <p>Dưới đây là một vài ví dụ về customizing job với job option.</p>
+
+            <p>Để delay start của job, sử dụng <code>delay</code> configuration property.</p>
+
+            <div class="cb">
+                <div class="cb-head">
+                    <div class="cb-fname"></div>
+                    <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+                </div>
+                <pre><span class="kw">const</span> job = <span class="kw">await</span> <span class="kw">this</span>.audioQueue.<span class="fn">add</span>(
+  <span class="str">'transcode'</span>,
+  {
+    foo: <span class="str">'bar'</span>,
+  },
+  { delay: <span class="num">3000</span> }, <span class="cm">// 3 seconds delayed</span>
+);</pre>
+            </div>
+
+            <p>Để add job vào right end của queue (xử lý job theo <strong>LIFO</strong> (Last In First Out)), set
+                property <code>lifo</code> của configuration object thành <code>true</code>.</p>
+
+            <div class="cb">
+                <div class="cb-head">
+                    <div class="cb-fname"></div>
+                    <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+                </div>
+                <pre><span class="kw">const</span> job = <span class="kw">await</span> <span class="kw">this</span>.audioQueue.<span class="fn">add</span>(
+  <span class="str">'transcode'</span>,
+  {
+    foo: <span class="str">'bar'</span>,
+  },
+  { lifo: <span class="kw">true</span> },
+);</pre>
+            </div>
+
+            <p>Để ưu tiên một job, sử dụng property <code>priority</code>.</p>
+
+            <div class="cb">
+                <div class="cb-head">
+                    <div class="cb-fname"></div>
+                    <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+                </div>
+                <pre><span class="kw">const</span> job = <span class="kw">await</span> <span class="kw">this</span>.audioQueue.<span class="fn">add</span>(
+  <span class="str">'transcode'</span>,
+  {
+    foo: <span class="str">'bar'</span>,
+  },
+  { priority: <span class="num">2</span> },
+);</pre>
+            </div>
+
+            <p>Để xem danh sách đầy đủ các option, hãy kiểm tra API documentation <a
+                    href="https://api.docs.bullmq.io/interfaces/v5.BaseJobOptions.html" target="_blank"><strong>tại
+                        đây</strong></a> và <a href="https://api.docs.bullmq.io/interfaces/v5.JobsOptions.html"
+                    target="_blank"><strong>tại đây</strong></a>.</p>
+
+            <!-- ═══════════ CONSUMERS ═══════════ -->
+            <h3 id="consumers">Consumers <a class="anchor" href="#consumers">#</a></h3>
+
+            <p>Consumer là một <strong>class</strong> định nghĩa các method để xử lý job được add vào queue, hoặc lắng
+                nghe
+                event trên queue, hoặc cả hai. Khai báo một consumer class bằng decorator <code>@Processor()</code> như
+                sau:</p>
+
+            <div class="cb">
+                <div class="cb-head">
+                    <div class="cb-fname"></div>
+                    <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+                </div>
+                <pre><span class="kw">import</span> { Processor } <span class="kw">from</span> <span class="str">'@nestjs/bullmq'</span>;
+
+<span class="dec">@Processor</span>(<span class="str">'audio'</span>)
+<span class="kw">export class</span> <span class="cl">AudioConsumer</span> {}</pre>
+            </div>
+
+            <div class="hint"><span class="lbl">💡 Hint</span>
+                <p>Consumer phải được đăng ký dưới dạng <code>providers</code> để package
+                    <code>@nestjs/bullmq</code> có thể pick chúng lên.
+                </p>
+            </div>
+
+            <p>Trong đó decorator's string argument (ví dụ: <code>'audio'</code>) là tên của queue sẽ được liên kết với
+                class method.</p>
+
+            <div class="cb">
+                <div class="cb-head">
+                    <div class="cb-fname"></div>
+                    <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+                </div>
+                <pre><span class="kw">import</span> { Processor, WorkerHost } <span class="kw">from</span> <span class="str">'@nestjs/bullmq'</span>;
+<span class="kw">import</span> { Job } <span class="kw">from</span> <span class="str">'bullmq'</span>;
+
+<span class="dec">@Processor</span>(<span class="str">'audio'</span>)
+<span class="kw">export class</span> <span class="cl">AudioConsumer</span> <span class="kw">extends</span> WorkerHost {
+  <span class="kw">async</span> <span class="fn">process</span>(job: Job&lt;any, any, string&gt;): Promise&lt;any&gt; {
+    <span class="kw">let</span> progress = <span class="num">0</span>;
+    <span class="kw">for</span> (<span class="kw">let</span> i = <span class="num">0</span>; i &lt; <span class="num">100</span>; i++) {
+      <span class="kw">await</span> <span class="fn">doSomething</span>(job.data);
+      progress += <span class="num">1</span>;
+      <span class="kw">await</span> job.<span class="fn">updateProgress</span>(progress);
+    }
+    <span class="kw">return</span> {};
+  }
+}</pre>
+            </div>
+
+            <p>Method process được gọi bất cứ khi nào worker ở trạng thái idle và có job cần xử lý trong queue. Handler
+                method này nhận <code>job</code> object làm argument duy nhất. Giá trị được trả về bởi handler method
+                được lưu trong job object và có thể được truy cập sau đó, ví dụ trong listener cho completed event.</p>
+
+            <p><code>Job</code> object có nhiều method cho phép bạn tương tác với state của chúng. Ví dụ, code trên sử
+                dụng method <code>updateProgress()</code> để cập nhật progress của job. Xem <a
+                    href="https://api.docs.bullmq.io/classes/v5.Job.html" target="_blank"><strong>tại đây</strong></a>
+                để biết complete <code>Job</code> object API reference.</p>
+
+            <p>Trong phiên bản cũ Bull, bạn có thể chỉ định rằng một job handler method sẽ chỉ xử lý
+                <strong>only</strong>
+                job của một type nhất định (job có <code>name</code> cụ thể) bằng cách truyền <code>name</code> đó cho
+                <code>@Process()</code> decorator như bên dưới.
+            </p>
+
+            <div class="warn"><span class="lbl">⚠️ Warning</span>
+                <p>Điều này không hoạt động với BullMQ, hãy đọc tiếp.</p>
+            </div>
+
+            <div class="cb">
+                <div class="cb-head">
+                    <div class="cb-fname"></div>
+                    <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+                </div>
+                <pre><span class="dec">@Process</span>(<span class="str">'transcode'</span>)
+<span class="kw">async</span> <span class="fn">transcode</span>(job: Job&lt;unknown&gt;) { ... }</pre>
+            </div>
+
+            <p>Hành vi này không được hỗ trợ trong BullMQ do sự nhầm lẫn nó tạo ra. Thay vào đó, bạn cần switch case
+                hoặc logic cho mỗi job name:</p>
+
+            <div class="cb">
+                <div class="cb-head">
+                    <div class="cb-fname"></div>
+                    <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+                </div>
+                <pre><span class="kw">import</span> { Processor, WorkerHost } <span class="kw">from</span> <span class="str">'@nestjs/bullmq'</span>;
+<span class="kw">import</span> { Job } <span class="kw">from</span> <span class="str">'bullmq'</span>;
+
+<span class="dec">@Processor</span>(<span class="str">'audio'</span>)
+<span class="kw">export class</span> <span class="cl">AudioConsumer</span> <span class="kw">extends</span> WorkerHost {
+  <span class="kw">async</span> <span class="fn">process</span>(job: Job&lt;any, any, string&gt;): Promise&lt;any&gt; {
+    <span class="kw">switch</span> (job.name) {
+      <span class="kw">case</span> <span class="str">'transcode'</span>: {
+        <span class="kw">let</span> progress = <span class="num">0</span>;
+        <span class="kw">for</span> (<span class="kw">let</span> i = <span class="num">0</span>; i &lt; <span class="num">100</span>; i++) {
+          <span class="kw">await</span> <span class="fn">doSomething</span>(job.data);
+          progress += <span class="num">1</span>;
+          <span class="kw">await</span> job.<span class="fn">progress</span>(progress);
+        }
+        <span class="kw">return</span> {};
+      }
+      <span class="kw">case</span> <span class="str">'concatenate'</span>: {
+        <span class="kw">await</span> <span class="fn">doSomeLogic2</span>();
+        <span class="kw">break</span>;
+      }
+    }
+  }
+}</pre>
+            </div>
+
+            <p>Điều này được trình bày trong phần <a href="https://docs.bullmq.io/guide/workers/sandboxed-processors"
+                    target="_blank"><strong>named
+                        processor</strong></a> của tài liệu BullMQ.</p>
+
+            <!-- ═══════════ REQUEST-SCOPED CONSUMERS ═══════════ -->
+            <h3 id="request-scoped-consumers">Request-scoped consumers <a class="anchor"
+                    href="#request-scoped-consumers">#</a></h3>
+
+            <p>Khi một consumer được đánh dấu là request-scoped (tìm hiểu thêm về injection scope <a
+                    href="https://docs.nestjs.com/fundamentals/injection-scopes" target="_blank"><strong>tại
+                        đây</strong></a>), một instance mới của class sẽ được tạo riêng cho mỗi job. Instance sẽ bị
+                garbage-collected sau khi job hoàn thành.</p>
+
+            <div class="cb">
+                <div class="cb-head">
+                    <div class="cb-fname"></div>
+                    <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+                </div>
+                <pre><span class="dec">@Processor</span>({
+  name: <span class="str">'audio'</span>,
+  scope: Scope.REQUEST,
+})</pre>
+            </div>
+
+            <p>Vì request-scoped consumer class được instantiate động và scoped đến một single job, bạn có thể inject
+                <code>JOB_REF</code> thông qua constructor bằng cách sử dụng standard approach.
+            </p>
+
+            <div class="cb">
+                <div class="cb-head">
+                    <div class="cb-fname"></div>
+                    <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+                </div>
+                <pre><span class="fn">constructor</span>(<span class="dec">@Inject</span>(JOB_REF) jobRef: Job) {
+  console.<span class="fn">log</span>(jobRef);
+}</pre>
+            </div>
+
+            <div class="hint"><span class="lbl">💡 Hint</span>
+                <p>Token <code>JOB_REF</code> được import từ package <code>@nestjs/bullmq</code>.</p>
+            </div>
+
+            <!-- ═══════════ EVENT LISTENERS ═══════════ -->
+            <h3 id="event-listeners">Event listeners <a class="anchor" href="#event-listeners">#</a></h3>
+
+            <p>BullMQ tạo ra một tập hợp các event hữu ích khi queue và/hoặc job state thay đổi. Các event này có thể
+                được subscribe ở Worker level bằng decorator <code>@OnWorkerEvent(event)</code>, hoặc ở Queue level với
+                một dedicated listener class và decorator <code>@OnQueueEvent(event)</code>.</p>
+
+            <p>Worker event phải được khai báo trong một <a href="#consumers"><strong>consumer</strong></a> class (tức
+                là, bên trong class decorated với <code>@Processor()</code> decorator). Để listen for một event, sử dụng
+                decorator <code>@OnWorkerEvent(event)</code> với event bạn muốn xử lý. Ví dụ, để listen event khi job
+                vào active state trong <code>audio</code> queue, sử dụng construct sau:</p>
+
+            <div class="cb">
+                <div class="cb-head">
+                    <div class="cb-fname"></div>
+                    <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+                </div>
+                <pre><span class="kw">import</span> { Processor, Process, OnWorkerEvent } <span class="kw">from</span> <span class="str">'@nestjs/bullmq'</span>;
+<span class="kw">import</span> { Job } <span class="kw">from</span> <span class="str">'bullmq'</span>;
+
+<span class="dec">@Processor</span>(<span class="str">'audio'</span>)
+<span class="kw">export class</span> <span class="cl">AudioConsumer</span> {
+  <span class="dec">@OnWorkerEvent</span>(<span class="str">'active'</span>)
+  <span class="fn">onActive</span>(job: Job) {
+    console.<span class="fn">log</span>(
+      <span class="str">`Processing job ${job.id} of type ${job.name} with data ${job.data}...`</span>,
+    );
+  }
+
+  <span class="cm">// ...</span>
+}</pre>
+            </div>
+
+            <p>Bạn có thể xem danh sách đầy đủ các event và argument của chúng dưới dạng property của WorkerListener <a
+                    href="https://api.docs.bullmq.io/interfaces/v5.WorkerListener.html" target="_blank"><strong>tại
+                        đây</strong></a>.</p>
+
+            <p>QueueEvent listener phải sử dụng decorator <code>@QueueEventsListener(queue)</code> và extend class
+                <code>QueueEventsHost</code> được cung cấp bởi <code>@nestjs/bullmq</code>. Để listen for event, sử
+                dụng decorator <code>@OnQueueEvent(event)</code> với event bạn muốn xử lý. Ví dụ, để listen event khi
+                job vào active state trong <code>audio</code> queue, sử dụng construct sau:
+            </p>
+
+            <div class="cb">
+                <div class="cb-head">
+                    <div class="cb-fname"></div>
+                    <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+                </div>
+                <pre><span class="kw">import</span> {
+  QueueEventsHost,
+  QueueEventsListener,
+  OnQueueEvent,
+} <span class="kw">from</span> <span class="str">'@nestjs/bullmq'</span>;
+
+<span class="dec">@QueueEventsListener</span>(<span class="str">'audio'</span>)
+<span class="kw">export class</span> <span class="cl">AudioEventsListener</span> <span class="kw">extends</span> QueueEventsHost {
+  <span class="dec">@OnQueueEvent</span>(<span class="str">'active'</span>)
+  <span class="fn">onActive</span>(job: { jobId: string; prev?: string }) {
+    console.<span class="fn">log</span>(<span class="str">`Processing job ${job.jobId}...`</span>);
+  }
+
+  <span class="cm">// ...</span>
+}</pre>
+            </div>
+
+            <div class="hint"><span class="lbl">💡 Hint</span>
+                <p>QueueEvent Listener phải được đăng ký dưới dạng <code>providers</code> để package
+                    <code>@nestjs/bullmq</code> có thể pick chúng lên.
+                </p>
+            </div>
+
+            <p>Bạn có thể xem danh sách đầy đủ các event và argument của chúng dưới dạng property của
+                QueueEventsListener <a href="https://api.docs.bullmq.io/interfaces/v5.QueueEventsListener.html"
+                    target="_blank"><strong>tại đây</strong></a>.</p>
+
+            <!-- ═══════════ QUEUE MANAGEMENT ═══════════ -->
+            <h3 id="queue-management">Queue management <a class="anchor" href="#queue-management">#</a></h3>
+
+            <p>Queue có một API cho phép bạn thực hiện các management function như pausing và resuming, lấy count of job
+                ở các state khác nhau, và nhiều hơn nữa. Bạn có thể tìm full queue API <a
+                    href="https://api.docs.bullmq.io/classes/v5.Queue.html" target="_blank"><strong>tại
+                        đây</strong></a>.
+                Invoke bất kỳ method nào trực tiếp trên <code>Queue</code> object, như hiển thị bên dưới với các ví dụ
+                pause/resume.</p>
+
+            <p>Pause một queue với lệnh gọi method <code>pause()</code>. Một paused queue sẽ không xử lý new job cho
+                đến khi được resumed, nhưng các job đang được xử lý sẽ tiếp tục cho đến khi chúng hoàn thành.</p>
+
+            <div class="cb">
+                <div class="cb-head">
+                    <div class="cb-fname"></div>
+                    <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+                </div>
+                <pre><span class="kw">await</span> audioQueue.<span class="fn">pause</span>();</pre>
+            </div>
+
+            <p>Để resume một paused queue, sử dụng method <code>resume()</code>, như sau:</p>
+
+            <div class="cb">
+                <div class="cb-head">
+                    <div class="cb-fname"></div>
+                    <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+                </div>
+                <pre><span class="kw">await</span> audioQueue.<span class="fn">resume</span>();</pre>
+            </div>
+
+            <!-- ═══════════ SEPARATE PROCESSES ═══════════ -->
+            <h3 id="separate-processes">Separate processes <a class="anchor" href="#separate-processes">#</a></h3>
+
+            <p>Job handler cũng có thể được chạy trong một separate (forked) process (<a
+                    href="https://docs.bullmq.io/guide/workers/sandboxed-processors"
+                    target="_blank"><strong>source</strong></a>). Điều này có một số lợi thế:</p>
+
+            <ul>
+                <li>Process được sandboxed nên nếu nó crash sẽ không ảnh hưởng đến worker.</li>
+                <li>Bạn có thể chạy blocking code mà không ảnh hưởng đến queue (job sẽ không bị stall).</li>
+                <li>Sử dụng tốt hơn multi-core CPU.</li>
+                <li>Ít connection đến redis hơn.</li>
+            </ul>
+
+            <div class="cb">
+                <div class="cb-head">
+                    <div class="cb-fname">app.module.ts</div>
+                    <div class="cb-right">
+                        <div class="tabs">
+                            <div class="tab on">JS</div>
+                        </div><button class="cpbtn" onclick="cp(this)">Copy</button>
+                    </div>
+                </div>
+                <pre><span class="kw">import</span> { Module } <span class="kw">from</span> <span class="str">'@nestjs/common'</span>;
+<span class="kw">import</span> { BullModule } <span class="kw">from</span> <span class="str">'@nestjs/bullmq'</span>;
+<span class="kw">import</span> { join } <span class="kw">from</span> <span class="str">'node:path'</span>;
+
+<span class="dec">@Module</span>({
+  imports: [
+    BullModule.<span class="fn">registerQueue</span>({
+      name: <span class="str">'audio'</span>,
+      processors: [<span class="fn">join</span>(__dirname, <span class="str">'processor.js'</span>)],
+    }),
+  ],
+})
+<span class="kw">export class</span> <span class="cl">AppModule</span> {}</pre>
+            </div>
+
+            <div class="warn"><span class="lbl">⚠️ Warning</span>
+                <p>Xin lưu ý rằng vì function của bạn đang được thực thi trong một forked process, Dependency Injection
+                    (và IoC container) sẽ không khả dụng. Điều đó có nghĩa là processor function của bạn sẽ cần chứa
+                    (hoặc tạo) tất cả instance của external dependency mà nó cần.</p>
+            </div>
+
+            <!-- ═══════════ ASYNC CONFIGURATION ═══════════ -->
+            <h3 id="async-configuration">Async configuration <a class="anchor" href="#async-configuration">#</a></h3>
+
+            <p>Bạn có thể muốn truyền <code>bullmq</code> option một cách bất đồng bộ thay vì tĩnh. Trong trường hợp
+                này, sử dụng method <code>forRootAsync()</code> cung cấp nhiều cách để xử lý async configuration. Tương
+                tự, nếu bạn muốn truyền queue option một cách bất đồng bộ, sử dụng method
+                <code>registerQueueAsync()</code>.
+            </p>
+
+            <p>Một cách tiếp cận là sử dụng factory function:</p>
+
+            <div class="cb">
+                <div class="cb-head">
+                    <div class="cb-fname"></div>
+                    <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+                </div>
+                <pre>BullModule.<span class="fn">forRootAsync</span>({
+  useFactory: () =&gt; ({
+    connection: {
+      host: <span class="str">'localhost'</span>,
+      port: <span class="num">6379</span>,
+    },
+  }),
+});</pre>
+            </div>
+
+            <p>Factory của chúng ta hoạt động giống như bất kỳ <a
+                    href="https://docs.nestjs.com/fundamentals/async-providers" target="_blank"><strong>asynchronous
+                        provider</strong></a> nào khác (ví dụ: nó có thể là
+                <code>async</code> và có khả năng inject dependency thông qua <code>inject</code>).
+            </p>
+
+            <div class="cb">
+                <div class="cb-head">
+                    <div class="cb-fname"></div>
+                    <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+                </div>
+                <pre>BullModule.<span class="fn">forRootAsync</span>({
+  imports: [ConfigModule],
+  useFactory: <span class="kw">async</span> (configService: ConfigService) =&gt; ({
+    connection: {
+      host: configService.<span class="fn">get</span>(<span class="str">'QUEUE_HOST'</span>),
+      port: configService.<span class="fn">get</span>(<span class="str">'QUEUE_PORT'</span>),
+    },
+  }),
+  inject: [ConfigService],
+});</pre>
+            </div>
+
+            <p>Ngoài ra, bạn có thể sử dụng cú pháp <code>useClass</code>:</p>
+
+            <div class="cb">
+                <div class="cb-head">
+                    <div class="cb-fname"></div>
+                    <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+                </div>
+                <pre>BullModule.<span class="fn">forRootAsync</span>({
+  useClass: BullConfigService,
+});</pre>
+            </div>
+
+            <p>Construction trên sẽ instantiate <code>BullConfigService</code> bên trong <code>BullModule</code> và sử
+                dụng nó để cung cấp options object bằng cách gọi <code>createSharedConfiguration()</code>. Lưu ý rằng
+                điều này có nghĩa là <code>BullConfigService</code> phải implement interface
+                <code>SharedBullConfigurationFactory</code>, như hiển thị bên dưới:
+            </p>
+
+            <div class="cb">
+                <div class="cb-head">
+                    <div class="cb-fname"></div>
+                    <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+                </div>
+                <pre><span class="dec">@Injectable</span>()
+<span class="kw">class</span> <span class="cl">BullConfigService</span> <span class="kw">implements</span> SharedBullConfigurationFactory {
+  <span class="fn">createSharedConfiguration</span>(): BullModuleOptions {
+    <span class="kw">return</span> {
+      connection: {
+        host: <span class="str">'localhost'</span>,
+        port: <span class="num">6379</span>,
+      },
+    };
+  }
+}</pre>
+            </div>
+
+            <p>Để ngăn việc tạo <code>BullConfigService</code> bên trong <code>BullModule</code> và sử dụng một
+                provider được import từ module khác, bạn có thể sử dụng cú pháp <code>useExisting</code>.</p>
+
+            <div class="cb">
+                <div class="cb-head">
+                    <div class="cb-fname"></div>
+                    <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+                </div>
+                <pre>BullModule.<span class="fn">forRootAsync</span>({
+  imports: [ConfigModule],
+  useExisting: ConfigService,
+});</pre>
+            </div>
+
+            <p>Construction này hoạt động giống <code>useClass</code> với một khác biệt quan trọng -
+                <code>BullModule</code> sẽ tìm trong các imported module để tái sử dụng <code>ConfigService</code> hiện
+                có thay vì instantiate một cái mới.
+            </p>
+
+            <p>Tương tự, nếu bạn muốn truyền queue option bất đồng bộ, sử dụng method
+                <code>registerQueueAsync()</code>, chỉ cần nhớ chỉ định attribute <code>name</code> bên ngoài factory
+                function.
+            </p>
+
+            <div class="cb">
+                <div class="cb-head">
+                    <div class="cb-fname"></div>
+                    <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+                </div>
+                <pre>BullModule.<span class="fn">registerQueueAsync</span>({
+  name: <span class="str">'audio'</span>,
+  useFactory: () =&gt; ({
+    redis: {
+      host: <span class="str">'localhost'</span>,
+      port: <span class="num">6379</span>,
+    },
+  }),
+});</pre>
+            </div>
+
+            <!-- ═══════════ MANUAL REGISTRATION ═══════════ -->
+            <h3 id="manual-registration">Manual registration <a class="anchor" href="#manual-registration">#</a></h3>
+
+            <p>Mặc định, <code>BullModule</code> tự động đăng ký BullMQ component (queue, processor, và event listener
+                service) trong lifecycle function <code>onModuleInit</code>. Tuy nhiên, trong một số trường hợp, hành vi
+                này có thể không lý tưởng. Để ngăn automatic registration, enable <code>manualRegistration</code> trong
+                <code>BullModule</code> như sau:
+            </p>
+
+            <div class="cb">
+                <div class="cb-head">
+                    <div class="cb-fname"></div>
+                    <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+                </div>
+                <pre>BullModule.<span class="fn">forRoot</span>({
+  extraOptions: {
+    manualRegistration: <span class="kw">true</span>,
+  },
+});</pre>
+            </div>
+
+            <p>Để đăng ký các component này theo cách thủ công, inject <code>BullRegistrar</code> và gọi function
+                <code>register</code>, lý tưởng nhất trong <code>OnModuleInit</code> hoặc
+                <code>OnApplicationBootstrap</code>.
+            </p>
+
+            <div class="cb">
+                <div class="cb-head">
+                    <div class="cb-fname"></div>
+                    <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+                </div>
+                <pre><span class="kw">import</span> { Injectable, OnModuleInit } <span class="kw">from</span> <span class="str">'@nestjs/common'</span>;
+<span class="kw">import</span> { BullRegistrar } <span class="kw">from</span> <span class="str">'@nestjs/bullmq'</span>;
+
+<span class="dec">@Injectable</span>()
+<span class="kw">export class</span> <span class="cl">AudioService</span> <span class="kw">implements</span> OnModuleInit {
+  <span class="fn">constructor</span>(<span class="kw">private</span> bullRegistrar: BullRegistrar) {}
+
+  <span class="fn">onModuleInit</span>() {
+    <span class="kw">if</span> (yourConditionHere) {
+      <span class="kw">this</span>.bullRegistrar.<span class="fn">register</span>();
+    }
+  }
+}</pre>
+            </div>
+
+            <p>Trừ khi bạn gọi function <code>BullRegistrar#register</code>, không có BullMQ component nào sẽ hoạt động
+                — nghĩa là sẽ không có job nào được xử lý.</p>
+
+            <!-- ═══════════ BULL INSTALLATION (Legacy) ═══════════ -->
+            <h2 id="bull-installation">Bull installation (Legacy)</h2>
+
+            <p>Phần dưới đây mô tả cách sử dụng package <code>@nestjs/bull</code> (Bull - phiên bản legacy). Nếu bạn
+                đang bắt đầu dự án mới, chúng tôi khuyến nghị sử dụng <strong>BullMQ</strong> (phần trên). Tuy nhiên,
+                nếu dự án của bạn đang sử dụng Bull, các hướng dẫn bên dưới vẫn áp dụng.</p>
+
+            <p>Để bắt đầu sử dụng Bull, chúng ta cài đặt các dependency cần thiết:</p>
+
+            <div class="cb">
+                <div class="cb-head">
+                    <div class="cb-fname">bash</div>
+                    <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+                </div>
+                <pre>$ npm install --save @nestjs/bull bull
+$ npm install --save-dev @types/bull</pre>
+            </div>
+
+            <p>Sau khi cài đặt hoàn tất, import <code>BullModule</code> vào root <code>AppModule</code>:</p>
+
+            <div class="cb">
+                <div class="cb-head">
+                    <div class="cb-fname">app.module.ts</div>
+                    <div class="cb-right">
+                        <div class="tabs">
+                            <div class="tab on">JS</div>
+                        </div><button class="cpbtn" onclick="cp(this)">Copy</button>
+                    </div>
+                </div>
+                <pre><span class="kw">import</span> { Module } <span class="kw">from</span> <span class="str">'@nestjs/common'</span>;
+<span class="kw">import</span> { BullModule } <span class="kw">from</span> <span class="str">'@nestjs/bull'</span>;
+
+<span class="dec">@Module</span>({
+  imports: [
+    BullModule.<span class="fn">forRoot</span>({
+      redis: {
+        host: <span class="str">'localhost'</span>,
+        port: <span class="num">6379</span>,
+      },
+    }),
+  ],
+})
+<span class="kw">export class</span> <span class="cl">AppModule</span> {}</pre>
+            </div>
+
+            <p>Method <code>forRoot()</code> được sử dụng để đăng ký một <code>bull</code> package configuration object
+                sẽ được sử dụng bởi tất cả queue đăng ký trong application (trừ khi chỉ định khác). Configuration object
+                bao gồm các property sau:</p>
+
+            <ul>
+                <li><code>limiter: RateLimiter</code> - Options để control rate tại đó job của queue processor được xử
+                    lý. Xem <a href="https://github.com/OptimalBits/bull/blob/master/REFERENCE.md#queue"
+                        target="_blank"><strong>RateLimiter</strong></a> để biết thêm. Optional.</li>
+                <li><code>redis: RedisOpts</code> - Options để configure Redis connection. Xem <a
+                        href="https://github.com/OptimalBits/bull/blob/master/REFERENCE.md#queue"
+                        target="_blank"><strong>RedisOpts</strong></a> để biết thêm. Optional.</li>
+                <li><code>prefix: string</code> - Prefix cho tất cả queue key. Optional.</li>
+                <li><code>defaultJobOptions: JobOpts</code> - Options để control default settings cho new job. Xem <a
+                        href="https://github.com/OptimalBits/bull/blob/master/REFERENCE.md#queueadd"
+                        target="_blank"><strong>JobOpts</strong></a> để biết thêm. Optional.</li>
+                <li><code>settings: AdvancedSettings</code> - Advanced Queue configuration settings. Thông thường không
+                    nên thay đổi. Xem <a href="https://github.com/OptimalBits/bull/blob/master/REFERENCE.md#queue"
+                        target="_blank"><strong>AdvancedSettings</strong></a> để biết thêm. Optional.</li>
+            </ul>
+
+            <p>Tất cả options đều optional, cung cấp quyền kiểm soát chi tiết hành vi queue. Chúng được truyền trực tiếp
+                đến Bull <code>Queue</code> constructor. Đọc thêm <a
+                    href="https://github.com/OptimalBits/bull/blob/master/REFERENCE.md#queue"
+                    target="_blank"><strong>tại đây</strong></a>.</p>
+
+            <p>Để đăng ký queue, import <code>BullModule.registerQueue()</code> dynamic module:</p>
+
+            <div class="cb">
+                <div class="cb-head">
+                    <div class="cb-fname"></div>
+                    <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+                </div>
+                <pre>BullModule.<span class="fn">registerQueue</span>({
+  name: <span class="str">'audio'</span>,
+});</pre>
+            </div>
+
+            <div class="hint"><span class="lbl">💡 Hint</span>
+                <p>Tạo nhiều queue bằng cách truyền nhiều comma-separated configuration object cho method
+                    <code>registerQueue()</code>.
+                </p>
+            </div>
+
+            <p>Method <code>registerQueue()</code> được sử dụng để instantiate và/hoặc đăng ký queue. Queue được chia sẻ
+                giữa các module và process kết nối đến cùng Redis database cơ bản với cùng credential. Mỗi queue là duy
+                nhất theo property name.</p>
+
+            <!-- ═══════════ Bull Named Configurations ═══════════ -->
+            <h3 id="bull-named-configurations">Named configurations (Bull) <a class="anchor"
+                    href="#bull-named-configurations">#</a></h3>
+
+            <p>Nếu queue của bạn kết nối đến nhiều Redis instance khác nhau, bạn có thể sử dụng kỹ thuật gọi là
+                <strong>named configurations</strong>. Tính năng này cho phép đăng ký nhiều configuration dưới các key
+                được chỉ định.
+            </p>
+
+            <div class="cb">
+                <div class="cb-head">
+                    <div class="cb-fname"></div>
+                    <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+                </div>
+                <pre>BullModule.<span class="fn">forRoot</span>(<span class="str">'alternative-config'</span>, {
+  redis: {
+    port: <span class="num">6381</span>,
+  },
+});</pre>
+            </div>
+
+            <p>Sau đó bạn có thể trỏ đến configuration này trong <code>registerQueue()</code> options object:</p>
+
+            <div class="cb">
+                <div class="cb-head">
+                    <div class="cb-fname"></div>
+                    <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+                </div>
+                <pre>BullModule.<span class="fn">registerQueue</span>({
+  configKey: <span class="str">'alternative-config'</span>,
+  name: <span class="str">'video'</span>,
+});</pre>
+            </div>
+
+            <!-- ═══════════ Bull Producers ═══════════ -->
+            <h3 id="bull-producers">Producers (Bull) <a class="anchor" href="#bull-producers">#</a></h3>
+
+            <p>Job producer add job vào queue. Để add job vào queue, inject queue vào service:</p>
+
+            <div class="cb">
+                <div class="cb-head">
+                    <div class="cb-fname"></div>
+                    <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+                </div>
+                <pre><span class="kw">import</span> { Injectable } <span class="kw">from</span> <span class="str">'@nestjs/common'</span>;
+<span class="kw">import</span> { Queue } <span class="kw">from</span> <span class="str">'bull'</span>;
+<span class="kw">import</span> { InjectQueue } <span class="kw">from</span> <span class="str">'@nestjs/bull'</span>;
+
+<span class="dec">@Injectable</span>()
+<span class="kw">export class</span> <span class="cl">AudioService</span> {
+  <span class="fn">constructor</span>(<span class="dec">@InjectQueue</span>(<span class="str">'audio'</span>) <span class="kw">private</span> audioQueue: Queue) {}
+}</pre>
+            </div>
+
+            <p>Sau đó add job bằng method <code>add()</code>:</p>
+
+            <div class="cb">
+                <div class="cb-head">
+                    <div class="cb-fname"></div>
+                    <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+                </div>
+                <pre><span class="kw">const</span> job = <span class="kw">await</span> <span class="kw">this</span>.audioQueue.<span class="fn">add</span>({
+  foo: <span class="str">'bar'</span>,
+});</pre>
+            </div>
+
+            <!-- ═══════════ Named jobs ═══════════ -->
+            <h3 id="named-jobs">Named jobs <a class="anchor" href="#named-jobs">#</a></h3>
+
+            <p>Job có thể có tên duy nhất. Điều này cho phép bạn tạo các <a
+                    href="#bull-consumers"><strong>consumer</strong></a>
+                chuyên biệt chỉ xử lý job với tên đã cho.</p>
+
+            <div class="cb">
+                <div class="cb-head">
+                    <div class="cb-fname"></div>
+                    <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+                </div>
+                <pre><span class="kw">const</span> job = <span class="kw">await</span> <span class="kw">this</span>.audioQueue.<span class="fn">add</span>(<span class="str">'transcode'</span>, {
+  foo: <span class="str">'bar'</span>,
+});</pre>
+            </div>
+
+            <div class="warn"><span class="lbl">⚠️ Warning</span>
+                <p>Khi sử dụng named job, bạn phải tạo processor cho mỗi tên duy nhất được add vào queue, nếu không
+                    queue
+                    sẽ thông báo rằng bạn thiếu processor cho job đã cho. Xem phần <a
+                        href="#bull-consumers">Consumers</a>
+                    để biết thêm.</p>
+            </div>
+
+            <!-- ═══════════ Bull Job Options ═══════════ -->
+            <h3 id="bull-job-options">Job options (Bull) <a class="anchor" href="#bull-job-options">#</a></h3>
+
+            <p>Job có thể có các option bổ sung đi kèm. Truyền một options object sau argument <code>job</code> trong
+                method <code>Queue.add()</code>. Một số job options properties bao gồm:</p>
+
+            <ul>
+                <li><code>priority: number</code> - Optional priority value. Ranges from 1 (highest priority) to
+                    MAX_INT (lowest priority). Lưu ý rằng việc sử dụng priority có ảnh hưởng nhẹ đến performance, vì
+                    vậy hãy sử dụng chúng cẩn thận.</li>
+                <li><code>delay: number</code> - Khoảng thời gian (millisecond) chờ trước khi job có thể được xử lý.
+                    Lưu ý rằng để delay chính xác, cả server và client nên có clock đồng bộ.</li>
+                <li><code>attempts: number</code> - Tổng số lần thử để thực hiện job cho đến khi hoàn thành.</li>
+                <li><code>repeat: RepeatOpts</code> - Lặp lại job theo cron specification. Xem <a
+                        href="https://github.com/OptimalBits/bull/blob/master/REFERENCE.md#queueadd"
+                        target="_blank"><strong>RepeatOpts</strong></a>.</li>
+                <li><code>backoff: number | BackoffOpts</code> - Backoff setting cho automatic retry khi job fail. Xem
+                    <a href="https://github.com/OptimalBits/bull/blob/master/REFERENCE.md#queueadd"
+                        target="_blank"><strong>BackoffOpts</strong></a>.
+                </li>
+                <li><code>lifo: boolean</code> - Nếu true, add job vào right end của queue thay vì left (mặc định
+                    false).</li>
+                <li><code>timeout: number</code> - Số millisecond mà job này có thể chạy trước khi bị timeout và fail.
+                </li>
+                <li><code>jobId: number | string</code> - Override job ID - mặc định, job ID là một unique integer,
+                    nhưng bạn có thể sử dụng setting này để override nó. Nếu sử dụng option này, bạn phải đảm bảo
+                    jobId duy nhất. Nếu bạn cố add job với id đã tồn tại, nó sẽ không được thêm.</li>
+                <li><code>removeOnComplete: boolean | number</code> - Nếu true, xóa job khi nó hoàn thành thành công.
+                    Nếu là number, chỉ định số lượng job cần giữ. Default behavior là giữ job trong completed set.
+                </li>
+                <li><code>removeOnFail: boolean | number</code> - Nếu true, xóa job khi nó fail sau tất cả attempt.
+                    Nếu là number, chỉ định số lượng job cần giữ. Default behavior là giữ job trong failed set.</li>
+                <li><code>stackTraceLimit: number</code> - Giới hạn số dòng stack trace sẽ được ghi lại trong
+                    stacktrace.</li>
+            </ul>
+
+            <p>Dưới đây là một vài ví dụ về customizing job với job option.</p>
+
+            <p>Để delay start của job, sử dụng <code>delay</code> configuration property.</p>
+
+            <div class="cb">
+                <div class="cb-head">
+                    <div class="cb-fname"></div>
+                    <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+                </div>
+                <pre><span class="kw">const</span> job = <span class="kw">await</span> <span class="kw">this</span>.audioQueue.<span class="fn">add</span>(
+  <span class="str">'transcode'</span>,
+  {
+    foo: <span class="str">'bar'</span>,
+  },
+  { delay: <span class="num">3000</span> }, <span class="cm">// 3 seconds delayed</span>
+);</pre>
+            </div>
+
+            <p>Để add job vào right end của queue (xử lý job theo <strong>LIFO</strong> (Last In First Out)), set
+                property <code>lifo</code> của configuration object thành <code>true</code>.</p>
+
+            <div class="cb">
+                <div class="cb-head">
+                    <div class="cb-fname"></div>
+                    <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+                </div>
+                <pre><span class="kw">const</span> job = <span class="kw">await</span> <span class="kw">this</span>.audioQueue.<span class="fn">add</span>(
+  <span class="str">'transcode'</span>,
+  {
+    foo: <span class="str">'bar'</span>,
+  },
+  { lifo: <span class="kw">true</span> },
+);</pre>
+            </div>
+
+            <p>Để ưu tiên một job, sử dụng property <code>priority</code>.</p>
+
+            <div class="cb">
+                <div class="cb-head">
+                    <div class="cb-fname"></div>
+                    <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+                </div>
+                <pre><span class="kw">const</span> job = <span class="kw">await</span> <span class="kw">this</span>.audioQueue.<span class="fn">add</span>(
+  <span class="str">'transcode'</span>,
+  {
+    foo: <span class="str">'bar'</span>,
+  },
+  { priority: <span class="num">2</span> },
+);</pre>
+            </div>
+
+            <p>Để xem danh sách đầy đủ các option, kiểm tra API documentation <a
+                    href="https://github.com/OptimalBits/bull/blob/master/REFERENCE.md#queueadd"
+                    target="_blank"><strong>tại đây</strong></a>.</p>
+
+            <!-- ═══════════ Bull Consumers ═══════════ -->
+            <h3 id="bull-consumers">Consumers (Bull) <a class="anchor" href="#bull-consumers">#</a></h3>
+
+            <p>Consumer là một <strong>class</strong> định nghĩa các method để xử lý job được add vào queue, hoặc lắng
+                nghe event, hoặc cả hai. Khai báo consumer class bằng decorator <code>@Processor()</code>:</p>
+
+            <div class="cb">
+                <div class="cb-head">
+                    <div class="cb-fname"></div>
+                    <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+                </div>
+                <pre><span class="kw">import</span> { Processor, Process } <span class="kw">from</span> <span class="str">'@nestjs/bull'</span>;
+
+<span class="dec">@Processor</span>(<span class="str">'audio'</span>)
+<span class="kw">export class</span> <span class="cl">AudioConsumer</span> {
+  <span class="dec">@Process</span>()
+  <span class="kw">async</span> <span class="fn">transcode</span>(job: Job&lt;unknown&gt;) {
+    <span class="kw">let</span> progress = <span class="num">0</span>;
+    <span class="kw">for</span> (<span class="kw">let</span> i = <span class="num">0</span>; i &lt; <span class="num">100</span>; i++) {
+      <span class="kw">await</span> <span class="fn">doSomething</span>(job.data);
+      progress += <span class="num">1</span>;
+      <span class="kw">await</span> job.<span class="fn">progress</span>(progress);
+    }
+    <span class="kw">return</span> {};
+  }
+}</pre>
+            </div>
+
+            <div class="hint"><span class="lbl">💡 Hint</span>
+                <p>Consumer phải được đăng ký dưới dạng <code>providers</code> để package <code>@nestjs/bull</code> có
+                    thể pick chúng lên.</p>
+            </div>
+
+            <p>Với named job, truyền tên cho <code>@Process()</code> decorator:</p>
+
+            <div class="cb">
+                <div class="cb-head">
+                    <div class="cb-fname"></div>
+                    <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+                </div>
+                <pre><span class="dec">@Process</span>(<span class="str">'transcode'</span>)
+<span class="kw">async</span> <span class="fn">transcode</span>(job: Job&lt;unknown&gt;) { ... }</pre>
+            </div>
+
+            <!-- ═══════════ Bull Event Listeners ═══════════ -->
+            <h3 id="bull-event-listeners">Event listeners (Bull) <a class="anchor" href="#bull-event-listeners">#</a>
+            </h3>
+
+            <p>Bull tạo một tập hợp các event hữu ích khi queue và/hoặc job state thay đổi. Nest cung cấp bộ decorator
+                cho phép subscribe các core event set. Chúng được export từ <code>@nestjs/bull</code> package.</p>
+
+            <p>Event listener phải được khai báo trong <a href="#bull-consumers"><strong>consumer</strong></a> class
+                (tức
+                là, bên trong class được decorate với <code>@Processor()</code> decorator). Để listen for một event, sử
+                dụng một trong các decorator dưới đây. Ví dụ, để listen event khi job vào active state trong
+                <code>audio</code> queue, sử dụng construct sau:
+            </p>
+
+            <div class="cb">
+                <div class="cb-head">
+                    <div class="cb-fname"></div>
+                    <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+                </div>
+                <pre><span class="kw">import</span> { Processor, Process, OnQueueActive } <span class="kw">from</span> <span class="str">'@nestjs/bull'</span>;
+<span class="kw">import</span> { Job } <span class="kw">from</span> <span class="str">'bull'</span>;
+
+<span class="dec">@Processor</span>(<span class="str">'audio'</span>)
+<span class="kw">export class</span> <span class="cl">AudioConsumer</span> {
+  <span class="dec">@OnQueueActive</span>()
+  <span class="fn">onActive</span>(job: Job) {
+    console.<span class="fn">log</span>(
+      <span class="str">`Processing job ${job.id} of type ${job.name} with data ${job.data}...`</span>,
+    );
+  }
+
+  <span class="cm">// ...</span>
+}</pre>
+            </div>
+
+            <p>Vì lắng nghe event là global-scoped (ví dụ: nếu một event xảy ra trên bất kỳ queue nào), hãy lưu ý rằng
+                argument signature của handler method có thể khác so với local event handler tương ứng. Ví dụ:</p>
+
+            <table>
+                <tr>
+                    <td><strong>Event</strong></td>
+                    <td><strong>Local event handler</strong></td>
+                    <td><strong>Global event handler</strong></td>
+                </tr>
+                <tr>
+                    <td>error</td>
+                    <td><code>@OnQueueError()</code></td>
+                    <td><code>@OnGlobalQueueError()</code></td>
+                </tr>
+                <tr>
+                    <td>waiting</td>
+                    <td><code>@OnQueueWaiting()</code></td>
+                    <td><code>@OnGlobalQueueWaiting()</code></td>
+                </tr>
+                <tr>
+                    <td>active</td>
+                    <td><code>@OnQueueActive()</code></td>
+                    <td><code>@OnGlobalQueueActive()</code></td>
+                </tr>
+                <tr>
+                    <td>stalled</td>
+                    <td><code>@OnQueueStalled()</code></td>
+                    <td><code>@OnGlobalQueueStalled()</code></td>
+                </tr>
+                <tr>
+                    <td>progress</td>
+                    <td><code>@OnQueueProgress()</code></td>
+                    <td><code>@OnGlobalQueueProgress()</code></td>
+                </tr>
+                <tr>
+                    <td>completed</td>
+                    <td><code>@OnQueueCompleted()</code></td>
+                    <td><code>@OnGlobalQueueCompleted()</code></td>
+                </tr>
+                <tr>
+                    <td>failed</td>
+                    <td><code>@OnQueueFailed()</code></td>
+                    <td><code>@OnGlobalQueueFailed()</code></td>
+                </tr>
+                <tr>
+                    <td>paused</td>
+                    <td><code>@OnQueuePaused()</code></td>
+                    <td><code>@OnGlobalQueuePaused()</code></td>
+                </tr>
+                <tr>
+                    <td>resumed</td>
+                    <td><code>@OnQueueResumed()</code></td>
+                    <td><code>@OnGlobalQueueResumed()</code></td>
+                </tr>
+                <tr>
+                    <td>cleaned</td>
+                    <td><code>@OnQueueCleaned()</code></td>
+                    <td><code>@OnGlobalQueueCleaned()</code></td>
+                </tr>
+                <tr>
+                    <td>drained</td>
+                    <td><code>@OnQueueDrained()</code></td>
+                    <td><code>@OnGlobalQueueDrained()</code></td>
+                </tr>
+                <tr>
+                    <td>removed</td>
+                    <td><code>@OnQueueRemoved()</code></td>
+                    <td><code>@OnGlobalQueueRemoved()</code></td>
+                </tr>
+            </table>
+
+            <p>Khi listening cho global event, method signature có thể hơi khác so với local counterpart. Cụ thể, bất kỳ
+                method signature nào nhận <code>job</code> object trong local version sẽ nhận <code>jobId</code>
+                (<code>number</code>) thay vì <code>job</code> (<code>Job</code> object) trong global version. Để lấy
+                reference đến <code>job</code> thực tế trong trường hợp như vậy, sử dụng method
+                <code>Queue#getJob</code>. Lệnh gọi này nên được <code>await</code>, và do đó handler nên được khai báo
+                <code>async</code>. Ví dụ:
+            </p>
+
+            <div class="cb">
+                <div class="cb-head">
+                    <div class="cb-fname"></div>
+                    <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+                </div>
+                <pre><span class="dec">@OnGlobalQueueCompleted</span>()
+<span class="kw">async</span> <span class="fn">onGlobalCompleted</span>(jobId: <span class="typ">number</span>, result: <span class="typ">any</span>) {
+  <span class="kw">const</span> job = <span class="kw">await</span> <span class="kw">this</span>.immediateQueue.<span class="fn">getJob</span>(jobId);
+  console.<span class="fn">log</span>(<span class="str">'(Global) on completed: job '</span>, job.id, <span class="str">' -> result: '</span>, result);
+}</pre>
+            </div>
+
+            <div class="hint"><span class="lbl">💡 Hint</span>
+                <p>Để truy cập <code>Queue</code> object (để thực hiện lệnh gọi <code>getJob()</code>), bạn phải inject
+                    nó. Ngoài ra, Queue phải được đăng ký trong module mà nó đang được inject vào.</p>
+            </div>
+
+            <!-- ═══════════ Bull Request-scoped consumers ═══════════ -->
+            <h3 id="bull-request-scoped-consumers">Request-scoped consumers (Bull) <a class="anchor"
+                    href="#bull-request-scoped-consumers">#</a></h3>
+
+            <p>Khi một consumer được đánh dấu là request-scoped (tìm hiểu thêm về injection scope <a
+                    href="https://docs.nestjs.com/fundamentals/injection-scopes" target="_blank"><strong>tại
+                        đây</strong></a>), một instance mới của class sẽ được tạo riêng cho mỗi job. Instance sẽ bị
+                garbage-collected sau khi job hoàn thành.</p>
+
+            <div class="cb">
+                <div class="cb-head">
+                    <div class="cb-fname"></div>
+                    <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+                </div>
+                <pre><span class="dec">@Processor</span>({
+  name: <span class="str">'audio'</span>,
+  scope: Scope.REQUEST,
+})</pre>
+            </div>
+
+            <p>Vì request-scoped consumer class được instantiate động và scoped đến một single job, bạn có thể inject
+                <code>JOB_REF</code> thông qua constructor bằng cách sử dụng standard approach.
+            </p>
+
+            <div class="cb">
+                <div class="cb-head">
+                    <div class="cb-fname"></div>
+                    <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+                </div>
+                <pre><span class="fn">constructor</span>(<span class="dec">@Inject</span>(JOB_REF) jobRef: Job) {
+  console.<span class="fn">log</span>(jobRef);
+}</pre>
+            </div>
+
+            <div class="hint"><span class="lbl">💡 Hint</span>
+                <p>Token <code>JOB_REF</code> được import từ package <code>@nestjs/bull</code>.</p>
+            </div>
+
+            <!-- ═══════════ Bull Queue management ═══════════ -->
+            <h3 id="bull-queue-management">Queue management (Bull) <a class="anchor" href="#bull-queue-management">#</a>
+            </h3>
+
+            <p>Queue có một API cho phép bạn thực hiện các management function như pausing và resuming, lấy count of job
+                ở các state khác nhau, và nhiều hơn nữa. Bạn có thể tìm full queue API <a
+                    href="https://github.com/OptimalBits/bull/blob/master/REFERENCE.md#queue"
+                    target="_blank"><strong>tại đây</strong></a>. Invoke bất kỳ method nào trực tiếp trên
+                <code>Queue</code> object, như hiển thị bên dưới với các ví dụ pause/resume.
+            </p>
+
+            <p>Pause một queue với lệnh gọi method <code>pause()</code>. Một paused queue sẽ không xử lý new job cho
+                đến khi được resumed, nhưng các job đang được xử lý sẽ tiếp tục cho đến khi chúng hoàn thành.</p>
+
+            <div class="cb">
+                <div class="cb-head">
+                    <div class="cb-fname"></div>
+                    <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+                </div>
+                <pre><span class="kw">await</span> audioQueue.<span class="fn">pause</span>();</pre>
+            </div>
+
+            <p>Để resume một paused queue, sử dụng method <code>resume()</code>, như sau:</p>
+
+            <div class="cb">
+                <div class="cb-head">
+                    <div class="cb-fname"></div>
+                    <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+                </div>
+                <pre><span class="kw">await</span> audioQueue.<span class="fn">resume</span>();</pre>
+            </div>
+
+            <!-- ═══════════ Bull Separate processes ═══════════ -->
+            <h3 id="bull-separate-processes">Separate processes (Bull) <a class="anchor"
+                    href="#bull-separate-processes">#</a></h3>
+
+            <p>Job handler cũng có thể được chạy trong một separate (forked) process (<a
+                    href="https://github.com/OptimalBits/bull#separate-processes"
+                    target="_blank"><strong>source</strong></a>). Điều này có một số lợi thế:</p>
+
+            <ul>
+                <li>Process được sandboxed nên nếu nó crash sẽ không ảnh hưởng đến worker.</li>
+                <li>Bạn có thể chạy blocking code mà không ảnh hưởng đến queue (job sẽ không bị stall).</li>
+                <li>Sử dụng tốt hơn multi-core CPU.</li>
+                <li>Ít connection đến Redis hơn.</li>
+            </ul>
+
+            <div class="cb">
+                <div class="cb-head">
+                    <div class="cb-fname">app.module.ts</div>
+                    <div class="cb-right">
+                        <div class="tabs">
+                            <div class="tab on">JS</div>
+                        </div><button class="cpbtn" onclick="cp(this)">Copy</button>
+                    </div>
+                </div>
+                <pre><span class="kw">import</span> { Module } <span class="kw">from</span> <span class="str">'@nestjs/common'</span>;
+<span class="kw">import</span> { BullModule } <span class="kw">from</span> <span class="str">'@nestjs/bull'</span>;
+<span class="kw">import</span> { join } <span class="kw">from</span> <span class="str">'path'</span>;
+
+<span class="dec">@Module</span>({
+  imports: [
+    BullModule.<span class="fn">registerQueue</span>({
+      name: <span class="str">'audio'</span>,
+      processors: [<span class="fn">join</span>(__dirname, <span class="str">'processor.js'</span>)],
+    }),
+  ],
+})
+<span class="kw">export class</span> <span class="cl">AppModule</span> {}</pre>
+            </div>
+
+            <p>Xin lưu ý rằng vì function của bạn đang được thực thi trong một forked process, Dependency Injection
+                (và IoC container) sẽ không khả dụng. Điều đó có nghĩa là processor function của bạn sẽ cần chứa
+                (hoặc tạo) tất cả instance của external dependency mà nó cần.</p>
+
+            <div class="cb">
+                <div class="cb-head">
+                    <div class="cb-fname">processor.ts</div>
+                    <div class="cb-right">
+                        <div class="tabs">
+                            <div class="tab on">JS</div>
+                        </div><button class="cpbtn" onclick="cp(this)">Copy</button>
+                    </div>
+                </div>
+                <pre><span class="kw">import</span> { Job, DoneCallback } <span class="kw">from</span> <span class="str">'bull'</span>;
+
+<span class="kw">export default function</span> (<span class="fn">job</span>: Job, <span class="fn">cb</span>: DoneCallback) {
+  console.<span class="fn">log</span>(<span class="str">`[${process.pid}] ${JSON.stringify(job.data)}`</span>);
+  <span class="fn">cb</span>(<span class="kw">null</span>, <span class="str">'It works'</span>);
+}</pre>
+            </div>
+
+            <!-- ═══════════ Bull Async configuration ═══════════ -->
+            <h3 id="bull-async-configuration">Async configuration (Bull) <a class="anchor"
+                    href="#bull-async-configuration">#</a></h3>
+
+            <p>Bạn có thể muốn truyền <code>bull</code> option một cách bất đồng bộ thay vì tĩnh. Trong trường hợp
+                này, sử dụng method <code>forRootAsync()</code> cung cấp nhiều cách để xử lý async configuration.
+                Tương tự, nếu bạn muốn truyền queue option một cách bất đồng bộ, sử dụng method
+                <code>registerQueueAsync()</code>.
+            </p>
+
+            <p>Một cách tiếp cận là sử dụng factory function:</p>
+
+            <div class="cb">
+                <div class="cb-head">
+                    <div class="cb-fname"></div>
+                    <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+                </div>
+                <pre>BullModule.<span class="fn">forRootAsync</span>({
+  useFactory: () =&gt; ({
+    redis: {
+      host: <span class="str">'localhost'</span>,
+      port: <span class="num">6379</span>,
+    },
+  }),
+});</pre>
+            </div>
+
+            <p>Factory của chúng ta hoạt động giống như bất kỳ <a
+                    href="https://docs.nestjs.com/fundamentals/async-providers" target="_blank"><strong>asynchronous
+                        provider</strong></a> nào khác (ví dụ: nó có thể là
+                <code>async</code> và có khả năng inject dependency thông qua <code>inject</code>).
+            </p>
+
+            <div class="cb">
+                <div class="cb-head">
+                    <div class="cb-fname"></div>
+                    <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+                </div>
+                <pre>BullModule.<span class="fn">forRootAsync</span>({
+  imports: [ConfigModule],
+  useFactory: <span class="kw">async</span> (configService: ConfigService) =&gt; ({
+    redis: {
+      host: configService.<span class="fn">get</span>(<span class="str">'QUEUE_HOST'</span>),
+      port: configService.<span class="fn">get</span>(<span class="str">'QUEUE_PORT'</span>),
+    },
+  }),
+  inject: [ConfigService],
+});</pre>
+            </div>
+
+            <p>Ngoài ra, bạn có thể sử dụng cú pháp <code>useClass</code>:</p>
+
+            <div class="cb">
+                <div class="cb-head">
+                    <div class="cb-fname"></div>
+                    <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+                </div>
+                <pre>BullModule.<span class="fn">forRootAsync</span>({
+  useClass: BullConfigService,
+});</pre>
+            </div>
+
+            <p>Construction trên sẽ instantiate <code>BullConfigService</code> bên trong <code>BullModule</code> và sử
+                dụng nó để cung cấp options object bằng cách gọi <code>createSharedConfiguration()</code>. Lưu ý rằng
+                điều này có nghĩa là <code>BullConfigService</code> phải implement interface
+                <code>SharedBullConfigurationFactory</code>, như hiển thị bên dưới:
+            </p>
+
+            <div class="cb">
+                <div class="cb-head">
+                    <div class="cb-fname"></div>
+                    <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+                </div>
+                <pre><span class="dec">@Injectable</span>()
+<span class="kw">class</span> <span class="cl">BullConfigService</span> <span class="kw">implements</span> SharedBullConfigurationFactory {
+  <span class="fn">createSharedConfiguration</span>(): BullModuleOptions {
+    <span class="kw">return</span> {
+      redis: {
+        host: <span class="str">'localhost'</span>,
+        port: <span class="num">6379</span>,
+      },
+    };
+  }
+}</pre>
+            </div>
+
+            <p>Để ngăn việc tạo <code>BullConfigService</code> bên trong <code>BullModule</code> và sử dụng một
+                provider được import từ module khác, bạn có thể sử dụng cú pháp <code>useExisting</code>.</p>
+
+            <div class="cb">
+                <div class="cb-head">
+                    <div class="cb-fname"></div>
+                    <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+                </div>
+                <pre>BullModule.<span class="fn">forRootAsync</span>({
+  imports: [ConfigModule],
+  useExisting: ConfigService,
+});</pre>
+            </div>
+
+            <p>Construction này hoạt động giống <code>useClass</code> với một khác biệt quan trọng -
+                <code>BullModule</code> sẽ tìm trong các imported module để tái sử dụng <code>ConfigService</code> hiện
+                có thay vì instantiate một cái mới.
+            </p>
+
+            <!-- ═══════════ EXAMPLE ═══════════ -->
+            <h3 id="example">Example <a class="anchor" href="#example">#</a></h3>
+
+            <p>Một working example có sẵn <a href="https://github.com/nestjs/nest/tree/master/sample/26-queues"
+                    target="_blank"><strong>tại đây</strong></a>.</p>
+
+            <!-- Page Navigation -->
+            <div class="page-nav">
+                <a href="TaskScheduling.html" class="pnbtn"><span class="pnlbl">← Trước</span><span class="pntitle">Task
+                        Scheduling</span></a>
+                <a href="Logging.html" class="pnbtn r"><span class="pnlbl">Tiếp →</span><span
+                        class="pntitle">Logging</span></a>
+            </div>
+
+        </main>
+
+        <!-- TOC -->
+        <aside class="toc">
+            <div class="toc-title">Nội dung</div>
+            <ul>
+                <li class="grp">BullMQ</li>
+                <li><a href="#bullmq-installation">BullMQ installation</a></li>
+                <li><a href="#named-configurations">Named configurations</a></li>
+                <li><a href="#producers">Producers</a></li>
+                <li><a href="#job-options">Job options</a></li>
+                <li><a href="#consumers">Consumers</a></li>
+                <li><a href="#request-scoped-consumers">Request-scoped consumers</a></li>
+                <li><a href="#event-listeners">Event listeners</a></li>
+                <li><a href="#queue-management">Queue management</a></li>
+                <li><a href="#separate-processes">Separate processes</a></li>
+                <li><a href="#async-configuration">Async configuration</a></li>
+                <li><a href="#manual-registration">Manual registration</a></li>
+                <li class="grp" style="margin-top:14px">Bull (Legacy)</li>
+                <li><a href="#bull-installation">Bull installation</a></li>
+                <li><a href="#bull-named-configurations">Named configurations</a></li>
+                <li><a href="#bull-producers">Producers</a></li>
+                <li><a href="#named-jobs">Named jobs</a></li>
+                <li><a href="#bull-job-options">Job options</a></li>
+                <li><a href="#bull-consumers">Consumers</a></li>
+                <li><a href="#bull-event-listeners">Event listeners</a></li>
+                <li><a href="#bull-request-scoped-consumers">Request-scoped consumers</a></li>
+                <li><a href="#bull-queue-management">Queue management</a></li>
+                <li><a href="#bull-separate-processes">Separate processes</a></li>
+                <li><a href="#bull-async-configuration">Async configuration</a></li>
+                <li><a href="#example">Example</a></li>
+            </ul>
+        </aside>
+
+    </div>
+
+    <script>
+        function cp(btn) { var w = btn.closest('.cb'), p = w.querySelector('pre'); if (!p) return; navigator.clipboard.writeText(p.textContent.trim()).then(function () { var o = btn.textContent; btn.textContent = 'Copied!'; btn.style.color = '#4ade80'; setTimeout(function () { btn.textContent = o; btn.style.color = '' }, 1500) }); }
+        document.querySelectorAll('.toc a').forEach(function (l) { l.addEventListener('click', function (e) { e.preventDefault(); var t = document.querySelector(this.getAttribute('href')); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' }) }) });
+        var tl = document.querySelectorAll('.toc a'), hd = document.querySelectorAll('h2[id],h3[id]');
+        function hi() { var c = ''; hd.forEach(function (h) { if (scrollY >= h.offsetTop - 120) c = h.id }); tl.forEach(function (a) { a.classList.toggle('active', a.getAttribute('href') === '#' + c) }) }
+        window.addEventListener('scroll', hi, { passive: true }); hi();
+    </script>
+</body>
+
+</html>

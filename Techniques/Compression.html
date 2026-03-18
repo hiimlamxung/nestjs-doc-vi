@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Compression | NestJS - Tài liệu tiếng Việt</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root{--bg:#0e0e0e;--surface:#1a1a1a;--surface2:#222;--border:#2a2a2a;--border-l:#333;--red:#ea2845;--red-l:#ff4d6a;--red-glow:rgba(234,40,69,.15);--text:#e8e8e8;--muted:#888;--sec:#b0b0b0;--code-bg:#1e1e1e;--code-bd:#2d2d2d;--hint-bg:#0d2a1a;--hint-c:#4ade80;--warn-bg:#2a1a0d;--warn-c:#fb923c;--note-bg:#0d1a2a;--note-c:#60a0d0;--toc-w:220px;--font:'Inter',sans-serif;--mono:'Source Code Pro',monospace;--r:6px;--rl:10px}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+    body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:15px;line-height:1.78}
+    .page{max-width:1060px;margin:0 auto;padding:48px 32px 96px;display:flex;gap:56px;align-items:flex-start}.content{flex:1;min-width:0}
+    .toc{width:var(--toc-w);flex-shrink:0;position:sticky;top:32px;align-self:flex-start;max-height:calc(100vh - 48px);overflow-y:auto}
+    .toc::-webkit-scrollbar{width:3px}.toc::-webkit-scrollbar-thumb{background:var(--border-l);border-radius:2px}
+    .toc-title{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding-bottom:8px;margin-bottom:8px;border-bottom:1px solid var(--border)}
+    .toc ul{list-style:none}.toc ul li a{display:block;padding:3.5px 0;font-size:12.5px;color:var(--muted);text-decoration:none;line-height:1.5;transition:color .15s;cursor:pointer}
+    .toc ul li a:hover,.toc ul li a.active{color:var(--red-l)}
+    .vi-banner{display:flex;align-items:center;gap:10px;padding:11px 16px;border:1px solid rgba(234,40,69,.3);border-radius:var(--rl);background:linear-gradient(135deg,rgba(234,40,69,.1),rgba(234,40,69,.04));font-size:13px;color:var(--sec);margin-bottom:32px}.vi-banner strong{color:var(--red-l)}
+    h1{font-size:36px;font-weight:700;letter-spacing:-.5px;line-height:1.2;margin-bottom:6px}h1::after{content:'';display:block;width:44px;height:3px;background:var(--red);border-radius:2px;margin-top:12px}
+    h3{font-size:19px;font-weight:600;letter-spacing:-.2px;margin:40px 0 12px;display:flex;align-items:center;gap:8px;scroll-margin-top:80px}
+    .anchor{font-size:14px;color:var(--muted);text-decoration:none;opacity:0;transition:opacity .2s}h3:hover .anchor{opacity:1}
+    p{color:var(--sec);line-height:1.82;margin-bottom:16px}p:last-child{margin-bottom:0}
+    a{color:var(--red-l);text-decoration:none}a:hover{text-decoration:underline}strong{color:var(--text);font-weight:600}
+    ul,ol{color:var(--sec);padding-left:22px;line-height:2.1;margin:16px 0}ul li{margin-bottom:6px}
+    code{font-family:var(--mono);font-size:13px;background:var(--code-bg);border:1px solid var(--code-bd);padding:1px 6px;border-radius:4px;color:#f9a8d4}
+    .hint,.warn,.note{margin:18px 0;padding:12px 16px;border-left:3px solid;border-radius:var(--r);font-size:13.5px;line-height:1.72}
+    .hint{background:var(--hint-bg);border-color:var(--hint-c);color:#a7f3d0}.warn{background:var(--warn-bg);border-color:var(--warn-c);color:#fed7aa}.note{background:var(--note-bg);border-color:var(--note-c);color:#bae6fd}
+    .hint p,.warn p,.note p{margin:0;color:inherit}.lbl{display:block;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
+    .hint .lbl{color:var(--hint-c)}.warn .lbl{color:var(--warn-c)}.note .lbl{color:var(--note-c)}
+    .cb{margin:18px 0;border:1px solid var(--code-bd);border-radius:var(--rl);overflow:hidden;background:var(--code-bg)}
+    .cb-head{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:#181818;border-bottom:1px solid var(--code-bd);min-height:38px}
+    .cb-fname{font-family:var(--mono);font-size:11.5px;color:var(--muted);display:flex;align-items:center;gap:6px}.cb-fname::before{content:'';display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--red)}
+    .cb-right{display:flex;align-items:center;gap:6px}
+    .cpbtn{padding:3px 9px;font-size:10.5px;font-family:var(--mono);background:var(--surface);border:1px solid var(--border-l);color:var(--muted);border-radius:4px;cursor:pointer;transition:all .14s}.cpbtn:hover{background:var(--surface2);color:var(--text)}
+    pre{padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:13.5px;line-height:1.65;color:#abb2bf}pre::-webkit-scrollbar{height:5px}pre::-webkit-scrollbar-thumb{background:var(--border-l);border-radius:3px}
+    .kw{color:#c678dd}.fn{color:#61afef}.str{color:#98c379}.dec{color:#e5c07b}.typ{color:#e5c07b}.cm{color:#5c6370;font-style:italic}.pn{color:#abb2bf}.num{color:#d19a66}.cl{color:#e06c75}
+    .page-nav{display:flex;justify-content:space-between;margin-top:52px;gap:16px}.pnbtn{display:flex;flex-direction:column;padding:14px 18px;border:1px solid var(--border);border-radius:var(--rl);text-decoration:none;transition:all .2s;min-width:150px}.pnbtn:hover{border-color:var(--red);background:var(--red-glow);text-decoration:none}.pnlbl{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:3px}.pntitle{font-size:14px;font-weight:600;color:var(--text)}.pnbtn.r{text-align:right;margin-left:auto}
+    @media(max-width:860px){.toc{display:none}}@media(max-width:600px){.page{padding:24px 16px 64px}}
+  </style>
+</head>
+<body>
+<div class="page">
+  <main class="content">
+    <div class="vi-banner"><span style="font-size:17px">🇻🇳</span><div>Dịch từ <strong><a href="https://docs.nestjs.com/techniques/compression" target="_blank">docs.nestjs.com/techniques/compression</a></strong>. Thuật ngữ kỹ thuật giữ nguyên tiếng Anh.</div></div>
+
+    <h1>Compression</h1>
+
+    <p style="margin-top:18px">Compression có thể giảm đáng kể kích thước của response body, từ đó tăng tốc độ của web app.</p>
+
+<div class="hint"><span class="lbl">💡 Hint</span><p>Đối với các website có lưu lượng truy cập cao trong production, việc offload compression ra khỏi application server được khuyến nghị mạnh mẽ — thường là trong một reverse proxy (ví dụ: Nginx). Trong trường hợp đó, bạn không nên sử dụng compression middleware.</p></div>
+
+    <!-- ═══ USE WITH EXPRESS (DEFAULT) ═══ -->
+    <h3 id="use-with-express-default">Use with Express (default) <a class="anchor" href="#use-with-express-default">#</a></h3>
+
+    <p>Sử dụng middleware package <a href="https://github.com/expressjs/compression" target="_blank"><strong>compression</strong></a> để bật gzip compression.</p>
+
+    <p>Trước tiên, cài đặt package cần thiết:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre>$ npm i --save compression
+$ npm i --save-dev @types/compression</pre></div>
+
+    <p>Sau khi cài đặt xong, apply compression middleware như global middleware.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">import</span> <span class="pn">*</span> <span class="kw">as</span> compression <span class="kw">from</span> <span class="str">'compression'</span><span class="pn">;</span>
+<span class="cm">// somewhere in your initialization file</span>
+app<span class="pn">.</span><span class="fn">use</span><span class="pn">(</span><span class="fn">compression</span><span class="pn">());</span></pre></div>
+
+    <!-- ═══ USE WITH FASTIFY ═══ -->
+    <h3 id="use-with-fastify">Use with Fastify <a class="anchor" href="#use-with-fastify">#</a></h3>
+
+    <p>Nếu sử dụng <code>FastifyAdapter</code>, bạn sẽ muốn sử dụng <a href="https://github.com/fastify/fastify-compress" target="_blank"><strong>fastify-compress</strong></a>:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre>$ npm i --save @fastify/compress</pre></div>
+
+    <p>Sau khi cài đặt xong, apply <code>@fastify/compress</code> middleware như global middleware.</p>
+
+<div class="warn"><span class="lbl">⚠️ Warning</span><p>Hãy đảm bảo rằng bạn sử dụng type <code>NestFastifyApplication</code> khi tạo application. Nếu không, bạn sẽ không thể sử dụng <code>register</code> để apply compression middleware.</p></div>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">import</span> <span class="pn">{</span> FastifyAdapter<span class="pn">,</span> NestFastifyApplication <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/platform-fastify'</span><span class="pn">;</span>
+<span class="kw">import</span> compression <span class="kw">from</span> <span class="str">'@fastify/compress'</span><span class="pn">;</span>
+
+<span class="cm">// inside bootstrap()</span>
+<span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> NestFactory<span class="pn">.</span><span class="fn">create</span><span class="pn">&lt;</span><span class="typ">NestFastifyApplication</span><span class="pn">&gt;(</span>
+  AppModule<span class="pn">,</span>
+  <span class="kw">new</span> <span class="cl">FastifyAdapter</span><span class="pn">(),</span>
+<span class="pn">);</span>
+<span class="kw">await</span> app<span class="pn">.</span><span class="fn">register</span><span class="pn">(</span>compression<span class="pn">);</span></pre></div>
+
+    <p>Mặc định, <code>@fastify/compress</code> sẽ sử dụng Brotli compression (trên Node &gt;= 11.7.0) khi browser chỉ ra rằng chúng hỗ trợ encoding này. Mặc dù Brotli có thể khá hiệu quả về mặt compression ratio, nhưng nó cũng có thể khá chậm. Mặc định, Brotli đặt maximum compression quality là 11, tuy nhiên nó có thể được điều chỉnh để giảm thời gian compression thay vì chất lượng compression bằng cách điều chỉnh <code>BROTLI_PARAM_QUALITY</code> trong khoảng từ 0 (min) đến 11 (max). Điều này sẽ yêu cầu fine tuning để tối ưu hiệu suất space/time. Ví dụ với quality 4:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">import</span> <span class="pn">{</span> constants <span class="pn">}</span> <span class="kw">from</span> <span class="str">'node:zlib'</span><span class="pn">;</span>
+<span class="cm">// somewhere in your initialization file</span>
+<span class="kw">await</span> app<span class="pn">.</span><span class="fn">register</span><span class="pn">(</span>compression<span class="pn">,</span> <span class="pn">{</span>
+  brotliOptions<span class="pn">:</span> <span class="pn">{</span>
+    params<span class="pn">:</span> <span class="pn">{</span>
+      <span class="pn">[</span>constants<span class="pn">.</span>BROTLI_PARAM_QUALITY<span class="pn">]:</span> <span class="num">4</span><span class="pn">,</span>
+    <span class="pn">},</span>
+  <span class="pn">},</span>
+<span class="pn">});</span></pre></div>
+
+    <p>Để đơn giản hóa, bạn có thể muốn yêu cầu <code>fastify-compress</code> chỉ sử dụng deflate và gzip để compress response; bạn sẽ nhận được response có thể lớn hơn nhưng chúng sẽ được truyền tải nhanh hơn nhiều.</p>
+
+    <p>Để chỉ định encoding, cung cấp argument thứ hai cho <code>app.register</code>:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">await</span> app<span class="pn">.</span><span class="fn">register</span><span class="pn">(</span>compression<span class="pn">,</span> <span class="pn">{</span>
+  encodings<span class="pn">:</span> <span class="pn">[</span><span class="str">'gzip'</span><span class="pn">,</span> <span class="str">'deflate'</span><span class="pn">],</span>
+<span class="pn">});</span></pre></div>
+
+    <p>Đoạn code trên yêu cầu <code>fastify-compress</code> chỉ sử dụng gzip và deflate encoding, ưu tiên gzip nếu client hỗ trợ cả hai.</p>
+
+    <!-- Page Navigation -->
+    <div class="page-nav">
+      <a href="Events.html" class="pnbtn">
+        <span class="pnlbl">← Trước</span>
+        <span class="pntitle">Events</span>
+      </a>
+      <a href="FileUpload.html" class="pnbtn r">
+        <span class="pnlbl">Tiếp →</span>
+        <span class="pntitle">File Upload</span>
+      </a>
+    </div>
+
+  </main>
+
+  <!-- TOC -->
+  <aside class="toc">
+    <div class="toc-title">Nội dung</div>
+    <ul>
+      <li><a href="#use-with-express-default">Use with Express (default)</a></li>
+      <li><a href="#use-with-fastify">Use with Fastify</a></li>
+    </ul>
+  </aside>
+
+</div>
+
+<script>
+  function cp(btn){var w=btn.closest('.cb');var p=w.querySelector('pre');if(!p)return;navigator.clipboard.writeText(p.textContent.trim()).then(function(){var o=btn.textContent;btn.textContent='Copied!';btn.style.color='#4ade80';setTimeout(function(){btn.textContent=o;btn.style.color=''},1500)})}
+  document.querySelectorAll('.toc a').forEach(function(l){l.addEventListener('click',function(e){e.preventDefault();var t=document.querySelector(this.getAttribute('href'));if(t)t.scrollIntoView({behavior:'smooth',block:'start'})})});
+  var tocLinks=document.querySelectorAll('.toc a'),heads=document.querySelectorAll('h3[id]');
+  function hi(){var c='';heads.forEach(function(h){if(scrollY>=h.offsetTop-120)c=h.id});tocLinks.forEach(function(a){a.classList.toggle('active',a.getAttribute('href')==='#'+c)})}
+  window.addEventListener('scroll',hi,{passive:true});hi();
+</script>
+</body>
+</html>

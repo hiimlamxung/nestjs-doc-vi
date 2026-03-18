@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>File upload | NestJS - Tài liệu tiếng Việt</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>:root{--bg:#0e0e0e;--surface:#1a1a1a;--surface2:#222;--border:#2a2a2a;--border-l:#333;--red:#ea2845;--red-l:#ff4d6a;--red-glow:rgba(234,40,69,.15);--text:#e8e8e8;--muted:#888;--sec:#b0b0b0;--code-bg:#1e1e1e;--code-bd:#2d2d2d;--hint-bg:#0d2a1a;--hint-c:#4ade80;--warn-bg:#2a1a0d;--warn-c:#fb923c;--note-bg:#0d1a2a;--note-c:#60a0d0;--toc-w:220px;--font:'Inter',sans-serif;--mono:'Source Code Pro',monospace;--r:6px;--rl:10px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:15px;line-height:1.78}
+.page{max-width:1060px;margin:0 auto;padding:48px 32px 96px;display:flex;gap:56px;align-items:flex-start}.content{flex:1;min-width:0}
+.toc{width:var(--toc-w);flex-shrink:0;position:sticky;top:32px;align-self:flex-start;max-height:calc(100vh - 48px);overflow-y:auto}
+.toc::-webkit-scrollbar{width:3px}.toc::-webkit-scrollbar-thumb{background:var(--border-l);border-radius:2px}
+.toc-title{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding-bottom:8px;margin-bottom:8px;border-bottom:1px solid var(--border)}
+.toc ul{list-style:none}.toc ul li a{display:block;padding:3.5px 0;font-size:12.5px;color:var(--muted);text-decoration:none;line-height:1.5;transition:color .15s;cursor:pointer}
+.toc ul li a:hover,.toc ul li a.active{color:var(--red-l)}
+.vi-banner{display:flex;align-items:center;gap:10px;padding:11px 16px;border:1px solid rgba(234,40,69,.3);border-radius:var(--rl);background:linear-gradient(135deg,rgba(234,40,69,.1),rgba(234,40,69,.04));font-size:13px;color:var(--sec);margin-bottom:32px}.vi-banner strong{color:var(--red-l)}
+h1{font-size:36px;font-weight:700;letter-spacing:-.5px;line-height:1.2;margin-bottom:6px}h1::after{content:'';display:block;width:44px;height:3px;background:var(--red);border-radius:2px;margin-top:12px}
+h3{font-size:19px;font-weight:600;letter-spacing:-.2px;margin:40px 0 12px;display:flex;align-items:center;gap:8px;scroll-margin-top:80px}
+.anchor{font-size:14px;color:var(--muted);text-decoration:none;opacity:0;transition:opacity .2s}h3:hover .anchor{opacity:1}
+p{color:var(--sec);line-height:1.82;margin-bottom:16px}p:last-child{margin-bottom:0}
+a{color:var(--red-l);text-decoration:none}a:hover{text-decoration:underline}strong{color:var(--text);font-weight:600}
+ul,ol{color:var(--sec);padding-left:22px;line-height:2.1;margin:16px 0}ul li{margin-bottom:6px}
+code{font-family:var(--mono);font-size:13px;background:var(--code-bg);border:1px solid var(--code-bd);padding:1px 6px;border-radius:4px;color:#f9a8d4}
+.hint,.warn,.note{margin:18px 0;padding:12px 16px;border-left:3px solid;border-radius:var(--r);font-size:13.5px;line-height:1.72}
+.hint{background:var(--hint-bg);border-color:var(--hint-c);color:#a7f3d0}.warn{background:var(--warn-bg);border-color:var(--warn-c);color:#fed7aa}.note{background:var(--note-bg);border-color:var(--note-c);color:#bae6fd}
+.hint p,.warn p,.note p{margin:0;color:inherit}.lbl{display:block;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
+.hint .lbl{color:var(--hint-c)}.warn .lbl{color:var(--warn-c)}.note .lbl{color:var(--note-c)}
+.cb{margin:18px 0;border:1px solid var(--code-bd);border-radius:var(--rl);overflow:hidden;background:var(--code-bg)}
+.cb-head{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:#181818;border-bottom:1px solid var(--code-bd);min-height:38px}
+.cb-fname{font-family:var(--mono);font-size:11.5px;color:var(--muted);display:flex;align-items:center;gap:6px}.cb-fname::before{content:'';display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--red)}
+.cb-right{display:flex;align-items:center;gap:6px}
+.cpbtn{padding:3px 9px;font-size:10.5px;font-family:var(--mono);background:var(--surface);border:1px solid var(--border-l);color:var(--muted);border-radius:4px;cursor:pointer;transition:all .14s}.cpbtn:hover{background:var(--surface2);color:var(--text)}
+pre{padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:13.5px;line-height:1.65;color:#abb2bf}pre::-webkit-scrollbar{height:5px}pre::-webkit-scrollbar-thumb{background:var(--border-l);border-radius:3px}
+.kw{color:#c678dd}.fn{color:#61afef}.str{color:#98c379}.dec{color:#e5c07b}.typ{color:#e5c07b}.cm{color:#5c6370;font-style:italic}.pn{color:#abb2bf}.num{color:#d19a66}.cl{color:#e06c75}
+.page-nav{display:flex;justify-content:space-between;margin-top:52px;gap:16px}.pnbtn{display:flex;flex-direction:column;padding:14px 18px;border:1px solid var(--border);border-radius:var(--rl);text-decoration:none;transition:all .2s;min-width:150px}.pnbtn:hover{border-color:var(--red);background:var(--red-glow);text-decoration:none}.pnlbl{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:3px}.pntitle{font-size:14px;font-weight:600;color:var(--text)}.pnbtn.r{text-align:right;margin-left:auto}
+@media(max-width:860px){.toc{display:none}}@media(max-width:600px){.page{padding:24px 16px 64px}}</style>
+</head>
+<body>
+<div class="page">
+  <main class="content">
+    <div class="vi-banner"><span style="font-size:17px">🇻🇳</span><div>Dịch từ <strong><a href="https://docs.nestjs.com/techniques/file-upload" target="_blank">docs.nestjs.com/techniques/file-upload</a></strong>. Thuật ngữ kỹ thuật giữ nguyên tiếng Anh.</div></div>
+
+    <h1>File upload</h1>
+
+    <p style="margin-top:18px">Để xử lý file uploading, Nest cung cấp một module tích hợp dựa trên <a href="https://github.com/expressjs/multer" target="_blank"><strong>multer</strong></a> middleware package cho Express. Multer xử lý dữ liệu được post ở định dạng <code>multipart/form-data</code>, chủ yếu được sử dụng để upload file qua HTTP <code>POST</code> request. Module này hoàn toàn có thể cấu hình và bạn có thể điều chỉnh behavior của nó theo yêu cầu ứng dụng.</p>
+
+<div class="warn"><span class="lbl">⚠️ Warning</span><p>Multer không thể xử lý dữ liệu không ở định dạng multipart được hỗ trợ (<code>multipart/form-data</code>). Ngoài ra, lưu ý rằng package này không tương thích với <code>FastifyAdapter</code>.</p></div>
+
+    <p>Để có type safety tốt hơn, hãy cài đặt Multer typings package:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre>$ npm i -D @types/multer</pre></div>
+
+    <p>Với package này được cài đặt, chúng ta có thể sử dụng type <code>Express.Multer.File</code> (bạn có thể import type này như sau: <code>import { Express } from 'express'</code>).</p>
+
+    <!-- BASIC EXAMPLE -->
+    <h3 id="basic-example">Basic example <a class="anchor" href="#basic-example">#</a></h3>
+
+    <p>Để upload một file đơn lẻ, chỉ cần gắn <code>FileInterceptor()</code> interceptor vào route handler và extract <code>file</code> từ <code>request</code> sử dụng decorator <code>@UploadedFile()</code>.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@Post</span><span class="pn">(</span><span class="str">'upload'</span><span class="pn">)</span>
+<span class="dec">@UseInterceptors</span><span class="pn">(</span><span class="fn">FileInterceptor</span><span class="pn">(</span><span class="str">'file'</span><span class="pn">)</span><span class="pn">)</span>
+<span class="fn">uploadFile</span><span class="pn">(</span><span class="dec">@UploadedFile</span><span class="pn">()</span> file<span class="pn">:</span> <span class="typ">Express.Multer.File</span><span class="pn">) {</span>
+  console<span class="pn">.</span><span class="fn">log</span><span class="pn">(</span>file<span class="pn">);</span>
+<span class="pn">}</span></pre></div>
+
+<div class="hint"><span class="lbl">💡 Hint</span><p>Decorator <code>FileInterceptor()</code> được export từ package <code>@nestjs/platform-express</code>. Decorator <code>@UploadedFile()</code> được export từ <code>@nestjs/common</code>.</p></div>
+
+    <p>Decorator <code>FileInterceptor()</code> nhận hai argument:</p>
+    <ul>
+      <li><code>fieldName</code>: string cung cấp tên của field từ HTML form chứa file</li>
+      <li><code>options</code>: object tùy chọn có type <code>MulterOptions</code>. Đây là cùng object được sử dụng bởi multer constructor (chi tiết hơn <a href="https://github.com/expressjs/multer#multeropts" target="_blank"><strong>tại đây</strong></a>).</li>
+    </ul>
+
+<div class="warn"><span class="lbl">⚠️ Warning</span><p><code>FileInterceptor()</code> có thể không tương thích với các third party cloud provider như Google Firebase hoặc các provider khác.</p></div>
+
+    <!-- FILE VALIDATION -->
+    <h3 id="file-validation">File validation <a class="anchor" href="#file-validation">#</a></h3>
+
+    <p>Thông thường, việc validate metadata của file đến, như file size hoặc file mime-type, có thể rất hữu ích. Để làm điều này, bạn có thể tạo <a href="https://docs.nestjs.com/pipes" target="_blank"><strong>Pipe</strong></a> của riêng mình và bind nó vào parameter được annotate bằng decorator <code>UploadedFile</code>. Ví dụ bên dưới minh họa cách một file size validator pipe cơ bản có thể được implement:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">import</span> <span class="pn">{</span> PipeTransform<span class="pn">,</span> Injectable<span class="pn">,</span> ArgumentMetadata <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+
+<span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">FileSizeValidationPipe</span> <span class="kw">implements</span> <span class="typ">PipeTransform</span> <span class="pn">{</span>
+  <span class="fn">transform</span><span class="pn">(</span>value<span class="pn">:</span> <span class="typ">any</span><span class="pn">,</span> metadata<span class="pn">:</span> <span class="typ">ArgumentMetadata</span><span class="pn">) {</span>
+    <span class="cm">// "value" is an object containing the file's attributes and metadata</span>
+    <span class="kw">const</span> oneKb <span class="pn">=</span> <span class="num">1000</span><span class="pn">;</span>
+    <span class="kw">return</span> value<span class="pn">.</span>size <span class="pn"><</span> oneKb<span class="pn">;</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+
+    <p>Điều này có thể được sử dụng kết hợp với <code>FileInterceptor</code> như sau:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@Post</span><span class="pn">(</span><span class="str">'file'</span><span class="pn">)</span>
+<span class="dec">@UseInterceptors</span><span class="pn">(</span><span class="fn">FileInterceptor</span><span class="pn">(</span><span class="str">'file'</span><span class="pn">)</span><span class="pn">)</span>
+<span class="fn">uploadFileAndValidate</span><span class="pn">(</span><span class="dec">@UploadedFile</span><span class="pn">(</span>
+  <span class="kw">new</span> <span class="cl">FileSizeValidationPipe</span><span class="pn">(),</span>
+  <span class="cm">// other pipes can be added here</span>
+<span class="pn">)</span> file<span class="pn">:</span> <span class="typ">Express.Multer.File</span><span class="pn">, ) {</span>
+  <span class="kw">return</span> file<span class="pn">;</span>
+<span class="pn">}</span></pre></div>
+
+    <p>Nest cung cấp một pipe tích hợp để xử lý các use case phổ biến và tạo thuận lợi/chuẩn hóa việc thêm mới. Pipe này có tên <code>ParseFilePipe</code>, và bạn có thể sử dụng nó như sau:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@Post</span><span class="pn">(</span><span class="str">'file'</span><span class="pn">)</span>
+<span class="dec">@UseInterceptors</span><span class="pn">(</span><span class="fn">FileInterceptor</span><span class="pn">(</span><span class="str">'file'</span><span class="pn">)</span><span class="pn">)</span>
+<span class="fn">uploadFileAndPassValidation</span><span class="pn">(</span>
+  <span class="dec">@Body</span><span class="pn">()</span> body<span class="pn">:</span> <span class="typ">SampleDto</span><span class="pn">,</span>
+  <span class="dec">@UploadedFile</span><span class="pn">(</span>
+    <span class="kw">new</span> <span class="cl">ParseFilePipe</span><span class="pn">({</span>
+      validators<span class="pn">:</span> <span class="pn">[</span>
+        <span class="cm">// ... Set of file validator instances here</span>
+      <span class="pn">]</span>
+    <span class="pn">})</span>
+  <span class="pn">)</span>
+  file<span class="pn">:</span> <span class="typ">Express.Multer.File</span><span class="pn">,</span>
+<span class="pn">) {</span>
+  <span class="kw">return</span> <span class="pn">{</span>
+    body<span class="pn">,</span>
+    file<span class="pn">:</span> file<span class="pn">.</span>buffer<span class="pn">.</span><span class="fn">toString</span><span class="pn">(),</span>
+  <span class="pn">};</span>
+<span class="pn">}</span></pre></div>
+
+    <p>Như bạn có thể thấy, cần phải chỉ định một mảng file validator sẽ được thực thi bởi <code>ParseFilePipe</code>. Chúng ta sẽ thảo luận về interface của validator, nhưng đáng lưu ý rằng pipe này cũng có hai option <strong>tùy chọn</strong> bổ sung:</p>
+    <ul>
+      <li><code>errorHttpStatusCode</code>: HTTP status code sẽ được throw trong trường hợp <strong>bất kỳ</strong> validator nào fail. Mặc định là <code>400</code> (BAD REQUEST)</li>
+      <li><code>exceptionFactory</code>: Một factory nhận error message và trả về một error.</li>
+    </ul>
+
+    <p>Quay lại interface <code>FileValidator</code>. Để tích hợp validator với pipe này, bạn phải sử dụng built-in implementation hoặc cung cấp <code>FileValidator</code> tùy chỉnh của riêng bạn. Xem ví dụ bên dưới:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">export abstract class</span> <span class="cl">FileValidator</span><span class="pn"><</span><span class="typ">TValidationOptions</span> <span class="pn">=</span> <span class="typ">Record</span><span class="pn"><</span><span class="typ">string</span><span class="pn">,</span> <span class="typ">any</span><span class="pn">>></span> <span class="pn">{</span>
+  <span class="kw">constructor</span><span class="pn">(</span><span class="kw">protected readonly</span> validationOptions<span class="pn">:</span> <span class="typ">TValidationOptions</span><span class="pn">) {}</span>
+
+  <span class="cm">/**
+   * Indicates if this file should be considered valid, according to the options passed in the constructor.
+   * @param file the file from the request object
+   */</span>
+  <span class="kw">abstract</span> <span class="fn">isValid</span><span class="pn">(</span>file<span class="pn">?:</span> <span class="typ">any</span><span class="pn">):</span> <span class="typ">boolean</span> <span class="pn">|</span> <span class="typ">Promise</span><span class="pn"><</span><span class="typ">boolean</span><span class="pn">>;</span>
+
+  <span class="cm">/**
+   * Builds an error message in case the validation fails.
+   * @param file the file from the request object
+   */</span>
+  <span class="kw">abstract</span> <span class="fn">buildErrorMessage</span><span class="pn">(</span>file<span class="pn">:</span> <span class="typ">any</span><span class="pn">):</span> <span class="typ">string</span><span class="pn">;</span>
+<span class="pn">}</span></pre></div>
+
+<div class="hint"><span class="lbl">💡 Hint</span><p>Interface <code>FileValidator</code> hỗ trợ async validation thông qua function <code>isValid</code>. Để tận dụng type security, bạn cũng có thể type parameter <code>file</code> thành <code>Express.Multer.File</code> trong trường hợp bạn sử dụng express (mặc định) làm driver.</p></div>
+
+    <p><code>FileValidator</code> là một class thông thường có quyền truy cập vào file object và validate nó theo các option được cung cấp bởi client. Nest có hai built-in <code>FileValidator</code> implementation bạn có thể sử dụng trong project:</p>
+    <ul>
+      <li><code>MaxFileSizeValidator</code> - Kiểm tra xem kích thước file có nhỏ hơn giá trị được cung cấp hay không (đo bằng <code>bytes</code>)</li>
+      <li><code>FileTypeValidator</code> - Kiểm tra xem mime-type của file có khớp với string hoặc RegExp được cho hay không. Mặc định, validate mime-type sử dụng file content <strong>magic number</strong></li>
+    </ul>
+
+    <p>Để hiểu cách chúng có thể được sử dụng kết hợp với <code>FileParsePipe</code> đã đề cập ở trên, chúng ta sẽ sử dụng một đoạn code đã chỉnh sửa từ ví dụ cuối cùng được trình bày:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@UploadedFile</span><span class="pn">(</span>
+  <span class="kw">new</span> <span class="cl">ParseFilePipe</span><span class="pn">({</span>
+    validators<span class="pn">:</span> <span class="pn">[</span>
+      <span class="kw">new</span> <span class="cl">MaxFileSizeValidator</span><span class="pn">({</span> maxSize<span class="pn">:</span> <span class="num">1000</span> <span class="pn">}),</span>
+      <span class="kw">new</span> <span class="cl">FileTypeValidator</span><span class="pn">({</span> fileType<span class="pn">:</span> <span class="str">'image/jpeg'</span> <span class="pn">}),</span>
+    <span class="pn">],</span>
+  <span class="pn">}),</span>
+<span class="pn">)</span>
+file<span class="pn">:</span> <span class="typ">Express.Multer.File</span><span class="pn">,</span></pre></div>
+
+<div class="hint"><span class="lbl">💡 Hint</span><p>Nếu số lượng validator tăng lên nhiều hoặc các option của chúng làm rối file, bạn có thể định nghĩa mảng này trong một file riêng và import nó ở đây dưới dạng named constant như <code>fileValidators</code>.</p></div>
+
+    <p>Cuối cùng, bạn có thể sử dụng class đặc biệt <code>ParseFilePipeBuilder</code> cho phép bạn compose & construct các validator. Bằng cách sử dụng nó như bên dưới, bạn có thể tránh việc khởi tạo thủ công từng validator và chỉ cần truyền trực tiếp các option của chúng:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@UploadedFile</span><span class="pn">(</span>
+  <span class="kw">new</span> <span class="cl">ParseFilePipeBuilder</span><span class="pn">()</span>
+    <span class="pn">.</span><span class="fn">addFileTypeValidator</span><span class="pn">({</span>
+      fileType<span class="pn">:</span> <span class="str">'jpeg'</span><span class="pn">,</span>
+    <span class="pn">})</span>
+    <span class="pn">.</span><span class="fn">addMaxSizeValidator</span><span class="pn">({</span>
+      maxSize<span class="pn">:</span> <span class="num">1000</span>
+    <span class="pn">})</span>
+    <span class="pn">.</span><span class="fn">build</span><span class="pn">({</span>
+      errorHttpStatusCode<span class="pn">:</span> HttpStatus<span class="pn">.</span>UNPROCESSABLE_ENTITY
+    <span class="pn">}),</span>
+<span class="pn">)</span>
+file<span class="pn">:</span> <span class="typ">Express.Multer.File</span><span class="pn">,</span></pre></div>
+
+<div class="hint"><span class="lbl">💡 Hint</span><p>File presence được yêu cầu mặc định, nhưng bạn có thể làm cho nó optional bằng cách thêm parameter <code>fileIsRequired: false</code> vào trong options của function <code>build</code> (cùng level với <code>errorHttpStatusCode</code>).</p></div>
+
+
+    <!-- ARRAY OF FILES -->
+    <h3 id="array-of-files">Array of files <a class="anchor" href="#array-of-files">#</a></h3>
+
+    <p>Để upload một mảng các file (được xác định bằng một tên field duy nhất), sử dụng decorator <code>FilesInterceptor()</code> (lưu ý từ <strong>Files</strong> ở dạng số nhiều trong tên decorator). Decorator này nhận ba argument:</p>
+    <ul>
+      <li><code>fieldName</code>: như mô tả ở trên</li>
+      <li><code>maxCount</code>: số tùy chọn xác định số lượng file tối đa được chấp nhận</li>
+      <li><code>options</code>: object <code>MulterOptions</code> tùy chọn, như mô tả ở trên</li>
+    </ul>
+
+    <p>Khi sử dụng <code>FilesInterceptor()</code>, extract file từ <code>request</code> sử dụng decorator <code>@UploadedFiles()</code> (lưu ý từ <strong>Files</strong> ở dạng số nhiều trong tên decorator).</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@Post</span><span class="pn">(</span><span class="str">'upload'</span><span class="pn">)</span>
+<span class="dec">@UseInterceptors</span><span class="pn">(</span><span class="fn">FilesInterceptor</span><span class="pn">(</span><span class="str">'files'</span><span class="pn">)</span><span class="pn">)</span>
+<span class="fn">uploadFile</span><span class="pn">(</span><span class="dec">@UploadedFiles</span><span class="pn">()</span> files<span class="pn">:</span> <span class="typ">Array</span><span class="pn"><</span><span class="typ">Express.Multer.File</span><span class="pn">></span><span class="pn">) {</span>
+  console<span class="pn">.</span><span class="fn">log</span><span class="pn">(</span>files<span class="pn">);</span>
+<span class="pn">}</span></pre></div>
+
+<div class="hint"><span class="lbl">💡 Hint</span><p>Decorator <code>FilesInterceptor()</code> được export từ package <code>@nestjs/platform-express</code>. Decorator <code>@UploadedFiles()</code> được export từ <code>@nestjs/common</code>.</p></div>
+
+    <!-- MULTIPLE FILES -->
+    <h3 id="multiple-files">Multiple files <a class="anchor" href="#multiple-files">#</a></h3>
+
+    <p>Để upload nhiều file (tất cả với các field name key khác nhau), sử dụng decorator <code>FileFieldsInterceptor()</code>. Decorator này nhận hai argument:</p>
+    <ul>
+      <li><code>uploadedFields</code>: một mảng các object, trong đó mỗi object chỉ định một property <code>name</code> bắt buộc với giá trị string chỉ định tên field, như mô tả ở trên, và một property <code>maxCount</code> tùy chọn, như mô tả ở trên</li>
+      <li><code>options</code>: object <code>MulterOptions</code> tùy chọn, như mô tả ở trên</li>
+    </ul>
+
+    <p>Khi sử dụng <code>FileFieldsInterceptor()</code>, extract file từ <code>request</code> với decorator <code>@UploadedFiles()</code>.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@Post</span><span class="pn">(</span><span class="str">'upload'</span><span class="pn">)</span>
+<span class="dec">@UseInterceptors</span><span class="pn">(</span><span class="fn">FileFieldsInterceptor</span><span class="pn">([</span>
+  <span class="pn">{</span> name<span class="pn">:</span> <span class="str">'avatar'</span><span class="pn">,</span> maxCount<span class="pn">:</span> <span class="num">1</span> <span class="pn">},</span>
+  <span class="pn">{</span> name<span class="pn">:</span> <span class="str">'background'</span><span class="pn">,</span> maxCount<span class="pn">:</span> <span class="num">1</span> <span class="pn">},</span>
+<span class="pn">])</span><span class="pn">)</span>
+<span class="fn">uploadFile</span><span class="pn">(</span><span class="dec">@UploadedFiles</span><span class="pn">()</span> files<span class="pn">:</span> <span class="pn">{</span> avatar<span class="pn">?:</span> <span class="typ">Express.Multer.File</span><span class="pn">[],</span> background<span class="pn">?:</span> <span class="typ">Express.Multer.File</span><span class="pn">[] })</span> <span class="pn">{</span>
+  console<span class="pn">.</span><span class="fn">log</span><span class="pn">(</span>files<span class="pn">);</span>
+<span class="pn">}</span></pre></div>
+
+    <!-- ANY FILES -->
+    <h3 id="any-files">Any files <a class="anchor" href="#any-files">#</a></h3>
+
+    <p>Để upload tất cả các field với arbitrary field name key, sử dụng decorator <code>AnyFilesInterceptor()</code>. Decorator này có thể chấp nhận một object <code>options</code> tùy chọn như mô tả ở trên.</p>
+
+    <p>Khi sử dụng <code>AnyFilesInterceptor()</code>, extract file từ <code>request</code> với decorator <code>@UploadedFiles()</code>.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@Post</span><span class="pn">(</span><span class="str">'upload'</span><span class="pn">)</span>
+<span class="dec">@UseInterceptors</span><span class="pn">(</span><span class="fn">AnyFilesInterceptor</span><span class="pn">()</span><span class="pn">)</span>
+<span class="fn">uploadFile</span><span class="pn">(</span><span class="dec">@UploadedFiles</span><span class="pn">()</span> files<span class="pn">:</span> <span class="typ">Array</span><span class="pn"><</span><span class="typ">Express.Multer.File</span><span class="pn">></span><span class="pn">) {</span>
+  console<span class="pn">.</span><span class="fn">log</span><span class="pn">(</span>files<span class="pn">);</span>
+<span class="pn">}</span></pre></div>
+
+    <!-- NO FILES -->
+    <h3 id="no-files">No files <a class="anchor" href="#no-files">#</a></h3>
+
+    <p>Để chấp nhận <code>multipart/form-data</code> nhưng không cho phép upload bất kỳ file nào, sử dụng <code>NoFilesInterceptor</code>. Điều này đặt multipart data làm attribute trên request body. Bất kỳ file nào được gửi cùng request sẽ throw một <code>BadRequestException</code>.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@Post</span><span class="pn">(</span><span class="str">'upload'</span><span class="pn">)</span>
+<span class="dec">@UseInterceptors</span><span class="pn">(</span><span class="fn">NoFilesInterceptor</span><span class="pn">()</span><span class="pn">)</span>
+<span class="fn">handleMultiPartData</span><span class="pn">(</span><span class="dec">@Body</span><span class="pn">()</span> body<span class="pn">) {</span>
+  console<span class="pn">.</span><span class="fn">log</span><span class="pn">(</span>body<span class="pn">)</span>
+<span class="pn">}</span></pre></div>
+
+    <!-- DEFAULT OPTIONS -->
+    <h3 id="default-options">Default options <a class="anchor" href="#default-options">#</a></h3>
+
+    <p>Bạn có thể chỉ định multer option trong file interceptor như mô tả ở trên. Để đặt option mặc định, bạn có thể gọi static method <code>register()</code> khi bạn import <code>MulterModule</code>, truyền vào các option được hỗ trợ. Bạn có thể sử dụng tất cả các option được liệt kê <a href="https://github.com/expressjs/multer#multeropts" target="_blank"><strong>tại đây</strong></a>.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre>MulterModule<span class="pn">.</span><span class="fn">register</span><span class="pn">({</span>
+  dest<span class="pn">:</span> <span class="str">'./upload'</span><span class="pn">,</span>
+<span class="pn">});</span></pre></div>
+
+<div class="hint"><span class="lbl">💡 Hint</span><p>Class <code>MulterModule</code> được export từ package <code>@nestjs/platform-express</code>.</p></div>
+
+    <!-- ASYNC CONFIGURATION -->
+    <h3 id="async-configuration">Async configuration <a class="anchor" href="#async-configuration">#</a></h3>
+
+    <p>Khi bạn cần đặt các option <code>MulterModule</code> một cách bất đồng bộ thay vì tĩnh, sử dụng method <code>registerAsync()</code>. Giống như hầu hết các dynamic module, Nest cung cấp một số kỹ thuật để xử lý cấu hình async.</p>
+
+    <p>Một kỹ thuật là sử dụng factory function:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre>MulterModule<span class="pn">.</span><span class="fn">registerAsync</span><span class="pn">({</span>
+  useFactory<span class="pn">:</span> <span class="pn">()</span> <span class="pn">=></span> <span class="pn">({</span>
+    dest<span class="pn">:</span> <span class="str">'./upload'</span><span class="pn">,</span>
+  <span class="pn">}),</span>
+<span class="pn">});</span></pre></div>
+
+    <p>Giống như các <a href="https://docs.nestjs.com/fundamentals/custom-providers#factory-providers-usefactory" target="_blank"><strong>factory provider</strong></a> khác, factory function có thể là <a href="https://docs.nestjs.com/fundamentals/custom-providers#async-providers-usefactory" target="_blank"><strong>async</strong></a> và có thể inject dependency thông qua <code>inject</code>.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre>MulterModule<span class="pn">.</span><span class="fn">registerAsync</span><span class="pn">({</span>
+  imports<span class="pn">:</span> <span class="pn">[</span>ConfigModule<span class="pn">],</span>
+  useFactory<span class="pn">:</span> <span class="kw">async</span> <span class="pn">(</span>configService<span class="pn">:</span> <span class="typ">ConfigService</span><span class="pn">)</span> <span class="pn">=></span> <span class="pn">({</span>
+    dest<span class="pn">:</span> configService<span class="pn">.</span><span class="fn">get</span><span class="pn"><</span><span class="typ">string</span><span class="pn">>(</span><span class="str">'MULTER_DEST'</span><span class="pn">),</span>
+  <span class="pn">}),</span>
+  inject<span class="pn">:</span> <span class="pn">[</span>ConfigService<span class="pn">],</span>
+<span class="pn">});</span></pre></div>
+
+    <p>Ngoài ra, bạn có thể cấu hình <code>MulterModule</code> sử dụng class thay vì factory, như bên dưới:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre>MulterModule<span class="pn">.</span><span class="fn">registerAsync</span><span class="pn">({</span>
+  useClass<span class="pn">:</span> MulterConfigService<span class="pn">,</span>
+<span class="pn">});</span></pre></div>
+
+    <p>Cấu trúc ở trên instantiate <code>MulterConfigService</code> bên trong <code>MulterModule</code>, sử dụng nó để tạo required options object. Lưu ý rằng trong ví dụ này, <code>MulterConfigService</code> phải implement interface <code>MulterOptionsFactory</code>, như bên dưới. <code>MulterModule</code> sẽ gọi method <code>createMulterOptions()</code> trên object đã khởi tạo của class được cung cấp.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">class</span> <span class="cl">MulterConfigService</span> <span class="kw">implements</span> <span class="typ">MulterOptionsFactory</span> <span class="pn">{</span>
+  <span class="fn">createMulterOptions</span><span class="pn">():</span> <span class="typ">MulterModuleOptions</span> <span class="pn">{</span>
+    <span class="kw">return</span> <span class="pn">{</span>
+      dest<span class="pn">:</span> <span class="str">'./upload'</span><span class="pn">,</span>
+    <span class="pn">};</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+
+    <p>Nếu bạn muốn tái sử dụng một options provider hiện có thay vì tạo bản sao private bên trong <code>MulterModule</code>, sử dụng cú pháp <code>useExisting</code>.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre>MulterModule<span class="pn">.</span><span class="fn">registerAsync</span><span class="pn">({</span>
+  imports<span class="pn">:</span> <span class="pn">[</span>ConfigModule<span class="pn">],</span>
+  useExisting<span class="pn">:</span> ConfigService<span class="pn">,</span>
+<span class="pn">});</span></pre></div>
+
+    <p>Bạn cũng có thể truyền cái gọi là <code>extraProviders</code> vào method <code>registerAsync()</code>. Các provider này sẽ được merge với các module provider.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre>MulterModule<span class="pn">.</span><span class="fn">registerAsync</span><span class="pn">({</span>
+  imports<span class="pn">:</span> <span class="pn">[</span>ConfigModule<span class="pn">],</span>
+  useClass<span class="pn">:</span> ConfigService<span class="pn">,</span>
+  extraProviders<span class="pn">:</span> <span class="pn">[</span>MyAdditionalProvider<span class="pn">],</span>
+<span class="pn">});</span></pre></div>
+
+    <p>Điều này hữu ích khi bạn muốn cung cấp các dependency bổ sung cho factory function hoặc class constructor.</p>
+
+    <!-- EXAMPLE -->
+    <h3 id="example">Example <a class="anchor" href="#example">#</a></h3>
+
+    <p>Một ví dụ hoạt động có sẵn <a href="https://github.com/nestjs/nest/tree/master/sample/29-file-upload" target="_blank"><strong>tại đây</strong></a>.</p>
+
+    <!-- Page Navigation -->
+    <div class="page-nav">
+      <a href="Compression.html" class="pnbtn">
+        <span class="pnlbl">← Trước</span>
+        <span class="pntitle">Compression</span>
+      </a>
+      <a href="StreamingFiles.html" class="pnbtn r">
+        <span class="pnlbl">Tiếp →</span>
+        <span class="pntitle">Streaming files</span>
+      </a>
+    </div>
+
+  </main>
+
+  <!-- TOC -->
+  <aside class="toc">
+    <div class="toc-title">Nội dung</div>
+    <ul>
+      <li><a href="#basic-example">Basic example</a></li>
+      <li><a href="#file-validation">File validation</a></li>
+      <li><a href="#array-of-files">Array of files</a></li>
+      <li><a href="#multiple-files">Multiple files</a></li>
+      <li><a href="#any-files">Any files</a></li>
+      <li><a href="#no-files">No files</a></li>
+      <li><a href="#default-options">Default options</a></li>
+      <li><a href="#async-configuration">Async configuration</a></li>
+      <li><a href="#example">Example</a></li>
+    </ul>
+  </aside>
+
+</div>
+
+<script>
+  function cp(btn){var w=btn.closest('.cb');var p=w.querySelector('pre');if(!p)return;navigator.clipboard.writeText(p.textContent.trim()).then(function(){var o=btn.textContent;btn.textContent='Copied!';btn.style.color='#4ade80';setTimeout(function(){btn.textContent=o;btn.style.color=''},1500)})}
+  document.querySelectorAll('.toc a').forEach(function(l){l.addEventListener('click',function(e){e.preventDefault();var t=document.querySelector(this.getAttribute('href'));if(t)t.scrollIntoView({behavior:'smooth',block:'start'})})});
+  var tocLinks=document.querySelectorAll('.toc a'),heads=document.querySelectorAll('h3[id]');
+  function hi(){var c='';heads.forEach(function(h){if(scrollY>=h.offsetTop-120)c=h.id});tocLinks.forEach(function(a){a.classList.toggle('active',a.getAttribute('href')==='#'+c)})}
+  window.addEventListener('scroll',hi,{passive:true});hi();
+</script>
+</body>
+</html>

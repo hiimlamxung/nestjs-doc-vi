@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cookies | NestJS - Tài liệu tiếng Việt</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root{--bg:#0e0e0e;--surface:#1a1a1a;--surface2:#222;--border:#2a2a2a;--border-l:#333;--red:#ea2845;--red-l:#ff4d6a;--red-glow:rgba(234,40,69,.15);--text:#e8e8e8;--muted:#888;--sec:#b0b0b0;--code-bg:#1e1e1e;--code-bd:#2d2d2d;--hint-bg:#0d2a1a;--hint-c:#4ade80;--warn-bg:#2a1a0d;--warn-c:#fb923c;--note-bg:#0d1a2a;--note-c:#60a0d0;--toc-w:220px;--font:'Inter',sans-serif;--mono:'Source Code Pro',monospace;--r:6px;--rl:10px}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+    body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:15px;line-height:1.78}
+    .page{max-width:1060px;margin:0 auto;padding:48px 32px 96px;display:flex;gap:56px;align-items:flex-start}.content{flex:1;min-width:0}
+    .toc{width:var(--toc-w);flex-shrink:0;position:sticky;top:32px;align-self:flex-start;max-height:calc(100vh - 48px);overflow-y:auto}
+    .toc::-webkit-scrollbar{width:3px}.toc::-webkit-scrollbar-thumb{background:var(--border-l);border-radius:2px}
+    .toc-title{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding-bottom:8px;margin-bottom:8px;border-bottom:1px solid var(--border)}
+    .toc ul{list-style:none}.toc ul li a{display:block;padding:3.5px 0;font-size:12.5px;color:var(--muted);text-decoration:none;line-height:1.5;transition:color .15s;cursor:pointer}
+    .toc ul li a:hover,.toc ul li a.active{color:var(--red-l)}
+    .vi-banner{display:flex;align-items:center;gap:10px;padding:11px 16px;border:1px solid rgba(234,40,69,.3);border-radius:var(--rl);background:linear-gradient(135deg,rgba(234,40,69,.1),rgba(234,40,69,.04));font-size:13px;color:var(--sec);margin-bottom:32px}.vi-banner strong{color:var(--red-l)}
+    h1{font-size:36px;font-weight:700;letter-spacing:-.5px;line-height:1.2;margin-bottom:6px}h1::after{content:'';display:block;width:44px;height:3px;background:var(--red);border-radius:2px;margin-top:12px}
+    h3{font-size:19px;font-weight:600;letter-spacing:-.2px;margin:40px 0 12px;display:flex;align-items:center;gap:8px;scroll-margin-top:80px}
+    .anchor{font-size:14px;color:var(--muted);text-decoration:none;opacity:0;transition:opacity .2s}h3:hover .anchor{opacity:1}
+    p{color:var(--sec);line-height:1.82;margin-bottom:16px}p:last-child{margin-bottom:0}
+    a{color:var(--red-l);text-decoration:none}a:hover{text-decoration:underline}strong{color:var(--text);font-weight:600}
+    ul,ol{color:var(--sec);padding-left:22px;line-height:2.1;margin:16px 0}
+    ul li{margin-bottom:6px}
+    code{font-family:var(--mono);font-size:13px;background:var(--code-bg);border:1px solid var(--code-bd);padding:1px 6px;border-radius:4px;color:#f9a8d4}
+    .hint,.warn,.note{margin:18px 0;padding:12px 16px;border-left:3px solid;border-radius:var(--r);font-size:13.5px;line-height:1.72}
+    .hint{background:var(--hint-bg);border-color:var(--hint-c);color:#a7f3d0}.warn{background:var(--warn-bg);border-color:var(--warn-c);color:#fed7aa}.note{background:var(--note-bg);border-color:var(--note-c);color:#bae6fd}
+    .hint p,.warn p,.note p{margin:0;color:inherit}.lbl{display:block;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
+    .hint .lbl{color:var(--hint-c)}.warn .lbl{color:var(--warn-c)}.note .lbl{color:var(--note-c)}
+    .cb{margin:18px 0;border:1px solid var(--code-bd);border-radius:var(--rl);overflow:hidden;background:var(--code-bg)}
+    .cb-head{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:#181818;border-bottom:1px solid var(--code-bd);min-height:38px}
+    .cb-fname{font-family:var(--mono);font-size:11.5px;color:var(--muted);display:flex;align-items:center;gap:6px}.cb-fname::before{content:'';display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--red)}
+    .cb-right{display:flex;align-items:center;gap:6px}
+    .cpbtn{padding:3px 9px;font-size:10.5px;font-family:var(--mono);background:var(--surface);border:1px solid var(--border-l);color:var(--muted);border-radius:4px;cursor:pointer;transition:all .14s}.cpbtn:hover{background:var(--surface2);color:var(--text)}
+    pre{padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:13.5px;line-height:1.65;color:#abb2bf}pre::-webkit-scrollbar{height:5px}pre::-webkit-scrollbar-thumb{background:var(--border-l);border-radius:3px}
+    .kw{color:#c678dd}.fn{color:#61afef}.str{color:#98c379}.dec{color:#e5c07b}.typ{color:#e5c07b}.cm{color:#5c6370;font-style:italic}.pn{color:#abb2bf}.num{color:#d19a66}.cl{color:#e06c75}
+    .page-nav{display:flex;justify-content:space-between;margin-top:52px;gap:16px}.pnbtn{display:flex;flex-direction:column;padding:14px 18px;border:1px solid var(--border);border-radius:var(--rl);text-decoration:none;transition:all .2s;min-width:150px}.pnbtn:hover{border-color:var(--red);background:var(--red-glow);text-decoration:none}.pnlbl{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:3px}.pntitle{font-size:14px;font-weight:600;color:var(--text)}.pnbtn.r{text-align:right;margin-left:auto}
+    @media(max-width:860px){.toc{display:none}}@media(max-width:600px){.page{padding:24px 16px 64px}}
+  </style>
+</head>
+<body>
+<div class="page">
+  <main class="content">
+    <div class="vi-banner"><span style="font-size:17px">🇻🇳</span><div>Dịch từ <strong><a href="https://docs.nestjs.com/techniques/cookies" target="_blank">docs.nestjs.com/techniques/cookies</a></strong>. Thuật ngữ kỹ thuật giữ nguyên tiếng Anh.</div></div>
+
+    <h1>Cookies</h1>
+
+    <p style="margin-top:18px">Một <a href="https://en.wikipedia.org/wiki/HTTP_cookie" target="_blank"><strong>HTTP cookie</strong></a> là một mẩu dữ liệu nhỏ được lưu trữ bởi browser của người dùng. Cookie được thiết kế để là một cơ chế đáng tin cậy cho các website để ghi nhớ thông tin stateful. Khi người dùng truy cập lại website, cookie sẽ tự động được gửi kèm với request.</p>
+
+    <!-- ═══ USE WITH EXPRESS ═══ -->
+    <h3 id="use-with-express">Use with Express (default) <a class="anchor" href="#use-with-express">#</a></h3>
+
+    <p>Trước tiên, cài đặt <a href="https://github.com/expressjs/cookie-parser" target="_blank"><strong>package cần thiết</strong></a> (và type của nó cho người dùng TypeScript):</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre>$ npm i cookie-parser
+$ npm i -D @types/cookie-parser</pre></div>
+
+    <p>Sau khi cài đặt xong, áp dụng <code>cookie-parser</code> middleware như global middleware (ví dụ: trong file <code>main.ts</code>).</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">import</span> <span class="pn">*</span> <span class="kw">as</span> cookieParser <span class="kw">from</span> <span class="str">'cookie-parser'</span><span class="pn">;</span>
+
+<span class="cm">// somewhere in your initialization file</span>
+app<span class="pn">.</span><span class="fn">use</span><span class="pn">(</span><span class="fn">cookieParser</span><span class="pn">());</span></pre></div>
+
+    <p>Bạn có thể truyền một số option cho <code>cookieParser</code> middleware:</p>
+
+    <ul>
+      <li><code>secret</code> một string hoặc array dùng để signing cookie. Đây là tùy chọn và nếu không được chỉ định, sẽ không parse signed cookie. Nếu một string được cung cấp, nó sẽ được dùng làm secret. Nếu một array được cung cấp, sẽ cố gắng unsign cookie với từng secret theo thứ tự.</li>
+      <li><code>options</code> một object được truyền cho <code>cookie.parse</code> làm option thứ hai. Xem <a href="https://www.npmjs.org/package/cookie#options" target="_blank"><strong>cookie</strong></a> để biết thêm thông tin.</li>
+    </ul>
+
+    <p>Middleware sẽ parse <code>Cookie</code> header trên request và expose cookie data dưới property <code>req.cookies</code> và, nếu một secret được cung cấp, dưới property <code>req.signedCookies</code>. Các property này là các cặp name value của cookie name với cookie value.</p>
+
+    <p>Khi một secret được cung cấp, module này sẽ unsign và validate bất kỳ signed cookie value nào và di chuyển những name value pair đó từ <code>req.cookies</code> vào <code>req.signedCookies</code>. Một signed cookie là một cookie có giá trị được prefix với <code>s:</code>. Signed cookie thất bại trong việc xác thực chữ ký sẽ có giá trị <code>false</code> thay vì giá trị đã bị tampered.</p>
+
+    <p>Với thiết lập này, bạn có thể đọc cookie từ bên trong các route handler, như sau:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@Get</span><span class="pn">()</span>
+<span class="fn">findAll</span><span class="pn">(</span><span class="dec">@Req</span><span class="pn">()</span> request<span class="pn">:</span> <span class="typ">Request</span><span class="pn">) {</span>
+  console<span class="pn">.</span><span class="fn">log</span><span class="pn">(</span>request<span class="pn">.</span>cookies<span class="pn">);</span> <span class="cm">// or "request.cookies['cookieKey']"</span>
+  <span class="cm">// or console.log(request.signedCookies);</span>
+<span class="pn">}</span></pre></div>
+
+<div class="hint"><span class="lbl">💡 Hint</span><p>Decorator <code>@Req()</code> được import từ <code>@nestjs/common</code>, trong khi <code>Request</code> từ package <code>express</code>.</p></div>
+
+    <p>Để đính kèm cookie vào outgoing response, sử dụng method <code>Response#cookie()</code>:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@Get</span><span class="pn">()</span>
+<span class="fn">findAll</span><span class="pn">(</span><span class="dec">@Res</span><span class="pn">({</span> passthrough<span class="pn">:</span> <span class="kw">true</span> <span class="pn">})</span> response<span class="pn">:</span> <span class="typ">Response</span><span class="pn">) {</span>
+  response<span class="pn">.</span><span class="fn">cookie</span><span class="pn">(</span><span class="str">'key'</span><span class="pn">,</span> <span class="str">'value'</span><span class="pn">);</span>
+<span class="pn">}</span></pre></div>
+
+<div class="warn"><span class="lbl">⚠️ Warning</span><p>Nếu bạn muốn để response handling logic cho framework, nhớ đặt option <code>passthrough</code> thành <code>true</code>, như đã thấy ở trên. Đọc thêm <a href="https://docs.nestjs.com/controllers#library-specific-approach" target="_blank"><strong>tại đây</strong></a>.</p></div>
+
+<div class="hint"><span class="lbl">💡 Hint</span><p>Decorator <code>@Res()</code> được import từ <code>@nestjs/common</code>, trong khi <code>Response</code> từ package <code>express</code>.</p></div>
+
+    <!-- ═══ USE WITH FASTIFY ═══ -->
+    <h3 id="use-with-fastify">Use with Fastify <a class="anchor" href="#use-with-fastify">#</a></h3>
+
+    <p>Trước tiên, cài đặt package cần thiết:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre>$ npm i @fastify/cookie</pre></div>
+
+    <p>Sau khi cài đặt xong, đăng ký plugin <code>@fastify/cookie</code>:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">import</span> fastifyCookie <span class="kw">from</span> <span class="str">'@fastify/cookie'</span><span class="pn">;</span>
+
+<span class="cm">// somewhere in your initialization file</span>
+<span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> <span class="cl">NestFactory</span><span class="pn">.</span><span class="fn">create</span><span class="pn">&lt;</span><span class="typ">NestFastifyApplication</span><span class="pn">&gt;(</span>
+  AppModule<span class="pn">,</span>
+  <span class="kw">new</span> <span class="cl">FastifyAdapter</span><span class="pn">(),</span>
+<span class="pn">);</span>
+<span class="kw">await</span> app<span class="pn">.</span><span class="fn">register</span><span class="pn">(</span>fastifyCookie<span class="pn">,</span> <span class="pn">{</span>
+  secret<span class="pn">:</span> <span class="str">'my-secret'</span><span class="pn">,</span> <span class="cm">// for cookies signature</span>
+<span class="pn">});</span></pre></div>
+
+    <p>Với thiết lập này, bạn có thể đọc cookie từ bên trong các route handler, như sau:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@Get</span><span class="pn">()</span>
+<span class="fn">findAll</span><span class="pn">(</span><span class="dec">@Req</span><span class="pn">()</span> request<span class="pn">:</span> <span class="typ">FastifyRequest</span><span class="pn">) {</span>
+  console<span class="pn">.</span><span class="fn">log</span><span class="pn">(</span>request<span class="pn">.</span>cookies<span class="pn">);</span> <span class="cm">// or "request.cookies['cookieKey']"</span>
+<span class="pn">}</span></pre></div>
+
+<div class="hint"><span class="lbl">💡 Hint</span><p>Decorator <code>@Req()</code> được import từ <code>@nestjs/common</code>, trong khi <code>FastifyRequest</code> từ package <code>fastify</code>.</p></div>
+
+    <p>Để đính kèm cookie vào outgoing response, sử dụng method <code>FastifyReply#setCookie()</code>:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@Get</span><span class="pn">()</span>
+<span class="fn">findAll</span><span class="pn">(</span><span class="dec">@Res</span><span class="pn">({</span> passthrough<span class="pn">:</span> <span class="kw">true</span> <span class="pn">})</span> response<span class="pn">:</span> <span class="typ">FastifyReply</span><span class="pn">) {</span>
+  response<span class="pn">.</span><span class="fn">setCookie</span><span class="pn">(</span><span class="str">'key'</span><span class="pn">,</span> <span class="str">'value'</span><span class="pn">);</span>
+<span class="pn">}</span></pre></div>
+
+    <p>Để đọc thêm về method <code>FastifyReply#setCookie()</code>, xem <a href="https://github.com/fastify/fastify-cookie#setcookie-name-value-options-" target="_blank"><strong>trang này</strong></a>.</p>
+
+<div class="warn"><span class="lbl">⚠️ Warning</span><p>Nếu bạn muốn để response handling logic cho framework, nhớ đặt option <code>passthrough</code> thành <code>true</code>, như đã thấy ở trên. Đọc thêm <a href="https://docs.nestjs.com/controllers#library-specific-approach" target="_blank"><strong>tại đây</strong></a>.</p></div>
+
+<div class="hint"><span class="lbl">💡 Hint</span><p>Decorator <code>@Res()</code> được import từ <code>@nestjs/common</code>, trong khi <code>FastifyReply</code> từ package <code>fastify</code>.</p></div>
+
+    <!-- ═══ CREATING A CUSTOM DECORATOR ═══ -->
+    <h3 id="creating-a-custom-decorator">Creating a custom decorator (cross-platform) <a class="anchor" href="#creating-a-custom-decorator">#</a></h3>
+
+    <p>Để cung cấp một cách thuận tiện, declarative để truy cập incoming cookie, chúng ta có thể tạo một <a href="https://docs.nestjs.com/custom-decorators" target="_blank"><strong>custom decorator</strong></a>.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">import</span> <span class="pn">{</span> createParamDecorator<span class="pn">,</span> ExecutionContext <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+
+<span class="kw">export const</span> Cookies <span class="pn">=</span> <span class="fn">createParamDecorator</span><span class="pn">(</span>
+  <span class="pn">(</span>data<span class="pn">:</span> <span class="typ">string</span><span class="pn">,</span> ctx<span class="pn">:</span> <span class="typ">ExecutionContext</span><span class="pn">)</span> <span class="pn">=&gt; {</span>
+    <span class="kw">const</span> request <span class="pn">=</span> ctx<span class="pn">.</span><span class="fn">switchToHttp</span><span class="pn">().</span><span class="fn">getRequest</span><span class="pn">();</span>
+    <span class="kw">return</span> data <span class="pn">?</span> request<span class="pn">.</span>cookies<span class="pn">?.[</span>data<span class="pn">]</span> <span class="pn">:</span> request<span class="pn">.</span>cookies<span class="pn">;</span>
+  <span class="pn">},</span>
+<span class="pn">);</span></pre></div>
+
+    <p>Decorator <code>@Cookies()</code> sẽ extract tất cả cookie, hoặc một named cookie từ object <code>req.cookies</code> và populate decorated parameter với giá trị đó.</p>
+
+    <p>Với thiết lập này, chúng ta có thể sử dụng decorator trong route handler signature, như sau:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@Get</span><span class="pn">()</span>
+<span class="fn">findAll</span><span class="pn">(</span><span class="dec">@Cookies</span><span class="pn">(</span><span class="str">'name'</span><span class="pn">)</span> name<span class="pn">:</span> <span class="typ">string</span><span class="pn">) {}</span></pre></div>
+
+    <!-- Page Navigation -->
+    <div class="page-nav">
+      <a href="Logger.html" class="pnbtn">
+        <span class="pnlbl">← Trước</span>
+        <span class="pntitle">Logger</span>
+      </a>
+      <a href="Events.html" class="pnbtn r">
+        <span class="pnlbl">Tiếp →</span>
+        <span class="pntitle">Events</span>
+      </a>
+    </div>
+
+  </main>
+
+  <!-- TOC -->
+  <aside class="toc">
+    <div class="toc-title">Nội dung</div>
+    <ul>
+      <li><a href="#use-with-express">Use with Express (default)</a></li>
+      <li><a href="#use-with-fastify">Use with Fastify</a></li>
+      <li><a href="#creating-a-custom-decorator">Creating a custom decorator (cross-platform)</a></li>
+    </ul>
+  </aside>
+
+</div>
+
+<script>
+  function cp(btn){var w=btn.closest('.cb');var p=w.querySelector('pre');if(!p)return;navigator.clipboard.writeText(p.textContent.trim()).then(function(){var o=btn.textContent;btn.textContent='Copied!';btn.style.color='#4ade80';setTimeout(function(){btn.textContent=o;btn.style.color=''},1500)})}
+  document.querySelectorAll('.toc a').forEach(function(l){l.addEventListener('click',function(e){e.preventDefault();var t=document.querySelector(this.getAttribute('href'));if(t)t.scrollIntoView({behavior:'smooth',block:'start'})})});
+  var tocLinks=document.querySelectorAll('.toc a'),heads=document.querySelectorAll('h3[id]');
+  function hi(){var c='';heads.forEach(function(h){if(scrollY>=h.offsetTop-120)c=h.id});tocLinks.forEach(function(a){a.classList.toggle('active',a.getAttribute('href')==='#'+c)})}
+  window.addEventListener('scroll',hi,{passive:true});hi();
+</script>
+</body>
+</html>

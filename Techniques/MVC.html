@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Model-View-Controller | NestJS - Tài liệu tiếng Việt</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root{--bg:#0e0e0e;--surface:#1a1a1a;--surface2:#222;--border:#2a2a2a;--border-l:#333;--red:#ea2845;--red-l:#ff4d6a;--red-glow:rgba(234,40,69,.15);--text:#e8e8e8;--muted:#888;--sec:#b0b0b0;--code-bg:#1e1e1e;--code-bd:#2d2d2d;--hint-bg:#0d2a1a;--hint-c:#4ade80;--warn-bg:#2a1a0d;--warn-c:#fb923c;--note-bg:#0d1a2a;--note-c:#60a0d0;--toc-w:220px;--font:'Inter',sans-serif;--mono:'Source Code Pro',monospace;--r:6px;--rl:10px}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+    body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:15px;line-height:1.78}
+    .page{max-width:1060px;margin:0 auto;padding:48px 32px 96px;display:flex;gap:56px;align-items:flex-start}.content{flex:1;min-width:0}
+    .toc{width:var(--toc-w);flex-shrink:0;position:sticky;top:32px;align-self:flex-start;max-height:calc(100vh - 48px);overflow-y:auto}
+    .toc::-webkit-scrollbar{width:3px}.toc::-webkit-scrollbar-thumb{background:var(--border-l);border-radius:2px}
+    .toc-title{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding-bottom:8px;margin-bottom:8px;border-bottom:1px solid var(--border)}
+    .toc ul{list-style:none}.toc ul li a{display:block;padding:3.5px 0;font-size:12.5px;color:var(--muted);text-decoration:none;line-height:1.5;transition:color .15s;cursor:pointer}
+    .toc ul li a:hover,.toc ul li a.active{color:var(--red-l)}
+    .vi-banner{display:flex;align-items:center;gap:10px;padding:11px 16px;border:1px solid rgba(234,40,69,.3);border-radius:var(--rl);background:linear-gradient(135deg,rgba(234,40,69,.1),rgba(234,40,69,.04));font-size:13px;color:var(--sec);margin-bottom:32px}.vi-banner strong{color:var(--red-l)}
+    h1{font-size:36px;font-weight:700;letter-spacing:-.5px;line-height:1.2;margin-bottom:6px}h1::after{content:'';display:block;width:44px;height:3px;background:var(--red);border-radius:2px;margin-top:12px}
+    h3{font-size:19px;font-weight:600;letter-spacing:-.2px;margin:40px 0 12px;display:flex;align-items:center;gap:8px;scroll-margin-top:80px}
+    h4{font-size:16px;font-weight:600;margin:28px 0 8px;scroll-margin-top:80px}
+    .anchor{font-size:14px;color:var(--muted);text-decoration:none;opacity:0;transition:opacity .2s}h3:hover .anchor,h4:hover .anchor{opacity:1}
+    p{color:var(--sec);line-height:1.82;margin-bottom:16px}p:last-child{margin-bottom:0}
+    a{color:var(--red-l);text-decoration:none}a:hover{text-decoration:underline}strong{color:var(--text);font-weight:600}
+    code{font-family:var(--mono);font-size:13px;background:var(--code-bg);border:1px solid var(--code-bd);padding:1px 6px;border-radius:4px;color:#f9a8d4}
+    .hint,.warn,.note{margin:18px 0;padding:12px 16px;border-left:3px solid;border-radius:var(--r);font-size:13.5px;line-height:1.72}
+    .hint{background:var(--hint-bg);border-color:var(--hint-c);color:#a7f3d0}.warn{background:var(--warn-bg);border-color:var(--warn-c);color:#fed7aa}.note{background:var(--note-bg);border-color:var(--note-c);color:#bae6fd}
+    .hint p,.warn p,.note p{margin:0;color:inherit}.lbl{display:block;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
+    .hint .lbl{color:var(--hint-c)}.warn .lbl{color:var(--warn-c)}.note .lbl{color:var(--note-c)}
+    .cb{margin:18px 0;border:1px solid var(--code-bd);border-radius:var(--rl);overflow:hidden;background:var(--code-bg)}
+    .cb-head{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:#181818;border-bottom:1px solid var(--code-bd);min-height:38px}
+    .cb-fname{font-family:var(--mono);font-size:11.5px;color:var(--muted);display:flex;align-items:center;gap:6px}.cb-fname::before{content:'';display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--red)}
+    .cb-right{display:flex;align-items:center;gap:6px}
+    .cpbtn{padding:3px 9px;font-size:10.5px;font-family:var(--mono);background:var(--surface);border:1px solid var(--border-l);color:var(--muted);border-radius:4px;cursor:pointer;transition:all .14s}.cpbtn:hover{background:var(--surface2);color:var(--text)}
+    pre{padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:13.5px;line-height:1.65;color:#abb2bf}pre::-webkit-scrollbar{height:5px}pre::-webkit-scrollbar-thumb{background:var(--border-l);border-radius:3px}
+    .kw{color:#c678dd}.fn{color:#61afef}.str{color:#98c379}.dec{color:#e5c07b}.typ{color:#e5c07b}.cm{color:#5c6370;font-style:italic}.pn{color:#abb2bf}.num{color:#d19a66}.cl{color:#e06c75}
+    .page-nav{display:flex;justify-content:space-between;margin-top:52px;gap:16px}.pnbtn{display:flex;flex-direction:column;padding:14px 18px;border:1px solid var(--border);border-radius:var(--rl);text-decoration:none;transition:all .2s;min-width:150px}.pnbtn:hover{border-color:var(--red);background:var(--red-glow);text-decoration:none}.pnlbl{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:3px}.pntitle{font-size:14px;font-weight:600;color:var(--text)}.pnbtn.r{text-align:right;margin-left:auto}
+    @media(max-width:860px){.toc{display:none}}@media(max-width:600px){.page{padding:24px 16px 64px}}
+  </style>
+</head>
+<body>
+<div class="page">
+  <main class="content">
+    <div class="vi-banner"><span style="font-size:17px">🇻🇳</span><div>Dịch từ <strong><a href="https://docs.nestjs.com/techniques/mvc" target="_blank">docs.nestjs.com/techniques/mvc</a></strong>. Thuật ngữ kỹ thuật giữ nguyên tiếng Anh.</div></div>
+
+    <!-- [1] H1 -->
+    <h1>Model-View-Controller</h1>
+
+    <!-- [2] Paragraph -->
+    <p style="margin-top:18px">Nest, mặc định, sử dụng thư viện <a href="https://github.com/expressjs/express" target="_blank"><strong>Express</strong></a> bên dưới. Do đó, mọi kỹ thuật sử dụng pattern MVC (Model-View-Controller) trong Express đều áp dụng được cho Nest.</p>
+
+    <!-- [3] Paragraph -->
+    <p>Đầu tiên, hãy scaffold một ứng dụng Nest đơn giản bằng công cụ <a href="https://github.com/nestjs/nest-cli" target="_blank"><strong>CLI</strong></a>:</p>
+
+    <!-- [4] Code block: CLI install -->
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre>$ npm i -g @nestjs/cli
+$ nest new project</pre></div>
+
+    <!-- [5] Paragraph -->
+    <p>Để tạo một ứng dụng MVC, chúng ta cũng cần một <a href="https://expressjs.com/en/guide/using-template-engines.html" target="_blank"><strong>template engine</strong></a> để render các HTML view:</p>
+
+    <!-- [6] Code block: install hbs -->
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre>$ npm install --save hbs</pre></div>
+
+    <!-- [7] Paragraph -->
+    <p>Chúng ta đã sử dụng engine <code>hbs</code> (<a href="https://github.com/pillarjs/hbs#readme" target="_blank"><strong>Handlebars</strong></a>), mặc dù bạn có thể sử dụng bất kỳ engine nào phù hợp với yêu cầu của bạn. Sau khi quá trình cài đặt hoàn tất, chúng ta cần cấu hình express instance bằng code sau:</p>
+
+    <!-- [8] Code block: main.ts -->
+<div class="cb"><div class="cb-head"><div class="cb-fname">main.ts</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">import</span> <span class="pn">{</span> NestFactory <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/core'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> NestExpressApplication <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/platform-express'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> join <span class="pn">}</span> <span class="kw">from</span> <span class="str">'node:path'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> AppModule <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./app.module'</span><span class="pn">;</span>
+
+<span class="kw">async function</span> <span class="fn">bootstrap</span><span class="pn">() {</span>
+  <span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> NestFactory<span class="pn">.</span><span class="fn">create</span><span class="pn">&lt;</span><span class="typ">NestExpressApplication</span><span class="pn">&gt;(</span>
+    AppModule<span class="pn">,</span>
+  <span class="pn">);</span>
+
+  app<span class="pn">.</span><span class="fn">useStaticAssets</span><span class="pn">(</span><span class="fn">join</span><span class="pn">(</span>__dirname<span class="pn">,</span> <span class="str">'..'</span><span class="pn">,</span> <span class="str">'public'</span><span class="pn">));</span>
+  app<span class="pn">.</span><span class="fn">setBaseViewsDir</span><span class="pn">(</span><span class="fn">join</span><span class="pn">(</span>__dirname<span class="pn">,</span> <span class="str">'..'</span><span class="pn">,</span> <span class="str">'views'</span><span class="pn">));</span>
+  app<span class="pn">.</span><span class="fn">setViewEngine</span><span class="pn">(</span><span class="str">'hbs'</span><span class="pn">);</span>
+
+  <span class="kw">await</span> app<span class="pn">.</span><span class="fn">listen</span><span class="pn">(</span>process<span class="pn">.</span>env<span class="pn">.</span>PORT <span class="pn">??</span> <span class="num">3000</span><span class="pn">);</span>
+<span class="pn">}</span>
+<span class="fn">bootstrap</span><span class="pn">();</span></pre></div>
+
+    <!-- [9] Paragraph -->
+    <p>Chúng ta đã cho <strong>Express</strong> biết rằng thư mục <code>public</code> sẽ được sử dụng để lưu trữ static asset, <code>views</code> sẽ chứa template, và template engine <code>hbs</code> sẽ được sử dụng để render HTML output.</p>
+
+    <!-- ═══ TEMPLATE RENDERING ═══ -->
+    <!-- [10] H3 -->
+    <h3 id="template-rendering">Template rendering <a class="anchor" href="#template-rendering">#</a></h3>
+
+    <!-- [11] Paragraph -->
+    <p>Bây giờ, hãy tạo một thư mục <code>views</code> và file template <code>index.hbs</code> bên trong nó. Trong template, chúng ta sẽ in một <code>message</code> được truyền từ controller:</p>
+
+    <!-- [12] Code block: views/index.hbs -->
+<div class="cb"><div class="cb-head"><div class="cb-fname">views/index.hbs</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;meta charset="utf-8" /&gt;
+    &lt;title&gt;App&lt;/title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    {{ message }}
+  &lt;/body&gt;
+&lt;/html&gt;</pre></div>
+
+    <!-- [13] Paragraph -->
+    <p>Tiếp theo, mở file <code>app.controller</code> và thay thế method <code>root()</code> bằng code sau:</p>
+
+    <!-- [14] Code block: app.controller.ts -->
+<div class="cb"><div class="cb-head"><div class="cb-fname">app.controller.ts</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">import</span> <span class="pn">{</span> Get<span class="pn">,</span> Controller<span class="pn">,</span> Render <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+
+<span class="dec">@Controller</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">AppController</span> <span class="pn">{</span>
+  <span class="dec">@Get</span><span class="pn">()</span>
+  <span class="dec">@Render</span><span class="pn">(</span><span class="str">'index'</span><span class="pn">)</span>
+  <span class="fn">root</span><span class="pn">() {</span>
+    <span class="kw">return</span> <span class="pn">{</span> message<span class="pn">:</span> <span class="str">'Hello world!'</span> <span class="pn">};</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+
+    <!-- [15] Paragraph -->
+    <p>Trong code này, chúng ta đang chỉ định template sẽ sử dụng trong decorator <code>@Render()</code>, và giá trị trả về của route handler method được truyền vào template để rendering. Lưu ý rằng giá trị trả về là một object với property <code>message</code>, khớp với placeholder <code>message</code> mà chúng ta đã tạo trong template.</p>
+
+    <!-- [16] Paragraph -->
+    <p>Trong khi ứng dụng đang chạy, mở trình duyệt và truy cập <a href="http://localhost:3000" target="_blank"><strong>http://localhost:3000</strong></a>. Bạn sẽ thấy thông báo <code>Hello world!</code>.</p>
+
+    <!-- ═══ DYNAMIC TEMPLATE RENDERING ═══ -->
+    <!-- [17] H3 -->
+    <h3 id="dynamic-template-rendering">Dynamic template rendering <a class="anchor" href="#dynamic-template-rendering">#</a></h3>
+
+    <!-- [18] Paragraph -->
+    <p>Nếu application logic cần quyết định động template nào sẽ render, thì chúng ta nên sử dụng decorator <code>@Res()</code>, và cung cấp tên view trong route handler, thay vì trong decorator <code>@Render()</code>:</p>
+
+    <!-- [19] Hint -->
+<div class="hint"><span class="lbl">💡 Hint</span><p>Khi Nest phát hiện decorator <code>@Res()</code>, nó inject object <code>response</code> dành riêng cho thư viện. Chúng ta có thể sử dụng object này để render template một cách dynamic. Tìm hiểu thêm về API của <code>response</code> object <a href="https://expressjs.com/en/api.html#res.render" target="_blank"><strong>tại đây</strong></a>.</p></div>
+
+    <!-- [20] Code block: app.controller.ts (dynamic) -->
+<div class="cb"><div class="cb-head"><div class="cb-fname">app.controller.ts</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">import</span> <span class="pn">{</span> Get<span class="pn">,</span> Controller<span class="pn">,</span> Res<span class="pn">,</span> Render <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> Response <span class="pn">}</span> <span class="kw">from</span> <span class="str">'express'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> AppService <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./app.service'</span><span class="pn">;</span>
+
+<span class="dec">@Controller</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">AppController</span> <span class="pn">{</span>
+  <span class="kw">constructor</span><span class="pn">(</span><span class="kw">private</span> appService<span class="pn">:</span> <span class="typ">AppService</span><span class="pn">) {}</span>
+
+  <span class="dec">@Get</span><span class="pn">()</span>
+  <span class="fn">root</span><span class="pn">(</span><span class="dec">@Res</span><span class="pn">()</span> res<span class="pn">:</span> <span class="typ">Response</span><span class="pn">) {</span>
+    <span class="kw">return</span> res<span class="pn">.</span><span class="fn">render</span><span class="pn">(</span>
+      <span class="kw">this</span><span class="pn">.</span>appService<span class="pn">.</span><span class="fn">getViewName</span><span class="pn">(),</span>
+      <span class="pn">{</span> message<span class="pn">:</span> <span class="str">'Hello world!'</span> <span class="pn">},</span>
+    <span class="pn">);</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+
+    <!-- [21] H4: Example -->
+    <h4 id="example">Example</h4>
+
+    <!-- [22] Paragraph -->
+    <p>Một ví dụ hoạt động có sẵn <a href="https://github.com/nestjs/nest/tree/master/sample/15-mvc" target="_blank"><strong>tại đây</strong></a>.</p>
+
+    <!-- ═══ FASTIFY ═══ -->
+    <!-- [23] H3 -->
+    <h3 id="fastify">Fastify <a class="anchor" href="#fastify">#</a></h3>
+
+    <!-- [24] Paragraph -->
+    <p>Như đã đề cập trong <a href="https://docs.nestjs.com/first-steps#benchmarks" target="_blank"><strong>chương</strong></a> này, chúng ta có thể sử dụng bất kỳ HTTP provider tương thích nào cùng với Nest. Một thư viện như vậy là <a href="https://github.com/fastify/fastify" target="_blank"><strong>Fastify</strong></a>. Để tạo một ứng dụng MVC với Fastify, chúng ta cần cài đặt các package sau:</p>
+
+    <!-- [25] Code block: install fastify packages -->
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre>$ npm install --save @fastify/view @fastify/static handlebars</pre></div>
+
+    <!-- [26] Paragraph -->
+    <p>Các bước tiếp theo bao gồm gần như cùng một quy trình được sử dụng với Express, với một số khác biệt nhỏ dành riêng cho platform. Sau khi quá trình cài đặt hoàn tất, mở file <code>main.ts</code> và cập nhật nội dung của nó:</p>
+
+    <!-- [27] Code block: main.ts (Fastify) -->
+<div class="cb"><div class="cb-head"><div class="cb-fname">main.ts</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">import</span> <span class="pn">{</span> NestFactory <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/core'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> NestFastifyApplication<span class="pn">,</span> FastifyAdapter <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/platform-fastify'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> AppModule <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./app.module'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> join <span class="pn">}</span> <span class="kw">from</span> <span class="str">'node:path'</span><span class="pn">;</span>
+
+<span class="kw">async function</span> <span class="fn">bootstrap</span><span class="pn">() {</span>
+  <span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> NestFactory<span class="pn">.</span><span class="fn">create</span><span class="pn">&lt;</span><span class="typ">NestFastifyApplication</span><span class="pn">&gt;(</span>
+    AppModule<span class="pn">,</span>
+    <span class="kw">new</span> <span class="cl">FastifyAdapter</span><span class="pn">(),</span>
+  <span class="pn">);</span>
+
+  app<span class="pn">.</span><span class="fn">useStaticAssets</span><span class="pn">({</span>
+    root<span class="pn">:</span> <span class="fn">join</span><span class="pn">(</span>__dirname<span class="pn">,</span> <span class="str">'..'</span><span class="pn">,</span> <span class="str">'public'</span><span class="pn">),</span>
+    prefix<span class="pn">:</span> <span class="str">'/public/'</span><span class="pn">,</span>
+  <span class="pn">});</span>
+  app<span class="pn">.</span><span class="fn">setViewEngine</span><span class="pn">({</span>
+    engine<span class="pn">: {</span>
+      handlebars<span class="pn">:</span> <span class="fn">require</span><span class="pn">(</span><span class="str">'handlebars'</span><span class="pn">),</span>
+    <span class="pn">},</span>
+    templates<span class="pn">:</span> <span class="fn">join</span><span class="pn">(</span>__dirname<span class="pn">,</span> <span class="str">'..'</span><span class="pn">,</span> <span class="str">'views'</span><span class="pn">),</span>
+  <span class="pn">});</span>
+
+  <span class="kw">await</span> app<span class="pn">.</span><span class="fn">listen</span><span class="pn">(</span>process<span class="pn">.</span>env<span class="pn">.</span>PORT <span class="pn">??</span> <span class="num">3000</span><span class="pn">);</span>
+<span class="pn">}</span>
+<span class="fn">bootstrap</span><span class="pn">();</span></pre></div>
+
+    <!-- [28] Paragraph -->
+    <p>Fastify API có một số khác biệt, nhưng kết quả cuối cùng của các lời gọi method này là giống nhau. Một khác biệt đáng chú ý là khi sử dụng Fastify, tên template mà bạn truyền vào decorator <code>@Render()</code> phải bao gồm phần mở rộng file.</p>
+
+    <!-- [29] Paragraph -->
+    <p>Đây là cách bạn có thể thiết lập:</p>
+
+    <!-- [30] Code block: app.controller.ts (Fastify @Render) -->
+<div class="cb"><div class="cb-head"><div class="cb-fname">app.controller.ts</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">import</span> <span class="pn">{</span> Get<span class="pn">,</span> Controller<span class="pn">,</span> Render <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+
+<span class="dec">@Controller</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">AppController</span> <span class="pn">{</span>
+  <span class="dec">@Get</span><span class="pn">()</span>
+  <span class="dec">@Render</span><span class="pn">(</span><span class="str">'index.hbs'</span><span class="pn">)</span>
+  <span class="fn">root</span><span class="pn">() {</span>
+    <span class="kw">return</span> <span class="pn">{</span> message<span class="pn">:</span> <span class="str">'Hello world!'</span> <span class="pn">};</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+
+    <!-- [31] Paragraph -->
+    <p>Ngoài ra, bạn có thể sử dụng decorator <code>@Res()</code> để inject trực tiếp response và chỉ định view bạn muốn render, như bên dưới:</p>
+
+    <!-- [32] Code block: app.controller.ts (Fastify @Res) -->
+<div class="cb"><div class="cb-head"><div class="cb-fname">app.controller.ts</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">import</span> <span class="pn">{</span> Res<span class="pn">,</span> Get<span class="pn">,</span> Controller <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> FastifyReply <span class="pn">}</span> <span class="kw">from</span> <span class="str">'fastify'</span><span class="pn">;</span>
+
+<span class="dec">@Controller</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">AppController</span> <span class="pn">{</span>
+  <span class="dec">@Get</span><span class="pn">()</span>
+  <span class="fn">root</span><span class="pn">(</span><span class="dec">@Res</span><span class="pn">()</span> res<span class="pn">:</span> <span class="typ">FastifyReply</span><span class="pn">) {</span>
+    <span class="kw">return</span> res<span class="pn">.</span><span class="fn">view</span><span class="pn">(</span><span class="str">'index.hbs'</span><span class="pn">,</span> <span class="pn">{</span> message<span class="pn">:</span> <span class="str">'Hello world!'</span> <span class="pn">});</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+
+    <!-- [33] H4: Example -->
+    <h4 id="example-1">Example</h4>
+
+    <!-- [34] Paragraph -->
+    <p>Một ví dụ hoạt động có sẵn <a href="https://github.com/nestjs/nest/tree/master/sample/17-mvc-fastify" target="_blank"><strong>tại đây</strong></a>.</p>
+
+    <!-- [35] Page Navigation -->
+    <div class="page-nav">
+      <a href="Session.html" class="pnbtn">
+        <span class="pnlbl">← Trước</span>
+        <span class="pntitle">Session</span>
+      </a>
+      <a href="Performance.html" class="pnbtn r">
+        <span class="pnlbl">Tiếp →</span>
+        <span class="pntitle">Performance (Fastify)</span>
+      </a>
+    </div>
+
+  </main>
+
+  <!-- TOC -->
+  <aside class="toc">
+    <div class="toc-title">Nội dung</div>
+    <ul>
+      <li><a href="#template-rendering">Template rendering</a></li>
+      <li><a href="#dynamic-template-rendering">Dynamic template rendering</a></li>
+      <li><a href="#fastify">Fastify</a></li>
+    </ul>
+  </aside>
+
+</div>
+
+<script>
+  function cp(btn){var w=btn.closest('.cb');var p=w.querySelector('pre');if(!p)return;navigator.clipboard.writeText(p.textContent.trim()).then(function(){var o=btn.textContent;btn.textContent='Copied!';btn.style.color='#4ade80';setTimeout(function(){btn.textContent=o;btn.style.color=''},1500)})}
+  document.querySelectorAll('.toc a').forEach(function(l){l.addEventListener('click',function(e){e.preventDefault();var t=document.querySelector(this.getAttribute('href'));if(t)t.scrollIntoView({behavior:'smooth',block:'start'})})});
+  var tocLinks=document.querySelectorAll('.toc a'),heads=document.querySelectorAll('h3[id]');
+  function hi(){var c='';heads.forEach(function(h){if(scrollY>=h.offsetTop-120)c=h.id});tocLinks.forEach(function(a){a.classList.toggle('active',a.getAttribute('href')==='#'+c)})}
+  window.addEventListener('scroll',hi,{passive:true});hi();
+</script>
+</body>
+</html>

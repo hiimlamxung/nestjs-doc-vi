@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Logger | NestJS - Tài liệu tiếng Việt</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root{--bg:#0e0e0e;--surface:#1a1a1a;--surface2:#222;--border:#2a2a2a;--border-l:#333;--red:#ea2845;--red-l:#ff4d6a;--red-glow:rgba(234,40,69,.15);--text:#e8e8e8;--muted:#888;--sec:#b0b0b0;--code-bg:#1e1e1e;--code-bd:#2d2d2d;--hint-bg:#0d2a1a;--hint-c:#4ade80;--warn-bg:#2a1a0d;--warn-c:#fb923c;--note-bg:#0d1a2a;--note-c:#60a0d0;--toc-w:220px;--font:'Inter',sans-serif;--mono:'Source Code Pro',monospace;--r:6px;--rl:10px}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+    body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:15px;line-height:1.78}
+    .page{max-width:1060px;margin:0 auto;padding:48px 32px 96px;display:flex;gap:56px;align-items:flex-start}.content{flex:1;min-width:0}
+    .toc{width:var(--toc-w);flex-shrink:0;position:sticky;top:32px;align-self:flex-start;max-height:calc(100vh - 48px);overflow-y:auto}
+    .toc::-webkit-scrollbar{width:3px}.toc::-webkit-scrollbar-thumb{background:var(--border-l);border-radius:2px}
+    .toc-title{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding-bottom:8px;margin-bottom:8px;border-bottom:1px solid var(--border)}
+    .toc ul{list-style:none}.toc ul li a{display:block;padding:3.5px 0;font-size:12.5px;color:var(--muted);text-decoration:none;line-height:1.5;transition:color .15s;cursor:pointer}
+    .toc ul li a:hover,.toc ul li a.active{color:var(--red-l)}
+    .vi-banner{display:flex;align-items:center;gap:10px;padding:11px 16px;border:1px solid rgba(234,40,69,.3);border-radius:var(--rl);background:linear-gradient(135deg,rgba(234,40,69,.1),rgba(234,40,69,.04));font-size:13px;color:var(--sec);margin-bottom:32px}.vi-banner strong{color:var(--red-l)}
+    h1{font-size:36px;font-weight:700;letter-spacing:-.5px;line-height:1.2;margin-bottom:6px}h1::after{content:'';display:block;width:44px;height:3px;background:var(--red);border-radius:2px;margin-top:12px}
+    h3{font-size:19px;font-weight:600;letter-spacing:-.2px;margin:40px 0 12px;display:flex;align-items:center;gap:8px;scroll-margin-top:80px}
+    .anchor{font-size:14px;color:var(--muted);text-decoration:none;opacity:0;transition:opacity .2s}h3:hover .anchor{opacity:1}
+    p{color:var(--sec);line-height:1.82;margin-bottom:16px}p:last-child{margin-bottom:0}
+    a{color:var(--red-l);text-decoration:none}a:hover{text-decoration:underline}strong{color:var(--text);font-weight:600}
+    ul,ol{color:var(--sec);padding-left:22px;line-height:2.1;margin:16px 0}
+    code{font-family:var(--mono);font-size:13px;background:var(--code-bg);border:1px solid var(--code-bd);padding:1px 6px;border-radius:4px;color:#f9a8d4}
+    .hint,.warn,.note{margin:18px 0;padding:12px 16px;border-left:3px solid;border-radius:var(--r);font-size:13.5px;line-height:1.72}
+    .hint{background:var(--hint-bg);border-color:var(--hint-c);color:#a7f3d0}.warn{background:var(--warn-bg);border-color:var(--warn-c);color:#fed7aa}.note{background:var(--note-bg);border-color:var(--note-c);color:#bae6fd}
+    .hint p,.warn p,.note p{margin:0;color:inherit}.lbl{display:block;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
+    .hint .lbl{color:var(--hint-c)}.warn .lbl{color:var(--warn-c)}.note .lbl{color:var(--note-c)}
+    .cb{margin:18px 0;border:1px solid var(--code-bd);border-radius:var(--rl);overflow:hidden;background:var(--code-bg)}
+    .cb-head{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:#181818;border-bottom:1px solid var(--code-bd);min-height:38px}
+    .cb-fname{font-family:var(--mono);font-size:11.5px;color:var(--muted);display:flex;align-items:center;gap:6px}.cb-fname::before{content:'';display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--red)}
+    .cb-right{display:flex;align-items:center;gap:6px}
+    .cpbtn{padding:3px 9px;font-size:10.5px;font-family:var(--mono);background:var(--surface);border:1px solid var(--border-l);color:var(--muted);border-radius:4px;cursor:pointer;transition:all .14s}.cpbtn:hover{background:var(--surface2);color:var(--text)}
+    pre{padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:13.5px;line-height:1.65;color:#abb2bf}pre::-webkit-scrollbar{height:5px}pre::-webkit-scrollbar-thumb{background:var(--border-l);border-radius:3px}
+    .kw{color:#c678dd}.fn{color:#61afef}.str{color:#98c379}.dec{color:#e5c07b}.typ{color:#e5c07b}.cm{color:#5c6370;font-style:italic}.pn{color:#abb2bf}.num{color:#d19a66}.cl{color:#e06c75}
+    table{width:100%;border-collapse:collapse;margin:18px 0;font-size:14px}table th{padding:10px 14px;border:1px solid var(--border-l);background:var(--surface);color:var(--text);text-align:left;font-weight:600}table td{padding:10px 14px;border:1px solid var(--border-l);color:var(--sec)}table td code{font-size:12px}
+    .page-nav{display:flex;justify-content:space-between;margin-top:52px;gap:16px}.pnbtn{display:flex;flex-direction:column;padding:14px 18px;border:1px solid var(--border);border-radius:var(--rl);text-decoration:none;transition:all .2s;min-width:150px}.pnbtn:hover{border-color:var(--red);background:var(--red-glow);text-decoration:none}.pnlbl{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:3px}.pntitle{font-size:14px;font-weight:600;color:var(--text)}.pnbtn.r{text-align:right;margin-left:auto}
+    @media(max-width:860px){.toc{display:none}}@media(max-width:600px){.page{padding:24px 16px 64px}}
+  </style>
+</head>
+<body>
+<div class="page">
+  <main class="content">
+    <div class="vi-banner"><span style="font-size:17px">🇻🇳</span><div>Dịch từ <strong><a href="https://docs.nestjs.com/techniques/logger" target="_blank">docs.nestjs.com/techniques/logger</a></strong>. Thuật ngữ kỹ thuật giữ nguyên tiếng Anh.</div></div>
+
+    <h1>Logger</h1>
+
+    <p style="margin-top:18px">Nest đi kèm với một text-based logger tích hợp sẵn, được sử dụng trong quá trình khởi động ứng dụng và một số trường hợp khác như hiển thị các caught exception (tức là system logging). Chức năng này được cung cấp thông qua class <code>Logger</code> trong package <code>@nestjs/common</code>. Bạn có thể kiểm soát hoàn toàn hành vi của hệ thống logging, bao gồm bất kỳ điều nào sau đây:</p>
+
+    <ul>
+      <li>Vô hiệu hóa hoàn toàn việc logging</li>
+      <li>Chỉ định mức độ chi tiết của log (ví dụ: hiển thị errors, warnings, debug info, v.v.)</li>
+      <li>Cấu hình format của log message (raw, json, có màu, v.v.)</li>
+      <li>Ghi đè timestamp trong logger mặc định (ví dụ: sử dụng tiêu chuẩn ISO8601 làm date format)</li>
+      <li>Ghi đè hoàn toàn logger mặc định</li>
+      <li>Tùy chỉnh logger mặc định bằng cách extend nó</li>
+      <li>Sử dụng dependency injection để đơn giản hóa việc composing và testing ứng dụng của bạn</li>
+    </ul>
+
+    <p>Bạn cũng có thể sử dụng logger tích hợp sẵn, hoặc tạo custom implementation của riêng mình, để log các application-level event và message của riêng bạn.</p>
+
+    <p>Nếu ứng dụng của bạn yêu cầu tích hợp với các hệ thống logging bên ngoài, file-based logging tự động, hoặc chuyển tiếp log đến centralized logging service, bạn có thể implement giải pháp logging hoàn toàn tùy chỉnh bằng thư viện logging Node.js. Một lựa chọn phổ biến là <a href="https://github.com/pinojs/pino" target="_blank"><strong>Pino</strong></a>, được biết đến với hiệu suất cao và sự linh hoạt.</p>
+
+    <!-- ═══════════════════════ BASIC CUSTOMIZATION ═══════════════════════ -->
+    <h3 id="basic-customization">Basic customization <a class="anchor" href="#basic-customization">#</a></h3>
+
+    <p>Để vô hiệu hóa logging, đặt property <code>logger</code> thành <code>false</code> trong (optional) Nest application options object được truyền làm argument thứ hai cho method <code>NestFactory.create()</code>.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> <span class="cl">NestFactory</span><span class="pn">.</span><span class="fn">create</span><span class="pn">(</span>AppModule<span class="pn">,</span> <span class="pn">{</span>
+  logger<span class="pn">:</span> <span class="kw">false</span><span class="pn">,</span>
+<span class="pn">});</span>
+<span class="kw">await</span> app<span class="pn">.</span><span class="fn">listen</span><span class="pn">(</span>process<span class="pn">.</span>env<span class="pn">.</span>PORT <span class="pn">??</span> <span class="num">3000</span><span class="pn">);</span></pre></div>
+
+    <p>Để bật các log level cụ thể, đặt property <code>logger</code> thành một mảng các chuỗi chỉ định các log level cần hiển thị, như sau:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> <span class="cl">NestFactory</span><span class="pn">.</span><span class="fn">create</span><span class="pn">(</span>AppModule<span class="pn">,</span> <span class="pn">{</span>
+  logger<span class="pn">:</span> <span class="pn">[</span><span class="str">'error'</span><span class="pn">,</span> <span class="str">'warn'</span><span class="pn">],</span>
+<span class="pn">});</span>
+<span class="kw">await</span> app<span class="pn">.</span><span class="fn">listen</span><span class="pn">(</span>process<span class="pn">.</span>env<span class="pn">.</span>PORT <span class="pn">??</span> <span class="num">3000</span><span class="pn">);</span></pre></div>
+
+    <p>Các giá trị trong mảng có thể là bất kỳ sự kết hợp nào của <code>'log'</code>, <code>'fatal'</code>, <code>'error'</code>, <code>'warn'</code>, <code>'debug'</code>, và <code>'verbose'</code>.</p>
+
+<div class="hint"><span class="lbl">💡 Hint</span><p>Các log level trong Nest có tính chất cascading (kế thừa). Điều này có nghĩa là việc cung cấp một log level cụ thể (như <code>'log'</code>) sẽ tự động bao gồm tất cả các level có mức độ nghiêm trọng cao hơn (ví dụ: <code>'warn'</code>, <code>'error'</code>, và <code>'fatal'</code>).</p></div>
+
+    <p>Để vô hiệu hóa colorized output, truyền object <code>ConsoleLogger</code> với property <code>colors</code> được đặt thành <code>false</code> làm giá trị của property <code>logger</code>.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> <span class="cl">NestFactory</span><span class="pn">.</span><span class="fn">create</span><span class="pn">(</span>AppModule<span class="pn">,</span> <span class="pn">{</span>
+  logger<span class="pn">:</span> <span class="kw">new</span> <span class="cl">ConsoleLogger</span><span class="pn">({</span>
+    colors<span class="pn">:</span> <span class="kw">false</span><span class="pn">,</span>
+  <span class="pn">}),</span>
+<span class="pn">});</span></pre></div>
+
+    <p>Để cấu hình prefix cho mỗi log message, truyền object <code>ConsoleLogger</code> với thuộc tính <code>prefix</code> được thiết lập:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> <span class="cl">NestFactory</span><span class="pn">.</span><span class="fn">create</span><span class="pn">(</span>AppModule<span class="pn">,</span> <span class="pn">{</span>
+  logger<span class="pn">:</span> <span class="kw">new</span> <span class="cl">ConsoleLogger</span><span class="pn">({</span>
+    prefix<span class="pn">:</span> <span class="str">'MyApp'</span><span class="pn">,</span> <span class="cm">// Default is "Nest"</span>
+  <span class="pn">}),</span>
+<span class="pn">});</span></pre></div>
+
+    <table>
+      <tr><th>Option</th><th>Mô tả</th><th>Default</th></tr>
+      <tr><td><code>logLevels</code></td><td>Các log level được bật.</td><td><code>['log','fatal','error','warn','debug','verbose']</code></td></tr>
+      <tr><td><code>timestamp</code></td><td>Nếu enabled, sẽ in timestamp (thời gian chênh lệch) giữa log message hiện tại và trước đó. <em>Không dùng khi <code>json</code> enabled.</em></td><td><code>false</code></td></tr>
+      <tr><td><code>prefix</code></td><td>Prefix được sử dụng cho mỗi log message. <em>Không dùng khi <code>json</code> enabled.</em></td><td><code>Nest</code></td></tr>
+      <tr><td><code>json</code></td><td>Nếu enabled, sẽ in log message ở format JSON.</td><td><code>false</code></td></tr>
+      <tr><td><code>colors</code></td><td>Nếu enabled, sẽ in log message có màu. Mặc định <code>true</code> nếu <code>json</code> disabled, <code>false</code> nếu ngược lại.</td><td><code>true</code></td></tr>
+      <tr><td><code>context</code></td><td>Context của logger.</td><td><code>undefined</code></td></tr>
+      <tr><td><code>compact</code></td><td>Nếu enabled, sẽ in log message trên một dòng duy nhất, ngay cả khi đó là object có nhiều property. Nếu đặt thành một số, <code>n</code> phần tử bên trong cùng được hợp nhất trên một dòng miễn là tất cả property phù hợp với <code>breakLength</code>. Short array element cũng được nhóm lại. <em>Chỉ dùng khi <code>json</code> disabled.</em></td><td><code>true</code></td></tr>
+      <tr><td><code>maxArrayLength</code></td><td>Chỉ định số lượng phần tử tối đa của <code>Array</code>, <code>TypedArray</code>, <code>Map</code>, <code>Set</code>, <code>WeakMap</code> và <code>WeakSet</code> để bao gồm khi formatting. Đặt <code>null</code> hoặc <code>Infinity</code> để hiển thị tất cả. Đặt <code>0</code> hoặc âm để không hiển thị. Bị bỏ qua khi <code>json</code> enabled, <code>colors</code> disabled và <code>compact</code> là <code>true</code>.</td><td><code>100</code></td></tr>
+      <tr><td><code>maxStringLength</code></td><td>Chỉ định số lượng ký tự tối đa khi formatting. Đặt <code>null</code> hoặc <code>Infinity</code> để hiển thị tất cả. Đặt <code>0</code> hoặc âm để không hiển thị. Bị bỏ qua khi <code>json</code> enabled, <code>colors</code> disabled và <code>compact</code> là <code>true</code>.</td><td><code>10000</code></td></tr>
+      <tr><td><code>sorted</code></td><td>Nếu enabled, sẽ sắp xếp key khi formatting object. Có thể là custom sorting function. Bị bỏ qua khi <code>json</code> enabled, <code>colors</code> disabled và <code>compact</code> là <code>true</code>.</td><td><code>false</code></td></tr>
+      <tr><td><code>depth</code></td><td>Chỉ định số lần đệ quy khi formatting object. Hữu ích để inspect large object. Truyền <code>Infinity</code> hoặc <code>null</code> để đệ quy đến maximum call stack size. Bị bỏ qua khi <code>json</code> enabled, <code>colors</code> disabled và <code>compact</code> là <code>true</code>.</td><td><code>5</code></td></tr>
+      <tr><td><code>showHidden</code></td><td>Nếu <code>true</code>, các non-enumerable symbol và property của object sẽ được bao gồm. <code>WeakMap</code> và <code>WeakSet</code> entry cũng được bao gồm cùng user defined prototype property.</td><td><code>false</code></td></tr>
+      <tr><td><code>breakLength</code></td><td>Độ dài tại đó input value được chia thành nhiều dòng. Đặt <code>Infinity</code> để format trên một dòng (kết hợp với <code>compact</code> là <code>true</code>). Mặc định <code>Infinity</code> khi <code>compact</code> là <code>true</code>, <code>80</code> nếu ngược lại. Bị bỏ qua khi <code>json</code> enabled, <code>colors</code> disabled và <code>compact</code> là <code>true</code>.</td><td><code>Infinity</code></td></tr>
+    </table>
+
+    <!-- ═══════════════════════ JSON LOGGING ═══════════════════════ -->
+    <h3 id="json-logging">JSON logging <a class="anchor" href="#json-logging">#</a></h3>
+
+    <p>JSON logging là điều cần thiết cho việc observability ứng dụng hiện đại và tích hợp với các log management system. Để bật JSON logging trong ứng dụng NestJS, cấu hình object <code>ConsoleLogger</code> với property <code>json</code> được đặt thành <code>true</code>. Sau đó, cung cấp cấu hình logger này làm giá trị cho property <code>logger</code> khi tạo application instance.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> <span class="cl">NestFactory</span><span class="pn">.</span><span class="fn">create</span><span class="pn">(</span>AppModule<span class="pn">,</span> <span class="pn">{</span>
+  logger<span class="pn">:</span> <span class="kw">new</span> <span class="cl">ConsoleLogger</span><span class="pn">({</span>
+    json<span class="pn">:</span> <span class="kw">true</span><span class="pn">,</span>
+  <span class="pn">}),</span>
+<span class="pn">});</span></pre></div>
+
+    <p>Cấu hình này xuất log ở structured JSON format, giúp dễ dàng tích hợp với các hệ thống bên ngoài như log aggregator và cloud platform. Ví dụ, các nền tảng như AWS ECS (Elastic Container Service) hỗ trợ JSON log một cách native, cho phép các tính năng nâng cao như:</p>
+
+    <ul>
+      <li><strong>Log Filtering:</strong> Dễ dàng thu hẹp log dựa trên các field như log level, timestamp hoặc custom metadata.</li>
+      <li><strong>Search and Analysis:</strong> Sử dụng các công cụ query để phân tích và theo dõi xu hướng trong hành vi ứng dụng.</li>
+    </ul>
+
+    <p>Ngoài ra, nếu bạn đang sử dụng NestJS Mau, JSON logging sẽ đơn giản hóa quá trình xem log ở structured, well-organized format, điều này đặc biệt hữu ích cho debugging và performance monitoring.</p>
+
+<div class="note"><span class="lbl">📘 Note</span><p>Khi <code>json</code> được đặt thành <code>true</code>, <code>ConsoleLogger</code> sẽ tự động vô hiệu hóa text colorization bằng cách đặt property <code>colors</code> thành <code>false</code>. Điều này đảm bảo rằng output vẫn là valid JSON, không có các formatting artifact. Tuy nhiên, cho mục đích development, bạn có thể override hành vi này bằng cách đặt <code>colors</code> thành <code>true</code> một cách rõ ràng. Điều này thêm colorized JSON log, giúp các log entry dễ đọc hơn trong quá trình local debugging.</p></div>
+
+    <p>Khi JSON logging được bật, output sẽ trông như thế này:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="pn">{</span>
+  <span class="str">"level"</span><span class="pn">:</span> <span class="str">"log"</span><span class="pn">,</span>
+  <span class="str">"pid"</span><span class="pn">:</span> <span class="num">19096</span><span class="pn">,</span>
+  <span class="str">"timestamp"</span><span class="pn">:</span> <span class="num">1607370779834</span><span class="pn">,</span>
+  <span class="str">"message"</span><span class="pn">:</span> <span class="str">"Starting Nest application..."</span><span class="pn">,</span>
+  <span class="str">"context"</span><span class="pn">:</span> <span class="str">"NestFactory"</span>
+<span class="pn">}</span></pre></div>
+
+    <!-- ═══════════════════════ USING THE LOGGER ═══════════════════════ -->
+    <h3 id="using-the-logger">Using the logger for application logging <a class="anchor" href="#using-the-logger">#</a></h3>
+
+    <p>Chúng ta có thể kết hợp một số kỹ thuật trên để cung cấp hành vi và formatting nhất quán cho cả Nest system logging và application event/message logging của riêng chúng ta.</p>
+
+    <p>Một thực hành tốt là khởi tạo class <code>Logger</code> từ <code>@nestjs/common</code> trong mỗi service. Chúng ta có thể cung cấp tên service làm argument <code>context</code> trong constructor của <code>Logger</code>, như sau:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">import</span> <span class="pn">{</span> Logger<span class="pn">,</span> Injectable <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+
+<span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">MyService</span> <span class="pn">{</span>
+  <span class="kw">private readonly</span> logger <span class="pn">=</span> <span class="kw">new</span> <span class="cl">Logger</span><span class="pn">(</span><span class="cl">MyService</span><span class="pn">.</span>name<span class="pn">);</span>
+
+  <span class="fn">doSomething</span><span class="pn">() {</span>
+    <span class="kw">this</span><span class="pn">.</span>logger<span class="pn">.</span><span class="fn">log</span><span class="pn">(</span><span class="str">'Doing something...'</span><span class="pn">);</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+
+    <p>Trong default logger implementation, context được in trong dấu ngoặc vuông, như <code>NestFactory</code> trong ví dụ bên dưới:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre>[Nest] 19096   - 12/08/2019, 7:12:59 AM   [NestFactory] Starting Nest application...</pre></div>
+
+    <p>Nếu chúng ta cung cấp một custom logger thông qua <code>app.useLogger()</code>, nó sẽ thực sự được Nest sử dụng internally. Điều đó có nghĩa là code của chúng ta vẫn implementation-agnostic, trong khi chúng ta có thể dễ dàng thay thế logger mặc định bằng cách gọi <code>app.useLogger()</code>.</p>
+
+    <p>Bằng cách đó, nếu chúng ta làm theo các bước từ phần trước và gọi <code>app.useLogger(app.get(MyLogger))</code>, các lệnh gọi sau đến <code>this.logger.log()</code> từ <code>MyService</code> sẽ dẫn đến việc gọi method <code>log</code> từ instance <code>MyLogger</code>.</p>
+
+    <p>Điều này sẽ phù hợp với hầu hết các trường hợp. Nhưng nếu bạn cần nhiều tùy chỉnh hơn (như thêm và gọi các custom method), hãy chuyển sang phần tiếp theo.</p>
+
+    <!-- ═══════════════════════ LOGS WITH TIMESTAMPS ═══════════════════════ -->
+    <h3 id="logs-with-timestamps">Logs with timestamps <a class="anchor" href="#logs-with-timestamps">#</a></h3>
+
+    <p>Để bật timestamp logging cho mỗi logged message, bạn có thể sử dụng thiết lập tùy chọn <code>timestamp: true</code> khi tạo logger instance.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">import</span> <span class="pn">{</span> Logger<span class="pn">,</span> Injectable <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+
+<span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">class</span> <span class="cl">MyService</span> <span class="pn">{</span>
+  <span class="kw">private readonly</span> logger <span class="pn">=</span> <span class="kw">new</span> <span class="cl">Logger</span><span class="pn">(</span><span class="cl">MyService</span><span class="pn">.</span>name<span class="pn">,</span> <span class="pn">{</span> timestamp<span class="pn">:</span> <span class="kw">true</span> <span class="pn">});</span>
+
+  <span class="fn">doSomething</span><span class="pn">() {</span>
+    <span class="kw">this</span><span class="pn">.</span>logger<span class="pn">.</span><span class="fn">log</span><span class="pn">(</span><span class="str">'Doing something with timestamp here ->'</span><span class="pn">);</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+
+    <p>Điều này sẽ tạo ra output với format như sau:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre>[Nest] 19096   - 04/19/2024, 7:12:59 AM   [MyService] Doing something with timestamp here +5ms</pre></div>
+
+    <p>Lưu ý <code>+5ms</code> ở cuối dòng. Với mỗi log statement, thời gian chênh lệch từ message trước được tính toán và hiển thị ở cuối dòng.</p>
+
+    <!-- ═══════════════════════ CUSTOM IMPLEMENTATION ═══════════════════════ -->
+    <h3 id="custom-implementation">Custom implementation <a class="anchor" href="#custom-implementation">#</a></h3>
+
+    <p>Bạn có thể cung cấp custom logger implementation để Nest sử dụng cho system logging bằng cách đặt giá trị của property <code>logger</code> thành một object implement interface <code>LoggerService</code>. Ví dụ, bạn có thể yêu cầu Nest sử dụng JavaScript <code>console</code> object toàn cục tích hợp sẵn (implement interface <code>LoggerService</code>), như sau:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> <span class="cl">NestFactory</span><span class="pn">.</span><span class="fn">create</span><span class="pn">(</span>AppModule<span class="pn">,</span> <span class="pn">{</span>
+  logger<span class="pn">:</span> console<span class="pn">,</span>
+<span class="pn">});</span>
+<span class="kw">await</span> app<span class="pn">.</span><span class="fn">listen</span><span class="pn">(</span>process<span class="pn">.</span>env<span class="pn">.</span>PORT <span class="pn">??</span> <span class="num">3000</span><span class="pn">);</span></pre></div>
+
+    <p>Việc implement custom logger của riêng bạn rất đơn giản. Chỉ cần implement từng method của interface <code>LoggerService</code> như bên dưới.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">import</span> <span class="pn">{</span> LoggerService<span class="pn">,</span> Injectable <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+
+<span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">MyLogger</span> <span class="kw">implements</span> <span class="typ">LoggerService</span> <span class="pn">{</span>
+  <span class="cm">/**
+   * Write a 'log' level log.
+   */</span>
+  <span class="fn">log</span><span class="pn">(</span>message<span class="pn">:</span> <span class="typ">any</span><span class="pn">,</span> <span class="pn">...</span>optionalParams<span class="pn">:</span> <span class="typ">any</span><span class="pn">[]) {}</span>
+
+  <span class="cm">/**
+   * Write a 'fatal' level log.
+   */</span>
+  <span class="fn">fatal</span><span class="pn">(</span>message<span class="pn">:</span> <span class="typ">any</span><span class="pn">,</span> <span class="pn">...</span>optionalParams<span class="pn">:</span> <span class="typ">any</span><span class="pn">[]) {}</span>
+
+  <span class="cm">/**
+   * Write an 'error' level log.
+   */</span>
+  <span class="fn">error</span><span class="pn">(</span>message<span class="pn">:</span> <span class="typ">any</span><span class="pn">,</span> <span class="pn">...</span>optionalParams<span class="pn">:</span> <span class="typ">any</span><span class="pn">[]) {}</span>
+
+  <span class="cm">/**
+   * Write a 'warn' level log.
+   */</span>
+  <span class="fn">warn</span><span class="pn">(</span>message<span class="pn">:</span> <span class="typ">any</span><span class="pn">,</span> <span class="pn">...</span>optionalParams<span class="pn">:</span> <span class="typ">any</span><span class="pn">[]) {}</span>
+
+  <span class="cm">/**
+   * Write a 'debug' level log.
+   */</span>
+  <span class="fn">debug</span><span class="pn">?(</span>message<span class="pn">:</span> <span class="typ">any</span><span class="pn">,</span> <span class="pn">...</span>optionalParams<span class="pn">:</span> <span class="typ">any</span><span class="pn">[]) {}</span>
+
+  <span class="cm">/**
+   * Write a 'verbose' level log.
+   */</span>
+  <span class="fn">verbose</span><span class="pn">?(</span>message<span class="pn">:</span> <span class="typ">any</span><span class="pn">,</span> <span class="pn">...</span>optionalParams<span class="pn">:</span> <span class="typ">any</span><span class="pn">[]) {}</span>
+<span class="pn">}</span></pre></div>
+
+    <p>Sau đó, bạn có thể cung cấp instance của <code>MyLogger</code> thông qua property <code>logger</code> của Nest application options object.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> <span class="cl">NestFactory</span><span class="pn">.</span><span class="fn">create</span><span class="pn">(</span>AppModule<span class="pn">,</span> <span class="pn">{</span>
+  logger<span class="pn">:</span> <span class="kw">new</span> <span class="cl">MyLogger</span><span class="pn">(),</span>
+<span class="pn">});</span>
+<span class="kw">await</span> app<span class="pn">.</span><span class="fn">listen</span><span class="pn">(</span>process<span class="pn">.</span>env<span class="pn">.</span>PORT <span class="pn">??</span> <span class="num">3000</span><span class="pn">);</span></pre></div>
+
+    <!-- ═══════════════════════ EXTEND BUILT-IN LOGGER ═══════════════════════ -->
+    <h3 id="extend-built-in-logger">Extend built-in logger <a class="anchor" href="#extend-built-in-logger">#</a></h3>
+
+    <p>Thay vì viết logger từ đầu, bạn có thể đáp ứng nhu cầu bằng cách extend class <code>ConsoleLogger</code> tích hợp sẵn và override hành vi được chọn của default implementation.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">import</span> <span class="pn">{</span> ConsoleLogger <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+
+<span class="kw">export class</span> <span class="cl">MyLogger</span> <span class="kw">extends</span> <span class="cl">ConsoleLogger</span> <span class="pn">{</span>
+  <span class="fn">error</span><span class="pn">(</span>message<span class="pn">:</span> <span class="typ">any</span><span class="pn">,</span> stack<span class="pn">?:</span> <span class="typ">string</span><span class="pn">,</span> context<span class="pn">?:</span> <span class="typ">string</span><span class="pn">) {</span>
+    <span class="cm">// add your tailored logic here</span>
+    <span class="kw">super</span><span class="pn">.</span><span class="fn">error</span><span class="pn">(...</span>arguments<span class="pn">);</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+
+    <p>Bạn có thể sử dụng extended logger trong các feature module như mô tả trong phần <a href="#injecting-a-custom-logger"><strong>Injecting a custom logger</strong></a> bên dưới.</p>
+
+    <p>Để yêu cầu Nest sử dụng extended logger cho system logging, truyền instance của nó thông qua property <code>logger</code> của application options (như trong phần <a href="#custom-implementation"><strong>Custom implementation</strong></a> ở trên), hoặc sử dụng method <code>app.useLogger()</code> như trong phần <a href="#dependency-injection"><strong>Dependency injection</strong></a> bên dưới.</p>
+
+    <!-- ═══════════════════════ DEPENDENCY INJECTION ═══════════════════════ -->
+    <h3 id="dependency-injection">Dependency injection <a class="anchor" href="#dependency-injection">#</a></h3>
+
+    <p>Để có chức năng logging nâng cao hơn, bạn sẽ muốn tận dụng dependency injection. Ví dụ, bạn có thể muốn inject một <code>ConfigService</code> vào logger để tùy chỉnh nó, và đến lượt nó, inject custom logger vào các controller và/hoặc provider khác. Để bật dependency injection cho custom logger, tạo một class implement <code>LoggerService</code> và đăng ký class đó như một provider trong một module. Ví dụ, bạn có thể:</p>
+
+    <ol>
+      <li>Định nghĩa một class <code>MyLogger</code> extend <code>ConsoleLogger</code> tích hợp sẵn hoặc override hoàn toàn nó, như trong các phần trước. Hãy đảm bảo implement interface <code>LoggerService</code>.</li>
+      <li>Tạo một <code>LoggerModule</code> như bên dưới, và cung cấp <code>MyLogger</code> từ module đó.</li>
+    </ol>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">logger.module.ts</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">import</span> <span class="pn">{</span> Module <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> MyLogger <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./my-logger.service'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  providers<span class="pn">:</span> <span class="pn">[</span>MyLogger<span class="pn">],</span>
+  exports<span class="pn">:</span> <span class="pn">[</span>MyLogger<span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">LoggerModule</span> <span class="pn">{}</span></pre></div>
+
+    <p>Với cấu trúc này, bạn đang cung cấp custom logger để sử dụng bởi bất kỳ module nào khác. Vì class <code>MyLogger</code> là một phần của module, nó có thể sử dụng dependency injection (ví dụ: để inject <code>ConfigService</code>). Cần thêm một kỹ thuật nữa để cung cấp custom logger này cho Nest sử dụng cho system logging (ví dụ: cho bootstrapping và error handling).</p>
+
+    <p>Vì việc khởi tạo ứng dụng (<code>NestFactory.create()</code>) xảy ra bên ngoài context của bất kỳ module nào, nó không tham gia vào giai đoạn Dependency Injection bình thường của quá trình initialization. Vì vậy, chúng ta phải đảm bảo rằng ít nhất một application module import <code>LoggerModule</code> để trigger Nest khởi tạo singleton instance của class <code>MyLogger</code>.</p>
+
+    <p>Sau đó, chúng ta có thể hướng dẫn Nest sử dụng cùng singleton instance của <code>MyLogger</code> với cấu trúc sau:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">main.ts</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> <span class="cl">NestFactory</span><span class="pn">.</span><span class="fn">create</span><span class="pn">(</span>AppModule<span class="pn">,</span> <span class="pn">{</span>
+  bufferLogs<span class="pn">:</span> <span class="kw">true</span><span class="pn">,</span>
+<span class="pn">});</span>
+app<span class="pn">.</span><span class="fn">useLogger</span><span class="pn">(</span>app<span class="pn">.</span><span class="fn">get</span><span class="pn">(</span>MyLogger<span class="pn">));</span>
+<span class="kw">await</span> app<span class="pn">.</span><span class="fn">listen</span><span class="pn">(</span>process<span class="pn">.</span>env<span class="pn">.</span>PORT <span class="pn">??</span> <span class="num">3000</span><span class="pn">);</span></pre></div>
+
+<div class="note"><span class="lbl">📘 Note</span><p>Trong ví dụ trên, chúng ta đặt <code>bufferLogs</code> thành <code>true</code> để đảm bảo rằng tất cả log sẽ được buffer cho đến khi custom logger được đính kèm (<code>MyLogger</code> trong trường hợp này) và quá trình khởi tạo ứng dụng hoàn tất hoặc thất bại. Nếu quá trình khởi tạo thất bại, Nest sẽ fallback về <code>ConsoleLogger</code> ban đầu để in bất kỳ error message nào. Ngoài ra, bạn có thể đặt <code>autoFlushLogs</code> thành <code>false</code> (mặc định là <code>true</code>) để flush log thủ công (bằng method <code>Logger.flush()</code>).</p></div>
+
+    <p>Ở đây chúng ta sử dụng method <code>get()</code> trên <code>NestApplication</code> instance để truy xuất singleton instance của object <code>MyLogger</code>. Kỹ thuật này về cơ bản là cách để "inject" một logger instance để Nest sử dụng. Lệnh gọi <code>app.get()</code> truy xuất singleton instance của <code>MyLogger</code>, và phụ thuộc vào việc instance đó đã được inject trước đó trong một module khác, như mô tả ở trên.</p>
+
+    <p>Bạn cũng có thể inject provider <code>MyLogger</code> này vào các feature class, từ đó đảm bảo hành vi logging nhất quán cho cả Nest system logging và application logging. Xem <a href="#using-the-logger"><strong>Using the logger for application logging</strong></a> và <a href="#injecting-a-custom-logger"><strong>Injecting a custom logger</strong></a> bên dưới để biết thêm thông tin.</p>
+
+    <!-- ═══════════════════════ INJECTING A CUSTOM LOGGER ═══════════════════════ -->
+    <h3 id="injecting-a-custom-logger">Injecting a custom logger <a class="anchor" href="#injecting-a-custom-logger">#</a></h3>
+
+    <p>Để bắt đầu, extend logger tích hợp sẵn với code như sau. Chúng ta cung cấp option <code>scope</code> làm configuration metadata cho class <code>ConsoleLogger</code>, chỉ định <a href="https://docs.nestjs.com/fundamentals/injection-scopes" target="_blank"><strong>transient scope</strong></a>, để đảm bảo rằng chúng ta sẽ có instance duy nhất của <code>MyLogger</code> trong mỗi feature module. Trong ví dụ này, chúng ta không extend các method <code>ConsoleLogger</code> riêng lẻ (như <code>log()</code>, <code>warn()</code>, v.v.), mặc dù bạn có thể chọn làm vậy.</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">my-logger.service.ts</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">import</span> <span class="pn">{</span> Injectable<span class="pn">,</span> Scope<span class="pn">,</span> ConsoleLogger <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+
+<span class="dec">@Injectable</span><span class="pn">({</span> scope<span class="pn">:</span> Scope<span class="pn">.</span>TRANSIENT <span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">MyLogger</span> <span class="kw">extends</span> <span class="cl">ConsoleLogger</span> <span class="pn">{</span>
+  <span class="fn">customLog</span><span class="pn">() {</span>
+    <span class="kw">this</span><span class="pn">.</span><span class="fn">log</span><span class="pn">(</span><span class="str">'Please feed the cat!'</span><span class="pn">);</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+
+    <p>Tiếp theo, tạo một <code>LoggerModule</code> với cấu trúc như sau:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">logger.module.ts</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">import</span> <span class="pn">{</span> Module <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> MyLogger <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./my-logger.service'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  providers<span class="pn">:</span> <span class="pn">[</span>MyLogger<span class="pn">],</span>
+  exports<span class="pn">:</span> <span class="pn">[</span>MyLogger<span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">LoggerModule</span> <span class="pn">{}</span></pre></div>
+
+    <p>Tiếp theo, import <code>LoggerModule</code> vào feature module. Vì chúng ta đã extend default <code>Logger</code>, chúng ta có sự tiện lợi của method <code>setContext</code>. Vì vậy, chúng ta có thể bắt đầu sử dụng context-aware custom logger, như sau:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">cats.service.ts</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">import</span> <span class="pn">{</span> Injectable <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> MyLogger <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./my-logger.service'</span><span class="pn">;</span>
+
+<span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">CatsService</span> <span class="pn">{</span>
+  <span class="kw">private readonly</span> cats<span class="pn">:</span> Cat<span class="pn">[] =</span> <span class="pn">[];</span>
+
+  <span class="fn">constructor</span><span class="pn">(</span><span class="kw">private</span> myLogger<span class="pn">:</span> <span class="cl">MyLogger</span><span class="pn">) {</span>
+    <span class="cm">// Due to transient scope, CatsService has its own unique instance of MyLogger,</span>
+    <span class="cm">// so setting context here will not affect other instances in other services</span>
+    <span class="kw">this</span><span class="pn">.</span>myLogger<span class="pn">.</span><span class="fn">setContext</span><span class="pn">(</span><span class="str">'CatsService'</span><span class="pn">);</span>
+  <span class="pn">}</span>
+
+  <span class="fn">findAll</span><span class="pn">():</span> Cat<span class="pn">[] {</span>
+    <span class="cm">// You can call all the default methods</span>
+    <span class="kw">this</span><span class="pn">.</span>myLogger<span class="pn">.</span><span class="fn">warn</span><span class="pn">(</span><span class="str">'About to return cats!'</span><span class="pn">);</span>
+    <span class="cm">// And your custom methods</span>
+    <span class="kw">this</span><span class="pn">.</span>myLogger<span class="pn">.</span><span class="fn">customLog</span><span class="pn">();</span>
+    <span class="kw">return</span> <span class="kw">this</span><span class="pn">.</span>cats<span class="pn">;</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+
+    <p>Cuối cùng, hướng dẫn Nest sử dụng instance của custom logger trong file <code>main.ts</code> như bên dưới. Trong ví dụ này, chúng ta thực sự không tùy chỉnh hành vi logger (bằng cách extend các method <code>Logger</code> như <code>log()</code>, <code>warn()</code>, v.v.), vì vậy bước này không cần thiết. Nhưng nó <strong>sẽ</strong> cần thiết nếu bạn thêm custom logic vào các method đó và muốn Nest sử dụng cùng implementation.</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">main.ts</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> <span class="cl">NestFactory</span><span class="pn">.</span><span class="fn">create</span><span class="pn">(</span>AppModule<span class="pn">,</span> <span class="pn">{</span>
+  bufferLogs<span class="pn">:</span> <span class="kw">true</span><span class="pn">,</span>
+<span class="pn">});</span>
+app<span class="pn">.</span><span class="fn">useLogger</span><span class="pn">(</span><span class="kw">new</span> <span class="cl">MyLogger</span><span class="pn">());</span>
+<span class="kw">await</span> app<span class="pn">.</span><span class="fn">listen</span><span class="pn">(</span>process<span class="pn">.</span>env<span class="pn">.</span>PORT <span class="pn">??</span> <span class="num">3000</span><span class="pn">);</span></pre></div>
+
+<div class="hint"><span class="lbl">💡 Hint</span><p>Ngoài ra, thay vì đặt <code>bufferLogs</code> thành <code>true</code>, bạn có thể tạm thời disable logger bằng directive <code>logger: false</code>. Lưu ý rằng nếu bạn cung cấp <code>logger: false</code> cho <code>NestFactory.create</code>, sẽ không có gì được log cho đến khi bạn gọi <code>useLogger</code>, vì vậy bạn có thể bỏ lỡ một số initialization error quan trọng. Nếu bạn không phiền khi một số initial message sẽ được log bằng default logger, bạn chỉ cần bỏ qua option <code>logger: false</code>.</p></div>
+
+    <!-- ═══════════════════════ USE EXTERNAL LOGGER ═══════════════════════ -->
+    <h3 id="use-external-logger">Use external logger <a class="anchor" href="#use-external-logger">#</a></h3>
+
+    <p>Các ứng dụng production thường có các yêu cầu logging cụ thể, bao gồm advanced filtering, formatting, và centralized logging. Logger tích hợp của Nest được sử dụng để giám sát hành vi hệ thống Nest, và cũng có thể hữu ích cho basic formatted text logging trong feature module khi đang develop, nhưng các ứng dụng production thường tận dụng các module logging chuyên dụng như <a href="https://github.com/winstonjs/winston" target="_blank"><strong>Winston</strong></a>. Giống như bất kỳ ứng dụng Node.js tiêu chuẩn nào, bạn có thể tận dụng tối đa các module như vậy trong Nest.</p>
+
+    <!-- Page Navigation -->
+    <div class="page-nav">
+      <a href="TaskScheduling.html" class="pnbtn">
+        <span class="pnlbl">← Trước</span>
+        <span class="pntitle">Task Scheduling</span>
+      </a>
+      <a href="Queues.html" class="pnbtn r">
+        <span class="pnlbl">Tiếp →</span>
+        <span class="pntitle">Queues</span>
+      </a>
+    </div>
+
+  </main>
+
+  <!-- TOC -->
+  <aside class="toc">
+    <div class="toc-title">Nội dung</div>
+    <ul>
+      <li><a href="#basic-customization">Basic customization</a></li>
+      <li><a href="#json-logging">JSON logging</a></li>
+      <li><a href="#using-the-logger">Using the logger for application logging</a></li>
+      <li><a href="#logs-with-timestamps">Logs with timestamps</a></li>
+      <li><a href="#custom-implementation">Custom implementation</a></li>
+      <li><a href="#extend-built-in-logger">Extend built-in logger</a></li>
+      <li><a href="#dependency-injection">Dependency injection</a></li>
+      <li><a href="#injecting-a-custom-logger">Injecting a custom logger</a></li>
+      <li><a href="#use-external-logger">Use external logger</a></li>
+    </ul>
+  </aside>
+
+</div>
+
+<script>
+  function cp(btn){var w=btn.closest('.cb');var p=w.querySelector('pre');if(!p)return;navigator.clipboard.writeText(p.textContent.trim()).then(function(){var o=btn.textContent;btn.textContent='Copied!';btn.style.color='#4ade80';setTimeout(function(){btn.textContent=o;btn.style.color=''},1500)})}
+  document.querySelectorAll('.toc a').forEach(function(l){l.addEventListener('click',function(e){e.preventDefault();var t=document.querySelector(this.getAttribute('href'));if(t)t.scrollIntoView({behavior:'smooth',block:'start'})})});
+  var tocLinks=document.querySelectorAll('.toc a'),heads=document.querySelectorAll('h3[id]');
+  function hi(){var c='';heads.forEach(function(h){if(scrollY>=h.offsetTop-120)c=h.id});tocLinks.forEach(function(a){a.classList.toggle('active',a.getAttribute('href')==='#'+c)})}
+  window.addEventListener('scroll',hi,{passive:true});hi();
+</script>
+</body>
+</html>

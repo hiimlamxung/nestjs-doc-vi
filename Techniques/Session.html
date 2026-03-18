@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Session | NestJS - Tài liệu tiếng Việt</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root{--bg:#0e0e0e;--surface:#1a1a1a;--surface2:#222;--border:#2a2a2a;--border-l:#333;--red:#ea2845;--red-l:#ff4d6a;--red-glow:rgba(234,40,69,.15);--text:#e8e8e8;--muted:#888;--sec:#b0b0b0;--code-bg:#1e1e1e;--code-bd:#2d2d2d;--hint-bg:#0d2a1a;--hint-c:#4ade80;--warn-bg:#2a1a0d;--warn-c:#fb923c;--note-bg:#0d1a2a;--note-c:#60a0d0;--toc-w:220px;--font:'Inter',sans-serif;--mono:'Source Code Pro',monospace;--r:6px;--rl:10px}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+    body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:15px;line-height:1.78}
+    .page{max-width:1060px;margin:0 auto;padding:48px 32px 96px;display:flex;gap:56px;align-items:flex-start}.content{flex:1;min-width:0}
+    .toc{width:var(--toc-w);flex-shrink:0;position:sticky;top:32px;align-self:flex-start;max-height:calc(100vh - 48px);overflow-y:auto}
+    .toc::-webkit-scrollbar{width:3px}.toc::-webkit-scrollbar-thumb{background:var(--border-l);border-radius:2px}
+    .toc-title{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding-bottom:8px;margin-bottom:8px;border-bottom:1px solid var(--border)}
+    .toc ul{list-style:none}.toc ul li a{display:block;padding:3.5px 0;font-size:12.5px;color:var(--muted);text-decoration:none;line-height:1.5;transition:color .15s;cursor:pointer}
+    .toc ul li a:hover,.toc ul li a.active{color:var(--red-l)}
+    .vi-banner{display:flex;align-items:center;gap:10px;padding:11px 16px;border:1px solid rgba(234,40,69,.3);border-radius:var(--rl);background:linear-gradient(135deg,rgba(234,40,69,.1),rgba(234,40,69,.04));font-size:13px;color:var(--sec);margin-bottom:32px}.vi-banner strong{color:var(--red-l)}
+    h1{font-size:36px;font-weight:700;letter-spacing:-.5px;line-height:1.2;margin-bottom:6px}h1::after{content:'';display:block;width:44px;height:3px;background:var(--red);border-radius:2px;margin-top:12px}
+    h3{font-size:19px;font-weight:600;letter-spacing:-.2px;margin:40px 0 12px;display:flex;align-items:center;gap:8px;scroll-margin-top:80px}
+    .anchor{font-size:14px;color:var(--muted);text-decoration:none;opacity:0;transition:opacity .2s}h3:hover .anchor{opacity:1}
+    p{color:var(--sec);line-height:1.82;margin-bottom:16px}p:last-child{margin-bottom:0}
+    a{color:var(--red-l);text-decoration:none}a:hover{text-decoration:underline}strong{color:var(--text);font-weight:600}
+    ul,ol{color:var(--sec);padding-left:22px;line-height:2.1;margin:16px 0}ul li{margin-bottom:6px}
+    code{font-family:var(--mono);font-size:13px;background:var(--code-bg);border:1px solid var(--code-bd);padding:1px 6px;border-radius:4px;color:#f9a8d4}
+    .hint,.warn,.note{margin:18px 0;padding:12px 16px;border-left:3px solid;border-radius:var(--r);font-size:13.5px;line-height:1.72}
+    .hint{background:var(--hint-bg);border-color:var(--hint-c);color:#a7f3d0}.warn{background:var(--warn-bg);border-color:var(--warn-c);color:#fed7aa}.note{background:var(--note-bg);border-color:var(--note-c);color:#bae6fd}
+    .hint p,.warn p,.note p{margin:0;color:inherit}.lbl{display:block;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
+    .hint .lbl{color:var(--hint-c)}.warn .lbl{color:var(--warn-c)}.note .lbl{color:var(--note-c)}
+    .cb{margin:18px 0;border:1px solid var(--code-bd);border-radius:var(--rl);overflow:hidden;background:var(--code-bg)}
+    .cb-head{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:#181818;border-bottom:1px solid var(--code-bd);min-height:38px}
+    .cb-fname{font-family:var(--mono);font-size:11.5px;color:var(--muted);display:flex;align-items:center;gap:6px}.cb-fname::before{content:'';display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--red)}
+    .cb-right{display:flex;align-items:center;gap:6px}
+    .cpbtn{padding:3px 9px;font-size:10.5px;font-family:var(--mono);background:var(--surface);border:1px solid var(--border-l);color:var(--muted);border-radius:4px;cursor:pointer;transition:all .14s}.cpbtn:hover{background:var(--surface2);color:var(--text)}
+    pre{padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:13.5px;line-height:1.65;color:#abb2bf}pre::-webkit-scrollbar{height:5px}pre::-webkit-scrollbar-thumb{background:var(--border-l);border-radius:3px}
+    .kw{color:#c678dd}.fn{color:#61afef}.str{color:#98c379}.dec{color:#e5c07b}.typ{color:#e5c07b}.cm{color:#5c6370;font-style:italic}.pn{color:#abb2bf}.num{color:#d19a66}.cl{color:#e06c75}
+    .page-nav{display:flex;justify-content:space-between;margin-top:52px;gap:16px}.pnbtn{display:flex;flex-direction:column;padding:14px 18px;border:1px solid var(--border);border-radius:var(--rl);text-decoration:none;transition:all .2s;min-width:150px}.pnbtn:hover{border-color:var(--red);background:var(--red-glow);text-decoration:none}.pnlbl{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:3px}.pntitle{font-size:14px;font-weight:600;color:var(--text)}.pnbtn.r{text-align:right;margin-left:auto}
+    @media(max-width:860px){.toc{display:none}}@media(max-width:600px){.page{padding:24px 16px 64px}}
+  </style>
+</head>
+<body>
+<div class="page">
+  <main class="content">
+    <div class="vi-banner"><span style="font-size:17px">🇻🇳</span><div>Dịch từ <strong><a href="https://docs.nestjs.com/techniques/session" target="_blank">docs.nestjs.com/techniques/session</a></strong>. Thuật ngữ kỹ thuật giữ nguyên tiếng Anh.</div></div>
+
+    <h1>Session</h1>
+
+    <p style="margin-top:18px"><strong>HTTP session</strong> cung cấp cách lưu trữ thông tin về user qua nhiều request, điều này đặc biệt hữu ích cho các ứng dụng <a href="https://docs.nestjs.com/techniques/mvc" target="_blank"><strong>MVC</strong></a>.</p>
+
+    <!-- ═══ USE WITH EXPRESS (DEFAULT) ═══ -->
+    <h3 id="use-with-express-default">Use with Express (default) <a class="anchor" href="#use-with-express-default">#</a></h3>
+
+    <p>Trước tiên, cài đặt <a href="https://github.com/expressjs/session" target="_blank"><strong>package cần thiết</strong></a> (và type của nó cho người dùng TypeScript):</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre>$ npm i express-session
+$ npm i -D @types/express-session</pre></div>
+
+    <p>Sau khi cài đặt xong, apply <code>express-session</code> middleware như global middleware (ví dụ, trong file <code>main.ts</code> của bạn).</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">import</span> <span class="pn">*</span> <span class="kw">as</span> session <span class="kw">from</span> <span class="str">'express-session'</span><span class="pn">;</span>
+
+<span class="cm">// somewhere in your initialization file</span>
+app<span class="pn">.</span><span class="fn">use</span><span class="pn">(</span>
+  <span class="fn">session</span><span class="pn">({</span>
+    secret<span class="pn">:</span> <span class="str">'my-secret'</span><span class="pn">,</span>
+    resave<span class="pn">:</span> <span class="kw">false</span><span class="pn">,</span>
+    saveUninitialized<span class="pn">:</span> <span class="kw">false</span><span class="pn">,</span>
+  <span class="pn">}),</span>
+<span class="pn">);</span></pre></div>
+
+<div class="warn"><span class="lbl">⚠️ Notice</span><p>Server-side session storage mặc định được thiết kế có chủ đích là <strong>không dành cho</strong> môi trường production. Nó sẽ bị rò rỉ bộ nhớ trong hầu hết các điều kiện, không scale được qua một process duy nhất, và chỉ dành cho debugging và developing. Đọc thêm trong <a href="https://github.com/expressjs/session" target="_blank"><strong>official repository</strong></a>.</p></div>
+
+    <p><code>secret</code> được sử dụng để sign session ID cookie. Đây có thể là một string cho single secret, hoặc một array gồm nhiều secret. Nếu một array các secret được cung cấp, chỉ phần tử đầu tiên sẽ được sử dụng để sign session ID cookie, trong khi tất cả các phần tử sẽ được xem xét khi verifying signature trong request. Bản thân secret không nên dễ dàng bị đoán bởi con người và tốt nhất nên là một tập hợp ngẫu nhiên các ký tự.</p>
+
+    <p>Bật option <code>resave</code> buộc session được lưu lại vào session store, ngay cả khi session không bao giờ bị sửa đổi trong suốt request. Giá trị mặc định là <code>true</code>, nhưng việc sử dụng giá trị mặc định đã bị deprecated, vì giá trị mặc định sẽ thay đổi trong tương lai.</p>
+
+    <p>Tương tự, bật option <code>saveUninitialized</code> buộc một session "chưa được khởi tạo" được lưu vào store. Một session là chưa được khởi tạo khi nó mới nhưng chưa được sửa đổi. Chọn <code>false</code> hữu ích cho việc implement login session, giảm sử dụng storage trên server, hoặc tuân thủ luật yêu cầu phải xin phép trước khi set cookie. Chọn <code>false</code> cũng sẽ giúp xử lý race condition khi client thực hiện nhiều request song song mà không có session (<a href="https://github.com/expressjs/session#saveuninitialized" target="_blank"><strong>source</strong></a>).</p>
+
+    <p>Bạn có thể truyền nhiều option khác vào <code>session</code> middleware, đọc thêm về chúng trong <a href="https://github.com/expressjs/session#options" target="_blank"><strong>tài liệu API</strong></a>.</p>
+
+<div class="hint"><span class="lbl">💡 Hint</span><p>Xin lưu ý rằng <code>secure: true</code> là option được khuyến nghị. Tuy nhiên, nó yêu cầu website hỗ trợ https, tức là HTTPS là cần thiết cho secure cookie. Nếu secure được set, và bạn truy cập site qua HTTP, cookie sẽ không được set. Nếu bạn đặt node.js phía sau proxy và đang sử dụng <code>secure: true</code>, bạn cần set "trust proxy" trong express.</p></div>
+
+    <p>Với cấu hình này, bạn bây giờ có thể set và đọc session value từ bên trong route handler, như sau:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@Get</span><span class="pn">()</span>
+<span class="fn">findAll</span><span class="pn">(</span><span class="dec">@Req</span><span class="pn">()</span> request<span class="pn">:</span> <span class="typ">Request</span><span class="pn">) {</span>
+  request<span class="pn">.</span>session<span class="pn">.</span>visits <span class="pn">=</span> request<span class="pn">.</span>session<span class="pn">.</span>visits <span class="pn">?</span> request<span class="pn">.</span>session<span class="pn">.</span>visits <span class="pn">+</span> <span class="num">1</span> <span class="pn">:</span> <span class="num">1</span><span class="pn">;</span>
+<span class="pn">}</span></pre></div>
+
+<div class="hint"><span class="lbl">💡 Hint</span><p>Decorator <code>@Req()</code> được import từ <code>@nestjs/common</code>, trong khi <code>Request</code> từ package <code>express</code>. Property <code>request.session</code> không khả dụng nếu bạn chưa apply session middleware. Ngoài ra, nếu bạn sử dụng TypeScript, bạn có thể cần extend type của session object bằng cách thêm property mới vào interface <code>SessionData</code> (<a href="https://github.com/expressjs/session#custom-session-store" target="_blank"><strong>tìm hiểu thêm tại đây</strong></a>).</p></div>
+
+    <p>Ngoài ra, bạn có thể sử dụng decorator <code>@Session()</code> để extract session object từ request, như sau:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@Get</span><span class="pn">()</span>
+<span class="fn">findAll</span><span class="pn">(</span><span class="dec">@Session</span><span class="pn">()</span> session<span class="pn">:</span> <span class="typ">Record</span><span class="pn">&lt;</span><span class="typ">string</span><span class="pn">,</span> <span class="typ">any</span><span class="pn">&gt;) {</span>
+  session<span class="pn">.</span>visits <span class="pn">=</span> session<span class="pn">.</span>visits <span class="pn">?</span> session<span class="pn">.</span>visits <span class="pn">+</span> <span class="num">1</span> <span class="pn">:</span> <span class="num">1</span><span class="pn">;</span>
+<span class="pn">}</span></pre></div>
+
+<div class="hint"><span class="lbl">💡 Hint</span><p>Decorator <code>@Session()</code> được import từ package <code>@nestjs/common</code>.</p></div>
+
+    <!-- ═══ USE WITH FASTIFY ═══ -->
+    <h3 id="use-with-fastify">Use with Fastify <a class="anchor" href="#use-with-fastify">#</a></h3>
+
+    <p>Trước tiên, cài đặt package cần thiết:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre>$ npm i @fastify/secure-session</pre></div>
+
+    <p>Sau khi cài đặt xong, register plugin <code>fastify-secure-session</code>:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">import</span> secureSession <span class="kw">from</span> <span class="str">'@fastify/secure-session'</span><span class="pn">;</span>
+
+<span class="cm">// somewhere in your initialization file</span>
+<span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> NestFactory<span class="pn">.</span><span class="fn">create</span><span class="pn">&lt;</span><span class="typ">NestFastifyApplication</span><span class="pn">&gt;(</span>
+  AppModule<span class="pn">,</span>
+  <span class="kw">new</span> <span class="cl">FastifyAdapter</span><span class="pn">(),</span>
+<span class="pn">);</span>
+<span class="kw">await</span> app<span class="pn">.</span><span class="fn">register</span><span class="pn">(</span>secureSession<span class="pn">,</span> <span class="pn">{</span>
+  secret<span class="pn">:</span> <span class="str">'averylogphrasebiggerthanthirtytwochars'</span><span class="pn">,</span>
+  salt<span class="pn">:</span> <span class="str">'mq9hDxBVDbdspDR6n'</span><span class="pn">,</span>
+<span class="pn">});</span></pre></div>
+
+<div class="hint"><span class="lbl">💡 Hint</span><p>Bạn cũng có thể tạo trước (pregenerate) một key (<a href="https://github.com/fastify/fastify-secure-session#usage" target="_blank"><strong>xem hướng dẫn</strong></a>) hoặc sử dụng <a href="https://github.com/fastify/fastify-secure-session#key-rotation" target="_blank"><strong>keys rotation</strong></a>.</p></div>
+
+    <p>Đọc thêm về các option có sẵn trong <a href="https://github.com/fastify/fastify-secure-session" target="_blank"><strong>official repository</strong></a>.</p>
+
+    <p>Với cấu hình này, bạn bây giờ có thể set và đọc session value từ bên trong route handler, như sau:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@Get</span><span class="pn">()</span>
+<span class="fn">findAll</span><span class="pn">(</span><span class="dec">@Req</span><span class="pn">()</span> request<span class="pn">:</span> <span class="typ">FastifyRequest</span><span class="pn">) {</span>
+  <span class="kw">const</span> visits <span class="pn">=</span> request<span class="pn">.</span>session<span class="pn">.</span><span class="fn">get</span><span class="pn">(</span><span class="str">'visits'</span><span class="pn">);</span>
+  request<span class="pn">.</span>session<span class="pn">.</span><span class="fn">set</span><span class="pn">(</span><span class="str">'visits'</span><span class="pn">,</span> visits <span class="pn">?</span> visits <span class="pn">+</span> <span class="num">1</span> <span class="pn">:</span> <span class="num">1</span><span class="pn">);</span>
+<span class="pn">}</span></pre></div>
+
+    <p>Ngoài ra, bạn có thể sử dụng decorator <code>@Session()</code> để extract session object từ request, như sau:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@Get</span><span class="pn">()</span>
+<span class="fn">findAll</span><span class="pn">(</span><span class="dec">@Session</span><span class="pn">()</span> session<span class="pn">:</span> <span class="typ">secureSession.Session</span><span class="pn">) {</span>
+  <span class="kw">const</span> visits <span class="pn">=</span> session<span class="pn">.</span><span class="fn">get</span><span class="pn">(</span><span class="str">'visits'</span><span class="pn">);</span>
+  session<span class="pn">.</span><span class="fn">set</span><span class="pn">(</span><span class="str">'visits'</span><span class="pn">,</span> visits <span class="pn">?</span> visits <span class="pn">+</span> <span class="num">1</span> <span class="pn">:</span> <span class="num">1</span><span class="pn">);</span>
+<span class="pn">}</span></pre></div>
+
+<div class="hint"><span class="lbl">💡 Hint</span><p>Decorator <code>@Session()</code> được import từ <code>@nestjs/common</code>, trong khi <code>secureSession.Session</code> từ package <code>@fastify/secure-session</code> (import statement: <code>import * as secureSession from '@fastify/secure-session'</code>).</p></div>
+
+    <!-- Page Navigation -->
+    <div class="page-nav">
+      <a href="HTTPModule.html" class="pnbtn">
+        <span class="pnlbl">← Trước</span>
+        <span class="pntitle">HTTP module</span>
+      </a>
+      <a href="MVC.html" class="pnbtn r">
+        <span class="pnlbl">Tiếp →</span>
+        <span class="pntitle">Model-View-Controller</span>
+      </a>
+    </div>
+
+  </main>
+
+  <!-- TOC -->
+  <aside class="toc">
+    <div class="toc-title">Nội dung</div>
+    <ul>
+      <li><a href="#use-with-express-default">Use with Express (default)</a></li>
+      <li><a href="#use-with-fastify">Use with Fastify</a></li>
+    </ul>
+  </aside>
+
+</div>
+
+<script>
+  function cp(btn){var w=btn.closest('.cb');var p=w.querySelector('pre');if(!p)return;navigator.clipboard.writeText(p.textContent.trim()).then(function(){var o=btn.textContent;btn.textContent='Copied!';btn.style.color='#4ade80';setTimeout(function(){btn.textContent=o;btn.style.color=''},1500)})}
+  document.querySelectorAll('.toc a').forEach(function(l){l.addEventListener('click',function(e){e.preventDefault();var t=document.querySelector(this.getAttribute('href'));if(t)t.scrollIntoView({behavior:'smooth',block:'start'})})});
+  var tocLinks=document.querySelectorAll('.toc a'),heads=document.querySelectorAll('h3[id]');
+  function hi(){var c='';heads.forEach(function(h){if(scrollY>=h.offsetTop-120)c=h.id});tocLinks.forEach(function(a){a.classList.toggle('active',a.getAttribute('href')==='#'+c)})}
+  window.addEventListener('scroll',hi,{passive:true});hi();
+</script>
+</body>
+</html>

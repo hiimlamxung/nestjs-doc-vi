@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Task Scheduling | NestJS - Tài liệu tiếng Việt</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0e0e0e;
+      --surface: #1a1a1a;
+      --surface2: #222;
+      --border: #2a2a2a;
+      --border-l: #333;
+      --red: #ea2845;
+      --red-l: #ff4d6a;
+      --red-glow: rgba(234, 40, 69, .15);
+      --text: #e8e8e8;
+      --muted: #888;
+      --sec: #b0b0b0;
+      --code-bg: #1e1e1e;
+      --code-bd: #2d2d2d;
+      --hint-bg: #0d2a1a;
+      --hint-c: #4ade80;
+      --warn-bg: #2a1a0d;
+      --warn-c: #fb923c;
+      --note-bg: #0d1a2a;
+      --note-c: #60a0d0;
+      --toc-w: 220px;
+      --font: 'Inter', sans-serif;
+      --mono: 'Source Code Pro', monospace;
+      --r: 6px;
+      --rl: 10px;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    html {
+      scroll-behavior: smooth
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 15px;
+      line-height: 1.78
+    }
+
+    .page {
+      max-width: 1060px;
+      margin: 0 auto;
+      padding: 48px 32px 96px;
+      display: flex;
+      gap: 56px;
+      align-items: flex-start
+    }
+
+    .content {
+      flex: 1;
+      min-width: 0
+    }
+
+    .toc {
+      width: var(--toc-w);
+      flex-shrink: 0;
+      position: sticky;
+      top: 32px;
+      align-self: flex-start;
+      max-height: calc(100vh - 48px);
+      overflow-y: auto
+    }
+
+    .toc::-webkit-scrollbar {
+      width: 3px
+    }
+
+    .toc::-webkit-scrollbar-thumb {
+      background: var(--border-l);
+      border-radius: 2px
+    }
+
+    .toc-title {
+      font-size: 10.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--muted);
+      padding-bottom: 8px;
+      margin-bottom: 8px;
+      border-bottom: 1px solid var(--border)
+    }
+
+    .toc ul {
+      list-style: none
+    }
+
+    .toc ul li a {
+      display: block;
+      padding: 3.5px 0;
+      font-size: 12.5px;
+      color: var(--muted);
+      text-decoration: none;
+      line-height: 1.5;
+      transition: color .15s;
+      cursor: pointer
+    }
+
+    .toc ul li a:hover,
+    .toc ul li a.active {
+      color: var(--red-l)
+    }
+
+    .vi-banner {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 16px;
+      border: 1px solid rgba(234, 40, 69, .3);
+      border-radius: var(--rl);
+      background: linear-gradient(135deg, rgba(234, 40, 69, .1), rgba(234, 40, 69, .04));
+      font-size: 13px;
+      color: var(--sec);
+      margin-bottom: 32px
+    }
+
+    .vi-banner strong {
+      color: var(--red-l)
+    }
+
+    h1 {
+      font-size: 36px;
+      font-weight: 700;
+      letter-spacing: -.5px;
+      line-height: 1.2;
+      margin-bottom: 6px
+    }
+
+    h1::after {
+      content: '';
+      display: block;
+      width: 44px;
+      height: 3px;
+      background: var(--red);
+      border-radius: 2px;
+      margin-top: 12px
+    }
+
+    h3 {
+      font-size: 19px;
+      font-weight: 600;
+      letter-spacing: -.2px;
+      margin: 40px 0 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      scroll-margin-top: 80px
+    }
+
+    .anchor {
+      font-size: 14px;
+      color: var(--muted);
+      text-decoration: none;
+      opacity: 0;
+      transition: opacity .2s
+    }
+
+    h3:hover .anchor {
+      opacity: 1
+    }
+
+    p {
+      color: var(--sec);
+      line-height: 1.82;
+      margin-bottom: 16px
+    }
+
+    p:last-child {
+      margin-bottom: 0
+    }
+
+    a {
+      color: var(--red-l);
+      text-decoration: none
+    }
+
+    a:hover {
+      text-decoration: underline
+    }
+
+    strong {
+      color: var(--text);
+      font-weight: 600
+    }
+
+    ul {
+      color: var(--sec);
+      padding-left: 22px;
+      line-height: 2.1;
+      margin: 16px 0
+    }
+
+    code {
+      font-family: var(--mono);
+      font-size: 13px;
+      background: var(--code-bg);
+      border: 1px solid var(--code-bd);
+      padding: 1px 6px;
+      border-radius: 4px;
+      color: #f9a8d4
+    }
+
+    .hint,
+    .warn,
+    .note {
+      margin: 18px 0;
+      padding: 12px 16px;
+      border-left: 3px solid;
+      border-radius: var(--r);
+      font-size: 13.5px;
+      line-height: 1.72
+    }
+
+    .hint {
+      background: var(--hint-bg);
+      border-color: var(--hint-c);
+      color: #a7f3d0
+    }
+
+    .warn {
+      background: var(--warn-bg);
+      border-color: var(--warn-c);
+      color: #fed7aa
+    }
+
+    .note {
+      background: var(--note-bg);
+      border-color: var(--note-c);
+      color: #bae6fd
+    }
+
+    .hint p,
+    .warn p,
+    .note p {
+      margin: 0;
+      color: inherit
+    }
+
+    .lbl {
+      display: block;
+      font-size: 10.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      margin-bottom: 4px
+    }
+
+    .hint .lbl {
+      color: var(--hint-c)
+    }
+
+    .warn .lbl {
+      color: var(--warn-c)
+    }
+
+    .note .lbl {
+      color: var(--note-c)
+    }
+
+    .cb {
+      margin: 18px 0;
+      border: 1px solid var(--code-bd);
+      border-radius: var(--rl);
+      overflow: hidden;
+      background: var(--code-bg)
+    }
+
+    .cb-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 14px;
+      background: #181818;
+      border-bottom: 1px solid var(--code-bd);
+      min-height: 38px
+    }
+
+    .cb-fname {
+      font-family: var(--mono);
+      font-size: 11.5px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 6px
+    }
+
+    .cb-fname::before {
+      content: '';
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--red)
+    }
+
+    .cb-right {
+      display: flex;
+      align-items: center;
+      gap: 6px
+    }
+
+    .tabs {
+      display: flex;
+      gap: 3px
+    }
+
+    .tab {
+      padding: 4px 11px;
+      font-size: 11px;
+      font-family: var(--mono);
+      font-weight: 500;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      color: var(--muted);
+      cursor: pointer;
+      user-select: none;
+      transition: all .14s
+    }
+
+    .tab.on {
+      color: var(--red-l);
+      background: var(--red-glow);
+      border-color: var(--red)
+    }
+
+    .cpbtn {
+      padding: 3px 9px;
+      font-size: 10.5px;
+      font-family: var(--mono);
+      background: var(--surface);
+      border: 1px solid var(--border-l);
+      color: var(--muted);
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all .14s
+    }
+
+    .cpbtn:hover {
+      background: var(--surface2);
+      color: var(--text)
+    }
+
+    pre {
+      font-family: var(--mono);
+      font-size: 13px;
+      line-height: 1.75;
+      color: #d4d4d4;
+      padding: 16px 18px;
+      margin: 0;
+      overflow-x: auto
+    }
+
+    pre code {
+      background: none;
+      border: none;
+      padding: 0;
+      font-size: inherit;
+      color: inherit;
+      border-radius: 0
+    }
+
+    .kw {
+      color: #c586c0
+    }
+
+    .dec {
+      color: #dcdcaa
+    }
+
+    .fn {
+      color: #dcdcaa
+    }
+
+    .cl {
+      color: #4ec9b0
+    }
+
+    .typ {
+      color: #4ec9b0
+    }
+
+    .str {
+      color: #ce9178
+    }
+
+    .num {
+      color: #b5cea8
+    }
+
+    .pn {
+      color: #d4d4d4
+    }
+
+    .cm {
+      color: #6a9955
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 18px 0;
+      font-size: 14px
+    }
+
+    table td,
+    table th {
+      padding: 12px 16px;
+      border: 1px solid var(--border-l);
+      color: var(--sec)
+    }
+
+    table td:first-child {
+      white-space: nowrap
+    }
+
+    table td code {
+      font-size: 12px
+    }
+
+    .page-nav {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 56px;
+      padding-top: 28px;
+      border-top: 1px solid var(--border)
+    }
+
+    .pnbtn {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      text-decoration: none;
+      padding: 10px 16px;
+      border: 1px solid var(--border-l);
+      border-radius: var(--rl);
+      min-width: 160px;
+      transition: all .15s
+    }
+
+    .pnbtn:hover {
+      border-color: var(--red);
+      background: var(--red-glow)
+    }
+
+    .pnbtn.r {
+      align-items: flex-end;
+      margin-left: auto
+    }
+
+    .pnlbl {
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .06em
+    }
+
+    .pntitle {
+      font-size: 14px;
+      color: var(--red-l);
+      font-weight: 600
+    }
+
+    @media(max-width:860px) {
+      .page {
+        flex-direction: column;
+        gap: 32px;
+        padding: 28px 16px 64px
+      }
+
+      .toc {
+        width: 100%;
+        position: static;
+        order: -1;
+        max-height: none;
+        border: 1px solid var(--border);
+        padding: 14px;
+        border-radius: var(--rl)
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="page">
+
+    <main class="content">
+
+      <div class="vi-banner">
+        🇻🇳 <strong>Tài liệu dịch</strong> — Bản dịch tiếng Việt từ <a
+          href="https://docs.nestjs.com/techniques/task-scheduling"
+          target="_blank">docs.nestjs.com/techniques/task-scheduling</a>
+      </div>
+
+      <h1>Task Scheduling</h1>
+
+      <p>Task scheduling cho phép bạn lên lịch thực thi code tùy ý (method/function) tại một thời điểm cố định, theo chu
+        kỳ lặp lại, hoặc một lần sau một khoảng thời gian nhất định. Trong thế giới Linux, việc này thường được xử lý
+        bởi các package như <a href="https://en.wikipedia.org/wiki/Cron" target="_blank"><strong>cron</strong></a> ở cấp
+        OS. Đối với ứng dụng Node.js, có một số package mô phỏng chức năng giống cron. Nest cung cấp package
+        <code>@nestjs/schedule</code>, tích hợp với package <a href="https://github.com/kelektiv/node-cron"
+          target="_blank"><strong>cron</strong></a> phổ biến của Node.js. Chúng ta sẽ tìm hiểu package này trong chapter
+        hiện tại.</p>
+
+      <!-- ═══════════════════════ INSTALLATION ═══════════════════════ -->
+      <h3 id="installation">Installation <a class="anchor" href="#installation">#</a></h3>
+
+      <p>Để bắt đầu sử dụng, trước tiên chúng ta cài đặt các dependency cần thiết.</p>
+
+      <div class="cb">
+        <div class="cb-head">
+          <div class="cb-fname">bash</div>
+          <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+        </div>
+        <pre>$ npm install --save @nestjs/schedule</pre>
+      </div>
+
+      <p>Để kích hoạt job scheduling, import <code>ScheduleModule</code> vào root <code>AppModule</code> và chạy static
+        method <code>forRoot()</code> như sau:</p>
+
+      <div class="cb">
+        <div class="cb-head">
+          <div class="cb-fname">app.module.ts</div>
+          <div class="cb-right">
+            <div class="tabs">
+              <div class="tab on">JS</div>
+            </div><button class="cpbtn" onclick="cp(this)">Copy</button>
+          </div>
+        </div>
+        <pre><span class="kw">import</span> <span class="pn">{</span> Module <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> ScheduleModule <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/schedule'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">:</span> <span class="pn">[</span>
+    <span class="cl">ScheduleModule</span><span class="pn">.</span><span class="fn">forRoot</span><span class="pn">()</span>
+  <span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="pn">{}</span></pre>
+      </div>
+
+      <p>Lệnh gọi <code>.forRoot()</code> khởi tạo scheduler và đăng ký bất kỳ declarative <a
+          href="#declarative-cron-jobs"><strong>cron job</strong></a>, <a
+          href="#declarative-timeouts"><strong>timeout</strong></a> và <a
+          href="#declarative-intervals"><strong>interval</strong></a> nào tồn tại bên trong app của bạn. Việc đăng ký
+        xảy ra khi <code>onApplicationBootstrap</code> lifecycle hook xảy ra, đảm bảo rằng tất cả các module đã được
+        load và khai báo bất kỳ scheduled job nào.</p>
+
+      <!-- ═══════════════════════ DECLARATIVE CRON JOBS ═══════════════════════ -->
+      <h3 id="declarative-cron-jobs">Declarative cron jobs <a class="anchor" href="#declarative-cron-jobs">#</a></h3>
+
+      <p>Một cron job lên lịch thực thi một function tùy ý (method call) để chạy tự động. Cron job có thể chạy:</p>
+
+      <ul>
+        <li>Một lần, tại một date/time xác định.</li>
+        <li>Theo chu kỳ lặp lại; recurring job có thể chạy tại một thời điểm xác định trong một khoảng thời gian nhất
+          định (ví dụ: mỗi giờ một lần, mỗi tuần một lần, mỗi 5 phút một lần)</li>
+      </ul>
+
+      <p>Khai báo một cron job với decorator <code>@Cron()</code> đặt trước method definition chứa code cần thực thi,
+        như sau:</p>
+
+      <div class="cb">
+        <div class="cb-head">
+          <div class="cb-fname">task.service.ts</div>
+          <div class="cb-right">
+            <div class="tabs">
+              <div class="tab on">JS</div>
+            </div><button class="cpbtn" onclick="cp(this)">Copy</button>
+          </div>
+        </div>
+        <pre><span class="kw">import</span> <span class="pn">{</span> Injectable<span class="pn">,</span> Logger <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> Cron <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/schedule'</span><span class="pn">;</span>
+
+<span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">TasksService</span> <span class="pn">{</span>
+  <span class="kw">private readonly</span> logger <span class="pn">=</span> <span class="kw">new</span> <span class="cl">Logger</span><span class="pn">(</span><span class="cl">TasksService</span><span class="pn">.</span>name<span class="pn">);</span>
+
+  <span class="dec">@Cron</span><span class="pn">(</span><span class="str">'45 * * * * *'</span><span class="pn">)</span>
+  <span class="fn">handleCron</span><span class="pn">() {</span>
+    <span class="kw">this</span><span class="pn">.</span>logger<span class="pn">.</span><span class="fn">debug</span><span class="pn">(</span><span class="str">'Called when the current second is 45'</span><span class="pn">);</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre>
+      </div>
+
+      <p>Trong ví dụ này, method <code>handleCron()</code> sẽ được gọi mỗi khi giây hiện tại là <code>45</code>. Nói
+        cách khác, method sẽ chạy mỗi phút một lần, tại mốc giây thứ 45.</p>
+
+      <p>Decorator <code>@Cron()</code> hỗ trợ tất cả các <a href="http://crontab.org/" target="_blank"><strong>cron
+            pattern</strong></a> tiêu chuẩn:</p>
+
+      <ul>
+        <li>Asterisk (ví dụ: <code>*</code>)</li>
+        <li>Ranges (ví dụ: <code>1-3,5</code>)</li>
+        <li>Steps (ví dụ: <code>*/2</code>)</li>
+      </ul>
+
+      <p>Trong ví dụ trên, chúng ta đã truyền <code>45 * * * * *</code> cho decorator. Key sau đây cho thấy cách mỗi vị
+        trí trong cron pattern string được hiểu:</p>
+
+      <div class="cb">
+        <div class="cb-head">
+          <div class="cb-fname"></div>
+          <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+        </div>
+        <pre>* * * * * *
+| | | | | |
+| | | | | day of week
+| | | | months
+| | | day of month
+| | hours
+| minutes
+seconds (optional)</pre>
+      </div>
+
+      <p>Một số cron pattern mẫu:</p>
+
+      <table>
+        <tr>
+          <td><code>* * * * * *</code></td>
+          <td>every second</td>
+        </tr>
+        <tr>
+          <td><code>45 * * * * *</code></td>
+          <td>every minute, on the 45th second</td>
+        </tr>
+        <tr>
+          <td><code>0 10 * * * *</code></td>
+          <td>every hour, at the start of the 10th minute</td>
+        </tr>
+        <tr>
+          <td><code>0 */30 9-17 * * *</code></td>
+          <td>every 30 minutes between 9am and 5pm</td>
+        </tr>
+        <tr>
+          <td><code>0 30 11 * * 1-5</code></td>
+          <td>Monday to Friday at 11:30am</td>
+        </tr>
+      </table>
+
+      <p>Package <code>@nestjs/schedule</code> cung cấp một enum tiện lợi chứa các cron pattern thường dùng. Bạn có thể
+        sử dụng enum này như sau:</p>
+
+      <div class="cb">
+        <div class="cb-head">
+          <div class="cb-fname">task.service.ts</div>
+          <div class="cb-right">
+            <div class="tabs">
+              <div class="tab on">JS</div>
+            </div><button class="cpbtn" onclick="cp(this)">Copy</button>
+          </div>
+        </div>
+        <pre><span class="kw">import</span> <span class="pn">{</span> Injectable<span class="pn">,</span> Logger <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> Cron<span class="pn">,</span> CronExpression <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/schedule'</span><span class="pn">;</span>
+
+<span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">TasksService</span> <span class="pn">{</span>
+  <span class="kw">private readonly</span> logger <span class="pn">=</span> <span class="kw">new</span> <span class="cl">Logger</span><span class="pn">(</span><span class="cl">TasksService</span><span class="pn">.</span>name<span class="pn">);</span>
+
+  <span class="dec">@Cron</span><span class="pn">(</span><span class="cl">CronExpression</span><span class="pn">.</span>EVERY_30_SECONDS<span class="pn">)</span>
+  <span class="fn">handleCron</span><span class="pn">() {</span>
+    <span class="kw">this</span><span class="pn">.</span>logger<span class="pn">.</span><span class="fn">debug</span><span class="pn">(</span><span class="str">'Called every 30 seconds'</span><span class="pn">);</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre>
+      </div>
+
+      <p>Trong ví dụ này, method <code>handleCron()</code> sẽ được gọi mỗi <code>30</code> giây. Nếu một exception xảy
+        ra, nó sẽ được log ra console, vì mọi method được annotate với <code>@Cron()</code> đều được tự động wrap trong
+        một <code>try-catch</code> block.</p>
+
+      <p>Ngoài ra, bạn có thể cung cấp một JavaScript <code>Date</code> object cho decorator <code>@Cron()</code>. Làm
+        như vậy sẽ khiến job thực thi đúng một lần, tại date được chỉ định.</p>
+
+      <div class="hint"><span class="lbl">💡 Hint</span>
+        <p>Sử dụng JavaScript date arithmetic để lên lịch job tương đối với date hiện tại. Ví dụ,
+          <code>@Cron(new Date(Date.now() + 10 * 1000))</code> để lên lịch một job chạy 10 giây sau khi app khởi động.
+        </p>
+      </div>
+
+      <p>Ngoài ra, bạn có thể cung cấp các option bổ sung làm tham số thứ hai cho decorator <code>@Cron()</code>.</p>
+
+      <table>
+        <tr>
+          <td><code>name</code></td>
+          <td>Hữu ích để truy cập và điều khiển một cron job sau khi nó đã được khai báo.</td>
+        </tr>
+        <tr>
+          <td><code>timeZone</code></td>
+          <td>Chỉ định timezone cho việc thực thi. Điều này sẽ thay đổi thời gian thực tế tương đối với timezone của
+            bạn. Nếu timezone không hợp lệ, một error sẽ được throw. Bạn có thể kiểm tra tất cả các timezone có sẵn tại
+            website <a href="http://momentjs.com/timezone/" target="_blank"><strong>Moment Timezone</strong></a>.</td>
+        </tr>
+        <tr>
+          <td><code>utcOffset</code></td>
+          <td>Cho phép bạn chỉ định offset của timezone thay vì sử dụng tham số <code>timeZone</code>.</td>
+        </tr>
+        <tr>
+          <td><code>waitForCompletion</code></td>
+          <td>Nếu <code>true</code>, không có instance bổ sung nào của cron job sẽ chạy cho đến khi <code>onTick</code>
+            callback hiện tại đã hoàn thành.</td>
+        </tr>
+        <tr>
+          <td><code>disabled</code></td>
+          <td>Cho biết liệu job có được thực thi hay không.</td>
+        </tr>
+      </table>
+
+      <div class="cb">
+        <div class="cb-head">
+          <div class="cb-fname">notification.service.ts</div>
+          <div class="cb-right">
+            <div class="tabs">
+              <div class="tab on">JS</div>
+            </div><button class="cpbtn" onclick="cp(this)">Copy</button>
+          </div>
+        </div>
+        <pre><span class="kw">import</span> <span class="pn">{</span> Injectable <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> Cron<span class="pn">,</span> CronExpression <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/schedule'</span><span class="pn">;</span>
+
+<span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">NotificationService</span> <span class="pn">{</span>
+  <span class="dec">@Cron</span><span class="pn">(</span><span class="str">'* * 0 * * *'</span><span class="pn">,</span> <span class="pn">{</span>
+    name<span class="pn">:</span> <span class="str">'notifications'</span><span class="pn">,</span>
+    timeZone<span class="pn">:</span> <span class="str">'Europe/Paris'</span><span class="pn">,</span>
+  <span class="pn">})</span>
+  <span class="fn">triggerNotifications</span><span class="pn">() {}</span>
+<span class="pn">}</span></pre>
+      </div>
+
+      <p>Bạn có thể truy cập và điều khiển một cron job sau khi nó đã được khai báo, hoặc tạo động một cron job (nơi
+        cron pattern của nó được xác định tại runtime) với <a href="#dynamic-schedule-module-api"><strong>Dynamic
+            API</strong></a>. Để truy cập một declarative cron job thông qua API, bạn phải liên kết job với một tên bằng
+        cách truyền property <code>name</code> trong một optional options object làm tham số thứ hai của decorator.</p>
+
+      <!-- ═══════════════════════ DECLARATIVE INTERVALS ═══════════════════════ -->
+      <h3 id="declarative-intervals">Declarative intervals <a class="anchor" href="#declarative-intervals">#</a></h3>
+
+      <p>Để khai báo rằng một method nên chạy tại một khoảng thời gian (lặp lại) xác định, đặt decorator
+        <code>@Interval()</code> trước method definition. Truyền giá trị interval, dưới dạng số tính bằng millisecond,
+        cho decorator như sau:</p>
+
+      <div class="cb">
+        <div class="cb-head">
+          <div class="cb-fname">task.service.ts</div>
+          <div class="cb-right">
+            <div class="tabs">
+              <div class="tab on">JS</div>
+            </div><button class="cpbtn" onclick="cp(this)">Copy</button>
+          </div>
+        </div>
+        <pre><span class="dec">@Interval</span><span class="pn">(</span><span class="num">10000</span><span class="pn">)</span>
+<span class="fn">handleInterval</span><span class="pn">() {</span>
+  <span class="kw">this</span><span class="pn">.</span>logger<span class="pn">.</span><span class="fn">debug</span><span class="pn">(</span><span class="str">'Called every 10 seconds'</span><span class="pn">);</span>
+<span class="pn">}</span></pre>
+      </div>
+
+      <div class="hint"><span class="lbl">💡 Hint</span>
+        <p>Cơ chế này sử dụng JavaScript <code>setInterval()</code> function bên trong. Bạn cũng có thể sử dụng cron job
+          để lên lịch các recurring job.</p>
+      </div>
+
+      <p>Nếu bạn muốn điều khiển declarative interval của mình từ bên ngoài declaring class thông qua <a
+          href="#dynamic-schedule-module-api"><strong>Dynamic API</strong></a>, hãy liên kết interval với một tên bằng
+        cách sử dụng construction sau:</p>
+
+      <div class="cb">
+        <div class="cb-head">
+          <div class="cb-fname">task.service.ts</div>
+          <div class="cb-right">
+            <div class="tabs">
+              <div class="tab on">JS</div>
+            </div><button class="cpbtn" onclick="cp(this)">Copy</button>
+          </div>
+        </div>
+        <pre><span class="dec">@Interval</span><span class="pn">(</span><span class="str">'notifications'</span><span class="pn">,</span> <span class="num">2500</span><span class="pn">)</span>
+<span class="fn">handleInterval</span><span class="pn">() {}</span></pre>
+      </div>
+
+      <p>Nếu một exception xảy ra, nó sẽ được log ra console, vì mọi method được annotate với <code>@Interval()</code>
+        đều được tự động wrap trong một <code>try-catch</code> block.</p>
+
+      <p><a href="#dynamic-intervals"><strong>Dynamic API</strong></a> cũng cho phép <strong>creating</strong> dynamic
+        interval, nơi các property của interval được xác định tại runtime, và <strong>listing and deleting</strong>
+        chúng.</p>
+
+      <!-- ═══════════════════════ DECLARATIVE TIMEOUTS ═══════════════════════ -->
+      <h3 id="declarative-timeouts">Declarative timeouts <a class="anchor" href="#declarative-timeouts">#</a></h3>
+
+      <p>Để khai báo rằng một method nên chạy (một lần) tại một timeout xác định, đặt decorator <code>@Timeout()</code>
+        trước method definition. Truyền relative time offset (tính bằng milliseconds), từ thời điểm application startup,
+        cho decorator như sau:</p>
+
+      <div class="cb">
+        <div class="cb-head">
+          <div class="cb-fname">task.service.ts</div>
+          <div class="cb-right">
+            <div class="tabs">
+              <div class="tab on">JS</div>
+            </div><button class="cpbtn" onclick="cp(this)">Copy</button>
+          </div>
+        </div>
+        <pre><span class="dec">@Timeout</span><span class="pn">(</span><span class="num">5000</span><span class="pn">)</span>
+<span class="fn">handleTimeout</span><span class="pn">() {</span>
+  <span class="kw">this</span><span class="pn">.</span>logger<span class="pn">.</span><span class="fn">debug</span><span class="pn">(</span><span class="str">'Called once after 5 seconds'</span><span class="pn">);</span>
+<span class="pn">}</span></pre>
+      </div>
+
+      <div class="hint"><span class="lbl">💡 Hint</span>
+        <p>Cơ chế này sử dụng JavaScript <code>setTimeout()</code> function bên trong.</p>
+      </div>
+
+      <p>Nếu một exception xảy ra, nó sẽ được log ra console, vì mọi method được annotate với <code>@Timeout()</code>
+        đều được tự động wrap trong một <code>try-catch</code> block.</p>
+
+      <p>Nếu bạn muốn điều khiển declarative timeout của mình từ bên ngoài declaring class thông qua <a
+          href="#dynamic-schedule-module-api"><strong>Dynamic API</strong></a>, hãy liên kết timeout với một tên bằng
+        cách sử dụng construction sau:</p>
+
+      <div class="cb">
+        <div class="cb-head">
+          <div class="cb-fname">task.service.ts</div>
+          <div class="cb-right">
+            <div class="tabs">
+              <div class="tab on">JS</div>
+            </div><button class="cpbtn" onclick="cp(this)">Copy</button>
+          </div>
+        </div>
+        <pre><span class="dec">@Timeout</span><span class="pn">(</span><span class="str">'notifications'</span><span class="pn">,</span> <span class="num">2500</span><span class="pn">)</span>
+<span class="fn">handleTimeout</span><span class="pn">() {}</span></pre>
+      </div>
+
+      <p><a href="#dynamic-timeouts"><strong>Dynamic API</strong></a> cũng cho phép <strong>creating</strong> dynamic
+        timeout, nơi các property của timeout được xác định tại runtime, và <strong>listing and deleting</strong> chúng.
+      </p>
+
+      <!-- ═══════════════════════ DYNAMIC SCHEDULE MODULE API ═══════════════════════ -->
+      <h3 id="dynamic-schedule-module-api">Dynamic schedule module API <a class="anchor"
+          href="#dynamic-schedule-module-api">#</a></h3>
+
+      <p>Module <code>@nestjs/schedule</code> cung cấp một dynamic API cho phép quản lý declarative <a
+          href="#declarative-cron-jobs"><strong>cron job</strong></a>, <a
+          href="#declarative-timeouts"><strong>timeout</strong></a> và <a
+          href="#declarative-intervals"><strong>interval</strong></a>. API cũng cho phép creating và managing
+        <strong>dynamic</strong> cron job, timeout và interval, nơi các property được xác định tại runtime.</p>
+
+      <!-- ═══════════════════════ DYNAMIC CRON JOBS ═══════════════════════ -->
+      <h3 id="dynamic-cron-jobs">Dynamic cron jobs <a class="anchor" href="#dynamic-cron-jobs">#</a></h3>
+
+      <p>Lấy reference đến một <code>CronJob</code> instance theo tên từ bất kỳ đâu trong code bằng cách sử dụng
+        <code>SchedulerRegistry</code> API. Đầu tiên, inject <code>SchedulerRegistry</code> bằng standard constructor
+        injection:</p>
+
+      <div class="cb">
+        <div class="cb-head">
+          <div class="cb-fname"></div>
+          <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+        </div>
+        <pre><span class="fn">constructor</span><span class="pn">(</span><span class="kw">private</span> schedulerRegistry<span class="pn">:</span> <span class="cl">SchedulerRegistry</span><span class="pn">) {}</span></pre>
+      </div>
+
+      <div class="hint"><span class="lbl">💡 Hint</span>
+        <p>Import <code>SchedulerRegistry</code> từ package <code>@nestjs/schedule</code>.</p>
+      </div>
+
+      <p>Sau đó sử dụng nó trong một class như sau. Giả sử một cron job đã được tạo với khai báo sau:</p>
+
+      <div class="cb">
+        <div class="cb-head">
+          <div class="cb-fname"></div>
+          <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+        </div>
+        <pre><span class="dec">@Cron</span><span class="pn">(</span><span class="str">'* * * * * *'</span><span class="pn">,</span> <span class="pn">{</span>
+  name<span class="pn">:</span> <span class="str">'notifications'</span><span class="pn">,</span>
+<span class="pn">})</span>
+<span class="fn">triggerNotifications</span><span class="pn">() {}</span></pre>
+      </div>
+
+      <p>Truy cập job này bằng cách sau:</p>
+
+      <div class="cb">
+        <div class="cb-head">
+          <div class="cb-fname"></div>
+          <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+        </div>
+        <pre><span class="kw">const</span> job <span class="pn">=</span> <span class="kw">this</span><span class="pn">.</span>schedulerRegistry<span class="pn">.</span><span class="fn">getCronJob</span><span class="pn">(</span><span class="str">'notifications'</span><span class="pn">);</span>
+
+job<span class="pn">.</span><span class="fn">stop</span><span class="pn">();</span>
+console<span class="pn">.</span><span class="fn">log</span><span class="pn">(</span>job<span class="pn">.</span><span class="fn">lastDate</span><span class="pn">());</span></pre>
+      </div>
+
+      <p>Method <code>getCronJob()</code> trả về named cron job. Object <code>CronJob</code> được trả về có các method
+        sau:</p>
+
+      <ul>
+        <li><code>stop()</code> - dừng một job đã được lên lịch để chạy.</li>
+        <li><code>start()</code> - khởi động lại một job đã bị dừng.</li>
+        <li><code>setTime(time: CronTime)</code> - dừng một job, đặt thời gian mới cho nó, và sau đó khởi động lại nó.
+        </li>
+        <li><code>lastDate()</code> - trả về một biểu diễn <code>DateTime</code> của date mà lần thực thi cuối cùng của
+          job đã xảy ra.</li>
+        <li><code>nextDate()</code> - trả về một biểu diễn <code>DateTime</code> của date khi lần thực thi tiếp theo của
+          job được lên lịch.</li>
+        <li><code>nextDates(count: number)</code> - Cung cấp một array (kích thước <code>count</code>) of
+          <code>DateTime</code> biểu diễn cho tập hợp date tiếp theo sẽ trigger job execution. <code>count</code> mặc
+          định là 0, trả về một empty array.</li>
+      </ul>
+
+      <div class="hint"><span class="lbl">💡 Hint</span>
+        <p>Sử dụng <code>toJSDate()</code> trên <code>DateTime</code> object để render chúng dưới dạng JavaScript Date
+          tương đương với DateTime này.</p>
+      </div>
+
+      <p><strong>Create</strong> một cron job mới dynamically bằng method <code>SchedulerRegistry#addCronJob</code>, như
+        sau:</p>
+
+      <div class="cb">
+        <div class="cb-head">
+          <div class="cb-fname"></div>
+          <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+        </div>
+        <pre><span class="fn">addCronJob</span><span class="pn">(</span>name<span class="pn">:</span> <span class="typ">string</span><span class="pn">,</span> seconds<span class="pn">:</span> <span class="typ">string</span><span class="pn">) {</span>
+  <span class="kw">const</span> job <span class="pn">=</span> <span class="kw">new</span> <span class="cl">CronJob</span><span class="pn">(</span><span class="str">`${seconds} * * * * *`</span><span class="pn">,</span> <span class="pn">() =&gt; {</span>
+    <span class="kw">this</span><span class="pn">.</span>logger<span class="pn">.</span><span class="fn">warn</span><span class="pn">(</span><span class="str">`time (${seconds}) for job ${name} to run!`</span><span class="pn">);</span>
+  <span class="pn">});</span>
+
+  <span class="kw">this</span><span class="pn">.</span>schedulerRegistry<span class="pn">.</span><span class="fn">addCronJob</span><span class="pn">(</span>name<span class="pn">,</span> job<span class="pn">);</span>
+  job<span class="pn">.</span><span class="fn">start</span><span class="pn">();</span>
+
+  <span class="kw">this</span><span class="pn">.</span>logger<span class="pn">.</span><span class="fn">warn</span><span class="pn">(</span>
+    <span class="str">`job ${name} added for each minute at ${seconds} seconds!`</span><span class="pn">,</span>
+  <span class="pn">);</span>
+<span class="pn">}</span></pre>
+      </div>
+
+      <p>Trong code này, chúng ta sử dụng <code>CronJob</code> object từ package <code>cron</code> để tạo cron job.
+        Constructor <code>CronJob</code> nhận một cron pattern (giống như decorator <code>@Cron()</code>) làm tham số
+        đầu tiên, và một callback sẽ được thực thi khi cron timer fire làm tham số thứ hai. Method
+        <code>SchedulerRegistry#addCronJob</code> nhận hai tham số: một tên cho <code>CronJob</code>, và chính
+        <code>CronJob</code> object.</p>
+
+      <div class="warn"><span class="lbl">⚠️ Warning</span>
+        <p>Import <code>CronJob</code> từ package <code>cron</code>.</p>
+      </div>
+
+      <p><strong>Delete</strong> một named cron job bằng method <code>SchedulerRegistry#deleteCronJob</code>, như sau:
+      </p>
+
+      <div class="cb">
+        <div class="cb-head">
+          <div class="cb-fname"></div>
+          <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+        </div>
+        <pre><span class="fn">deleteCron</span><span class="pn">(</span>name<span class="pn">:</span> <span class="typ">string</span><span class="pn">) {</span>
+  <span class="kw">this</span><span class="pn">.</span>schedulerRegistry<span class="pn">.</span><span class="fn">deleteCronJob</span><span class="pn">(</span>name<span class="pn">);</span>
+  <span class="kw">this</span><span class="pn">.</span>logger<span class="pn">.</span><span class="fn">warn</span><span class="pn">(</span><span class="str">`job ${name} deleted!`</span><span class="pn">);</span>
+<span class="pn">}</span></pre>
+      </div>
+
+      <p><strong>List</strong> tất cả cron job bằng method <code>SchedulerRegistry#getCronJobs</code> như sau:</p>
+
+      <div class="cb">
+        <div class="cb-head">
+          <div class="cb-fname"></div>
+          <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+        </div>
+        <pre><span class="fn">getCrons</span><span class="pn">() {</span>
+  <span class="kw">const</span> jobs <span class="pn">=</span> <span class="kw">this</span><span class="pn">.</span>schedulerRegistry<span class="pn">.</span><span class="fn">getCronJobs</span><span class="pn">();</span>
+  jobs<span class="pn">.</span><span class="fn">forEach</span><span class="pn">((</span>value<span class="pn">,</span> key<span class="pn">,</span> map<span class="pn">) =&gt; {</span>
+    <span class="kw">let</span> next<span class="pn">;</span>
+    <span class="kw">try</span> <span class="pn">{</span>
+      next <span class="pn">=</span> value<span class="pn">.</span><span class="fn">nextDate</span><span class="pn">().</span><span class="fn">toJSDate</span><span class="pn">();</span>
+    <span class="pn">}</span> <span class="kw">catch</span> <span class="pn">(</span>e<span class="pn">) {</span>
+      next <span class="pn">=</span> <span class="str">'error: next fire date is in the past!'</span><span class="pn">;</span>
+    <span class="pn">}</span>
+    <span class="kw">this</span><span class="pn">.</span>logger<span class="pn">.</span><span class="fn">log</span><span class="pn">(</span><span class="str">`job: ${key} -&gt; next: ${next}`</span><span class="pn">);</span>
+  <span class="pn">});</span>
+<span class="pn">}</span></pre>
+      </div>
+
+      <p>Method <code>getCronJobs()</code> trả về một <code>map</code>. Trong code này, chúng ta iterate qua map và cố
+        gắng truy cập method <code>nextDate()</code> của mỗi <code>CronJob</code>. Trong <code>CronJob</code> API, nếu
+        một job đã fire xong và không có future firing date, nó sẽ throw một exception.</p>
+
+      <!-- ═══════════════════════ DYNAMIC INTERVALS ═══════════════════════ -->
+      <h3 id="dynamic-intervals">Dynamic intervals <a class="anchor" href="#dynamic-intervals">#</a></h3>
+
+      <p>Lấy reference đến một interval bằng method <code>SchedulerRegistry#getInterval</code>. Như trên, inject
+        <code>SchedulerRegistry</code> bằng standard constructor injection:</p>
+
+      <div class="cb">
+        <div class="cb-head">
+          <div class="cb-fname"></div>
+          <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+        </div>
+        <pre><span class="fn">constructor</span><span class="pn">(</span><span class="kw">private</span> schedulerRegistry<span class="pn">:</span> <span class="cl">SchedulerRegistry</span><span class="pn">) {}</span></pre>
+      </div>
+
+      <p>Và sử dụng nó như sau:</p>
+
+      <div class="cb">
+        <div class="cb-head">
+          <div class="cb-fname"></div>
+          <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+        </div>
+        <pre><span class="kw">const</span> interval <span class="pn">=</span> <span class="kw">this</span><span class="pn">.</span>schedulerRegistry<span class="pn">.</span><span class="fn">getInterval</span><span class="pn">(</span><span class="str">'notifications'</span><span class="pn">);</span>
+<span class="fn">clearInterval</span><span class="pn">(</span>interval<span class="pn">);</span></pre>
+      </div>
+
+      <p><strong>Create</strong> một interval mới dynamically bằng method <code>SchedulerRegistry#addInterval</code>,
+        như sau:</p>
+
+      <div class="cb">
+        <div class="cb-head">
+          <div class="cb-fname"></div>
+          <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+        </div>
+        <pre><span class="fn">addInterval</span><span class="pn">(</span>name<span class="pn">:</span> <span class="typ">string</span><span class="pn">,</span> milliseconds<span class="pn">:</span> <span class="typ">number</span><span class="pn">) {</span>
+  <span class="kw">const</span> callback <span class="pn">= () =&gt; {</span>
+    <span class="kw">this</span><span class="pn">.</span>logger<span class="pn">.</span><span class="fn">warn</span><span class="pn">(</span><span class="str">`Interval ${name} executing at time (${milliseconds})!`</span><span class="pn">);</span>
+  <span class="pn">};</span>
+
+  <span class="kw">const</span> interval <span class="pn">=</span> <span class="fn">setInterval</span><span class="pn">(</span>callback<span class="pn">,</span> milliseconds<span class="pn">);</span>
+  <span class="kw">this</span><span class="pn">.</span>schedulerRegistry<span class="pn">.</span><span class="fn">addInterval</span><span class="pn">(</span>name<span class="pn">,</span> interval<span class="pn">);</span>
+<span class="pn">}</span></pre>
+      </div>
+
+      <p>Trong code này, chúng ta tạo một standard JavaScript interval, sau đó truyền nó cho method
+        <code>SchedulerRegistry#addInterval</code>. Method đó nhận hai tham số: một tên cho interval, và chính interval
+        đó.</p>
+
+      <p><strong>Delete</strong> một named interval bằng method <code>SchedulerRegistry#deleteInterval</code>, như sau:
+      </p>
+
+      <div class="cb">
+        <div class="cb-head">
+          <div class="cb-fname"></div>
+          <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+        </div>
+        <pre><span class="fn">deleteInterval</span><span class="pn">(</span>name<span class="pn">:</span> <span class="typ">string</span><span class="pn">) {</span>
+  <span class="kw">this</span><span class="pn">.</span>schedulerRegistry<span class="pn">.</span><span class="fn">deleteInterval</span><span class="pn">(</span>name<span class="pn">);</span>
+  <span class="kw">this</span><span class="pn">.</span>logger<span class="pn">.</span><span class="fn">warn</span><span class="pn">(</span><span class="str">`Interval ${name} deleted!`</span><span class="pn">);</span>
+<span class="pn">}</span></pre>
+      </div>
+
+      <p><strong>List</strong> tất cả interval bằng method <code>SchedulerRegistry#getIntervals</code> như sau:</p>
+
+      <div class="cb">
+        <div class="cb-head">
+          <div class="cb-fname"></div>
+          <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+        </div>
+        <pre><span class="fn">getIntervals</span><span class="pn">() {</span>
+  <span class="kw">const</span> intervals <span class="pn">=</span> <span class="kw">this</span><span class="pn">.</span>schedulerRegistry<span class="pn">.</span><span class="fn">getIntervals</span><span class="pn">();</span>
+  intervals<span class="pn">.</span><span class="fn">forEach</span><span class="pn">(</span>key <span class="pn">=&gt;</span> <span class="kw">this</span><span class="pn">.</span>logger<span class="pn">.</span><span class="fn">log</span><span class="pn">(</span><span class="str">`Interval: ${key}`</span><span class="pn">));</span>
+<span class="pn">}</span></pre>
+      </div>
+
+      <!-- ═══════════════════════ DYNAMIC TIMEOUTS ═══════════════════════ -->
+      <h3 id="dynamic-timeouts">Dynamic timeouts <a class="anchor" href="#dynamic-timeouts">#</a></h3>
+
+      <p>Lấy reference đến một timeout bằng method <code>SchedulerRegistry#getTimeout</code>. Như trên, inject
+        <code>SchedulerRegistry</code> bằng standard constructor injection:</p>
+
+      <div class="cb">
+        <div class="cb-head">
+          <div class="cb-fname"></div>
+          <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+        </div>
+        <pre><span class="fn">constructor</span><span class="pn">(</span><span class="kw">private</span> <span class="kw">readonly</span> schedulerRegistry<span class="pn">:</span> <span class="cl">SchedulerRegistry</span><span class="pn">) {}</span></pre>
+      </div>
+
+      <p>Và sử dụng nó như sau:</p>
+
+      <div class="cb">
+        <div class="cb-head">
+          <div class="cb-fname"></div>
+          <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+        </div>
+        <pre><span class="kw">const</span> timeout <span class="pn">=</span> <span class="kw">this</span><span class="pn">.</span>schedulerRegistry<span class="pn">.</span><span class="fn">getTimeout</span><span class="pn">(</span><span class="str">'notifications'</span><span class="pn">);</span>
+<span class="fn">clearTimeout</span><span class="pn">(</span>timeout<span class="pn">);</span></pre>
+      </div>
+
+      <p><strong>Create</strong> một timeout mới dynamically bằng method <code>SchedulerRegistry#addTimeout</code>, như
+        sau:</p>
+
+      <div class="cb">
+        <div class="cb-head">
+          <div class="cb-fname"></div>
+          <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+        </div>
+        <pre><span class="fn">addTimeout</span><span class="pn">(</span>name<span class="pn">:</span> <span class="typ">string</span><span class="pn">,</span> milliseconds<span class="pn">:</span> <span class="typ">number</span><span class="pn">) {</span>
+  <span class="kw">const</span> callback <span class="pn">= () =&gt; {</span>
+    <span class="kw">this</span><span class="pn">.</span>logger<span class="pn">.</span><span class="fn">warn</span><span class="pn">(</span><span class="str">`Timeout ${name} executing after (${milliseconds})!`</span><span class="pn">);</span>
+  <span class="pn">};</span>
+
+  <span class="kw">const</span> timeout <span class="pn">=</span> <span class="fn">setTimeout</span><span class="pn">(</span>callback<span class="pn">,</span> milliseconds<span class="pn">);</span>
+  <span class="kw">this</span><span class="pn">.</span>schedulerRegistry<span class="pn">.</span><span class="fn">addTimeout</span><span class="pn">(</span>name<span class="pn">,</span> timeout<span class="pn">);</span>
+<span class="pn">}</span></pre>
+      </div>
+
+      <p>Trong code này, chúng ta tạo một standard JavaScript timeout, sau đó truyền nó cho method
+        <code>SchedulerRegistry#addTimeout</code>. Method đó nhận hai tham số: một tên cho timeout, và chính timeout đó.
+      </p>
+
+      <p><strong>Delete</strong> một named timeout bằng method <code>SchedulerRegistry#deleteTimeout</code>, như sau:
+      </p>
+
+      <div class="cb">
+        <div class="cb-head">
+          <div class="cb-fname"></div>
+          <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+        </div>
+        <pre><span class="fn">deleteTimeout</span><span class="pn">(</span>name<span class="pn">:</span> <span class="typ">string</span><span class="pn">) {</span>
+  <span class="kw">this</span><span class="pn">.</span>schedulerRegistry<span class="pn">.</span><span class="fn">deleteTimeout</span><span class="pn">(</span>name<span class="pn">);</span>
+  <span class="kw">this</span><span class="pn">.</span>logger<span class="pn">.</span><span class="fn">warn</span><span class="pn">(</span><span class="str">`Timeout ${name} deleted!`</span><span class="pn">);</span>
+<span class="pn">}</span></pre>
+      </div>
+
+      <p><strong>List</strong> tất cả timeout bằng method <code>SchedulerRegistry#getTimeouts</code> như sau:</p>
+
+      <div class="cb">
+        <div class="cb-head">
+          <div class="cb-fname"></div>
+          <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+        </div>
+        <pre><span class="fn">getTimeouts</span><span class="pn">() {</span>
+  <span class="kw">const</span> timeouts <span class="pn">=</span> <span class="kw">this</span><span class="pn">.</span>schedulerRegistry<span class="pn">.</span><span class="fn">getTimeouts</span><span class="pn">();</span>
+  timeouts<span class="pn">.</span><span class="fn">forEach</span><span class="pn">(</span>key <span class="pn">=&gt;</span> <span class="kw">this</span><span class="pn">.</span>logger<span class="pn">.</span><span class="fn">log</span><span class="pn">(</span><span class="str">`Timeout: ${key}`</span><span class="pn">));</span>
+<span class="pn">}</span></pre>
+      </div>
+
+      <!-- ═══════════════════════ EXAMPLE ═══════════════════════ -->
+      <h3 id="example">Example <a class="anchor" href="#example">#</a></h3>
+
+      <p>Một working example có sẵn <a href="https://github.com/nestjs/nest/tree/master/sample/27-scheduling"
+          target="_blank"><strong>tại đây</strong></a>.</p>
+
+      <!-- Page Navigation -->
+      <div class="page-nav">
+        <a href="Versioning.html" class="pnbtn">
+          <span class="pnlbl">← Trước</span>
+          <span class="pntitle">Versioning</span>
+        </a>
+        <a href="Queues.html" class="pnbtn r">
+          <span class="pnlbl">Tiếp →</span>
+          <span class="pntitle">Queues</span>
+        </a>
+      </div>
+
+    </main>
+
+    <!-- TOC -->
+    <aside class="toc">
+      <div class="toc-title">Nội dung</div>
+      <ul>
+        <li><a href="#installation">Installation</a></li>
+        <li><a href="#declarative-cron-jobs">Declarative cron jobs</a></li>
+        <li><a href="#declarative-intervals">Declarative intervals</a></li>
+        <li><a href="#declarative-timeouts">Declarative timeouts</a></li>
+        <li><a href="#dynamic-schedule-module-api">Dynamic schedule module API</a></li>
+        <li><a href="#dynamic-cron-jobs">Dynamic cron jobs</a></li>
+        <li><a href="#dynamic-intervals">Dynamic intervals</a></li>
+        <li><a href="#dynamic-timeouts">Dynamic timeouts</a></li>
+        <li><a href="#example">Example</a></li>
+      </ul>
+    </aside>
+
+  </div>
+
+  <script>
+    function cp(btn) {
+      var wrap = btn.closest('.cb');
+      var pre = wrap.querySelector('pre');
+      if (!pre) return;
+      navigator.clipboard.writeText(pre.textContent.trim()).then(function () {
+        var o = btn.textContent;
+        btn.textContent = 'Copied!';
+        btn.style.color = '#4ade80';
+        setTimeout(function () { btn.textContent = o; btn.style.color = ''; }, 1500);
+      });
+    }
+    document.querySelectorAll('.toc a').forEach(function (link) {
+      link.addEventListener('click', function (e) {
+        e.preventDefault();
+        var target = document.querySelector(this.getAttribute('href'));
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+    var tocLinks = document.querySelectorAll('.toc a');
+    var heads = document.querySelectorAll('h3[id]');
+    function hi() {
+      var cur = '';
+      heads.forEach(function (h) { if (scrollY >= h.offsetTop - 120) cur = h.id; });
+      tocLinks.forEach(function (a) { a.classList.toggle('active', a.getAttribute('href') === '#' + cur); });
+    }
+    window.addEventListener('scroll', hi, { passive: true });
+    hi();
+  </script>
+</body>
+
+</html>
