@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Authorization | NestJS - Tài liệu tiếng Việt</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root{--bg:#0e0e0e;--surface:#1a1a1a;--surface2:#222;--border:#2a2a2a;--border-l:#333;--red:#ea2845;--red-l:#ff4d6a;--red-glow:rgba(234,40,69,.15);--text:#e8e8e8;--muted:#888;--sec:#b0b0b0;--code-bg:#1e1e1e;--code-bd:#2d2d2d;--hint-bg:#0d2a1a;--hint-c:#4ade80;--warn-bg:#2a1a0d;--warn-c:#fb923c;--note-bg:#0d1a2a;--note-c:#60a0d0;--toc-w:220px;--font:'Inter',sans-serif;--mono:'Source Code Pro',monospace;--r:6px;--rl:10px}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+    body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:15px;line-height:1.78}
+    .page{max-width:1060px;margin:0 auto;padding:48px 32px 96px;display:flex;gap:56px;align-items:flex-start}.content{flex:1;min-width:0}
+    .toc{width:var(--toc-w);flex-shrink:0;position:sticky;top:32px;align-self:flex-start;max-height:calc(100vh - 48px);overflow-y:auto}
+    .toc::-webkit-scrollbar{width:3px}.toc::-webkit-scrollbar-thumb{background:var(--border-l);border-radius:2px}
+    .toc-title{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding-bottom:8px;margin-bottom:8px;border-bottom:1px solid var(--border)}
+    .toc ul{list-style:none}.toc ul li a{display:block;padding:3.5px 0;font-size:12.5px;color:var(--muted);text-decoration:none;line-height:1.5;transition:color .15s;cursor:pointer}
+    .toc ul li a:hover,.toc ul li a.active{color:var(--red-l)}
+    .vi-banner{display:flex;align-items:center;gap:10px;padding:11px 16px;border:1px solid rgba(234,40,69,.3);border-radius:var(--rl);background:linear-gradient(135deg,rgba(234,40,69,.1),rgba(234,40,69,.04));font-size:13px;color:var(--sec);margin-bottom:32px}.vi-banner strong{color:var(--red-l)}
+    h1{font-size:36px;font-weight:700;letter-spacing:-.5px;line-height:1.2;margin-bottom:6px}h1::after{content:'';display:block;width:44px;height:3px;background:var(--red);border-radius:2px;margin-top:12px}
+    h3{font-size:19px;font-weight:600;letter-spacing:-.2px;margin:40px 0 12px;display:flex;align-items:center;gap:8px;scroll-margin-top:80px}
+    .anchor{font-size:14px;color:var(--muted);text-decoration:none;opacity:0;transition:opacity .2s}h3:hover .anchor{opacity:1}
+    p{color:var(--sec);line-height:1.82;margin-bottom:16px}p:last-child{margin-bottom:0}
+    a{color:var(--red-l);text-decoration:none}a:hover{text-decoration:underline}strong{color:var(--text);font-weight:600}
+    ul,ol{color:var(--sec);padding-left:22px;line-height:2.1;margin:16px 0}ul li{margin-bottom:6px}
+    code{font-family:var(--mono);font-size:13px;background:var(--code-bg);border:1px solid var(--code-bd);padding:1px 6px;border-radius:4px;color:#f9a8d4}
+    .hint,.warn,.note{margin:18px 0;padding:12px 16px;border-left:3px solid;border-radius:var(--r);font-size:13.5px;line-height:1.72}
+    .hint{background:var(--hint-bg);border-color:var(--hint-c);color:#a7f3d0}.warn{background:var(--warn-bg);border-color:var(--warn-c);color:#fed7aa}.note{background:var(--note-bg);border-color:var(--note-c);color:#bae6fd}
+    .hint p,.warn p,.note p{margin:0;color:inherit}.lbl{display:block;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
+    .hint .lbl{color:var(--hint-c)}.warn .lbl{color:var(--warn-c)}.note .lbl{color:var(--note-c)}
+    .cb{margin:18px 0;border:1px solid var(--code-bd);border-radius:var(--rl);overflow:hidden;background:var(--code-bg)}
+    .cb-head{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:#181818;border-bottom:1px solid var(--code-bd);min-height:38px}
+    .cb-fname{font-family:var(--mono);font-size:11.5px;color:var(--muted);display:flex;align-items:center;gap:6px}.cb-fname::before{content:'';display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--red)}
+    .cb-right{display:flex;align-items:center;gap:6px}
+    .cpbtn{padding:3px 9px;font-size:10.5px;font-family:var(--mono);background:var(--surface);border:1px solid var(--border-l);color:var(--muted);border-radius:4px;cursor:pointer;transition:all .14s}.cpbtn:hover{background:var(--surface2);color:var(--text)}
+    pre{padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:13.5px;line-height:1.65;color:#abb2bf}pre::-webkit-scrollbar{height:5px}pre::-webkit-scrollbar-thumb{background:var(--border-l);border-radius:3px}
+    .kw{color:#c678dd}.fn{color:#61afef}.str{color:#98c379}.dec{color:#e5c07b}.typ{color:#e5c07b}.cm{color:#5c6370;font-style:italic}.pn{color:#abb2bf}.num{color:#d19a66}.cl{color:#e06c75}
+    .tab-group{display:flex;gap:0;margin-bottom:0}.tab-btn{padding:5px 16px;font-size:11.5px;font-family:var(--mono);background:transparent;border:1px solid var(--code-bd);border-bottom:none;color:var(--muted);cursor:pointer;transition:all .15s;border-radius:6px 6px 0 0;margin-right:-1px}.tab-btn:hover{color:var(--text)}.tab-btn.active{background:var(--code-bg);color:var(--red-l);border-color:var(--code-bd)}.tab-content{display:none}.tab-content.active{display:block}
+    .page-nav{display:flex;justify-content:space-between;margin-top:52px;gap:16px}.pnbtn{display:flex;flex-direction:column;padding:14px 18px;border:1px solid var(--border);border-radius:var(--rl);text-decoration:none;transition:all .2s;min-width:150px}.pnbtn:hover{border-color:var(--red);background:var(--red-glow);text-decoration:none}.pnlbl{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:3px}.pntitle{font-size:14px;font-weight:600;color:var(--text)}.pnbtn.r{text-align:right;margin-left:auto}
+    @media(max-width:860px){.toc{display:none}}@media(max-width:600px){.page{padding:24px 16px 64px}}
+  </style>
+</head>
+<body>
+<div class="page">
+  <div class="content">
+    <div class="vi-banner">
+      <strong>Tiếng Việt</strong> Tài liệu NestJS được dịch sang tiếng Việt
+    </div>
+
+    <h1>Authorization</h1>
+
+    <p><strong>Authorization</strong> đề cập đến quá trình xác định những gì một user có thể làm. Ví dụ, một user quản trị được phép tạo, chỉnh sửa và xóa bài viết. Một user không phải quản trị chỉ được phép đọc các bài viết.</p>
+
+    <p>Authorization là trực giao và độc lập với authentication. Tuy nhiên, authorization yêu cầu một cơ chế authentication.</p>
+
+    <p>Có nhiều cách tiếp cận và chiến lược khác nhau để xử lý authorization. Cách tiếp cận được chọn cho bất kỳ dự án nào phụ thuộc vào yêu cầu cụ thể của ứng dụng đó. Chương này trình bày một số cách tiếp cận authorization có thể được điều chỉnh cho nhiều yêu cầu khác nhau.</p>
+
+    <!-- Basic RBAC implementation -->
+    <h3 id="basic-rbac">Triển khai RBAC cơ bản <a class="anchor" href="#basic-rbac">#</a></h3>
+
+    <p>Role-based access control (<strong>RBAC</strong>) là một cơ chế kiểm soát truy cập trung lập về chính sách, được định nghĩa xoay quanh các role và quyền hạn. Trong phần này, chúng ta sẽ minh họa cách triển khai một cơ chế RBAC rất cơ bản sử dụng <a href="../Overview/Guards.html">guards</a> của Nest.</p>
+
+    <p>Đầu tiên, hãy tạo một <code>Role</code> enum đại diện cho các role trong hệ thống:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-fname">role.enum</span>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="kw">export</span> <span class="kw">enum</span> <span class="typ">Role</span> <span class="pn">{</span>
+  User <span class="pn">=</span> <span class="str">'user'</span><span class="pn">,</span>
+  Admin <span class="pn">=</span> <span class="str">'admin'</span><span class="pn">,</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">Gợi ý</span>
+      <p>Trong các hệ thống phức tạp hơn, bạn có thể lưu trữ các role trong cơ sở dữ liệu, hoặc lấy chúng từ nhà cung cấp authentication bên ngoài.</p>
+    </div>
+
+    <p>Với điều này, chúng ta có thể tạo một decorator <code>@Roles()</code>. Decorator này cho phép chỉ định những role nào được yêu cầu để truy cập các tài nguyên cụ thể.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-fname">roles.decorator</span>
+        <div class="cb-right">
+          <div class="tab-group">
+            <button class="tab-btn active" onclick="switchTab(this,'ts')">TypeScript</button>
+            <button class="tab-btn" onclick="switchTab(this,'js')">JavaScript</button>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div class="tab-content active" data-tab="ts">
+<pre><span class="kw">import</span> <span class="pn">{</span> SetMetadata <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> Role <span class="pn">}</span> <span class="kw">from</span> <span class="str">'../enums/role.enum'</span><span class="pn">;</span>
+
+<span class="kw">export</span> <span class="kw">const</span> ROLES_KEY <span class="pn">=</span> <span class="str">'roles'</span><span class="pn">;</span>
+<span class="kw">export</span> <span class="kw">const</span> <span class="fn">Roles</span> <span class="pn">=</span> <span class="pn">(</span><span class="pn">...</span>roles<span class="pn">:</span> <span class="typ">Role</span><span class="pn">[]</span><span class="pn">)</span> <span class="pn">=&gt;</span> <span class="fn">SetMetadata</span><span class="pn">(</span>ROLES_KEY<span class="pn">,</span> roles<span class="pn">)</span><span class="pn">;</span></pre>
+      </div>
+      <div class="tab-content" data-tab="js">
+<pre><span class="kw">import</span> <span class="pn">{</span> SetMetadata <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+
+<span class="kw">export</span> <span class="kw">const</span> ROLES_KEY <span class="pn">=</span> <span class="str">'roles'</span><span class="pn">;</span>
+<span class="kw">export</span> <span class="kw">const</span> <span class="fn">Roles</span> <span class="pn">=</span> <span class="pn">(</span><span class="pn">...</span>roles<span class="pn">)</span> <span class="pn">=&gt;</span> <span class="fn">SetMetadata</span><span class="pn">(</span>ROLES_KEY<span class="pn">,</span> roles<span class="pn">)</span><span class="pn">;</span></pre>
+      </div>
+    </div>
+
+    <p>Bây giờ chúng ta đã có decorator <code>@Roles()</code> tùy chỉnh, chúng ta có thể sử dụng nó để decorate bất kỳ route handler nào.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-fname">cats.controller</span>
+        <div class="cb-right">
+          <div class="tab-group">
+            <button class="tab-btn active" onclick="switchTab(this,'ts')">TypeScript</button>
+            <button class="tab-btn" onclick="switchTab(this,'js')">JavaScript</button>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div class="tab-content active" data-tab="ts">
+<pre><span class="dec">@Post</span><span class="pn">()</span>
+<span class="dec">@Roles</span><span class="pn">(</span>Role<span class="pn">.</span>Admin<span class="pn">)</span>
+<span class="fn">create</span><span class="pn">(</span><span class="dec">@Body</span><span class="pn">()</span> createCatDto<span class="pn">:</span> <span class="typ">CreateCatDto</span><span class="pn">)</span> <span class="pn">{</span>
+  <span class="kw">this</span><span class="pn">.</span>catsService<span class="pn">.</span><span class="fn">create</span><span class="pn">(</span>createCatDto<span class="pn">)</span><span class="pn">;</span>
+<span class="pn">}</span></pre>
+      </div>
+      <div class="tab-content" data-tab="js">
+<pre><span class="dec">@Post</span><span class="pn">()</span>
+<span class="dec">@Roles</span><span class="pn">(</span>Role<span class="pn">.</span>Admin<span class="pn">)</span>
+<span class="dec">@Bind</span><span class="pn">(</span><span class="fn">Body</span><span class="pn">())</span>
+<span class="fn">create</span><span class="pn">(</span>createCatDto<span class="pn">)</span> <span class="pn">{</span>
+  <span class="kw">this</span><span class="pn">.</span>catsService<span class="pn">.</span><span class="fn">create</span><span class="pn">(</span>createCatDto<span class="pn">)</span><span class="pn">;</span>
+<span class="pn">}</span></pre>
+      </div>
+    </div>
+
+    <p>Cuối cùng, chúng ta tạo một class <code>RolesGuard</code> sẽ so sánh các role được gán cho user hiện tại với các role thực sự được yêu cầu bởi route đang được xử lý.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-fname">roles.guard</span>
+        <div class="cb-right">
+          <div class="tab-group">
+            <button class="tab-btn active" onclick="switchTab(this,'ts')">TypeScript</button>
+            <button class="tab-btn" onclick="switchTab(this,'js')">JavaScript</button>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div class="tab-content active" data-tab="ts">
+<pre><span class="kw">import</span> <span class="pn">{</span> Injectable<span class="pn">,</span> CanActivate<span class="pn">,</span> ExecutionContext <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> Reflector <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/core'</span><span class="pn">;</span>
+
+<span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export</span> <span class="kw">class</span> <span class="cl">RolesGuard</span> <span class="kw">implements</span> <span class="typ">CanActivate</span> <span class="pn">{</span>
+  <span class="fn">constructor</span><span class="pn">(</span><span class="kw">private</span> reflector<span class="pn">:</span> <span class="typ">Reflector</span><span class="pn">)</span> <span class="pn">{}</span>
+
+  <span class="fn">canActivate</span><span class="pn">(</span>context<span class="pn">:</span> <span class="typ">ExecutionContext</span><span class="pn">)</span><span class="pn">:</span> <span class="typ">boolean</span> <span class="pn">{</span>
+    <span class="kw">const</span> requiredRoles <span class="pn">=</span> <span class="kw">this</span><span class="pn">.</span>reflector<span class="pn">.</span><span class="fn">getAllAndOverride</span><span class="pn">&lt;</span><span class="typ">Role</span><span class="pn">[]&gt;(</span>ROLES_KEY<span class="pn">,</span> <span class="pn">[</span>
+      context<span class="pn">.</span><span class="fn">getHandler</span><span class="pn">(),</span>
+      context<span class="pn">.</span><span class="fn">getClass</span><span class="pn">(),</span>
+    <span class="pn">]);</span>
+    <span class="kw">if</span> <span class="pn">(!</span>requiredRoles<span class="pn">)</span> <span class="pn">{</span>
+      <span class="kw">return</span> <span class="num">true</span><span class="pn">;</span>
+    <span class="pn">}</span>
+    <span class="kw">const</span> <span class="pn">{</span> user <span class="pn">}</span> <span class="pn">=</span> context<span class="pn">.</span><span class="fn">switchToHttp</span><span class="pn">().</span><span class="fn">getRequest</span><span class="pn">();</span>
+    <span class="kw">return</span> requiredRoles<span class="pn">.</span><span class="fn">some</span><span class="pn">((</span>role<span class="pn">)</span> <span class="pn">=&gt;</span> user<span class="pn">.</span>roles<span class="pn">?.</span><span class="fn">includes</span><span class="pn">(</span>role<span class="pn">));</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre>
+      </div>
+      <div class="tab-content" data-tab="js">
+<pre><span class="kw">import</span> <span class="pn">{</span> Injectable<span class="pn">,</span> Dependencies <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> Reflector <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/core'</span><span class="pn">;</span>
+
+<span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="dec">@Dependencies</span><span class="pn">(</span>Reflector<span class="pn">)</span>
+<span class="kw">export</span> <span class="kw">class</span> <span class="cl">RolesGuard</span> <span class="pn">{</span>
+  <span class="fn">constructor</span><span class="pn">(</span>reflector<span class="pn">)</span> <span class="pn">{</span>
+    <span class="kw">this</span><span class="pn">.</span>reflector <span class="pn">=</span> reflector<span class="pn">;</span>
+  <span class="pn">}</span>
+
+  <span class="fn">canActivate</span><span class="pn">(</span>context<span class="pn">)</span> <span class="pn">{</span>
+    <span class="kw">const</span> requiredRoles <span class="pn">=</span> <span class="kw">this</span><span class="pn">.</span>reflector<span class="pn">.</span><span class="fn">getAllAndOverride</span><span class="pn">(</span>ROLES_KEY<span class="pn">,</span> <span class="pn">[</span>
+      context<span class="pn">.</span><span class="fn">getHandler</span><span class="pn">(),</span>
+      context<span class="pn">.</span><span class="fn">getClass</span><span class="pn">(),</span>
+    <span class="pn">]);</span>
+    <span class="kw">if</span> <span class="pn">(!</span>requiredRoles<span class="pn">)</span> <span class="pn">{</span>
+      <span class="kw">return</span> <span class="num">true</span><span class="pn">;</span>
+    <span class="pn">}</span>
+    <span class="kw">const</span> <span class="pn">{</span> user <span class="pn">}</span> <span class="pn">=</span> context<span class="pn">.</span><span class="fn">switchToHttp</span><span class="pn">().</span><span class="fn">getRequest</span><span class="pn">();</span>
+    <span class="kw">return</span> requiredRoles<span class="pn">.</span><span class="fn">some</span><span class="pn">((</span>role<span class="pn">)</span> <span class="pn">=&gt;</span> user<span class="pn">.</span>roles<span class="pn">.</span><span class="fn">includes</span><span class="pn">(</span>role<span class="pn">));</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre>
+      </div>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">Gợi ý</span>
+      <p>Tham khảo phần <a href="../Fundamentals/execution-context.html#reflection-and-metadata">Reflection và metadata</a> trong chương Execution context để biết thêm chi tiết về việc sử dụng <code>Reflector</code> theo cách nhận biết ngữ cảnh.</p>
+    </div>
+
+    <div class="warn">
+      <span class="lbl">Lưu ý</span>
+      <p>Ví dụ này được đặt tên là "<strong>basic</strong>" vì chúng ta chỉ kiểm tra sự hiện diện của các role ở cấp route handler. Trong các ứng dụng thực tế, bạn có thể có các endpoint/handler liên quan đến nhiều thao tác, trong đó mỗi thao tác yêu cầu một tập hợp quyền cụ thể. Trong trường hợp này, bạn sẽ phải cung cấp cơ chế kiểm tra role ở đâu đó trong business-logic của bạn, khiến việc bảo trì trở nên khó khăn hơn vì sẽ không có nơi tập trung nào liên kết các quyền với các hành động cụ thể.</p>
+    </div>
+
+    <p>Trong ví dụ này, chúng ta giả định rằng <code>request.user</code> chứa instance của user và các role được phép (dưới thuộc tính <code>roles</code>). Trong ứng dụng của bạn, bạn có thể sẽ thực hiện liên kết đó trong <strong>authentication guard</strong> tùy chỉnh của bạn - xem chương <a href="Authentication.html">authentication</a> để biết thêm chi tiết.</p>
+
+    <p>Để đảm bảo ví dụ này hoạt động, class <code>User</code> của bạn phải có dạng như sau:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-fname">user</span>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="kw">class</span> <span class="cl">User</span> <span class="pn">{</span>
+  <span class="cm">// ...other properties</span>
+  roles<span class="pn">:</span> <span class="typ">Role</span><span class="pn">[];</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <p>Cuối cùng, hãy đảm bảo đăng ký <code>RolesGuard</code>, ví dụ, ở cấp controller, hoặc toàn cục:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-fname">app.module</span>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre>providers<span class="pn">:</span> <span class="pn">[</span>
+  <span class="pn">{</span>
+    provide<span class="pn">:</span> APP_GUARD<span class="pn">,</span>
+    useClass<span class="pn">:</span> RolesGuard<span class="pn">,</span>
+  <span class="pn">},</span>
+<span class="pn">],</span></pre>
+    </div>
+
+    <p>Khi một user với quyền không đủ yêu cầu một endpoint, Nest tự động trả về response sau:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-fname">response</span>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="pn">{</span>
+  <span class="str">"statusCode"</span><span class="pn">:</span> <span class="num">403</span><span class="pn">,</span>
+  <span class="str">"message"</span><span class="pn">:</span> <span class="str">"Forbidden resource"</span><span class="pn">,</span>
+  <span class="str">"error"</span><span class="pn">:</span> <span class="str">"Forbidden"</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">Gợi ý</span>
+      <p>Nếu bạn muốn trả về một error response khác, bạn nên throw exception cụ thể của riêng bạn thay vì trả về giá trị boolean.</p>
+    </div>
+
+    <!-- Claims-based authorization -->
+    <h3 id="claims-based">Claims-based authorization <a class="anchor" href="#claims-based">#</a></h3>
+
+    <p>Khi một identity được tạo, nó có thể được gán một hoặc nhiều claim được cấp bởi một bên đáng tin cậy. Một claim là một cặp name-value đại diện cho những gì subject có thể làm, không phải subject là gì.</p>
+
+    <p>Để triển khai Claims-based authorization trong Nest, bạn có thể làm theo các bước tương tự mà chúng ta đã trình bày ở trên trong phần <a href="#basic-rbac">RBAC</a> với một điểm khác biệt quan trọng: thay vì kiểm tra các role cụ thể, bạn nên so sánh <strong>permissions</strong>. Mỗi user sẽ có một tập hợp các permission được gán. Tương tự, mỗi resource/endpoint sẽ xác định những permission nào được yêu cầu (ví dụ, thông qua một decorator <code>@RequirePermissions()</code> chuyên dụng) để truy cập chúng.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-fname">cats.controller</span>
+        <div class="cb-right">
+          <div class="tab-group">
+            <button class="tab-btn active" onclick="switchTab(this,'ts')">TypeScript</button>
+            <button class="tab-btn" onclick="switchTab(this,'js')">JavaScript</button>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div class="tab-content active" data-tab="ts">
+<pre><span class="dec">@Post</span><span class="pn">()</span>
+<span class="dec">@RequirePermissions</span><span class="pn">(</span>Permission<span class="pn">.</span>CREATE_CAT<span class="pn">)</span>
+<span class="fn">create</span><span class="pn">(</span><span class="dec">@Body</span><span class="pn">()</span> createCatDto<span class="pn">:</span> <span class="typ">CreateCatDto</span><span class="pn">)</span> <span class="pn">{</span>
+  <span class="kw">this</span><span class="pn">.</span>catsService<span class="pn">.</span><span class="fn">create</span><span class="pn">(</span>createCatDto<span class="pn">)</span><span class="pn">;</span>
+<span class="pn">}</span></pre>
+      </div>
+      <div class="tab-content" data-tab="js">
+<pre><span class="dec">@Post</span><span class="pn">()</span>
+<span class="dec">@RequirePermissions</span><span class="pn">(</span>Permission<span class="pn">.</span>CREATE_CAT<span class="pn">)</span>
+<span class="dec">@Bind</span><span class="pn">(</span><span class="fn">Body</span><span class="pn">())</span>
+<span class="fn">create</span><span class="pn">(</span>createCatDto<span class="pn">)</span> <span class="pn">{</span>
+  <span class="kw">this</span><span class="pn">.</span>catsService<span class="pn">.</span><span class="fn">create</span><span class="pn">(</span>createCatDto<span class="pn">)</span><span class="pn">;</span>
+<span class="pn">}</span></pre>
+      </div>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">Gợi ý</span>
+      <p>Trong ví dụ trên, <code>Permission</code> (tương tự <code>Role</code> mà chúng ta đã trình bày trong phần RBAC) là một TypeScript enum chứa tất cả các permission có sẵn trong hệ thống của bạn.</p>
+    </div>
+
+    <!-- Integrating CASL -->
+    <h3 id="integrating-casl">Tích hợp CASL <a class="anchor" href="#integrating-casl">#</a></h3>
+
+    <p><a href="https://casl.js.org/">CASL</a> là một thư viện authorization đẳng cấu (isomorphic) giới hạn những tài nguyên mà một client nhất định được phép truy cập. Nó được thiết kế để có thể áp dụng dần dần và có thể dễ dàng mở rộng từ authorization dựa trên claim đơn giản đến authorization dựa trên subject và attribute đầy đủ tính năng.</p>
+
+    <p>Để bắt đầu, trước tiên hãy cài đặt package <code>@casl/ability</code>:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-fname">terminal</span>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre>$ npm i @casl/ability</pre>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">Gợi ý</span>
+      <p>Trong ví dụ này, chúng ta chọn CASL, nhưng bạn có thể sử dụng bất kỳ thư viện nào khác như <code>accesscontrol</code> hoặc <code>acl</code>, tùy thuộc vào sở thích và nhu cầu dự án của bạn.</p>
+    </div>
+
+    <p>Sau khi cài đặt xong, để minh họa cơ chế của CASL, chúng ta sẽ định nghĩa hai entity class: <code>User</code> và <code>Article</code>.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-fname">user.entity</span>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="kw">class</span> <span class="cl">User</span> <span class="pn">{</span>
+  id<span class="pn">:</span> <span class="typ">number</span><span class="pn">;</span>
+  isAdmin<span class="pn">:</span> <span class="typ">boolean</span><span class="pn">;</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-fname">article.entity</span>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="kw">class</span> <span class="cl">Article</span> <span class="pn">{</span>
+  id<span class="pn">:</span> <span class="typ">number</span><span class="pn">;</span>
+  isPublished<span class="pn">:</span> <span class="typ">boolean</span><span class="pn">;</span>
+  authorId<span class="pn">:</span> <span class="typ">number</span><span class="pn">;</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <p>Bây giờ hãy xem xét và tinh chỉnh các yêu cầu cho ví dụ này:</p>
+
+    <ul>
+      <li>Admin có thể quản lý (create/read/update/delete) tất cả entity</li>
+      <li>User có quyền truy cập chỉ đọc đối với mọi thứ</li>
+      <li>User có thể cập nhật bài viết của họ (<code>article.authorId === userId</code>)</li>
+      <li>Bài viết đã được xuất bản không thể bị xóa (<code>article.isPublished === true</code>)</li>
+    </ul>
+
+    <p>Với điều này, chúng ta có thể bắt đầu bằng việc tạo một <code>Action</code> enum đại diện cho tất cả các hành động có thể mà user có thể thực hiện với các entity:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-fname">action.enum</span>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="kw">export</span> <span class="kw">enum</span> <span class="typ">Action</span> <span class="pn">{</span>
+  Manage <span class="pn">=</span> <span class="str">'manage'</span><span class="pn">,</span>
+  Create <span class="pn">=</span> <span class="str">'create'</span><span class="pn">,</span>
+  Read <span class="pn">=</span> <span class="str">'read'</span><span class="pn">,</span>
+  Update <span class="pn">=</span> <span class="str">'update'</span><span class="pn">,</span>
+  Delete <span class="pn">=</span> <span class="str">'delete'</span><span class="pn">,</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <div class="warn">
+      <span class="lbl">Lưu ý</span>
+      <p><code>manage</code> là một từ khóa đặc biệt trong CASL đại diện cho "bất kỳ hành động nào".</p>
+    </div>
+
+    <p>Để đóng gói thư viện CASL, hãy tạo <code>CaslModule</code> và <code>CaslAbilityFactory</code> ngay bây giờ.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-fname">terminal</span>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre>$ nest g module casl
+$ nest g class casl/casl-ability.factory</pre>
+    </div>
+
+    <p>Với điều này, chúng ta có thể định nghĩa method <code>createForUser()</code> trên <code>CaslAbilityFactory</code>. Method này sẽ tạo object <code>Ability</code> cho một user nhất định:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-fname">casl-ability.factory</span>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="kw">type</span> <span class="typ">Subjects</span> <span class="pn">=</span> <span class="typ">InferSubjects</span><span class="pn">&lt;</span><span class="kw">typeof</span> Article <span class="pn">|</span> <span class="kw">typeof</span> User<span class="pn">&gt;</span> <span class="pn">|</span> <span class="str">'all'</span><span class="pn">;</span>
+
+<span class="kw">export</span> <span class="kw">type</span> <span class="typ">AppAbility</span> <span class="pn">=</span> <span class="typ">MongoAbility</span><span class="pn">&lt;[</span><span class="typ">Action</span><span class="pn">,</span> <span class="typ">Subjects</span><span class="pn">]&gt;;</span>
+
+<span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export</span> <span class="kw">class</span> <span class="cl">CaslAbilityFactory</span> <span class="pn">{</span>
+  <span class="fn">createForUser</span><span class="pn">(</span>user<span class="pn">:</span> <span class="typ">User</span><span class="pn">)</span> <span class="pn">{</span>
+    <span class="kw">const</span> <span class="pn">{</span> can<span class="pn">,</span> cannot<span class="pn">,</span> build <span class="pn">}</span> <span class="pn">=</span> <span class="kw">new</span> <span class="cl">AbilityBuilder</span><span class="pn">(</span>createMongoAbility<span class="pn">);</span>
+
+    <span class="kw">if</span> <span class="pn">(</span>user<span class="pn">.</span>isAdmin<span class="pn">)</span> <span class="pn">{</span>
+      <span class="fn">can</span><span class="pn">(</span>Action<span class="pn">.</span>Manage<span class="pn">,</span> <span class="str">'all'</span><span class="pn">);</span> <span class="cm">// read-write access to everything</span>
+    <span class="pn">}</span> <span class="kw">else</span> <span class="pn">{</span>
+      <span class="fn">can</span><span class="pn">(</span>Action<span class="pn">.</span>Read<span class="pn">,</span> <span class="str">'all'</span><span class="pn">);</span> <span class="cm">// read-only access to everything</span>
+    <span class="pn">}</span>
+
+    <span class="fn">can</span><span class="pn">(</span>Action<span class="pn">.</span>Update<span class="pn">,</span> Article<span class="pn">,</span> <span class="pn">{</span> authorId<span class="pn">:</span> user<span class="pn">.</span>id <span class="pn">});</span>
+    <span class="fn">cannot</span><span class="pn">(</span>Action<span class="pn">.</span>Delete<span class="pn">,</span> Article<span class="pn">,</span> <span class="pn">{</span> isPublished<span class="pn">:</span> <span class="num">true</span> <span class="pn">});</span>
+
+    <span class="kw">return</span> <span class="fn">build</span><span class="pn">({</span>
+      detectSubjectType<span class="pn">:</span> <span class="pn">(</span>item<span class="pn">)</span> <span class="pn">=&gt;</span>
+        item<span class="pn">.</span>constructor <span class="kw">as</span> <span class="typ">ExtractSubjectType</span><span class="pn">&lt;</span><span class="typ">Subjects</span><span class="pn">&gt;,</span>
+    <span class="pn">});</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <div class="warn">
+      <span class="lbl">Lưu ý</span>
+      <p><code>all</code> là một từ khóa đặc biệt trong CASL đại diện cho "bất kỳ subject nào".</p>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">Gợi ý</span>
+      <p>Các class <code>MongoAbility</code>, <code>AbilityBuilder</code>, <code>AbilityClass</code>, và <code>ExtractSubjectType</code> được export từ package <code>@casl/ability</code>.</p>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">Gợi ý</span>
+      <p>Tùy chọn <code>detectSubjectType</code> cho phép CASL hiểu cách lấy subject type từ một object. Để biết thêm thông tin, đọc <a href="https://casl.js.org/v6/en/guide/subject-type-detection#use-classes-as-subject-types">tài liệu CASL</a> để biết chi tiết.</p>
+    </div>
+
+    <p>Trong ví dụ trên, chúng ta đã tạo instance <code>MongoAbility</code> sử dụng class <code>AbilityBuilder</code>. Như bạn có thể đoán, <code>can</code> và <code>cannot</code> chấp nhận cùng các đối số nhưng có ý nghĩa khác nhau, <code>can</code> cho phép thực hiện một hành động trên subject được chỉ định và <code>cannot</code> cấm. Cả hai đều có thể chấp nhận tối đa 4 đối số. Để tìm hiểu thêm về các hàm này, hãy truy cập <a href="https://casl.js.org/v6/en/guide/intro">tài liệu chính thức của CASL</a>.</p>
+
+    <p>Cuối cùng, hãy đảm bảo thêm <code>CaslAbilityFactory</code> vào mảng <code>providers</code> và <code>exports</code> trong định nghĩa module <code>CaslModule</code>:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-fname">casl.module</span>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="kw">import</span> <span class="pn">{</span> Module <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> CaslAbilityFactory <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./casl-ability.factory'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  providers<span class="pn">:</span> <span class="pn">[</span>CaslAbilityFactory<span class="pn">],</span>
+  exports<span class="pn">:</span> <span class="pn">[</span>CaslAbilityFactory<span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export</span> <span class="kw">class</span> <span class="cl">CaslModule</span> <span class="pn">{}</span></pre>
+    </div>
+
+    <p>Với điều này, chúng ta có thể inject <code>CaslAbilityFactory</code> vào bất kỳ class nào sử dụng constructor injection tiêu chuẩn miễn là <code>CaslModule</code> được import trong host context:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-fname">example</span>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="fn">constructor</span><span class="pn">(</span><span class="kw">private</span> caslAbilityFactory<span class="pn">:</span> <span class="typ">CaslAbilityFactory</span><span class="pn">)</span> <span class="pn">{}</span></pre>
+    </div>
+
+    <p>Sau đó sử dụng nó trong class như sau.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-fname">example</span>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="kw">const</span> ability <span class="pn">=</span> <span class="kw">this</span><span class="pn">.</span>caslAbilityFactory<span class="pn">.</span><span class="fn">createForUser</span><span class="pn">(</span>user<span class="pn">);</span>
+<span class="kw">if</span> <span class="pn">(</span>ability<span class="pn">.</span><span class="fn">can</span><span class="pn">(</span>Action<span class="pn">.</span>Read<span class="pn">,</span> <span class="str">'all'</span><span class="pn">))</span> <span class="pn">{</span>
+  <span class="cm">// "user" has read access to everything</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">Gợi ý</span>
+      <p>Tìm hiểu thêm về class <code>MongoAbility</code> trong <a href="https://casl.js.org/v6/en/guide/intro">tài liệu chính thức của CASL</a>.</p>
+    </div>
+
+    <p>Ví dụ, giả sử chúng ta có một user không phải admin. Trong trường hợp này, user có thể đọc bài viết, nhưng việc tạo mới hoặc xóa các bài viết hiện có nên bị cấm.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-fname">example</span>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="kw">const</span> user <span class="pn">=</span> <span class="kw">new</span> <span class="cl">User</span><span class="pn">();</span>
+user<span class="pn">.</span>isAdmin <span class="pn">=</span> <span class="num">false</span><span class="pn">;</span>
+
+<span class="kw">const</span> ability <span class="pn">=</span> <span class="kw">this</span><span class="pn">.</span>caslAbilityFactory<span class="pn">.</span><span class="fn">createForUser</span><span class="pn">(</span>user<span class="pn">);</span>
+ability<span class="pn">.</span><span class="fn">can</span><span class="pn">(</span>Action<span class="pn">.</span>Read<span class="pn">,</span> Article<span class="pn">);</span> <span class="cm">// true</span>
+ability<span class="pn">.</span><span class="fn">can</span><span class="pn">(</span>Action<span class="pn">.</span>Delete<span class="pn">,</span> Article<span class="pn">);</span> <span class="cm">// false</span>
+ability<span class="pn">.</span><span class="fn">can</span><span class="pn">(</span>Action<span class="pn">.</span>Create<span class="pn">,</span> Article<span class="pn">);</span> <span class="cm">// false</span></pre>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">Gợi ý</span>
+      <p>Mặc dù cả class <code>MongoAbility</code> và <code>AbilityBuilder</code> đều cung cấp các method <code>can</code> và <code>cannot</code>, chúng có mục đích khác nhau và chấp nhận các đối số hơi khác nhau.</p>
+    </div>
+
+    <p>Ngoài ra, như chúng ta đã chỉ định trong các yêu cầu, user có thể cập nhật bài viết của mình:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-fname">example</span>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="kw">const</span> user <span class="pn">=</span> <span class="kw">new</span> <span class="cl">User</span><span class="pn">();</span>
+user<span class="pn">.</span>id <span class="pn">=</span> <span class="num">1</span><span class="pn">;</span>
+
+<span class="kw">const</span> article <span class="pn">=</span> <span class="kw">new</span> <span class="cl">Article</span><span class="pn">();</span>
+article<span class="pn">.</span>authorId <span class="pn">=</span> user<span class="pn">.</span>id<span class="pn">;</span>
+
+<span class="kw">const</span> ability <span class="pn">=</span> <span class="kw">this</span><span class="pn">.</span>caslAbilityFactory<span class="pn">.</span><span class="fn">createForUser</span><span class="pn">(</span>user<span class="pn">);</span>
+ability<span class="pn">.</span><span class="fn">can</span><span class="pn">(</span>Action<span class="pn">.</span>Update<span class="pn">,</span> article<span class="pn">);</span> <span class="cm">// true</span>
+
+article<span class="pn">.</span>authorId <span class="pn">=</span> <span class="num">2</span><span class="pn">;</span>
+ability<span class="pn">.</span><span class="fn">can</span><span class="pn">(</span>Action<span class="pn">.</span>Update<span class="pn">,</span> article<span class="pn">);</span> <span class="cm">// false</span></pre>
+    </div>
+
+    <p>Như bạn có thể thấy, instance <code>MongoAbility</code> cho phép chúng ta kiểm tra quyền theo cách khá dễ đọc. Tương tự, <code>AbilityBuilder</code> cho phép chúng ta định nghĩa quyền (và chỉ định các điều kiện khác nhau) theo cách tương tự. Để tìm thêm ví dụ, hãy truy cập tài liệu chính thức.</p>
+
+    <!-- Advanced: Implementing a PoliciesGuard -->
+    <h3 id="policies-guard">Nâng cao: Triển khai <code>PoliciesGuard</code> <a class="anchor" href="#policies-guard">#</a></h3>
+
+    <p>Trong phần này, chúng ta sẽ minh họa cách xây dựng một guard phức tạp hơn, kiểm tra xem user có đáp ứng các <strong>authorization policy</strong> cụ thể có thể được cấu hình ở cấp method hay không.</p>
+
+    <p>Đầu tiên, hãy làm rõ các yêu cầu. Mục tiêu là cung cấp một cơ chế cho phép chỉ định kiểm tra policy cho mỗi route handler. Chúng ta sẽ hỗ trợ cả object và function.</p>
+
+    <p>Hãy bắt đầu bằng việc định nghĩa các interface cho policy handler:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-fname">policy-handler.interface</span>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="kw">import</span> <span class="pn">{</span> AppAbility <span class="pn">}</span> <span class="kw">from</span> <span class="str">'../casl/casl-ability.factory'</span><span class="pn">;</span>
+
+<span class="kw">interface</span> <span class="typ">IPolicyHandler</span> <span class="pn">{</span>
+  <span class="fn">handle</span><span class="pn">(</span>ability<span class="pn">:</span> <span class="typ">AppAbility</span><span class="pn">):</span> <span class="typ">boolean</span><span class="pn">;</span>
+<span class="pn">}</span>
+
+<span class="kw">type</span> <span class="typ">PolicyHandlerCallback</span> <span class="pn">=</span> <span class="pn">(</span>ability<span class="pn">:</span> <span class="typ">AppAbility</span><span class="pn">)</span> <span class="pn">=&gt;</span> <span class="typ">boolean</span><span class="pn">;</span>
+
+<span class="kw">export</span> <span class="kw">type</span> <span class="typ">PolicyHandler</span> <span class="pn">=</span> <span class="typ">IPolicyHandler</span> <span class="pn">|</span> <span class="typ">PolicyHandlerCallback</span><span class="pn">;</span></pre>
+    </div>
+
+    <p>Với điều này, chúng ta có thể tạo decorator <code>@CheckPolicies()</code>.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-fname">check-policies.decorator</span>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="kw">export</span> <span class="kw">const</span> CHECK_POLICIES_KEY <span class="pn">=</span> <span class="str">'check_policy'</span><span class="pn">;</span>
+<span class="kw">export</span> <span class="kw">const</span> <span class="fn">CheckPolicies</span> <span class="pn">=</span> <span class="pn">(...</span>handlers<span class="pn">:</span> <span class="typ">PolicyHandler</span><span class="pn">[])</span> <span class="pn">=&gt;</span>
+  <span class="fn">SetMetadata</span><span class="pn">(</span>CHECK_POLICIES_KEY<span class="pn">,</span> handlers<span class="pn">);</span></pre>
+    </div>
+
+    <p>Bây giờ hãy tạo <code>PoliciesGuard</code>:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-fname">policies.guard</span>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export</span> <span class="kw">class</span> <span class="cl">PoliciesGuard</span> <span class="kw">implements</span> <span class="typ">CanActivate</span> <span class="pn">{</span>
+  <span class="fn">constructor</span><span class="pn">(</span>
+    <span class="kw">private</span> reflector<span class="pn">:</span> <span class="typ">Reflector</span><span class="pn">,</span>
+    <span class="kw">private</span> caslAbilityFactory<span class="pn">:</span> <span class="typ">CaslAbilityFactory</span><span class="pn">,</span>
+  <span class="pn">)</span> <span class="pn">{}</span>
+
+  <span class="kw">async</span> <span class="fn">canActivate</span><span class="pn">(</span>context<span class="pn">:</span> <span class="typ">ExecutionContext</span><span class="pn">):</span> <span class="typ">Promise</span><span class="pn">&lt;</span><span class="typ">boolean</span><span class="pn">&gt;</span> <span class="pn">{</span>
+    <span class="kw">const</span> policyHandlers <span class="pn">=</span>
+      <span class="kw">this</span><span class="pn">.</span>reflector<span class="pn">.</span><span class="fn">get</span><span class="pn">&lt;</span><span class="typ">PolicyHandler</span><span class="pn">[]&gt;(</span>
+        CHECK_POLICIES_KEY<span class="pn">,</span>
+        context<span class="pn">.</span><span class="fn">getHandler</span><span class="pn">(),</span>
+      <span class="pn">)</span> <span class="pn">||</span> <span class="pn">[];</span>
+
+    <span class="kw">const</span> <span class="pn">{</span> user <span class="pn">}</span> <span class="pn">=</span> context<span class="pn">.</span><span class="fn">switchToHttp</span><span class="pn">().</span><span class="fn">getRequest</span><span class="pn">();</span>
+    <span class="kw">const</span> ability <span class="pn">=</span> <span class="kw">this</span><span class="pn">.</span>caslAbilityFactory<span class="pn">.</span><span class="fn">createForUser</span><span class="pn">(</span>user<span class="pn">);</span>
+
+    <span class="kw">return</span> policyHandlers<span class="pn">.</span><span class="fn">every</span><span class="pn">((</span>handler<span class="pn">)</span> <span class="pn">=&gt;</span>
+      <span class="kw">this</span><span class="pn">.</span><span class="fn">execPolicyHandler</span><span class="pn">(</span>handler<span class="pn">,</span> ability<span class="pn">),</span>
+    <span class="pn">);</span>
+  <span class="pn">}</span>
+
+  <span class="kw">private</span> <span class="fn">execPolicyHandler</span><span class="pn">(</span>handler<span class="pn">:</span> <span class="typ">PolicyHandler</span><span class="pn">,</span> ability<span class="pn">:</span> <span class="typ">AppAbility</span><span class="pn">)</span> <span class="pn">{</span>
+    <span class="kw">if</span> <span class="pn">(</span><span class="kw">typeof</span> handler <span class="pn">===</span> <span class="str">'function'</span><span class="pn">)</span> <span class="pn">{</span>
+      <span class="kw">return</span> <span class="fn">handler</span><span class="pn">(</span>ability<span class="pn">);</span>
+    <span class="pn">}</span>
+    <span class="kw">return</span> handler<span class="pn">.</span><span class="fn">handle</span><span class="pn">(</span>ability<span class="pn">);</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">Gợi ý</span>
+      <p>Trong ví dụ này, chúng ta giả định rằng <code>request.user</code> chứa instance của user. Trong ứng dụng của bạn, bạn có thể sẽ thực hiện liên kết đó trong <strong>authentication guard</strong> tùy chỉnh của bạn - xem chương <a href="Authentication.html">authentication</a> để biết thêm chi tiết.</p>
+    </div>
+
+    <p>Cuối cùng, để kiểm tra guard này, hãy gắn nó vào bất kỳ route handler nào:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-fname">articles.controller</span>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="dec">@Get</span><span class="pn">()</span>
+<span class="dec">@UseGuards</span><span class="pn">(</span>PoliciesGuard<span class="pn">)</span>
+<span class="dec">@CheckPolicies</span><span class="pn">((</span>ability<span class="pn">:</span> <span class="typ">AppAbility</span><span class="pn">)</span> <span class="pn">=&gt;</span> ability<span class="pn">.</span><span class="fn">can</span><span class="pn">(</span>Action<span class="pn">.</span>Read<span class="pn">,</span> Article<span class="pn">))</span>
+<span class="fn">findAll</span><span class="pn">()</span> <span class="pn">{</span>
+  <span class="kw">return</span> <span class="kw">this</span><span class="pn">.</span>articlesService<span class="pn">.</span><span class="fn">findAll</span><span class="pn">();</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <p>Ngoài ra, chúng ta có thể định nghĩa một class implement interface <code>IPolicyHandler</code>:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-fname">read-article-policy.handler</span>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="kw">export</span> <span class="kw">class</span> <span class="cl">ReadArticlePolicyHandler</span> <span class="kw">implements</span> <span class="typ">IPolicyHandler</span> <span class="pn">{</span>
+  <span class="fn">handle</span><span class="pn">(</span>ability<span class="pn">:</span> <span class="typ">AppAbility</span><span class="pn">)</span> <span class="pn">{</span>
+    <span class="kw">return</span> ability<span class="pn">.</span><span class="fn">can</span><span class="pn">(</span>Action<span class="pn">.</span>Read<span class="pn">,</span> Article<span class="pn">);</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <p>Và sử dụng nó như sau:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-fname">articles.controller</span>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="dec">@Get</span><span class="pn">()</span>
+<span class="dec">@UseGuards</span><span class="pn">(</span>PoliciesGuard<span class="pn">)</span>
+<span class="dec">@CheckPolicies</span><span class="pn">(</span><span class="kw">new</span> <span class="cl">ReadArticlePolicyHandler</span><span class="pn">())</span>
+<span class="fn">findAll</span><span class="pn">()</span> <span class="pn">{</span>
+  <span class="kw">return</span> <span class="kw">this</span><span class="pn">.</span>articlesService<span class="pn">.</span><span class="fn">findAll</span><span class="pn">();</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <div class="warn">
+      <span class="lbl">Lưu ý</span>
+      <p>Vì chúng ta phải khởi tạo policy handler tại chỗ bằng từ khóa <code>new</code>, class <code>ReadArticlePolicyHandler</code> không thể sử dụng Dependency Injection. Điều này có thể được giải quyết với method <code>ModuleRef#get</code> (đọc thêm <a href="../Fundamentals/module-reference.html">tại đây</a>). Về cơ bản, thay vì đăng ký function và instance thông qua decorator <code>@CheckPolicies()</code>, bạn phải cho phép truyền một <code>Type&lt;IPolicyHandler&gt;</code>. Sau đó, bên trong guard của bạn, bạn có thể lấy instance sử dụng type reference: <code>moduleRef.get(YOUR_HANDLER_TYPE)</code> hoặc thậm chí khởi tạo động bằng method <code>ModuleRef#create</code>.</p>
+    </div>
+
+    <!-- Page Navigation -->
+    <div class="page-nav">
+      <a class="pnbtn" href="Authentication.html">
+        <span class="pnlbl">Trước</span>
+        <span class="pntitle">Authentication</span>
+      </a>
+      <a class="pnbtn r" href="EncryptionAndHashing.html">
+        <span class="pnlbl">Tiếp theo</span>
+        <span class="pntitle">Encryption and Hashing</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Table of Contents -->
+  <nav class="toc">
+    <div class="toc-title">Nội dung</div>
+    <ul>
+      <li><a href="#basic-rbac">Triển khai RBAC cơ bản</a></li>
+      <li><a href="#claims-based">Claims-based authorization</a></li>
+      <li><a href="#integrating-casl">Tích hợp CASL</a></li>
+      <li><a href="#policies-guard">Nâng cao: Triển khai PoliciesGuard</a></li>
+    </ul>
+  </nav>
+</div>
+
+<script>
+  function cp(btn){var w=btn.closest('.cb');var p=w.querySelector('.tab-content.active pre')||w.querySelector('pre');if(!p)return;navigator.clipboard.writeText(p.textContent.trim()).then(function(){var o=btn.textContent;btn.textContent='Copied!';btn.style.color='#4ade80';setTimeout(function(){btn.textContent=o;btn.style.color=''},1500)})}
+  function switchTab(btn,tab){var cb=btn.closest('.cb');cb.querySelectorAll('.tab-btn').forEach(function(b){b.classList.toggle('active',b===btn)});cb.querySelectorAll('.tab-content').forEach(function(c){c.classList.toggle('active',c.dataset.tab===tab)})}
+  document.querySelectorAll('.toc a').forEach(function(l){l.addEventListener('click',function(e){e.preventDefault();var t=document.querySelector(this.getAttribute('href'));if(t)t.scrollIntoView({behavior:'smooth',block:'start'})})});
+  var tocLinks=document.querySelectorAll('.toc a'),heads=document.querySelectorAll('h3[id]');
+  function hi(){var c='';heads.forEach(function(h){if(scrollY>=h.offsetTop-120)c=h.id});tocLinks.forEach(function(a){a.classList.toggle('active',a.getAttribute('href')==='#'+c)})}
+  window.addEventListener('scroll',hi,{passive:true});hi();
+</script>
+</body>
+</html>

@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Overview | NestJS Microservices - Tài liệu tiếng Việt</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root{--bg:#0e0e0e;--surface:#1a1a1a;--surface2:#222;--border:#2a2a2a;--border-l:#333;--red:#ea2845;--red-l:#ff4d6a;--red-glow:rgba(234,40,69,.15);--text:#e8e8e8;--muted:#888;--sec:#b0b0b0;--code-bg:#1e1e1e;--code-bd:#2d2d2d;--hint-bg:#0d2a1a;--hint-c:#4ade80;--warn-bg:#2a1a0d;--warn-c:#fb923c;--note-bg:#0d1a2a;--note-c:#60a0d0;--toc-w:220px;--font:'Inter',sans-serif;--mono:'Source Code Pro',monospace;--r:6px;--rl:10px}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+    body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:15px;line-height:1.78}
+    .page{max-width:1060px;margin:0 auto;padding:48px 32px 96px;display:flex;gap:56px;align-items:flex-start}.content{flex:1;min-width:0}
+    .toc{width:var(--toc-w);flex-shrink:0;position:sticky;top:32px;align-self:flex-start;max-height:calc(100vh - 48px);overflow-y:auto}
+    .toc::-webkit-scrollbar{width:3px}.toc::-webkit-scrollbar-thumb{background:var(--border-l);border-radius:2px}
+    .toc-title{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding-bottom:8px;margin-bottom:8px;border-bottom:1px solid var(--border)}
+    .toc ul{list-style:none}.toc ul li a{display:block;padding:3.5px 0;font-size:12.5px;color:var(--muted);text-decoration:none;line-height:1.5;transition:color .15s;cursor:pointer}
+    .toc ul li a:hover,.toc ul li a.active{color:var(--red-l)}
+    .vi-banner{display:flex;align-items:center;gap:10px;padding:11px 16px;border:1px solid rgba(234,40,69,.3);border-radius:var(--rl);background:linear-gradient(135deg,rgba(234,40,69,.1),rgba(234,40,69,.04));font-size:13px;color:var(--sec);margin-bottom:32px}.vi-banner strong{color:var(--red-l)}
+    h1{font-size:36px;font-weight:700;letter-spacing:-.5px;line-height:1.2;margin-bottom:6px}h1::after{content:'';display:block;width:44px;height:3px;background:var(--red);border-radius:2px;margin-top:12px}
+    h3{font-size:19px;font-weight:600;letter-spacing:-.2px;margin:40px 0 12px;display:flex;align-items:center;gap:8px;scroll-margin-top:80px}
+    .anchor{font-size:14px;color:var(--muted);text-decoration:none;opacity:0;transition:opacity .2s}h3:hover .anchor{opacity:1}
+    p{color:var(--sec);line-height:1.82;margin-bottom:16px}p:last-child{margin-bottom:0}
+    a{color:var(--red-l);text-decoration:none}a:hover{text-decoration:underline}strong{color:var(--text);font-weight:600}
+    ul,ol{color:var(--sec);padding-left:22px;line-height:2.1;margin:16px 0}ul li{margin-bottom:6px}
+    code{font-family:var(--mono);font-size:13px;background:var(--code-bg);border:1px solid var(--code-bd);padding:1px 6px;border-radius:4px;color:#f9a8d4}
+    .hint,.warn,.note{margin:18px 0;padding:12px 16px;border-left:3px solid;border-radius:var(--r);font-size:13.5px;line-height:1.72}
+    .hint{background:var(--hint-bg);border-color:var(--hint-c);color:#a7f3d0}.warn{background:var(--warn-bg);border-color:var(--warn-c);color:#fed7aa}.note{background:var(--note-bg);border-color:var(--note-c);color:#bae6fd}
+    .hint p,.warn p,.note p{margin:0;color:inherit}.lbl{display:block;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
+    .hint .lbl{color:var(--hint-c)}.warn .lbl{color:var(--warn-c)}.note .lbl{color:var(--note-c)}
+    .cb{margin:18px 0;border:1px solid var(--code-bd);border-radius:var(--rl);overflow:hidden;background:var(--code-bg)}
+    .cb-head{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:#181818;border-bottom:1px solid var(--code-bd);min-height:38px}
+    .cb-fname{font-family:var(--mono);font-size:11.5px;color:var(--muted);display:flex;align-items:center;gap:6px}.cb-fname::before{content:'';display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--red)}
+    .cb-right{display:flex;align-items:center;gap:6px}
+    .cpbtn{padding:3px 9px;font-size:10.5px;font-family:var(--mono);background:var(--surface);border:1px solid var(--border-l);color:var(--muted);border-radius:4px;cursor:pointer;transition:all .14s}.cpbtn:hover{background:var(--surface2);color:var(--text)}
+    pre{padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:13.5px;line-height:1.65;color:#abb2bf}pre::-webkit-scrollbar{height:5px}pre::-webkit-scrollbar-thumb{background:var(--border-l);border-radius:3px}
+    .kw{color:#c678dd}.fn{color:#61afef}.str{color:#98c379}.dec{color:#e5c07b}.typ{color:#e5c07b}.cm{color:#5c6370;font-style:italic}.pn{color:#abb2bf}.num{color:#d19a66}.cl{color:#e06c75}
+    .tab-group{display:flex;gap:0;margin-bottom:0}.tab-btn{padding:5px 16px;font-size:11.5px;font-family:var(--mono);background:transparent;border:1px solid var(--code-bd);border-bottom:none;color:var(--muted);cursor:pointer;transition:all .15s;border-radius:6px 6px 0 0;margin-right:-1px}.tab-btn:hover{color:var(--text)}.tab-btn.active{background:var(--code-bg);color:var(--red-l);border-color:var(--code-bd)}.tab-content{display:none}.tab-content.active{display:block}
+    table{width:100%;border-collapse:collapse;margin:18px 0;font-size:13.5px}
+    table td{padding:10px 14px;border:1px solid var(--border);color:var(--sec);vertical-align:top}
+    table tr:nth-child(even){background:var(--surface)}
+    table td:first-child{white-space:nowrap;color:var(--text);font-weight:500}
+    .page-nav{display:flex;justify-content:space-between;margin-top:52px;gap:16px}.pnbtn{display:flex;flex-direction:column;padding:14px 18px;border:1px solid var(--border);border-radius:var(--rl);text-decoration:none;transition:all .2s;min-width:150px}.pnbtn:hover{border-color:var(--red);background:var(--red-glow);text-decoration:none}.pnlbl{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:3px}.pntitle{font-size:14px;font-weight:600;color:var(--text)}.pnbtn.r{text-align:right;margin-left:auto}
+    @media(max-width:860px){.toc{display:none}}@media(max-width:600px){.page{padding:24px 16px 64px}}
+  </style>
+</head>
+<body>
+<div class="page">
+  <main class="content">
+    <div class="vi-banner"><span style="font-size:17px">&#127483;&#127475;</span><div>Dịch từ <strong><a href="https://docs.nestjs.com/microservices/basics" target="_blank">docs.nestjs.com/microservices/basics</a></strong>. Thuật ngữ kỹ thuật giữ nguyên tiếng Anh.</div></div>
+
+    <h1>Overview</h1>
+
+    <p style="margin-top:18px">Ngoài kiến trúc ứng dụng truyền thống (đôi khi gọi là monolithic), Nest hỗ trợ nguyên bản phong cách phát triển kiến trúc microservice. Hầu hết các khái niệm được thảo luận ở những phần khác trong tài liệu này, chẳng hạn như dependency injection, decorators, exception filters, pipes, guards và interceptors, đều áp dụng như nhau cho microservices. Bất cứ khi nào có thể, Nest trừu tượng hóa chi tiết triển khai để các component giống nhau có thể chạy trên các nền tảng dựa trên HTTP, WebSockets và Microservices. Phần này đề cập đến các khía cạnh của Nest dành riêng cho microservices.</p>
+
+    <p>Trong Nest, một microservice về cơ bản là một ứng dụng sử dụng <strong>transport</strong> layer khác với HTTP.</p>
+
+    <p>Nest hỗ trợ nhiều triển khai transport layer tích hợp sẵn, được gọi là <strong>transporters</strong>, chịu trách nhiệm truyền tải messages giữa các microservice instances khác nhau. Hầu hết các transporters đều hỗ trợ nguyên bản cả hai kiểu message <strong>request-response</strong> và <strong>event-based</strong>. Nest trừu tượng hóa chi tiết triển khai của mỗi transporter đằng sau một interface chuẩn cho cả messaging request-response và event-based. Điều này giúp dễ dàng chuyển đổi từ transport layer này sang transport layer khác -- ví dụ để tận dụng các tính năng reliability hoặc performance cụ thể của một transport layer nhất định -- mà không ảnh hưởng đến code ứng dụng của bạn.</p>
+
+    <!-- ═══ Installation ═══ -->
+    <h3 id="installation">Installation <a class="anchor" href="#installation">#</a></h3>
+
+    <p>Để bắt đầu xây dựng microservices, trước tiên hãy cài đặt package cần thiết:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre>$ npm i --save @nestjs/microservices</pre></div>
+
+    <!-- ═══ Getting started ═══ -->
+    <h3 id="getting-started">Getting started <a class="anchor" href="#getting-started">#</a></h3>
+
+    <p>Để khởi tạo một microservice, sử dụng phương thức <code>createMicroservice()</code> của class <code>NestFactory</code>:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">main</div><div class="cb-right"><div class="tab-group"><button class="tab-btn active" onclick="switchTab(this,'ts')">TypeScript</button><button class="tab-btn" onclick="switchTab(this,'js')">JavaScript</button></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div class="tab-content active" data-tab="ts"><pre><span class="kw">import</span> <span class="pn">{</span> NestFactory <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/core'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> Transport<span class="pn">,</span> MicroserviceOptions <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/microservices'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> AppModule <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./app.module'</span><span class="pn">;</span>
+
+<span class="kw">async</span> <span class="kw">function</span> <span class="fn">bootstrap</span><span class="pn">() {</span>
+  <span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> NestFactory<span class="pn">.</span><span class="fn">createMicroservice</span><span class="pn">&lt;</span><span class="typ">MicroserviceOptions</span><span class="pn">&gt;(</span>
+    AppModule<span class="pn">,</span>
+    <span class="pn">{</span>
+      transport<span class="pn">:</span> Transport<span class="pn">.</span>TCP<span class="pn">,</span>
+    <span class="pn">},</span>
+  <span class="pn">);</span>
+  <span class="kw">await</span> app<span class="pn">.</span><span class="fn">listen</span><span class="pn">();</span>
+<span class="pn">}</span>
+<span class="fn">bootstrap</span><span class="pn">();</span></pre></div><div class="tab-content" data-tab="js"><pre><span class="kw">import</span> <span class="pn">{</span> NestFactory <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/core'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> Transport <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/microservices'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> AppModule <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./app.module'</span><span class="pn">;</span>
+
+<span class="kw">async</span> <span class="kw">function</span> <span class="fn">bootstrap</span><span class="pn">() {</span>
+  <span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> NestFactory<span class="pn">.</span><span class="fn">createMicroservice</span><span class="pn">(</span>AppModule<span class="pn">, {</span>
+    transport<span class="pn">:</span> Transport<span class="pn">.</span>TCP<span class="pn">,</span>
+  <span class="pn">});</span>
+  <span class="kw">await</span> app<span class="pn">.</span><span class="fn">listen</span><span class="pn">();</span>
+<span class="pn">}</span>
+<span class="fn">bootstrap</span><span class="pn">();</span></pre></div></div>
+
+<div class="hint"><span class="lbl">Gợi ý</span><p>Microservices sử dụng <strong>TCP</strong> transport layer theo mặc định.</p></div>
+
+    <p>Tham số thứ hai của phương thức <code>createMicroservice()</code> là một object <code>options</code>. Object này có thể bao gồm hai thành viên:</p>
+
+    <table>
+      <tr><td><code>transport</code></td><td>Chỉ định transporter (ví dụ: <code>Transport.NATS</code>)</td></tr>
+      <tr><td><code>options</code></td><td>Một object options dành riêng cho transporter để xác định hành vi của transporter</td></tr>
+    </table>
+
+    <p>Object <code>options</code> dành riêng cho transporter đã chọn. Transporter <strong>TCP</strong> cung cấp các thuộc tính được mô tả bên dưới. Đối với các transporters khác (ví dụ: Redis, MQTT, v.v.), hãy xem chương tương ứng để biết mô tả các options có sẵn.</p>
+
+    <table>
+      <tr><td><code>host</code></td><td>Connection hostname</td></tr>
+      <tr><td><code>port</code></td><td>Connection port</td></tr>
+      <tr><td><code>retryAttempts</code></td><td>Số lần retry message (mặc định: <code>0</code>)</td></tr>
+      <tr><td><code>retryDelay</code></td><td>Delay giữa các lần retry message (ms) (mặc định: <code>0</code>)</td></tr>
+      <tr><td><code>serializer</code></td><td>Custom serializer cho outgoing messages</td></tr>
+      <tr><td><code>deserializer</code></td><td>Custom deserializer cho incoming messages</td></tr>
+      <tr><td><code>socketClass</code></td><td>Một custom Socket kế thừa <code>TcpSocket</code> (mặc định: <code>JsonSocket</code>)</td></tr>
+      <tr><td><code>tlsOptions</code></td><td>Các options để cấu hình giao thức tls</td></tr>
+    </table>
+
+<div class="hint"><span class="lbl">Gợi ý</span><p>Các thuộc tính trên dành riêng cho TCP transporter. Để biết thông tin về các options có sẵn cho các transporters khác, hãy tham khảo chương tương ứng.</p></div>
+
+    <!-- ═══ Message and Event Patterns ═══ -->
+    <h3 id="message-and-event-patterns">Message and Event Patterns <a class="anchor" href="#message-and-event-patterns">#</a></h3>
+
+    <p>Microservices nhận diện cả messages và events theo <strong>patterns</strong>. Một pattern là một giá trị đơn giản, ví dụ, một literal object hoặc một string. Patterns được tự động serialize và gửi qua mạng cùng với phần data của message. Bằng cách này, message senders và consumers có thể phối hợp xác định requests nào được xử lý bởi handlers nào.</p>
+
+    <!-- ═══ Request-response ═══ -->
+    <h3 id="request-response">Request-response <a class="anchor" href="#request-response">#</a></h3>
+
+    <p>Kiểu message request-response hữu ích khi bạn cần <strong>trao đổi</strong> messages giữa các external services khác nhau. Mô hình này đảm bảo rằng service đã thực sự nhận được message (mà không yêu cầu bạn phải tự triển khai một giao thức acknowledgment). Tuy nhiên, cách tiếp cận request-response không phải lúc nào cũng phù hợp nhất. Ví dụ, các streaming transporters như Kafka hoặc NATS streaming, sử dụng log-based persistence, được tối ưu hóa để giải quyết một tập hợp các thách thức khác, phù hợp hơn với mô hình event messaging (xem event-based messaging để biết thêm chi tiết).</p>
+
+    <p>Để kích hoạt kiểu message request-response, Nest tạo hai logical channels: một để truyền data và một để chờ incoming responses. Đối với một số underlying transports, như NATS, hỗ trợ dual-channel này được cung cấp sẵn. Đối với những transports khác, Nest bù đắp bằng cách tạo thủ công các channels riêng biệt. Mặc dù điều này hiệu quả, nhưng có thể tạo ra một số overhead. Do đó, nếu bạn không cần kiểu message request-response, bạn có thể muốn cân nhắc sử dụng phương thức event-based.</p>
+
+    <p>Để tạo một message handler dựa trên mô hình request-response, sử dụng decorator <code>@MessagePattern()</code>, được import từ package <code>@nestjs/microservices</code>. Decorator này chỉ nên được sử dụng trong các controller classes, vì chúng đóng vai trò là entry points cho ứng dụng của bạn. Sử dụng nó trong providers sẽ không có tác dụng, vì chúng sẽ bị Nest runtime bỏ qua.</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">math.controller</div><div class="cb-right"><div class="tab-group"><button class="tab-btn active" onclick="switchTab(this,'ts')">TypeScript</button><button class="tab-btn" onclick="switchTab(this,'js')">JavaScript</button></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div class="tab-content active" data-tab="ts"><pre><span class="kw">import</span> <span class="pn">{</span> Controller <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> MessagePattern <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/microservices'</span><span class="pn">;</span>
+
+<span class="dec">@Controller</span><span class="pn">()</span>
+<span class="kw">export</span> <span class="kw">class</span> <span class="typ">MathController</span> <span class="pn">{</span>
+  <span class="dec">@MessagePattern</span><span class="pn">({</span> cmd<span class="pn">:</span> <span class="str">'sum'</span> <span class="pn">})</span>
+  <span class="fn">accumulate</span><span class="pn">(</span>data<span class="pn">:</span> <span class="typ">number</span><span class="pn">[]): </span><span class="typ">number</span> <span class="pn">{</span>
+    <span class="kw">return</span> <span class="pn">(</span>data <span class="pn">||</span> <span class="pn">[]).</span><span class="fn">reduce</span><span class="pn">((</span>a<span class="pn">,</span> b<span class="pn">) =&gt;</span> a <span class="pn">+</span> b<span class="pn">);</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div><div class="tab-content" data-tab="js"><pre><span class="kw">import</span> <span class="pn">{</span> Controller <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> MessagePattern <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/microservices'</span><span class="pn">;</span>
+
+<span class="dec">@Controller</span><span class="pn">()</span>
+<span class="kw">export</span> <span class="kw">class</span> <span class="typ">MathController</span> <span class="pn">{</span>
+  <span class="dec">@MessagePattern</span><span class="pn">({</span> cmd<span class="pn">:</span> <span class="str">'sum'</span> <span class="pn">})</span>
+  <span class="fn">accumulate</span><span class="pn">(</span>data<span class="pn">) {</span>
+    <span class="kw">return</span> <span class="pn">(</span>data <span class="pn">||</span> <span class="pn">[]).</span><span class="fn">reduce</span><span class="pn">((</span>a<span class="pn">,</span> b<span class="pn">) =&gt;</span> a <span class="pn">+</span> b<span class="pn">);</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div></div>
+
+    <p>Trong đoạn code trên, <strong>message handler</strong> <code>accumulate()</code> lắng nghe các messages khớp với message pattern <code>{{ '{' }} cmd: 'sum' {{ '}' }}</code>. Message handler nhận một tham số duy nhất, <code>data</code> được truyền từ client. Trong trường hợp này, data là một mảng các số cần được tính tổng.</p>
+
+    <!-- ═══ Asynchronous responses ═══ -->
+    <h3 id="asynchronous-responses">Asynchronous responses <a class="anchor" href="#asynchronous-responses">#</a></h3>
+
+    <p>Message handlers có thể phản hồi đồng bộ hoặc <strong>bất đồng bộ</strong>, nghĩa là các phương thức <code>async</code> được hỗ trợ.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><div class="tab-group"><button class="tab-btn active" onclick="switchTab(this,'ts')">TypeScript</button><button class="tab-btn" onclick="switchTab(this,'js')">JavaScript</button></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div class="tab-content active" data-tab="ts"><pre><span class="dec">@MessagePattern</span><span class="pn">({</span> cmd<span class="pn">:</span> <span class="str">'sum'</span> <span class="pn">})</span>
+<span class="kw">async</span> <span class="fn">accumulate</span><span class="pn">(</span>data<span class="pn">:</span> <span class="typ">number</span><span class="pn">[]): </span><span class="typ">Promise</span><span class="pn">&lt;</span><span class="typ">number</span><span class="pn">&gt; {</span>
+  <span class="kw">return</span> <span class="pn">(</span>data <span class="pn">||</span> <span class="pn">[]).</span><span class="fn">reduce</span><span class="pn">((</span>a<span class="pn">,</span> b<span class="pn">) =&gt;</span> a <span class="pn">+</span> b<span class="pn">);</span>
+<span class="pn">}</span></pre></div><div class="tab-content" data-tab="js"><pre><span class="dec">@MessagePattern</span><span class="pn">({</span> cmd<span class="pn">:</span> <span class="str">'sum'</span> <span class="pn">})</span>
+<span class="kw">async</span> <span class="fn">accumulate</span><span class="pn">(</span>data<span class="pn">) {</span>
+  <span class="kw">return</span> <span class="pn">(</span>data <span class="pn">||</span> <span class="pn">[]).</span><span class="fn">reduce</span><span class="pn">((</span>a<span class="pn">,</span> b<span class="pn">) =&gt;</span> a <span class="pn">+</span> b<span class="pn">);</span>
+<span class="pn">}</span></pre></div></div>
+
+    <p>Một message handler cũng có thể trả về một <code>Observable</code>, trong trường hợp đó các giá trị kết quả sẽ được emit cho đến khi stream hoàn thành.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><div class="tab-group"><button class="tab-btn active" onclick="switchTab(this,'ts')">TypeScript</button><button class="tab-btn" onclick="switchTab(this,'js')">JavaScript</button></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div class="tab-content active" data-tab="ts"><pre><span class="dec">@MessagePattern</span><span class="pn">({</span> cmd<span class="pn">:</span> <span class="str">'sum'</span> <span class="pn">})</span>
+<span class="fn">accumulate</span><span class="pn">(</span>data<span class="pn">:</span> <span class="typ">number</span><span class="pn">[]): </span><span class="typ">Observable</span><span class="pn">&lt;</span><span class="typ">number</span><span class="pn">&gt; {</span>
+  <span class="kw">return</span> <span class="fn">from</span><span class="pn">([</span><span class="num">1</span><span class="pn">,</span> <span class="num">2</span><span class="pn">,</span> <span class="num">3</span><span class="pn">]);</span>
+<span class="pn">}</span></pre></div><div class="tab-content" data-tab="js"><pre><span class="dec">@MessagePattern</span><span class="pn">({</span> cmd<span class="pn">:</span> <span class="str">'sum'</span> <span class="pn">})</span>
+<span class="fn">accumulate</span><span class="pn">(</span>data<span class="pn">:</span> <span class="typ">number</span><span class="pn">[]): </span><span class="typ">Observable</span><span class="pn">&lt;</span><span class="typ">number</span><span class="pn">&gt; {</span>
+  <span class="kw">return</span> <span class="fn">from</span><span class="pn">([</span><span class="num">1</span><span class="pn">,</span> <span class="num">2</span><span class="pn">,</span> <span class="num">3</span><span class="pn">]);</span>
+<span class="pn">}</span></pre></div></div>
+
+    <p>Trong ví dụ trên, message handler sẽ phản hồi <strong>ba lần</strong>, mỗi lần cho một item trong mảng.</p>
+
+    <!-- ═══ Event-based ═══ -->
+    <h3 id="event-based">Event-based <a class="anchor" href="#event-based">#</a></h3>
+
+    <p>Mặc dù phương thức request-response hoàn hảo cho việc trao đổi messages giữa các services, nhưng nó ít phù hợp hơn cho event-based messaging -- khi bạn chỉ muốn publish <strong>events</strong> mà không cần chờ response. Trong những trường hợp như vậy, overhead của việc duy trì hai channels cho request-response là không cần thiết.</p>
+
+    <p>Ví dụ, nếu bạn muốn thông báo cho một service khác rằng một điều kiện cụ thể đã xảy ra trong phần này của hệ thống, kiểu message event-based là lý tưởng.</p>
+
+    <p>Để tạo một event handler, sử dụng decorator <code>@EventPattern()</code>, được import từ package <code>@nestjs/microservices</code>.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><div class="tab-group"><button class="tab-btn active" onclick="switchTab(this,'ts')">TypeScript</button><button class="tab-btn" onclick="switchTab(this,'js')">JavaScript</button></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div class="tab-content active" data-tab="ts"><pre><span class="dec">@EventPattern</span><span class="pn">(</span><span class="str">'user_created'</span><span class="pn">)</span>
+<span class="kw">async</span> <span class="fn">handleUserCreated</span><span class="pn">(</span>data<span class="pn">:</span> <span class="typ">Record</span><span class="pn">&lt;</span><span class="typ">string</span><span class="pn">,</span> <span class="typ">unknown</span><span class="pn">&gt;) {</span>
+  <span class="cm">// business logic</span>
+<span class="pn">}</span></pre></div><div class="tab-content" data-tab="js"><pre><span class="dec">@EventPattern</span><span class="pn">(</span><span class="str">'user_created'</span><span class="pn">)</span>
+<span class="kw">async</span> <span class="fn">handleUserCreated</span><span class="pn">(</span>data<span class="pn">) {</span>
+  <span class="cm">// business logic</span>
+<span class="pn">}</span></pre></div></div>
+
+<div class="hint"><span class="lbl">Gợi ý</span><p>Bạn có thể đăng ký nhiều event handlers cho một <strong>event pattern duy nhất</strong>, và tất cả chúng sẽ được tự động kích hoạt song song.</p></div>
+
+    <p><strong>Event handler</strong> <code>handleUserCreated()</code> lắng nghe event <code>'user_created'</code>. Event handler nhận một tham số duy nhất, <code>data</code> được truyền từ client (trong trường hợp này, một event payload đã được gửi qua mạng).</p>
+
+    <!-- ═══ Additional request details ═══ -->
+    <h3 id="additional-request-details">Additional request details <a class="anchor" href="#additional-request-details">#</a></h3>
+
+    <p>Trong các kịch bản nâng cao hơn, bạn có thể cần truy cập thêm chi tiết về incoming request. Ví dụ, khi sử dụng NATS với wildcard subscriptions, bạn có thể muốn lấy subject gốc mà producer đã gửi message tới. Tương tự, với Kafka, bạn có thể cần truy cập message headers. Để đạt được điều này, bạn có thể sử dụng các built-in decorators như bên dưới:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><div class="tab-group"><button class="tab-btn active" onclick="switchTab(this,'ts')">TypeScript</button><button class="tab-btn" onclick="switchTab(this,'js')">JavaScript</button></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div class="tab-content active" data-tab="ts"><pre><span class="dec">@MessagePattern</span><span class="pn">(</span><span class="str">'time.us.*'</span><span class="pn">)</span>
+<span class="fn">getDate</span><span class="pn">(</span><span class="dec">@Payload</span><span class="pn">()</span> data<span class="pn">:</span> <span class="typ">number</span><span class="pn">[],</span> <span class="dec">@Ctx</span><span class="pn">()</span> context<span class="pn">:</span> <span class="typ">NatsContext</span><span class="pn">) {</span>
+  console<span class="pn">.</span><span class="fn">log</span><span class="pn">(</span><span class="str">`Subject: ${context.getSubject()}`</span><span class="pn">);</span> <span class="cm">// e.g. "time.us.east"</span>
+  <span class="kw">return</span> <span class="kw">new</span> <span class="typ">Date</span><span class="pn">().</span><span class="fn">toLocaleTimeString</span><span class="pn">(...);</span>
+<span class="pn">}</span></pre></div><div class="tab-content" data-tab="js"><pre><span class="dec">@Bind</span><span class="pn">(</span><span class="fn">Payload</span><span class="pn">(),</span> <span class="fn">Ctx</span><span class="pn">())</span>
+<span class="dec">@MessagePattern</span><span class="pn">(</span><span class="str">'time.us.*'</span><span class="pn">)</span>
+<span class="fn">getDate</span><span class="pn">(</span>data<span class="pn">,</span> context<span class="pn">) {</span>
+  console<span class="pn">.</span><span class="fn">log</span><span class="pn">(</span><span class="str">`Subject: ${context.getSubject()}`</span><span class="pn">);</span> <span class="cm">// e.g. "time.us.east"</span>
+  <span class="kw">return</span> <span class="kw">new</span> <span class="typ">Date</span><span class="pn">().</span><span class="fn">toLocaleTimeString</span><span class="pn">(...);</span>
+<span class="pn">}</span></pre></div></div>
+
+<div class="hint"><span class="lbl">Gợi ý</span><p><code>@Payload()</code>, <code>@Ctx()</code> và <code>NatsContext</code> được import từ <code>@nestjs/microservices</code>.</p></div>
+
+<div class="hint"><span class="lbl">Gợi ý</span><p>Bạn cũng có thể truyền một property key vào decorator <code>@Payload()</code> để trích xuất một thuộc tính cụ thể từ incoming payload object, ví dụ, <code>@Payload('id')</code>.</p></div>
+
+    <!-- ═══ Client ═══ -->
+    <h3 id="client">Client (producer class) <a class="anchor" href="#client">#</a></h3>
+
+    <p>Một ứng dụng Nest client có thể trao đổi messages hoặc publish events tới một Nest microservice bằng class <code>ClientProxy</code>. Class này cung cấp nhiều phương thức, như <code>send()</code> (cho request-response messaging) và <code>emit()</code> (cho event-driven messaging), cho phép giao tiếp với một remote microservice. Bạn có thể lấy một instance của class này theo những cách sau:</p>
+
+    <p>Một cách tiếp cận là import <code>ClientsModule</code>, cung cấp phương thức tĩnh <code>register()</code>. Phương thức này nhận một mảng các objects đại diện cho microservice transporters. Mỗi object phải bao gồm thuộc tính <code>name</code>, và tùy chọn thuộc tính <code>transport</code> (mặc định là <code>Transport.TCP</code>), cũng như thuộc tính <code>options</code> tùy chọn.</p>
+
+    <p>Thuộc tính <code>name</code> hoạt động như một <strong>injection token</strong>, bạn có thể sử dụng để inject một instance của <code>ClientProxy</code> ở bất cứ đâu cần thiết. Giá trị của thuộc tính <code>name</code> có thể là bất kỳ string hoặc JavaScript symbol tùy ý nào, như được mô tả trong tài liệu custom providers.</p>
+
+    <p>Thuộc tính <code>options</code> là một object bao gồm các thuộc tính giống như những gì chúng ta đã thấy trong phương thức <code>createMicroservice()</code> trước đó.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">: [</span>
+    ClientsModule<span class="pn">.</span><span class="fn">register</span><span class="pn">([</span>
+      <span class="pn">{</span> name<span class="pn">:</span> <span class="str">'MATH_SERVICE'</span><span class="pn">,</span> transport<span class="pn">:</span> Transport<span class="pn">.</span>TCP <span class="pn">},</span>
+    <span class="pn">]),</span>
+  <span class="pn">],</span>
+<span class="pn">})</span></pre></div>
+
+    <p>Ngoài ra, bạn có thể sử dụng phương thức <code>registerAsync()</code> nếu bạn cần cung cấp cấu hình hoặc thực hiện bất kỳ quy trình bất đồng bộ nào trong quá trình thiết lập.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">: [</span>
+    ClientsModule<span class="pn">.</span><span class="fn">registerAsync</span><span class="pn">([</span>
+      <span class="pn">{</span>
+        imports<span class="pn">: [</span>ConfigModule<span class="pn">],</span>
+        name<span class="pn">:</span> <span class="str">'MATH_SERVICE'</span><span class="pn">,</span>
+        useFactory<span class="pn">:</span> <span class="kw">async</span> <span class="pn">(</span>configService<span class="pn">:</span> <span class="typ">ConfigService</span><span class="pn">) =&gt; ({</span>
+          transport<span class="pn">:</span> Transport<span class="pn">.</span>TCP<span class="pn">,</span>
+          options<span class="pn">: {</span>
+            url<span class="pn">:</span> configService<span class="pn">.</span><span class="fn">get</span><span class="pn">(</span><span class="str">'URL'</span><span class="pn">),</span>
+          <span class="pn">},</span>
+        <span class="pn">}),</span>
+        inject<span class="pn">: [</span>ConfigService<span class="pn">],</span>
+      <span class="pn">},</span>
+    <span class="pn">]),</span>
+  <span class="pn">],</span>
+<span class="pn">})</span></pre></div>
+
+    <p>Sau khi module đã được import, bạn có thể inject một instance của <code>ClientProxy</code> được cấu hình với các options đã chỉ định cho transporter <code>'MATH_SERVICE'</code> bằng decorator <code>@Inject()</code>.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">constructor</span><span class="pn">(</span>
+  <span class="dec">@Inject</span><span class="pn">(</span><span class="str">'MATH_SERVICE'</span><span class="pn">)</span> <span class="kw">private</span> client<span class="pn">:</span> <span class="typ">ClientProxy</span><span class="pn">,</span>
+<span class="pn">) {}</span></pre></div>
+
+<div class="hint"><span class="lbl">Gợi ý</span><p>Các class <code>ClientsModule</code> và <code>ClientProxy</code> được import từ package <code>@nestjs/microservices</code>.</p></div>
+
+    <p>Đôi khi, bạn có thể cần lấy cấu hình transporter từ một service khác (chẳng hạn như <code>ConfigService</code>), thay vì hard-code nó trong ứng dụng client. Để đạt được điều này, bạn có thể đăng ký một custom provider sử dụng class <code>ClientProxyFactory</code>. Class này cung cấp phương thức tĩnh <code>create()</code> nhận một transporter options object và trả về một instance <code>ClientProxy</code> tùy chỉnh.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@Module</span><span class="pn">({</span>
+  providers<span class="pn">: [</span>
+    <span class="pn">{</span>
+      provide<span class="pn">:</span> <span class="str">'MATH_SERVICE'</span><span class="pn">,</span>
+      useFactory<span class="pn">: (</span>configService<span class="pn">:</span> <span class="typ">ConfigService</span><span class="pn">) =&gt; {</span>
+        <span class="kw">const</span> mathSvcOptions <span class="pn">=</span> configService<span class="pn">.</span><span class="fn">getMathSvcOptions</span><span class="pn">();</span>
+        <span class="kw">return</span> ClientProxyFactory<span class="pn">.</span><span class="fn">create</span><span class="pn">(</span>mathSvcOptions<span class="pn">);</span>
+      <span class="pn">},</span>
+      inject<span class="pn">: [</span>ConfigService<span class="pn">],</span>
+    <span class="pn">}</span>
+  <span class="pn">]</span>
+  ...
+<span class="pn">})</span></pre></div>
+
+<div class="hint"><span class="lbl">Gợi ý</span><p><code>ClientProxyFactory</code> được import từ package <code>@nestjs/microservices</code>.</p></div>
+
+    <p>Một tùy chọn khác là sử dụng property decorator <code>@Client()</code>.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@Client</span><span class="pn">({</span> transport<span class="pn">:</span> Transport<span class="pn">.</span>TCP <span class="pn">})</span>
+client<span class="pn">:</span> <span class="typ">ClientProxy</span><span class="pn">;</span></pre></div>
+
+<div class="hint"><span class="lbl">Gợi ý</span><p>Decorator <code>@Client()</code> được import từ package <code>@nestjs/microservices</code>.</p></div>
+
+    <p>Sử dụng decorator <code>@Client()</code> không phải là kỹ thuật được ưu tiên, vì nó khó test hơn và khó chia sẻ một client instance.</p>
+
+    <p><code>ClientProxy</code> là <strong>lazy</strong>. Nó không khởi tạo kết nối ngay lập tức. Thay vào đó, nó sẽ được thiết lập trước lần gọi microservice đầu tiên, và sau đó được tái sử dụng qua mỗi lần gọi tiếp theo. Tuy nhiên, nếu bạn muốn trì hoãn quá trình bootstrapping ứng dụng cho đến khi kết nối được thiết lập, bạn có thể khởi tạo kết nối thủ công bằng phương thức <code>connect()</code> của object <code>ClientProxy</code> bên trong lifecycle hook <code>OnApplicationBootstrap</code>.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">async</span> <span class="fn">onApplicationBootstrap</span><span class="pn">() {</span>
+  <span class="kw">await</span> <span class="kw">this</span><span class="pn">.</span>client<span class="pn">.</span><span class="fn">connect</span><span class="pn">();</span>
+<span class="pn">}</span></pre></div>
+
+    <p>Nếu kết nối không thể được tạo, phương thức <code>connect()</code> sẽ reject với error object tương ứng.</p>
+
+    <!-- ═══ Sending messages ═══ -->
+    <h3 id="sending-messages">Sending messages <a class="anchor" href="#sending-messages">#</a></h3>
+
+    <p><code>ClientProxy</code> cung cấp phương thức <code>send()</code>. Phương thức này được dùng để gọi microservice và trả về một <code>Observable</code> với response của nó. Do đó, chúng ta có thể subscribe vào các giá trị được emit một cách dễ dàng.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><div class="tab-group"><button class="tab-btn active" onclick="switchTab(this,'ts')">TypeScript</button><button class="tab-btn" onclick="switchTab(this,'js')">JavaScript</button></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div class="tab-content active" data-tab="ts"><pre><span class="fn">accumulate</span><span class="pn">(): </span><span class="typ">Observable</span><span class="pn">&lt;</span><span class="typ">number</span><span class="pn">&gt; {</span>
+  <span class="kw">const</span> pattern <span class="pn">=</span> <span class="pn">{</span> cmd<span class="pn">:</span> <span class="str">'sum'</span> <span class="pn">};</span>
+  <span class="kw">const</span> payload <span class="pn">=</span> <span class="pn">[</span><span class="num">1</span><span class="pn">,</span> <span class="num">2</span><span class="pn">,</span> <span class="num">3</span><span class="pn">];</span>
+  <span class="kw">return</span> <span class="kw">this</span><span class="pn">.</span>client<span class="pn">.</span><span class="fn">send</span><span class="pn">&lt;</span><span class="typ">number</span><span class="pn">&gt;(</span>pattern<span class="pn">,</span> payload<span class="pn">);</span>
+<span class="pn">}</span></pre></div><div class="tab-content" data-tab="js"><pre><span class="fn">accumulate</span><span class="pn">() {</span>
+  <span class="kw">const</span> pattern <span class="pn">=</span> <span class="pn">{</span> cmd<span class="pn">:</span> <span class="str">'sum'</span> <span class="pn">};</span>
+  <span class="kw">const</span> payload <span class="pn">=</span> <span class="pn">[</span><span class="num">1</span><span class="pn">,</span> <span class="num">2</span><span class="pn">,</span> <span class="num">3</span><span class="pn">];</span>
+  <span class="kw">return</span> <span class="kw">this</span><span class="pn">.</span>client<span class="pn">.</span><span class="fn">send</span><span class="pn">(</span>pattern<span class="pn">,</span> payload<span class="pn">);</span>
+<span class="pn">}</span></pre></div></div>
+
+    <p>Phương thức <code>send()</code> nhận hai tham số, <code>pattern</code> và <code>payload</code>. <code>pattern</code> phải khớp với một pattern đã được định nghĩa trong decorator <code>@MessagePattern()</code>. <code>payload</code> là một message mà chúng ta muốn truyền tới remote microservice. Phương thức này trả về một <strong>cold <code>Observable</code></strong>, nghĩa là bạn phải explicitly subscribe vào nó trước khi message được gửi.</p>
+
+    <!-- ═══ Publishing events ═══ -->
+    <h3 id="publishing-events">Publishing events <a class="anchor" href="#publishing-events">#</a></h3>
+
+    <p>Để gửi một event, sử dụng phương thức <code>emit()</code> của object <code>ClientProxy</code>. Phương thức này publish một event tới message broker.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><div class="tab-group"><button class="tab-btn active" onclick="switchTab(this,'ts')">TypeScript</button><button class="tab-btn" onclick="switchTab(this,'js')">JavaScript</button></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div class="tab-content active" data-tab="ts"><pre><span class="kw">async</span> <span class="fn">publish</span><span class="pn">() {</span>
+  <span class="kw">this</span><span class="pn">.</span>client<span class="pn">.</span><span class="fn">emit</span><span class="pn">&lt;</span><span class="typ">number</span><span class="pn">&gt;(</span><span class="str">'user_created'</span><span class="pn">,</span> <span class="kw">new</span> <span class="fn">UserCreatedEvent</span><span class="pn">());</span>
+<span class="pn">}</span></pre></div><div class="tab-content" data-tab="js"><pre><span class="kw">async</span> <span class="fn">publish</span><span class="pn">() {</span>
+  <span class="kw">this</span><span class="pn">.</span>client<span class="pn">.</span><span class="fn">emit</span><span class="pn">(</span><span class="str">'user_created'</span><span class="pn">,</span> <span class="kw">new</span> <span class="fn">UserCreatedEvent</span><span class="pn">());</span>
+<span class="pn">}</span></pre></div></div>
+
+    <p>Phương thức <code>emit()</code> nhận hai tham số: <code>pattern</code> và <code>payload</code>. <code>pattern</code> phải khớp với một pattern đã được định nghĩa trong decorator <code>@EventPattern()</code>, trong khi <code>payload</code> đại diện cho event data mà bạn muốn truyền tới remote microservice. Phương thức này trả về một <strong>hot <code>Observable</code></strong> (trái ngược với cold <code>Observable</code> được trả về bởi <code>send()</code>), nghĩa là bất kể bạn có explicitly subscribe vào observable hay không, proxy sẽ ngay lập tức cố gắng deliver event.</p>
+
+    <!-- ═══ Request-scoping ═══ -->
+    <h3 id="request-scoping">Request-scoping <a class="anchor" href="#request-scoping">#</a></h3>
+
+    <p>Đối với những người đến từ các ngôn ngữ lập trình khác, có thể ngạc nhiên khi biết rằng trong Nest, hầu hết mọi thứ được chia sẻ giữa các incoming requests. Điều này bao gồm connection pool tới database, singleton services với global state, và nhiều hơn nữa. Hãy nhớ rằng Node.js không tuân theo mô hình request/response multi-threaded stateless, trong đó mỗi request được xử lý bởi một thread riêng biệt. Do đó, việc sử dụng singleton instances là <strong>an toàn</strong> cho các ứng dụng của chúng ta.</p>
+
+    <p>Tuy nhiên, có những trường hợp đặc biệt khi lifetime dựa trên request cho handler có thể là mong muốn. Điều này có thể bao gồm các kịch bản như per-request caching trong các ứng dụng GraphQL, request tracking, hoặc multi-tenancy. Bạn có thể tìm hiểu thêm về cách kiểm soát scopes trong tài liệu injection scopes.</p>
+
+    <p>Request-scoped handlers và providers có thể inject <code>RequestContext</code> bằng decorator <code>@Inject()</code> kết hợp với token <code>CONTEXT</code>:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">import</span> <span class="pn">{</span> Injectable<span class="pn">,</span> Scope<span class="pn">,</span> Inject <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> CONTEXT<span class="pn">,</span> RequestContext <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/microservices'</span><span class="pn">;</span>
+
+<span class="dec">@Injectable</span><span class="pn">({</span> scope<span class="pn">:</span> Scope<span class="pn">.</span>REQUEST <span class="pn">})</span>
+<span class="kw">export</span> <span class="kw">class</span> <span class="typ">CatsService</span> <span class="pn">{</span>
+  <span class="kw">constructor</span><span class="pn">(</span><span class="dec">@Inject</span><span class="pn">(</span>CONTEXT<span class="pn">)</span> <span class="kw">private</span> ctx<span class="pn">:</span> <span class="typ">RequestContext</span><span class="pn">) {}</span>
+<span class="pn">}</span></pre></div>
+
+    <p>Điều này cung cấp quyền truy cập vào object <code>RequestContext</code>, có hai thuộc tính:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">export</span> <span class="kw">interface</span> <span class="typ">RequestContext</span><span class="pn">&lt;</span>T <span class="pn">=</span> <span class="typ">any</span><span class="pn">&gt; {</span>
+  pattern<span class="pn">:</span> <span class="typ">string</span> <span class="pn">|</span> <span class="typ">Record</span><span class="pn">&lt;</span><span class="typ">string</span><span class="pn">,</span> <span class="typ">any</span><span class="pn">&gt;;</span>
+  data<span class="pn">:</span> T<span class="pn">;</span>
+<span class="pn">}</span></pre></div>
+
+    <p>Thuộc tính <code>data</code> là message payload được gửi bởi message producer. Thuộc tính <code>pattern</code> là pattern được sử dụng để xác định handler phù hợp để xử lý incoming message.</p>
+
+    <!-- ═══ Instance status updates ═══ -->
+    <h3 id="instance-status-updates">Instance status updates <a class="anchor" href="#instance-status-updates">#</a></h3>
+
+    <p>Để nhận cập nhật theo thời gian thực về connection và trạng thái của underlying driver instance, bạn có thể subscribe vào <code>status</code> stream. Stream này cung cấp các status updates dành riêng cho driver đã chọn. Ví dụ, nếu bạn đang sử dụng TCP transporter (mặc định), <code>status</code> stream phát ra các event <code>connected</code> và <code>disconnected</code>.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">this</span><span class="pn">.</span>client<span class="pn">.</span>status<span class="pn">.</span><span class="fn">subscribe</span><span class="pn">((</span>status<span class="pn">:</span> <span class="typ">TcpStatus</span><span class="pn">) =&gt; {</span>
+  console<span class="pn">.</span><span class="fn">log</span><span class="pn">(</span>status<span class="pn">);</span>
+<span class="pn">});</span></pre></div>
+
+<div class="hint"><span class="lbl">Gợi ý</span><p>Type <code>TcpStatus</code> được import từ package <code>@nestjs/microservices</code>.</p></div>
+
+    <p>Tương tự, bạn có thể subscribe vào <code>status</code> stream của server để nhận thông báo về trạng thái server.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">const</span> server <span class="pn">=</span> app<span class="pn">.</span><span class="fn">connectMicroservice</span><span class="pn">&lt;</span><span class="typ">MicroserviceOptions</span><span class="pn">&gt;(...);</span>
+server<span class="pn">.</span>status<span class="pn">.</span><span class="fn">subscribe</span><span class="pn">((</span>status<span class="pn">:</span> <span class="typ">TcpStatus</span><span class="pn">) =&gt; {</span>
+  console<span class="pn">.</span><span class="fn">log</span><span class="pn">(</span>status<span class="pn">);</span>
+<span class="pn">});</span></pre></div>
+
+    <!-- ═══ Listening to internal events ═══ -->
+    <h3 id="listening-to-internal-events">Listening to internal events <a class="anchor" href="#listening-to-internal-events">#</a></h3>
+
+    <p>Trong một số trường hợp, bạn có thể muốn lắng nghe các internal events được phát ra bởi microservice. Ví dụ, bạn có thể lắng nghe event <code>error</code> để kích hoạt các thao tác bổ sung khi có lỗi xảy ra. Để làm điều này, sử dụng phương thức <code>on()</code>, như bên dưới:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">this</span><span class="pn">.</span>client<span class="pn">.</span><span class="fn">on</span><span class="pn">(</span><span class="str">'error'</span><span class="pn">, (</span>err<span class="pn">) =&gt; {</span>
+  console<span class="pn">.</span><span class="fn">error</span><span class="pn">(</span>err<span class="pn">);</span>
+<span class="pn">});</span></pre></div>
+
+    <p>Tương tự, bạn có thể lắng nghe các internal events của server:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre>server<span class="pn">.</span><span class="fn">on</span><span class="pn">&lt;</span><span class="typ">TcpEvents</span><span class="pn">&gt;(</span><span class="str">'error'</span><span class="pn">, (</span>err<span class="pn">) =&gt; {</span>
+  console<span class="pn">.</span><span class="fn">error</span><span class="pn">(</span>err<span class="pn">);</span>
+<span class="pn">});</span></pre></div>
+
+<div class="hint"><span class="lbl">Gợi ý</span><p>Type <code>TcpEvents</code> được import từ package <code>@nestjs/microservices</code>.</p></div>
+
+    <!-- ═══ Underlying driver access ═══ -->
+    <h3 id="underlying-driver-access">Underlying driver access <a class="anchor" href="#underlying-driver-access">#</a></h3>
+
+    <p>Đối với các use cases nâng cao hơn, bạn có thể cần truy cập underlying driver instance. Điều này có thể hữu ích cho các kịch bản như đóng kết nối thủ công hoặc sử dụng các phương thức dành riêng cho driver. Tuy nhiên, hãy lưu ý rằng trong hầu hết trường hợp, bạn <strong>không cần</strong> truy cập driver trực tiếp.</p>
+
+    <p>Để làm vậy, bạn có thể sử dụng phương thức <code>unwrap()</code>, trả về underlying driver instance. Generic type parameter nên chỉ định type của driver instance mà bạn mong đợi.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">const</span> netServer <span class="pn">=</span> <span class="kw">this</span><span class="pn">.</span>client<span class="pn">.</span><span class="fn">unwrap</span><span class="pn">&lt;</span><span class="typ">Server</span><span class="pn">&gt;();</span></pre></div>
+
+    <p>Ở đây, <code>Server</code> là một type được import từ module <code>net</code>.</p>
+
+    <p>Tương tự, bạn có thể truy cập underlying driver instance của server:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">const</span> netServer <span class="pn">=</span> server<span class="pn">.</span><span class="fn">unwrap</span><span class="pn">&lt;</span><span class="typ">Server</span><span class="pn">&gt;();</span></pre></div>
+
+    <!-- ═══ Handling timeouts ═══ -->
+    <h3 id="handling-timeouts">Handling timeouts <a class="anchor" href="#handling-timeouts">#</a></h3>
+
+    <p>Trong các hệ thống phân tán, microservices đôi khi có thể bị down hoặc không khả dụng. Để tránh chờ đợi vô thời hạn, bạn có thể sử dụng timeouts. Timeout là một pattern rất hữu ích khi giao tiếp với các services khác. Để áp dụng timeouts cho các microservice calls của bạn, bạn có thể sử dụng RxJS <code>timeout</code> operator. Nếu microservice không phản hồi trong thời gian được chỉ định, một exception sẽ được throw, mà bạn có thể catch và xử lý phù hợp.</p>
+
+    <p>Để triển khai điều này, bạn cần sử dụng package <code>rxjs</code>. Chỉ cần sử dụng <code>timeout</code> operator trong pipe:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><div class="tab-group"><button class="tab-btn active" onclick="switchTab(this,'ts')">TypeScript</button><button class="tab-btn" onclick="switchTab(this,'js')">JavaScript</button></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div class="tab-content active" data-tab="ts"><pre><span class="kw">this</span><span class="pn">.</span>client
+  <span class="pn">.</span><span class="fn">send</span><span class="pn">&lt;</span><span class="typ">TResult</span><span class="pn">,</span> <span class="typ">TInput</span><span class="pn">&gt;(</span>pattern<span class="pn">,</span> data<span class="pn">)</span>
+  <span class="pn">.</span><span class="fn">pipe</span><span class="pn">(</span><span class="fn">timeout</span><span class="pn">(</span><span class="num">5000</span><span class="pn">));</span></pre></div><div class="tab-content" data-tab="js"><pre><span class="kw">this</span><span class="pn">.</span>client
+  <span class="pn">.</span><span class="fn">send</span><span class="pn">(</span>pattern<span class="pn">,</span> data<span class="pn">)</span>
+  <span class="pn">.</span><span class="fn">pipe</span><span class="pn">(</span><span class="fn">timeout</span><span class="pn">(</span><span class="num">5000</span><span class="pn">));</span></pre></div></div>
+
+<div class="hint"><span class="lbl">Gợi ý</span><p><code>timeout</code> operator được import từ package <code>rxjs/operators</code>.</p></div>
+
+    <p>Sau 5 giây, nếu microservice không phản hồi, nó sẽ throw một error.</p>
+
+    <!-- ═══ TLS support ═══ -->
+    <h3 id="tls-support">TLS support <a class="anchor" href="#tls-support">#</a></h3>
+
+    <p>Khi giao tiếp bên ngoài private network, điều quan trọng là phải encrypt traffic để đảm bảo an toàn. Trong NestJS, điều này có thể đạt được với TLS over TCP sử dụng module TLS tích hợp sẵn của Node. Nest cung cấp hỗ trợ TLS tích hợp trong TCP transport, cho phép chúng ta encrypt giao tiếp giữa các microservices hoặc clients.</p>
+
+    <p>Để kích hoạt TLS cho một TCP server, bạn cần cả private key và certificate ở định dạng PEM. Chúng được thêm vào server options bằng cách thiết lập <code>tlsOptions</code> và chỉ định các file key và cert, như bên dưới:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">import</span> <span class="pn">*</span> <span class="kw">as</span> fs <span class="kw">from</span> <span class="str">'fs'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> NestFactory <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/core'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> AppModule <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./app.module'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> MicroserviceOptions<span class="pn">,</span> Transport <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/microservices'</span><span class="pn">;</span>
+
+<span class="kw">async</span> <span class="kw">function</span> <span class="fn">bootstrap</span><span class="pn">() {</span>
+  <span class="kw">const</span> key <span class="pn">=</span> fs<span class="pn">.</span><span class="fn">readFileSync</span><span class="pn">(</span><span class="str">'&lt;pathToKeyFile&gt;'</span><span class="pn">,</span> <span class="str">'utf8'</span><span class="pn">).</span><span class="fn">toString</span><span class="pn">();</span>
+  <span class="kw">const</span> cert <span class="pn">=</span> fs<span class="pn">.</span><span class="fn">readFileSync</span><span class="pn">(</span><span class="str">'&lt;pathToCertFile&gt;'</span><span class="pn">,</span> <span class="str">'utf8'</span><span class="pn">).</span><span class="fn">toString</span><span class="pn">();</span>
+
+  <span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> NestFactory<span class="pn">.</span><span class="fn">createMicroservice</span><span class="pn">&lt;</span><span class="typ">MicroserviceOptions</span><span class="pn">&gt;(</span>
+    AppModule<span class="pn">,</span>
+    <span class="pn">{</span>
+      transport<span class="pn">:</span> Transport<span class="pn">.</span>TCP<span class="pn">,</span>
+      options<span class="pn">: {</span>
+        tlsOptions<span class="pn">: {</span>
+          key<span class="pn">,</span>
+          cert<span class="pn">,</span>
+        <span class="pn">},</span>
+      <span class="pn">},</span>
+    <span class="pn">},</span>
+  <span class="pn">);</span>
+
+  <span class="kw">await</span> app<span class="pn">.</span><span class="fn">listen</span><span class="pn">();</span>
+<span class="pn">}</span>
+<span class="fn">bootstrap</span><span class="pn">();</span></pre></div>
+
+    <p>Để client giao tiếp an toàn qua TLS, chúng ta cũng định nghĩa object <code>tlsOptions</code> nhưng lần này với CA certificate. Đây là certificate của authority đã ký certificate của server. Điều này đảm bảo rằng client tin tưởng certificate của server và có thể thiết lập kết nối an toàn.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">import</span> <span class="pn">{</span> Module <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> ClientsModule<span class="pn">,</span> Transport <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/microservices'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">: [</span>
+    ClientsModule<span class="pn">.</span><span class="fn">register</span><span class="pn">([</span>
+      <span class="pn">{</span>
+        name<span class="pn">:</span> <span class="str">'MATH_SERVICE'</span><span class="pn">,</span>
+        transport<span class="pn">:</span> Transport<span class="pn">.</span>TCP<span class="pn">,</span>
+        options<span class="pn">: {</span>
+          tlsOptions<span class="pn">: {</span>
+            ca<span class="pn">: [</span>fs<span class="pn">.</span><span class="fn">readFileSync</span><span class="pn">(</span><span class="str">'&lt;pathToCaFile&gt;'</span><span class="pn">,</span> <span class="str">'utf-8'</span><span class="pn">).</span><span class="fn">toString</span><span class="pn">()],</span>
+          <span class="pn">},</span>
+        <span class="pn">},</span>
+      <span class="pn">},</span>
+    <span class="pn">]),</span>
+  <span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export</span> <span class="kw">class</span> <span class="typ">AppModule</span> <span class="pn">{}</span></pre></div>
+
+    <p>Bạn cũng có thể truyền một mảng CAs nếu thiết lập của bạn sử dụng nhiều trusted authorities.</p>
+
+    <p>Khi mọi thứ đã được thiết lập, bạn có thể inject <code>ClientProxy</code> như bình thường bằng decorator <code>@Inject()</code> để sử dụng client trong services của bạn. Điều này đảm bảo giao tiếp được encrypt trên các NestJS microservices, với module <code>TLS</code> của Node xử lý các chi tiết encryption.</p>
+
+    <p>Để biết thêm thông tin, tham khảo tài liệu TLS của Node.</p>
+
+    <!-- ═══ Dynamic configuration ═══ -->
+    <h3 id="dynamic-configuration">Dynamic configuration <a class="anchor" href="#dynamic-configuration">#</a></h3>
+
+    <p>Khi một microservice cần được cấu hình sử dụng <code>ConfigService</code> (từ package <code>@nestjs/config</code>), nhưng injection context chỉ khả dụng sau khi microservice instance được tạo, <code>AsyncMicroserviceOptions</code> cung cấp một giải pháp. Cách tiếp cận này cho phép cấu hình động, đảm bảo tích hợp mượt mà với <code>ConfigService</code>.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">import</span> <span class="pn">{</span> ConfigService <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/config'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> AsyncMicroserviceOptions<span class="pn">,</span> Transport <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/microservices'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> AppModule <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./app.module'</span><span class="pn">;</span>
+
+<span class="kw">async</span> <span class="kw">function</span> <span class="fn">bootstrap</span><span class="pn">() {</span>
+  <span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> NestFactory<span class="pn">.</span><span class="fn">createMicroservice</span><span class="pn">&lt;</span><span class="typ">AsyncMicroserviceOptions</span><span class="pn">&gt;(</span>
+    AppModule<span class="pn">,</span>
+    <span class="pn">{</span>
+      useFactory<span class="pn">: (</span>configService<span class="pn">:</span> <span class="typ">ConfigService</span><span class="pn">) =&gt; ({</span>
+        transport<span class="pn">:</span> Transport<span class="pn">.</span>TCP<span class="pn">,</span>
+        options<span class="pn">: {</span>
+          host<span class="pn">:</span> configService<span class="pn">.</span><span class="fn">get</span><span class="pn">&lt;</span><span class="typ">string</span><span class="pn">&gt;(</span><span class="str">'HOST'</span><span class="pn">),</span>
+          port<span class="pn">:</span> configService<span class="pn">.</span><span class="fn">get</span><span class="pn">&lt;</span><span class="typ">number</span><span class="pn">&gt;(</span><span class="str">'PORT'</span><span class="pn">),</span>
+        <span class="pn">},</span>
+      <span class="pn">}),</span>
+      inject<span class="pn">: [</span>ConfigService<span class="pn">],</span>
+    <span class="pn">},</span>
+  <span class="pn">);</span>
+
+  <span class="kw">await</span> app<span class="pn">.</span><span class="fn">listen</span><span class="pn">();</span>
+<span class="pn">}</span>
+<span class="fn">bootstrap</span><span class="pn">();</span></pre></div>
+
+    <!-- Page Navigation -->
+    <div class="page-nav">
+      <a href="Redis.html" class="pnbtn r">
+        <span class="pnlbl">Tiếp &rarr;</span>
+        <span class="pntitle">Redis</span>
+      </a>
+    </div>
+
+  </main>
+
+  <!-- TOC -->
+  <aside class="toc">
+    <div class="toc-title">Nội dung</div>
+    <ul>
+      <li><a href="#installation">Installation</a></li>
+      <li><a href="#getting-started">Getting started</a></li>
+      <li><a href="#message-and-event-patterns">Message and Event Patterns</a></li>
+      <li><a href="#request-response">Request-response</a></li>
+      <li><a href="#asynchronous-responses">Asynchronous responses</a></li>
+      <li><a href="#event-based">Event-based</a></li>
+      <li><a href="#additional-request-details">Additional request details</a></li>
+      <li><a href="#client">Client</a></li>
+      <li><a href="#sending-messages">Sending messages</a></li>
+      <li><a href="#publishing-events">Publishing events</a></li>
+      <li><a href="#request-scoping">Request-scoping</a></li>
+      <li><a href="#instance-status-updates">Instance status updates</a></li>
+      <li><a href="#listening-to-internal-events">Listening to internal events</a></li>
+      <li><a href="#underlying-driver-access">Underlying driver access</a></li>
+      <li><a href="#handling-timeouts">Handling timeouts</a></li>
+      <li><a href="#tls-support">TLS support</a></li>
+      <li><a href="#dynamic-configuration">Dynamic configuration</a></li>
+    </ul>
+  </aside>
+
+</div>
+
+<script>
+  function cp(btn){var w=btn.closest('.cb');var p=w.querySelector('.tab-content.active pre')||w.querySelector('pre');if(!p)return;navigator.clipboard.writeText(p.textContent.trim()).then(function(){var o=btn.textContent;btn.textContent='Copied!';btn.style.color='#4ade80';setTimeout(function(){btn.textContent=o;btn.style.color=''},1500)})}
+  function switchTab(btn,tab){var cb=btn.closest('.cb');cb.querySelectorAll('.tab-btn').forEach(function(b){b.classList.toggle('active',b===btn)});cb.querySelectorAll('.tab-content').forEach(function(c){c.classList.toggle('active',c.dataset.tab===tab)})}
+  document.querySelectorAll('.toc a').forEach(function(l){l.addEventListener('click',function(e){e.preventDefault();var t=document.querySelector(this.getAttribute('href'));if(t)t.scrollIntoView({behavior:'smooth',block:'start'})})});
+  var tocLinks=document.querySelectorAll('.toc a'),heads=document.querySelectorAll('h3[id]');
+  function hi(){var c='';heads.forEach(function(h){if(scrollY>=h.offsetTop-120)c=h.id});tocLinks.forEach(function(a){a.classList.toggle('active',a.getAttribute('href')==='#'+c)})}
+  window.addEventListener('scroll',hi,{passive:true});hi();
+</script>
+</body>
+</html>

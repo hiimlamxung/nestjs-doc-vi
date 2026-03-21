@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Authentication | NestJS - Tài liệu tiếng Việt</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root{--bg:#0e0e0e;--surface:#1a1a1a;--surface2:#222;--border:#2a2a2a;--border-l:#333;--red:#ea2845;--red-l:#ff4d6a;--red-glow:rgba(234,40,69,.15);--text:#e8e8e8;--muted:#888;--sec:#b0b0b0;--code-bg:#1e1e1e;--code-bd:#2d2d2d;--hint-bg:#0d2a1a;--hint-c:#4ade80;--warn-bg:#2a1a0d;--warn-c:#fb923c;--note-bg:#0d1a2a;--note-c:#60a0d0;--toc-w:220px;--font:'Inter',sans-serif;--mono:'Source Code Pro',monospace;--r:6px;--rl:10px}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+    body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:15px;line-height:1.78}
+    .page{max-width:1060px;margin:0 auto;padding:48px 32px 96px;display:flex;gap:56px;align-items:flex-start}.content{flex:1;min-width:0}
+    .toc{width:var(--toc-w);flex-shrink:0;position:sticky;top:32px;align-self:flex-start;max-height:calc(100vh - 48px);overflow-y:auto}
+    .toc::-webkit-scrollbar{width:3px}.toc::-webkit-scrollbar-thumb{background:var(--border-l);border-radius:2px}
+    .toc-title{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding-bottom:8px;margin-bottom:8px;border-bottom:1px solid var(--border)}
+    .toc ul{list-style:none}.toc ul li a{display:block;padding:3.5px 0;font-size:12.5px;color:var(--muted);text-decoration:none;line-height:1.5;transition:color .15s;cursor:pointer}
+    .toc ul li a:hover,.toc ul li a.active{color:var(--red-l)}
+    .vi-banner{display:flex;align-items:center;gap:10px;padding:11px 16px;border:1px solid rgba(234,40,69,.3);border-radius:var(--rl);background:linear-gradient(135deg,rgba(234,40,69,.1),rgba(234,40,69,.04));font-size:13px;color:var(--sec);margin-bottom:32px}.vi-banner strong{color:var(--red-l)}
+    h1{font-size:36px;font-weight:700;letter-spacing:-.5px;line-height:1.2;margin-bottom:6px}h1::after{content:'';display:block;width:44px;height:3px;background:var(--red);border-radius:2px;margin-top:12px}
+    h3{font-size:19px;font-weight:600;letter-spacing:-.2px;margin:40px 0 12px;display:flex;align-items:center;gap:8px;scroll-margin-top:80px}
+    .anchor{font-size:14px;color:var(--muted);text-decoration:none;opacity:0;transition:opacity .2s}h3:hover .anchor{opacity:1}
+    p{color:var(--sec);line-height:1.82;margin-bottom:16px}p:last-child{margin-bottom:0}
+    a{color:var(--red-l);text-decoration:none}a:hover{text-decoration:underline}strong{color:var(--text);font-weight:600}
+    ul,ol{color:var(--sec);padding-left:22px;line-height:2.1;margin:16px 0}ul li{margin-bottom:6px}
+    code{font-family:var(--mono);font-size:13px;background:var(--code-bg);border:1px solid var(--code-bd);padding:1px 6px;border-radius:4px;color:#f9a8d4}
+    .hint,.warn,.note{margin:18px 0;padding:12px 16px;border-left:3px solid;border-radius:var(--r);font-size:13.5px;line-height:1.72}
+    .hint{background:var(--hint-bg);border-color:var(--hint-c);color:#a7f3d0}.warn{background:var(--warn-bg);border-color:var(--warn-c);color:#fed7aa}.note{background:var(--note-bg);border-color:var(--note-c);color:#bae6fd}
+    .hint p,.warn p,.note p{margin:0;color:inherit}.lbl{display:block;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
+    .hint .lbl{color:var(--hint-c)}.warn .lbl{color:var(--warn-c)}.note .lbl{color:var(--note-c)}
+    .cb{margin:18px 0;border:1px solid var(--code-bd);border-radius:var(--rl);overflow:hidden;background:var(--code-bg)}
+    .cb-head{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:#181818;border-bottom:1px solid var(--code-bd);min-height:38px}
+    .cb-fname{font-family:var(--mono);font-size:11.5px;color:var(--muted);display:flex;align-items:center;gap:6px}.cb-fname::before{content:'';display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--red)}
+    .cb-right{display:flex;align-items:center;gap:6px}
+    .cpbtn{padding:3px 9px;font-size:10.5px;font-family:var(--mono);background:var(--surface);border:1px solid var(--border-l);color:var(--muted);border-radius:4px;cursor:pointer;transition:all .14s}.cpbtn:hover{background:var(--surface2);color:var(--text)}
+    pre{padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:13.5px;line-height:1.65;color:#abb2bf}pre::-webkit-scrollbar{height:5px}pre::-webkit-scrollbar-thumb{background:var(--border-l);border-radius:3px}
+    .kw{color:#c678dd}.fn{color:#61afef}.str{color:#98c379}.dec{color:#e5c07b}.typ{color:#e5c07b}.cm{color:#5c6370;font-style:italic}.pn{color:#abb2bf}.num{color:#d19a66}.cl{color:#e06c75}
+    .tab-group{display:flex;gap:0;margin-bottom:0}.tab-btn{padding:5px 16px;font-size:11.5px;font-family:var(--mono);background:transparent;border:1px solid var(--code-bd);border-bottom:none;color:var(--muted);cursor:pointer;transition:all .15s;border-radius:6px 6px 0 0;margin-right:-1px}.tab-btn:hover{color:var(--text)}.tab-btn.active{background:var(--code-bg);color:var(--red-l);border-color:var(--code-bd)}.tab-content{display:none}.tab-content.active{display:block}
+    .page-nav{display:flex;justify-content:space-between;margin-top:52px;gap:16px}.pnbtn{display:flex;flex-direction:column;padding:14px 18px;border:1px solid var(--border);border-radius:var(--rl);text-decoration:none;transition:all .2s;min-width:150px}.pnbtn:hover{border-color:var(--red);background:var(--red-glow);text-decoration:none}.pnlbl{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:3px}.pntitle{font-size:14px;font-weight:600;color:var(--text)}.pnbtn.r{text-align:right;margin-left:auto}
+    @media(max-width:860px){.toc{display:none}}@media(max-width:600px){.page{padding:24px 16px 64px}}
+  </style>
+</head>
+<body>
+<div class="page">
+  <div class="content">
+    <div class="vi-banner">
+      <strong>Tiếng Việt</strong> Tài liệu NestJS được dịch sang tiếng Việt
+    </div>
+
+    <h1>Authentication</h1>
+    <p>Authentication là một phần <strong>thiết yếu</strong> của hầu hết các ứng dụng. Có nhiều cách tiếp cận và chiến lược khác nhau để xử lý authentication. Cách tiếp cận được sử dụng cho bất kỳ dự án nào phụ thuộc vào yêu cầu cụ thể của ứng dụng đó. Chương này trình bày một số cách tiếp cận authentication có thể được điều chỉnh cho nhiều yêu cầu khác nhau.</p>
+
+    <p>Hãy cụ thể hóa các yêu cầu của chúng ta. Trong trường hợp sử dụng này, client sẽ bắt đầu bằng việc xác thực với username và password. Sau khi được xác thực, server sẽ phát hành một JWT có thể được gửi dưới dạng <a href="https://tools.ietf.org/html/rfc6750">bearer token</a> trong authorization header của các request tiếp theo để chứng minh đã được xác thực. Chúng ta cũng sẽ tạo một route được bảo vệ chỉ có thể truy cập bởi các request chứa JWT hợp lệ.</p>
+
+    <p>Chúng ta sẽ bắt đầu với yêu cầu đầu tiên: xác thực người dùng. Sau đó chúng ta sẽ mở rộng bằng cách phát hành JWT. Cuối cùng, chúng ta sẽ tạo một route được bảo vệ kiểm tra JWT hợp lệ trên request.</p>
+
+    <!-- Creating an authentication module -->
+    <h3 id="creating-an-authentication-module">Tạo authentication module <a class="anchor" href="#creating-an-authentication-module">#</a></h3>
+
+    <p>Chúng ta sẽ bắt đầu bằng việc tạo một <code>AuthModule</code> và trong đó, một <code>AuthService</code> và một <code>AuthController</code>. Chúng ta sẽ sử dụng <code>AuthService</code> để triển khai logic authentication, và <code>AuthController</code> để expose các authentication endpoint.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-fname">bash</span>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre>$ nest g module auth
+$ nest g controller auth
+$ nest g service auth</pre>
+    </div>
+
+    <p>Khi chúng ta triển khai <code>AuthService</code>, chúng ta sẽ thấy hữu ích khi đóng gói các thao tác người dùng trong một <code>UsersService</code>, vì vậy hãy tạo module và service đó ngay bây giờ:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-fname">bash</span>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre>$ nest g module users
+$ nest g service users</pre>
+    </div>
+
+    <p>Thay thế nội dung mặc định của các file được tạo như hiển thị bên dưới. Đối với ứng dụng mẫu của chúng ta, <code>UsersService</code> đơn giản duy trì một danh sách người dùng hard-coded trong bộ nhớ, và một phương thức find để truy xuất một người dùng theo username. Trong ứng dụng thực tế, đây là nơi bạn sẽ xây dựng user model và persistence layer, sử dụng thư viện mà bạn chọn (ví dụ: TypeORM, Sequelize, Mongoose, v.v.).</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-fname">users/users.service</span>
+        <div class="cb-right">
+          <div class="tab-group">
+            <button class="tab-btn active" onclick="switchTab(this,'ts')">TypeScript</button>
+            <button class="tab-btn" onclick="switchTab(this,'js')">JavaScript</button>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div class="tab-content active" data-tab="ts">
+<pre><span class="kw">import</span> <span class="pn">{</span> Injectable <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+
+<span class="cm">// This should be a real class/interface representing a user entity</span>
+<span class="kw">export</span> <span class="kw">type</span> <span class="typ">User</span> <span class="pn">=</span> <span class="typ">any</span><span class="pn">;</span>
+
+<span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export</span> <span class="kw">class</span> <span class="cl">UsersService</span> <span class="pn">{</span>
+  <span class="kw">private</span> <span class="kw">readonly</span> users <span class="pn">=</span> <span class="pn">[</span>
+    <span class="pn">{</span>
+      userId<span class="pn">:</span> <span class="num">1</span><span class="pn">,</span>
+      username<span class="pn">:</span> <span class="str">'john'</span><span class="pn">,</span>
+      password<span class="pn">:</span> <span class="str">'changeme'</span><span class="pn">,</span>
+    <span class="pn">},</span>
+    <span class="pn">{</span>
+      userId<span class="pn">:</span> <span class="num">2</span><span class="pn">,</span>
+      username<span class="pn">:</span> <span class="str">'maria'</span><span class="pn">,</span>
+      password<span class="pn">:</span> <span class="str">'guess'</span><span class="pn">,</span>
+    <span class="pn">},</span>
+  <span class="pn">];</span>
+
+  <span class="kw">async</span> <span class="fn">findOne</span><span class="pn">(</span>username<span class="pn">:</span> <span class="typ">string</span><span class="pn">):</span> <span class="typ">Promise</span><span class="pn">&lt;</span><span class="typ">User</span> <span class="pn">|</span> <span class="typ">undefined</span><span class="pn">&gt;</span> <span class="pn">{</span>
+    <span class="kw">return</span> <span class="kw">this</span><span class="pn">.</span>users<span class="pn">.</span><span class="fn">find</span><span class="pn">(</span>user <span class="pn">=&gt;</span> user<span class="pn">.</span>username <span class="pn">===</span> username<span class="pn">);</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre>
+      </div>
+      <div class="tab-content" data-tab="js">
+<pre><span class="kw">import</span> <span class="pn">{</span> Injectable <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+
+<span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export</span> <span class="kw">class</span> <span class="cl">UsersService</span> <span class="pn">{</span>
+  <span class="fn">constructor</span><span class="pn">()</span> <span class="pn">{</span>
+    <span class="kw">this</span><span class="pn">.</span>users <span class="pn">=</span> <span class="pn">[</span>
+      <span class="pn">{</span>
+        userId<span class="pn">:</span> <span class="num">1</span><span class="pn">,</span>
+        username<span class="pn">:</span> <span class="str">'john'</span><span class="pn">,</span>
+        password<span class="pn">:</span> <span class="str">'changeme'</span><span class="pn">,</span>
+      <span class="pn">},</span>
+      <span class="pn">{</span>
+        userId<span class="pn">:</span> <span class="num">2</span><span class="pn">,</span>
+        username<span class="pn">:</span> <span class="str">'maria'</span><span class="pn">,</span>
+        password<span class="pn">:</span> <span class="str">'guess'</span><span class="pn">,</span>
+      <span class="pn">},</span>
+    <span class="pn">];</span>
+  <span class="pn">}</span>
+
+  <span class="kw">async</span> <span class="fn">findOne</span><span class="pn">(</span>username<span class="pn">)</span> <span class="pn">{</span>
+    <span class="kw">return</span> <span class="kw">this</span><span class="pn">.</span>users<span class="pn">.</span><span class="fn">find</span><span class="pn">(</span>user <span class="pn">=&gt;</span> user<span class="pn">.</span>username <span class="pn">===</span> username<span class="pn">);</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre>
+      </div>
+    </div>
+
+    <p>Trong <code>UsersModule</code>, thay đổi duy nhất cần thiết là thêm <code>UsersService</code> vào mảng exports của decorator <code>@Module</code> để nó có thể nhìn thấy được bên ngoài module này (chúng ta sẽ sớm sử dụng nó trong <code>AuthService</code>).</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-fname">users/users.module</span>
+        <div class="cb-right">
+          <div class="tab-group">
+            <button class="tab-btn active" onclick="switchTab(this,'ts')">TypeScript</button>
+            <button class="tab-btn" onclick="switchTab(this,'js')">JavaScript</button>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div class="tab-content active" data-tab="ts">
+<pre><span class="kw">import</span> <span class="pn">{</span> Module <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> UsersService <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./users.service'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  providers<span class="pn">:</span> <span class="pn">[</span>UsersService<span class="pn">],</span>
+  exports<span class="pn">:</span> <span class="pn">[</span>UsersService<span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export</span> <span class="kw">class</span> <span class="cl">UsersModule</span> <span class="pn">{}</span></pre>
+      </div>
+      <div class="tab-content" data-tab="js">
+<pre><span class="kw">import</span> <span class="pn">{</span> Module <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> UsersService <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./users.service'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  providers<span class="pn">:</span> <span class="pn">[</span>UsersService<span class="pn">],</span>
+  exports<span class="pn">:</span> <span class="pn">[</span>UsersService<span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export</span> <span class="kw">class</span> <span class="cl">UsersModule</span> <span class="pn">{}</span></pre>
+      </div>
+    </div>
+
+    <!-- Implementing the "Sign in" endpoint -->
+    <h3 id="implementing-the-sign-in-endpoint">Triển khai endpoint "Sign in" <a class="anchor" href="#implementing-the-sign-in-endpoint">#</a></h3>
+
+    <p><code>AuthService</code> của chúng ta có nhiệm vụ truy xuất người dùng và xác minh password. Chúng ta tạo phương thức <code>signIn()</code> cho mục đích này. Trong đoạn code bên dưới, chúng ta sử dụng toán tử spread ES6 tiện lợi để loại bỏ thuộc tính password khỏi user object trước khi trả về. Đây là một thực hành phổ biến khi trả về user object, vì bạn không muốn expose các trường nhạy cảm như password hoặc các security key khác.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-fname">auth/auth.service</span>
+        <div class="cb-right">
+          <div class="tab-group">
+            <button class="tab-btn active" onclick="switchTab(this,'ts')">TypeScript</button>
+            <button class="tab-btn" onclick="switchTab(this,'js')">JavaScript</button>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div class="tab-content active" data-tab="ts">
+<pre><span class="kw">import</span> <span class="pn">{</span> Injectable<span class="pn">,</span> UnauthorizedException <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> UsersService <span class="pn">}</span> <span class="kw">from</span> <span class="str">'../users/users.service'</span><span class="pn">;</span>
+
+<span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export</span> <span class="kw">class</span> <span class="cl">AuthService</span> <span class="pn">{</span>
+  <span class="fn">constructor</span><span class="pn">(</span><span class="kw">private</span> usersService<span class="pn">:</span> <span class="typ">UsersService</span><span class="pn">)</span> <span class="pn">{}</span>
+
+  <span class="kw">async</span> <span class="fn">signIn</span><span class="pn">(</span>username<span class="pn">:</span> <span class="typ">string</span><span class="pn">,</span> pass<span class="pn">:</span> <span class="typ">string</span><span class="pn">):</span> <span class="typ">Promise</span><span class="pn">&lt;</span><span class="typ">any</span><span class="pn">&gt;</span> <span class="pn">{</span>
+    <span class="kw">const</span> user <span class="pn">=</span> <span class="kw">await</span> <span class="kw">this</span><span class="pn">.</span>usersService<span class="pn">.</span><span class="fn">findOne</span><span class="pn">(</span>username<span class="pn">);</span>
+    <span class="kw">if</span> <span class="pn">(</span>user<span class="pn">?.</span>password <span class="pn">!==</span> pass<span class="pn">)</span> <span class="pn">{</span>
+      <span class="kw">throw</span> <span class="kw">new</span> <span class="cl">UnauthorizedException</span><span class="pn">();</span>
+    <span class="pn">}</span>
+    <span class="kw">const</span> <span class="pn">{</span> password<span class="pn">,</span> <span class="pn">...</span>result <span class="pn">}</span> <span class="pn">=</span> user<span class="pn">;</span>
+    <span class="cm">// TODO: Generate a JWT and return it here</span>
+    <span class="cm">// instead of the user object</span>
+    <span class="kw">return</span> result<span class="pn">;</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre>
+      </div>
+      <div class="tab-content" data-tab="js">
+<pre><span class="kw">import</span> <span class="pn">{</span> Injectable<span class="pn">,</span> Dependencies<span class="pn">,</span> UnauthorizedException <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> UsersService <span class="pn">}</span> <span class="kw">from</span> <span class="str">'../users/users.service'</span><span class="pn">;</span>
+
+<span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="dec">@Dependencies</span><span class="pn">(</span>UsersService<span class="pn">)</span>
+<span class="kw">export</span> <span class="kw">class</span> <span class="cl">AuthService</span> <span class="pn">{</span>
+  <span class="fn">constructor</span><span class="pn">(</span>usersService<span class="pn">)</span> <span class="pn">{</span>
+    <span class="kw">this</span><span class="pn">.</span>usersService <span class="pn">=</span> usersService<span class="pn">;</span>
+  <span class="pn">}</span>
+
+  <span class="kw">async</span> <span class="fn">signIn</span><span class="pn">(</span>username<span class="pn">,</span> pass<span class="pn">)</span> <span class="pn">{</span>
+    <span class="kw">const</span> user <span class="pn">=</span> <span class="kw">await</span> <span class="kw">this</span><span class="pn">.</span>usersService<span class="pn">.</span><span class="fn">findOne</span><span class="pn">(</span>username<span class="pn">);</span>
+    <span class="kw">if</span> <span class="pn">(</span>user<span class="pn">?.</span>password <span class="pn">!==</span> pass<span class="pn">)</span> <span class="pn">{</span>
+      <span class="kw">throw</span> <span class="kw">new</span> <span class="cl">UnauthorizedException</span><span class="pn">();</span>
+    <span class="pn">}</span>
+    <span class="kw">const</span> <span class="pn">{</span> password<span class="pn">,</span> <span class="pn">...</span>result <span class="pn">}</span> <span class="pn">=</span> user<span class="pn">;</span>
+    <span class="cm">// TODO: Generate a JWT and return it here</span>
+    <span class="cm">// instead of the user object</span>
+    <span class="kw">return</span> result<span class="pn">;</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre>
+      </div>
+    </div>
+
+    <div class="warn">
+      <span class="lbl">Warning</span>
+      <p>Tất nhiên trong ứng dụng thực tế, bạn sẽ không lưu trữ password ở dạng plain text. Thay vào đó, bạn sẽ sử dụng một thư viện như <a href="https://github.com/kelektiv/node.bcrypt.js#readme">bcrypt</a>, với thuật toán hash một chiều có salt. Với cách tiếp cận đó, bạn chỉ lưu trữ password đã được hash, và sau đó so sánh password đã lưu với phiên bản hash của password <strong>đầu vào</strong>, do đó không bao giờ lưu trữ hoặc expose password người dùng ở dạng plain text. Để giữ cho ứng dụng mẫu đơn giản, chúng ta vi phạm quy tắc tuyệt đối đó và sử dụng plain text. <strong>Đừng làm điều này trong ứng dụng thực tế!</strong></p>
+    </div>
+
+    <p>Bây giờ, chúng ta cập nhật <code>AuthModule</code> để import <code>UsersModule</code>.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-fname">auth/auth.module</span>
+        <div class="cb-right">
+          <div class="tab-group">
+            <button class="tab-btn active" onclick="switchTab(this,'ts')">TypeScript</button>
+            <button class="tab-btn" onclick="switchTab(this,'js')">JavaScript</button>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div class="tab-content active" data-tab="ts">
+<pre><span class="kw">import</span> <span class="pn">{</span> Module <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> AuthService <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./auth.service'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> AuthController <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./auth.controller'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> UsersModule <span class="pn">}</span> <span class="kw">from</span> <span class="str">'../users/users.module'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">:</span> <span class="pn">[</span>UsersModule<span class="pn">],</span>
+  providers<span class="pn">:</span> <span class="pn">[</span>AuthService<span class="pn">],</span>
+  controllers<span class="pn">:</span> <span class="pn">[</span>AuthController<span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export</span> <span class="kw">class</span> <span class="cl">AuthModule</span> <span class="pn">{}</span></pre>
+      </div>
+      <div class="tab-content" data-tab="js">
+<pre><span class="kw">import</span> <span class="pn">{</span> Module <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> AuthService <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./auth.service'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> AuthController <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./auth.controller'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> UsersModule <span class="pn">}</span> <span class="kw">from</span> <span class="str">'../users/users.module'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">:</span> <span class="pn">[</span>UsersModule<span class="pn">],</span>
+  providers<span class="pn">:</span> <span class="pn">[</span>AuthService<span class="pn">],</span>
+  controllers<span class="pn">:</span> <span class="pn">[</span>AuthController<span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export</span> <span class="kw">class</span> <span class="cl">AuthModule</span> <span class="pn">{}</span></pre>
+      </div>
+    </div>
+
+    <p>Với điều này đã sẵn sàng, hãy mở <code>AuthController</code> và thêm phương thức <code>signIn()</code> vào đó. Phương thức này sẽ được client gọi để xác thực người dùng. Nó sẽ nhận username và password trong request body, và sẽ trả về một JWT token nếu người dùng được xác thực.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-fname">auth/auth.controller</span>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="kw">import</span> <span class="pn">{</span> Body<span class="pn">,</span> Controller<span class="pn">,</span> Post<span class="pn">,</span> HttpCode<span class="pn">,</span> HttpStatus <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> AuthService <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./auth.service'</span><span class="pn">;</span>
+
+<span class="dec">@Controller</span><span class="pn">(</span><span class="str">'auth'</span><span class="pn">)</span>
+<span class="kw">export</span> <span class="kw">class</span> <span class="cl">AuthController</span> <span class="pn">{</span>
+  <span class="fn">constructor</span><span class="pn">(</span><span class="kw">private</span> authService<span class="pn">:</span> <span class="typ">AuthService</span><span class="pn">)</span> <span class="pn">{}</span>
+
+  <span class="dec">@HttpCode</span><span class="pn">(</span>HttpStatus<span class="pn">.</span>OK<span class="pn">)</span>
+  <span class="dec">@Post</span><span class="pn">(</span><span class="str">'login'</span><span class="pn">)</span>
+  <span class="fn">signIn</span><span class="pn">(</span><span class="dec">@Body</span><span class="pn">()</span> signInDto<span class="pn">:</span> <span class="typ">Record</span><span class="pn">&lt;</span><span class="typ">string</span><span class="pn">,</span> <span class="typ">any</span><span class="pn">&gt;)</span> <span class="pn">{</span>
+    <span class="kw">return</span> <span class="kw">this</span><span class="pn">.</span>authService<span class="pn">.</span><span class="fn">signIn</span><span class="pn">(</span>signInDto<span class="pn">.</span>username<span class="pn">,</span> signInDto<span class="pn">.</span>password<span class="pn">);</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">Gợi ý</span>
+      <p>Lý tưởng nhất, thay vì sử dụng kiểu <code>Record&lt;string, any&gt;</code>, chúng ta nên sử dụng một DTO class để định nghĩa hình dạng của request body. Xem chương <a href="/Techniques/Validation.html">validation</a> để biết thêm thông tin.</p>
+    </div>
+
+    <!-- JWT token -->
+    <h3 id="jwt-token">JWT token <a class="anchor" href="#jwt-token">#</a></h3>
+
+    <p>Chúng ta đã sẵn sàng chuyển sang phần JWT của hệ thống auth. Hãy xem xét và tinh chỉnh các yêu cầu của chúng ta:</p>
+
+    <ul>
+      <li>Cho phép người dùng xác thực bằng username/password, trả về một JWT để sử dụng trong các lần gọi tiếp theo đến các API endpoint được bảo vệ. Chúng ta đang trên đường đạt được yêu cầu này. Để hoàn thành, chúng ta cần viết code phát hành JWT.</li>
+      <li>Tạo các API route được bảo vệ dựa trên sự hiện diện của JWT hợp lệ dưới dạng bearer token</li>
+    </ul>
+
+    <p>Chúng ta cần cài đặt thêm một package để hỗ trợ yêu cầu JWT:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-fname">bash</span>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre>$ npm install --save @nestjs/jwt</pre>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">Gợi ý</span>
+      <p>Package <code>@nestjs/jwt</code> (xem thêm <a href="https://github.com/nestjs/jwt">tại đây</a>) là một utility package giúp thao tác với JWT. Bao gồm việc tạo và xác minh JWT token.</p>
+    </div>
+
+    <p>Để giữ cho các service được module hóa gọn gàng, chúng ta sẽ xử lý việc tạo JWT trong <code>authService</code>. Mở file <code>auth.service.ts</code> trong thư mục <code>auth</code>, inject <code>JwtService</code>, và cập nhật phương thức <code>signIn</code> để tạo JWT token:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-fname">auth/auth.service</span>
+        <div class="cb-right">
+          <div class="tab-group">
+            <button class="tab-btn active" onclick="switchTab(this,'ts')">TypeScript</button>
+            <button class="tab-btn" onclick="switchTab(this,'js')">JavaScript</button>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div class="tab-content active" data-tab="ts">
+<pre><span class="kw">import</span> <span class="pn">{</span> Injectable<span class="pn">,</span> UnauthorizedException <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> UsersService <span class="pn">}</span> <span class="kw">from</span> <span class="str">'../users/users.service'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> JwtService <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/jwt'</span><span class="pn">;</span>
+
+<span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export</span> <span class="kw">class</span> <span class="cl">AuthService</span> <span class="pn">{</span>
+  <span class="fn">constructor</span><span class="pn">(</span>
+    <span class="kw">private</span> usersService<span class="pn">:</span> <span class="typ">UsersService</span><span class="pn">,</span>
+    <span class="kw">private</span> jwtService<span class="pn">:</span> <span class="typ">JwtService</span>
+  <span class="pn">)</span> <span class="pn">{}</span>
+
+  <span class="kw">async</span> <span class="fn">signIn</span><span class="pn">(</span>
+    username<span class="pn">:</span> <span class="typ">string</span><span class="pn">,</span>
+    pass<span class="pn">:</span> <span class="typ">string</span><span class="pn">,</span>
+  <span class="pn">):</span> <span class="typ">Promise</span><span class="pn">&lt;{</span> access_token<span class="pn">:</span> <span class="typ">string</span> <span class="pn">}&gt;</span> <span class="pn">{</span>
+    <span class="kw">const</span> user <span class="pn">=</span> <span class="kw">await</span> <span class="kw">this</span><span class="pn">.</span>usersService<span class="pn">.</span><span class="fn">findOne</span><span class="pn">(</span>username<span class="pn">);</span>
+    <span class="kw">if</span> <span class="pn">(</span>user<span class="pn">?.</span>password <span class="pn">!==</span> pass<span class="pn">)</span> <span class="pn">{</span>
+      <span class="kw">throw</span> <span class="kw">new</span> <span class="cl">UnauthorizedException</span><span class="pn">();</span>
+    <span class="pn">}</span>
+    <span class="kw">const</span> payload <span class="pn">=</span> <span class="pn">{</span> sub<span class="pn">:</span> user<span class="pn">.</span>userId<span class="pn">,</span> username<span class="pn">:</span> user<span class="pn">.</span>username <span class="pn">};</span>
+    <span class="kw">return</span> <span class="pn">{</span>
+      access_token<span class="pn">:</span> <span class="kw">await</span> <span class="kw">this</span><span class="pn">.</span>jwtService<span class="pn">.</span><span class="fn">signAsync</span><span class="pn">(</span>payload<span class="pn">),</span>
+    <span class="pn">};</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre>
+      </div>
+      <div class="tab-content" data-tab="js">
+<pre><span class="kw">import</span> <span class="pn">{</span> Injectable<span class="pn">,</span> Dependencies<span class="pn">,</span> UnauthorizedException <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> UsersService <span class="pn">}</span> <span class="kw">from</span> <span class="str">'../users/users.service'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> JwtService <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/jwt'</span><span class="pn">;</span>
+
+<span class="dec">@Dependencies</span><span class="pn">(</span>UsersService<span class="pn">,</span> JwtService<span class="pn">)</span>
+<span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export</span> <span class="kw">class</span> <span class="cl">AuthService</span> <span class="pn">{</span>
+  <span class="fn">constructor</span><span class="pn">(</span>usersService<span class="pn">,</span> jwtService<span class="pn">)</span> <span class="pn">{</span>
+    <span class="kw">this</span><span class="pn">.</span>usersService <span class="pn">=</span> usersService<span class="pn">;</span>
+    <span class="kw">this</span><span class="pn">.</span>jwtService <span class="pn">=</span> jwtService<span class="pn">;</span>
+  <span class="pn">}</span>
+
+  <span class="kw">async</span> <span class="fn">signIn</span><span class="pn">(</span>username<span class="pn">,</span> pass<span class="pn">)</span> <span class="pn">{</span>
+    <span class="kw">const</span> user <span class="pn">=</span> <span class="kw">await</span> <span class="kw">this</span><span class="pn">.</span>usersService<span class="pn">.</span><span class="fn">findOne</span><span class="pn">(</span>username<span class="pn">);</span>
+    <span class="kw">if</span> <span class="pn">(</span>user<span class="pn">?.</span>password <span class="pn">!==</span> pass<span class="pn">)</span> <span class="pn">{</span>
+      <span class="kw">throw</span> <span class="kw">new</span> <span class="cl">UnauthorizedException</span><span class="pn">();</span>
+    <span class="pn">}</span>
+    <span class="kw">const</span> payload <span class="pn">=</span> <span class="pn">{</span> username<span class="pn">:</span> user<span class="pn">.</span>username<span class="pn">,</span> sub<span class="pn">:</span> user<span class="pn">.</span>userId <span class="pn">};</span>
+    <span class="kw">return</span> <span class="pn">{</span>
+      access_token<span class="pn">:</span> <span class="kw">await</span> <span class="kw">this</span><span class="pn">.</span>jwtService<span class="pn">.</span><span class="fn">signAsync</span><span class="pn">(</span>payload<span class="pn">),</span>
+    <span class="pn">};</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre>
+      </div>
+    </div>
+
+    <p>Chúng ta đang sử dụng thư viện <code>@nestjs/jwt</code>, cung cấp hàm <code>signAsync()</code> để tạo JWT từ một tập hợp con các thuộc tính của <code>user</code> object, sau đó trả về dưới dạng một object đơn giản với thuộc tính <code>access_token</code> duy nhất. Lưu ý: chúng ta chọn tên thuộc tính <code>sub</code> để chứa giá trị <code>userId</code> nhằm nhất quán với tiêu chuẩn JWT.</p>
+
+    <p>Bây giờ chúng ta cần cập nhật <code>AuthModule</code> để import các dependency mới và cấu hình <code>JwtModule</code>.</p>
+
+    <p>Đầu tiên, tạo <code>constants.ts</code> trong thư mục <code>auth</code>, và thêm đoạn code sau:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-fname">auth/constants</span>
+        <div class="cb-right">
+          <div class="tab-group">
+            <button class="tab-btn active" onclick="switchTab(this,'ts')">TypeScript</button>
+            <button class="tab-btn" onclick="switchTab(this,'js')">JavaScript</button>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div class="tab-content active" data-tab="ts">
+<pre><span class="kw">export</span> <span class="kw">const</span> jwtConstants <span class="pn">=</span> <span class="pn">{</span>
+  secret<span class="pn">:</span> <span class="str">'DO NOT USE THIS VALUE. INSTEAD, CREATE A COMPLEX SECRET AND KEEP IT SAFE OUTSIDE OF THE SOURCE CODE.'</span><span class="pn">,</span>
+<span class="pn">};</span></pre>
+      </div>
+      <div class="tab-content" data-tab="js">
+<pre><span class="kw">export</span> <span class="kw">const</span> jwtConstants <span class="pn">=</span> <span class="pn">{</span>
+  secret<span class="pn">:</span> <span class="str">'DO NOT USE THIS VALUE. INSTEAD, CREATE A COMPLEX SECRET AND KEEP IT SAFE OUTSIDE OF THE SOURCE CODE.'</span><span class="pn">,</span>
+<span class="pn">};</span></pre>
+      </div>
+    </div>
+
+    <p>Chúng ta sẽ sử dụng điều này để chia sẻ key giữa các bước ký và xác minh JWT.</p>
+
+    <div class="warn">
+      <span class="lbl">Warning</span>
+      <p><strong>Không expose key này công khai</strong>. Chúng ta đã làm vậy ở đây để làm rõ code đang làm gì, nhưng trong hệ thống production <strong>bạn phải bảo vệ key này</strong> bằng các biện pháp phù hợp như secrets vault, environment variable, hoặc configuration service.</p>
+    </div>
+
+    <p>Bây giờ, mở <code>auth.module.ts</code> trong thư mục <code>auth</code> và cập nhật nó như sau:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-fname">auth/auth.module</span>
+        <div class="cb-right">
+          <div class="tab-group">
+            <button class="tab-btn active" onclick="switchTab(this,'ts')">TypeScript</button>
+            <button class="tab-btn" onclick="switchTab(this,'js')">JavaScript</button>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div class="tab-content active" data-tab="ts">
+<pre><span class="kw">import</span> <span class="pn">{</span> Module <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> AuthService <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./auth.service'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> UsersModule <span class="pn">}</span> <span class="kw">from</span> <span class="str">'../users/users.module'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> JwtModule <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/jwt'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> AuthController <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./auth.controller'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> jwtConstants <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./constants'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">:</span> <span class="pn">[</span>
+    UsersModule<span class="pn">,</span>
+    JwtModule<span class="pn">.</span><span class="fn">register</span><span class="pn">({</span>
+      global<span class="pn">:</span> <span class="kw">true</span><span class="pn">,</span>
+      secret<span class="pn">:</span> jwtConstants<span class="pn">.</span>secret<span class="pn">,</span>
+      signOptions<span class="pn">:</span> <span class="pn">{</span> expiresIn<span class="pn">:</span> <span class="str">'60s'</span> <span class="pn">},</span>
+    <span class="pn">}),</span>
+  <span class="pn">],</span>
+  providers<span class="pn">:</span> <span class="pn">[</span>AuthService<span class="pn">],</span>
+  controllers<span class="pn">:</span> <span class="pn">[</span>AuthController<span class="pn">],</span>
+  exports<span class="pn">:</span> <span class="pn">[</span>AuthService<span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export</span> <span class="kw">class</span> <span class="cl">AuthModule</span> <span class="pn">{}</span></pre>
+      </div>
+      <div class="tab-content" data-tab="js">
+<pre><span class="kw">import</span> <span class="pn">{</span> Module <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> AuthService <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./auth.service'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> UsersModule <span class="pn">}</span> <span class="kw">from</span> <span class="str">'../users/users.module'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> JwtModule <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/jwt'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> AuthController <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./auth.controller'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> jwtConstants <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./constants'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">:</span> <span class="pn">[</span>
+    UsersModule<span class="pn">,</span>
+    JwtModule<span class="pn">.</span><span class="fn">register</span><span class="pn">({</span>
+      global<span class="pn">:</span> <span class="kw">true</span><span class="pn">,</span>
+      secret<span class="pn">:</span> jwtConstants<span class="pn">.</span>secret<span class="pn">,</span>
+      signOptions<span class="pn">:</span> <span class="pn">{</span> expiresIn<span class="pn">:</span> <span class="str">'60s'</span> <span class="pn">},</span>
+    <span class="pn">}),</span>
+  <span class="pn">],</span>
+  providers<span class="pn">:</span> <span class="pn">[</span>AuthService<span class="pn">],</span>
+  controllers<span class="pn">:</span> <span class="pn">[</span>AuthController<span class="pn">],</span>
+  exports<span class="pn">:</span> <span class="pn">[</span>AuthService<span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export</span> <span class="kw">class</span> <span class="cl">AuthModule</span> <span class="pn">{}</span></pre>
+      </div>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">Gợi ý</span>
+      <p>Chúng ta đăng ký <code>JwtModule</code> là global để mọi thứ dễ dàng hơn. Điều này có nghĩa là chúng ta không cần import <code>JwtModule</code> ở bất kỳ nơi nào khác trong ứng dụng.</p>
+    </div>
+
+    <p>Chúng ta cấu hình <code>JwtModule</code> bằng <code>register()</code>, truyền vào một configuration object. Xem <a href="https://github.com/nestjs/jwt/blob/master/README.md">tại đây</a> để biết thêm về Nest <code>JwtModule</code> và <a href="https://github.com/auth0/node-jsonwebtoken#usage">tại đây</a> để biết thêm chi tiết về các tùy chọn cấu hình có sẵn.</p>
+
+    <p>Hãy tiếp tục và kiểm tra các route bằng cURL. Bạn có thể kiểm tra với bất kỳ <code>user</code> object nào được hard-coded trong <code>UsersService</code>.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-fname">bash</span>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="cm">$ # POST to /auth/login</span>
+$ curl -X POST http://localhost:3000/auth/login -d '{"username": "john", "password": "changeme"}' -H "Content-Type: application/json"
+{"access_token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."}
+<span class="cm">$ # Note: above JWT truncated</span></pre>
+    </div>
+
+    <!-- Implementing the authentication guard -->
+    <h3 id="implementing-the-authentication-guard">Triển khai authentication guard <a class="anchor" href="#implementing-the-authentication-guard">#</a></h3>
+
+    <p>Bây giờ chúng ta có thể giải quyết yêu cầu cuối cùng: bảo vệ endpoint bằng cách yêu cầu JWT hợp lệ có mặt trên request. Chúng ta sẽ làm điều này bằng cách tạo một <code>AuthGuard</code> mà chúng ta có thể sử dụng để bảo vệ các route.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-fname">auth/auth.guard</span>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="kw">import</span> <span class="pn">{</span>
+  CanActivate<span class="pn">,</span>
+  ExecutionContext<span class="pn">,</span>
+  Injectable<span class="pn">,</span>
+  UnauthorizedException<span class="pn">,</span>
+<span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> JwtService <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/jwt'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> Request <span class="pn">}</span> <span class="kw">from</span> <span class="str">'express'</span><span class="pn">;</span>
+
+<span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export</span> <span class="kw">class</span> <span class="cl">AuthGuard</span> <span class="kw">implements</span> <span class="typ">CanActivate</span> <span class="pn">{</span>
+  <span class="fn">constructor</span><span class="pn">(</span><span class="kw">private</span> jwtService<span class="pn">:</span> <span class="typ">JwtService</span><span class="pn">)</span> <span class="pn">{}</span>
+
+  <span class="kw">async</span> <span class="fn">canActivate</span><span class="pn">(</span>context<span class="pn">:</span> <span class="typ">ExecutionContext</span><span class="pn">):</span> <span class="typ">Promise</span><span class="pn">&lt;</span><span class="typ">boolean</span><span class="pn">&gt;</span> <span class="pn">{</span>
+    <span class="kw">const</span> request <span class="pn">=</span> context<span class="pn">.</span><span class="fn">switchToHttp</span><span class="pn">().</span><span class="fn">getRequest</span><span class="pn">();</span>
+    <span class="kw">const</span> token <span class="pn">=</span> <span class="kw">this</span><span class="pn">.</span><span class="fn">extractTokenFromHeader</span><span class="pn">(</span>request<span class="pn">);</span>
+    <span class="kw">if</span> <span class="pn">(!</span>token<span class="pn">)</span> <span class="pn">{</span>
+      <span class="kw">throw</span> <span class="kw">new</span> <span class="cl">UnauthorizedException</span><span class="pn">();</span>
+    <span class="pn">}</span>
+    <span class="kw">try</span> <span class="pn">{</span>
+      <span class="kw">const</span> payload <span class="pn">=</span> <span class="kw">await</span> <span class="kw">this</span><span class="pn">.</span>jwtService<span class="pn">.</span><span class="fn">verifyAsync</span><span class="pn">(</span>token<span class="pn">);</span>
+      request<span class="pn">[</span><span class="str">'user'</span><span class="pn">]</span> <span class="pn">=</span> payload<span class="pn">;</span>
+    <span class="pn">}</span> <span class="kw">catch</span> <span class="pn">{</span>
+      <span class="kw">throw</span> <span class="kw">new</span> <span class="cl">UnauthorizedException</span><span class="pn">();</span>
+    <span class="pn">}</span>
+    <span class="kw">return</span> <span class="kw">true</span><span class="pn">;</span>
+  <span class="pn">}</span>
+
+  <span class="kw">private</span> <span class="fn">extractTokenFromHeader</span><span class="pn">(</span>request<span class="pn">:</span> <span class="typ">Request</span><span class="pn">):</span> <span class="typ">string</span> <span class="pn">|</span> <span class="typ">undefined</span> <span class="pn">{</span>
+    <span class="kw">const</span> <span class="pn">[</span>type<span class="pn">,</span> token<span class="pn">]</span> <span class="pn">=</span> request<span class="pn">.</span>headers<span class="pn">.</span>authorization<span class="pn">?.</span><span class="fn">split</span><span class="pn">(</span><span class="str">' '</span><span class="pn">)</span> <span class="pn">??</span> <span class="pn">[];</span>
+    <span class="kw">return</span> type <span class="pn">===</span> <span class="str">'Bearer'</span> <span class="pn">?</span> token <span class="pn">:</span> <span class="kw">undefined</span><span class="pn">;</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <p>Bây giờ chúng ta có thể triển khai route được bảo vệ và đăng ký <code>AuthGuard</code> để bảo vệ nó.</p>
+
+    <p>Mở file <code>auth.controller.ts</code> và cập nhật như sau:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-fname">auth.controller</span>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="kw">import</span> <span class="pn">{</span>
+  Body<span class="pn">,</span>
+  Controller<span class="pn">,</span>
+  Get<span class="pn">,</span>
+  HttpCode<span class="pn">,</span>
+  HttpStatus<span class="pn">,</span>
+  Post<span class="pn">,</span>
+  Request<span class="pn">,</span>
+  UseGuards
+<span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> AuthGuard <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./auth.guard'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> AuthService <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./auth.service'</span><span class="pn">;</span>
+
+<span class="dec">@Controller</span><span class="pn">(</span><span class="str">'auth'</span><span class="pn">)</span>
+<span class="kw">export</span> <span class="kw">class</span> <span class="cl">AuthController</span> <span class="pn">{</span>
+  <span class="fn">constructor</span><span class="pn">(</span><span class="kw">private</span> authService<span class="pn">:</span> <span class="typ">AuthService</span><span class="pn">)</span> <span class="pn">{}</span>
+
+  <span class="dec">@HttpCode</span><span class="pn">(</span>HttpStatus<span class="pn">.</span>OK<span class="pn">)</span>
+  <span class="dec">@Post</span><span class="pn">(</span><span class="str">'login'</span><span class="pn">)</span>
+  <span class="fn">signIn</span><span class="pn">(</span><span class="dec">@Body</span><span class="pn">()</span> signInDto<span class="pn">:</span> <span class="typ">Record</span><span class="pn">&lt;</span><span class="typ">string</span><span class="pn">,</span> <span class="typ">any</span><span class="pn">&gt;)</span> <span class="pn">{</span>
+    <span class="kw">return</span> <span class="kw">this</span><span class="pn">.</span>authService<span class="pn">.</span><span class="fn">signIn</span><span class="pn">(</span>signInDto<span class="pn">.</span>username<span class="pn">,</span> signInDto<span class="pn">.</span>password<span class="pn">);</span>
+  <span class="pn">}</span>
+
+  <span class="dec">@UseGuards</span><span class="pn">(</span>AuthGuard<span class="pn">)</span>
+  <span class="dec">@Get</span><span class="pn">(</span><span class="str">'profile'</span><span class="pn">)</span>
+  <span class="fn">getProfile</span><span class="pn">(</span><span class="dec">@Request</span><span class="pn">()</span> req<span class="pn">)</span> <span class="pn">{</span>
+    <span class="kw">return</span> req<span class="pn">.</span>user<span class="pn">;</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <p>Chúng ta đang áp dụng <code>AuthGuard</code> vừa tạo cho route <code>GET /profile</code> để nó được bảo vệ.</p>
+
+    <p>Đảm bảo ứng dụng đang chạy, và kiểm tra các route bằng <code>cURL</code>.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-fname">bash</span>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="cm">$ # GET /profile</span>
+$ curl http://localhost:3000/auth/profile
+{"statusCode":401,"message":"Unauthorized"}
+
+<span class="cm">$ # POST /auth/login</span>
+$ curl -X POST http://localhost:3000/auth/login -d '{"username": "john", "password": "changeme"}' -H "Content-Type: application/json"
+{"access_token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2Vybm..."}
+
+<span class="cm">$ # GET /profile using access_token returned from previous step as bearer code</span>
+$ curl http://localhost:3000/auth/profile -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2Vybm..."
+{"sub":1,"username":"john","iat":...,"exp":...}</pre>
+    </div>
+
+    <p>Lưu ý rằng trong <code>AuthModule</code>, chúng ta đã cấu hình JWT có thời hạn hết hạn là <code>60 giây</code>. Đây là thời hạn quá ngắn, và việc xử lý chi tiết về hết hạn token và refresh nằm ngoài phạm vi của bài viết này. Tuy nhiên, chúng ta chọn như vậy để minh họa một phẩm chất quan trọng của JWT. Nếu bạn đợi 60 giây sau khi xác thực trước khi thực hiện request <code>GET /auth/profile</code>, bạn sẽ nhận được response <code>401 Unauthorized</code>. Điều này là vì <code>@nestjs/jwt</code> tự động kiểm tra thời gian hết hạn của JWT, giúp bạn không phải tự làm điều đó trong ứng dụng.</p>
+
+    <p>Chúng ta đã hoàn thành việc triển khai JWT authentication. Các JavaScript client (như Angular/React/Vue), và các ứng dụng JavaScript khác, giờ đây có thể xác thực và giao tiếp an toàn với API Server của chúng ta.</p>
+
+    <!-- Enable authentication globally -->
+    <h3 id="enable-authentication-globally">Kích hoạt authentication toàn cục <a class="anchor" href="#enable-authentication-globally">#</a></h3>
+
+    <p>Nếu phần lớn các endpoint của bạn cần được bảo vệ theo mặc định, bạn có thể đăng ký authentication guard như một <a href="/Overview/Guards.html#binding-guards">global guard</a> và thay vì sử dụng decorator <code>@UseGuards()</code> trên mỗi controller, bạn chỉ cần đánh dấu các route nào là public.</p>
+
+    <p>Đầu tiên, đăng ký <code>AuthGuard</code> như một global guard bằng cách sử dụng cấu trúc sau (trong bất kỳ module nào, ví dụ, trong <code>AuthModule</code>):</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-fname">TypeScript</span>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre>providers<span class="pn">:</span> <span class="pn">[</span>
+  <span class="pn">{</span>
+    provide<span class="pn">:</span> APP_GUARD<span class="pn">,</span>
+    useClass<span class="pn">:</span> AuthGuard<span class="pn">,</span>
+  <span class="pn">},</span>
+<span class="pn">],</span></pre>
+    </div>
+
+    <p>Với điều này, Nest sẽ tự động bind <code>AuthGuard</code> vào tất cả endpoint.</p>
+
+    <p>Bây giờ chúng ta cần cung cấp một cơ chế để khai báo route là public. Để làm điều này, chúng ta có thể tạo một custom decorator bằng hàm factory <code>SetMetadata</code>.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-fname">TypeScript</span>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="kw">import</span> <span class="pn">{</span> SetMetadata <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+
+<span class="kw">export</span> <span class="kw">const</span> IS_PUBLIC_KEY <span class="pn">=</span> <span class="str">'isPublic'</span><span class="pn">;</span>
+<span class="kw">export</span> <span class="kw">const</span> <span class="fn">Public</span> <span class="pn">=</span> <span class="pn">()</span> <span class="pn">=&gt;</span> <span class="fn">SetMetadata</span><span class="pn">(</span>IS_PUBLIC_KEY<span class="pn">,</span> <span class="kw">true</span><span class="pn">);</span></pre>
+    </div>
+
+    <p>Trong file trên, chúng ta đã export hai hằng số. Một là metadata key có tên <code>IS_PUBLIC_KEY</code>, và cái còn lại là decorator mới mà chúng ta sẽ gọi là <code>Public</code> (bạn có thể đặt tên khác là <code>SkipAuth</code> hoặc <code>AllowAnon</code>, bất cứ gì phù hợp với dự án).</p>
+
+    <p>Bây giờ chúng ta đã có custom decorator <code>@Public()</code>, chúng ta có thể sử dụng nó để decorate bất kỳ method nào, như sau:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-fname">TypeScript</span>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="dec">@Public</span><span class="pn">()</span>
+<span class="dec">@Get</span><span class="pn">()</span>
+<span class="fn">findAll</span><span class="pn">()</span> <span class="pn">{</span>
+  <span class="kw">return</span> <span class="pn">[];</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <p>Cuối cùng, chúng ta cần <code>AuthGuard</code> trả về <code>true</code> khi tìm thấy metadata <code>"isPublic"</code>. Để làm điều này, chúng ta sẽ sử dụng class <code>Reflector</code> (đọc thêm <a href="/Overview/Guards.html#putting-it-all-together">tại đây</a>).</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-fname">auth/auth.guard</span>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export</span> <span class="kw">class</span> <span class="cl">AuthGuard</span> <span class="kw">implements</span> <span class="typ">CanActivate</span> <span class="pn">{</span>
+  <span class="fn">constructor</span><span class="pn">(</span><span class="kw">private</span> jwtService<span class="pn">:</span> <span class="typ">JwtService</span><span class="pn">,</span> <span class="kw">private</span> reflector<span class="pn">:</span> <span class="typ">Reflector</span><span class="pn">)</span> <span class="pn">{}</span>
+
+  <span class="kw">async</span> <span class="fn">canActivate</span><span class="pn">(</span>context<span class="pn">:</span> <span class="typ">ExecutionContext</span><span class="pn">):</span> <span class="typ">Promise</span><span class="pn">&lt;</span><span class="typ">boolean</span><span class="pn">&gt;</span> <span class="pn">{</span>
+    <span class="kw">const</span> isPublic <span class="pn">=</span> <span class="kw">this</span><span class="pn">.</span>reflector<span class="pn">.</span><span class="fn">getAllAndOverride</span><span class="pn">&lt;</span><span class="typ">boolean</span><span class="pn">&gt;(</span>IS_PUBLIC_KEY<span class="pn">,</span> <span class="pn">[</span>
+      context<span class="pn">.</span><span class="fn">getHandler</span><span class="pn">(),</span>
+      context<span class="pn">.</span><span class="fn">getClass</span><span class="pn">(),</span>
+    <span class="pn">]);</span>
+    <span class="kw">if</span> <span class="pn">(</span>isPublic<span class="pn">)</span> <span class="pn">{</span>
+      <span class="kw">return</span> <span class="kw">true</span><span class="pn">;</span>
+    <span class="pn">}</span>
+
+    <span class="kw">const</span> request <span class="pn">=</span> context<span class="pn">.</span><span class="fn">switchToHttp</span><span class="pn">().</span><span class="fn">getRequest</span><span class="pn">();</span>
+    <span class="kw">const</span> token <span class="pn">=</span> <span class="kw">this</span><span class="pn">.</span><span class="fn">extractTokenFromHeader</span><span class="pn">(</span>request<span class="pn">);</span>
+    <span class="kw">if</span> <span class="pn">(!</span>token<span class="pn">)</span> <span class="pn">{</span>
+      <span class="kw">throw</span> <span class="kw">new</span> <span class="cl">UnauthorizedException</span><span class="pn">();</span>
+    <span class="pn">}</span>
+    <span class="kw">try</span> <span class="pn">{</span>
+      <span class="kw">const</span> payload <span class="pn">=</span> <span class="kw">await</span> <span class="kw">this</span><span class="pn">.</span>jwtService<span class="pn">.</span><span class="fn">verifyAsync</span><span class="pn">(</span>token<span class="pn">);</span>
+      request<span class="pn">[</span><span class="str">'user'</span><span class="pn">]</span> <span class="pn">=</span> payload<span class="pn">;</span>
+    <span class="pn">}</span> <span class="kw">catch</span> <span class="pn">{</span>
+      <span class="kw">throw</span> <span class="kw">new</span> <span class="cl">UnauthorizedException</span><span class="pn">();</span>
+    <span class="pn">}</span>
+    <span class="kw">return</span> <span class="kw">true</span><span class="pn">;</span>
+  <span class="pn">}</span>
+
+  <span class="kw">private</span> <span class="fn">extractTokenFromHeader</span><span class="pn">(</span>request<span class="pn">:</span> <span class="typ">Request</span><span class="pn">):</span> <span class="typ">string</span> <span class="pn">|</span> <span class="typ">undefined</span> <span class="pn">{</span>
+    <span class="kw">const</span> <span class="pn">[</span>type<span class="pn">,</span> token<span class="pn">]</span> <span class="pn">=</span> request<span class="pn">.</span>headers<span class="pn">.</span>authorization<span class="pn">?.</span><span class="fn">split</span><span class="pn">(</span><span class="str">' '</span><span class="pn">)</span> <span class="pn">??</span> <span class="pn">[];</span>
+    <span class="kw">return</span> type <span class="pn">===</span> <span class="str">'Bearer'</span> <span class="pn">?</span> token <span class="pn">:</span> <span class="kw">undefined</span><span class="pn">;</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <!-- Passport integration -->
+    <h3 id="passport-integration">Tích hợp Passport <a class="anchor" href="#passport-integration">#</a></h3>
+
+    <p><a href="https://github.com/jaredhanson/passport">Passport</a> là thư viện authentication node.js phổ biến nhất, được cộng đồng biết đến rộng rãi và được sử dụng thành công trong nhiều ứng dụng production. Việc tích hợp thư viện này với ứng dụng <strong>Nest</strong> rất đơn giản khi sử dụng module <code>@nestjs/passport</code>.</p>
+
+    <p>Để tìm hiểu cách tích hợp Passport với NestJS, hãy xem <a href="/Recipes/passport.html">chương này</a>.</p>
+
+    <!-- Example -->
+    <h3 id="example">Ví dụ <a class="anchor" href="#example">#</a></h3>
+
+    <p>Bạn có thể tìm thấy phiên bản hoàn chỉnh của code trong chương này <a href="https://github.com/nestjs/nest/tree/master/sample/19-auth-jwt">tại đây</a>.</p>
+
+    <!-- Page navigation -->
+    <div class="page-nav">
+      <div></div>
+      <a class="pnbtn r" href="Authorization.html">
+        <span class="pnlbl">Tiếp theo</span>
+        <span class="pntitle">Authorization</span>
+      </a>
+    </div>
+
+  </div>
+
+  <!-- Table of Contents -->
+  <nav class="toc">
+    <div class="toc-title">Nội dung</div>
+    <ul>
+      <li><a href="#creating-an-authentication-module">Tạo authentication module</a></li>
+      <li><a href="#implementing-the-sign-in-endpoint">Triển khai endpoint "Sign in"</a></li>
+      <li><a href="#jwt-token">JWT token</a></li>
+      <li><a href="#implementing-the-authentication-guard">Triển khai authentication guard</a></li>
+      <li><a href="#enable-authentication-globally">Kích hoạt authentication toàn cục</a></li>
+      <li><a href="#passport-integration">Tích hợp Passport</a></li>
+      <li><a href="#example">Ví dụ</a></li>
+    </ul>
+  </nav>
+</div>
+
+<script>
+  function cp(btn){var w=btn.closest('.cb');var p=w.querySelector('.tab-content.active pre')||w.querySelector('pre');if(!p)return;navigator.clipboard.writeText(p.textContent.trim()).then(function(){var o=btn.textContent;btn.textContent='Copied!';btn.style.color='#4ade80';setTimeout(function(){btn.textContent=o;btn.style.color=''},1500)})}
+  function switchTab(btn,tab){var cb=btn.closest('.cb');cb.querySelectorAll('.tab-btn').forEach(function(b){b.classList.toggle('active',b===btn)});cb.querySelectorAll('.tab-content').forEach(function(c){c.classList.toggle('active',c.dataset.tab===tab)})}
+  document.querySelectorAll('.toc a').forEach(function(l){l.addEventListener('click',function(e){e.preventDefault();var t=document.querySelector(this.getAttribute('href'));if(t)t.scrollIntoView({behavior:'smooth',block:'start'})})});
+  var tocLinks=document.querySelectorAll('.toc a'),heads=document.querySelectorAll('h3[id]');
+  function hi(){var c='';heads.forEach(function(h){if(scrollY>=h.offsetTop-120)c=h.id});tocLinks.forEach(function(a){a.classList.toggle('active',a.getAttribute('href')==='#'+c)})}
+  window.addEventListener('scroll',hi,{passive:true});hi();
+</script>
+</body>
+</html>

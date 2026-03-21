@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gRPC | NestJS Microservices - Tài liệu tiếng Việt</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root{--bg:#0e0e0e;--surface:#1a1a1a;--surface2:#222;--border:#2a2a2a;--border-l:#333;--red:#ea2845;--red-l:#ff4d6a;--red-glow:rgba(234,40,69,.15);--text:#e8e8e8;--muted:#888;--sec:#b0b0b0;--code-bg:#1e1e1e;--code-bd:#2d2d2d;--hint-bg:#0d2a1a;--hint-c:#4ade80;--warn-bg:#2a1a0d;--warn-c:#fb923c;--note-bg:#0d1a2a;--note-c:#60a0d0;--toc-w:220px;--font:'Inter',sans-serif;--mono:'Source Code Pro',monospace;--r:6px;--rl:10px}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+    body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:15px;line-height:1.78}
+    .page{max-width:1060px;margin:0 auto;padding:48px 32px 96px;display:flex;gap:56px;align-items:flex-start}.content{flex:1;min-width:0}
+    .toc{width:var(--toc-w);flex-shrink:0;position:sticky;top:32px;align-self:flex-start;max-height:calc(100vh - 48px);overflow-y:auto}
+    .toc::-webkit-scrollbar{width:3px}.toc::-webkit-scrollbar-thumb{background:var(--border-l);border-radius:2px}
+    .toc-title{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding-bottom:8px;margin-bottom:8px;border-bottom:1px solid var(--border)}
+    .toc ul{list-style:none}.toc ul li a{display:block;padding:3.5px 0;font-size:12.5px;color:var(--muted);text-decoration:none;line-height:1.5;transition:color .15s;cursor:pointer}
+    .toc ul li a:hover,.toc ul li a.active{color:var(--red-l)}
+    .vi-banner{display:flex;align-items:center;gap:10px;padding:11px 16px;border:1px solid rgba(234,40,69,.3);border-radius:var(--rl);background:linear-gradient(135deg,rgba(234,40,69,.1),rgba(234,40,69,.04));font-size:13px;color:var(--sec);margin-bottom:32px}.vi-banner strong{color:var(--red-l)}
+    h1{font-size:36px;font-weight:700;letter-spacing:-.5px;line-height:1.2;margin-bottom:6px}h1::after{content:'';display:block;width:44px;height:3px;background:var(--red);border-radius:2px;margin-top:12px}
+    h3{font-size:19px;font-weight:600;letter-spacing:-.2px;margin:40px 0 12px;display:flex;align-items:center;gap:8px;scroll-margin-top:80px}
+    .anchor{font-size:14px;color:var(--muted);text-decoration:none;opacity:0;transition:opacity .2s}h3:hover .anchor{opacity:1}
+    p{color:var(--sec);line-height:1.82;margin-bottom:16px}p:last-child{margin-bottom:0}
+    a{color:var(--red-l);text-decoration:none}a:hover{text-decoration:underline}strong{color:var(--text);font-weight:600}
+    ul,ol{color:var(--sec);padding-left:22px;line-height:2.1;margin:16px 0}ul li{margin-bottom:6px}
+    code{font-family:var(--mono);font-size:13px;background:var(--code-bg);border:1px solid var(--code-bd);padding:1px 6px;border-radius:4px;color:#f9a8d4}
+    .hint,.warn,.note{margin:18px 0;padding:12px 16px;border-left:3px solid;border-radius:var(--r);font-size:13.5px;line-height:1.72}
+    .hint{background:var(--hint-bg);border-color:var(--hint-c);color:#a7f3d0}.warn{background:var(--warn-bg);border-color:var(--warn-c);color:#fed7aa}.note{background:var(--note-bg);border-color:var(--note-c);color:#bae6fd}
+    .hint p,.warn p,.note p{margin:0;color:inherit}.lbl{display:block;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
+    .hint .lbl{color:var(--hint-c)}.warn .lbl{color:var(--warn-c)}.note .lbl{color:var(--note-c)}
+    .cb{margin:18px 0;border:1px solid var(--code-bd);border-radius:var(--rl);overflow:hidden;background:var(--code-bg)}
+    .cb-head{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:#181818;border-bottom:1px solid var(--code-bd);min-height:38px}
+    .cb-fname{font-family:var(--mono);font-size:11.5px;color:var(--muted);display:flex;align-items:center;gap:6px}.cb-fname::before{content:'';display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--red)}
+    .cb-right{display:flex;align-items:center;gap:6px}
+    .cpbtn{padding:3px 9px;font-size:10.5px;font-family:var(--mono);background:var(--surface);border:1px solid var(--border-l);color:var(--muted);border-radius:4px;cursor:pointer;transition:all .14s}.cpbtn:hover{background:var(--surface2);color:var(--text)}
+    pre{padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:13.5px;line-height:1.65;color:#abb2bf}pre::-webkit-scrollbar{height:5px}pre::-webkit-scrollbar-thumb{background:var(--border-l);border-radius:3px}
+    .kw{color:#c678dd}.fn{color:#61afef}.str{color:#98c379}.dec{color:#e5c07b}.typ{color:#e5c07b}.cm{color:#5c6370;font-style:italic}.pn{color:#abb2bf}.num{color:#d19a66}.cl{color:#e06c75}
+    .tab-group{display:flex;gap:0;margin-bottom:0}.tab-btn{padding:5px 16px;font-size:11.5px;font-family:var(--mono);background:transparent;border:1px solid var(--code-bd);border-bottom:none;color:var(--muted);cursor:pointer;transition:all .15s;border-radius:6px 6px 0 0;margin-right:-1px}.tab-btn:hover{color:var(--text)}.tab-btn.active{background:var(--code-bg);color:var(--red-l);border-color:var(--code-bd)}.tab-content{display:none}.tab-content.active{display:block}
+    table{width:100%;border-collapse:collapse;margin:18px 0;font-size:13.5px}
+    table td{padding:10px 14px;border:1px solid var(--border);color:var(--sec);vertical-align:top}
+    table tr:nth-child(even){background:var(--surface)}
+    table td:first-child{white-space:nowrap;color:var(--text);font-weight:500}
+    .page-nav{display:flex;justify-content:space-between;margin-top:52px;gap:16px}.pnbtn{display:flex;flex-direction:column;padding:14px 18px;border:1px solid var(--border);border-radius:var(--rl);text-decoration:none;transition:all .2s;min-width:150px}.pnbtn:hover{border-color:var(--red);background:var(--red-glow);text-decoration:none}.pnlbl{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:3px}.pntitle{font-size:14px;font-weight:600;color:var(--text)}.pnbtn.r{text-align:right;margin-left:auto}
+    @media(max-width:860px){.toc{display:none}}@media(max-width:600px){.page{padding:24px 16px 64px}}
+  </style>
+</head>
+<body>
+<div class="page">
+  <main class="content">
+    <div class="vi-banner"><span style="font-size:17px">&#x1f1fb;&#x1f1f3;</span><div>Dịch từ <strong><a href="https://docs.nestjs.com/microservices/grpc" target="_blank">docs.nestjs.com/microservices/grpc</a></strong>. Thuật ngữ kỹ thuật giữ nguyên tiếng Anh.</div></div>
+
+    <h1>gRPC</h1>
+
+    <p style="margin-top:18px"><a href="https://github.com/grpc/grpc-node" target="_blank">gRPC</a> là một framework RPC hiệu suất cao, mã nguồn mở, hiện đại, có thể chạy trong bất kỳ môi trường nào. Nó có thể kết nối hiệu quả các service trong và giữa các data center với hỗ trợ có thể cắm thêm (pluggable) cho load balancing, tracing, health checking và authentication.</p>
+
+    <p>Giống như nhiều hệ thống RPC khác, gRPC dựa trên khái niệm định nghĩa một service bằng các function (method) có thể được gọi từ xa. Với mỗi method, bạn định nghĩa các tham số và kiểu trả về. Các service, tham số và kiểu trả về được định nghĩa trong các file <code>.proto</code> sử dụng cơ chế <a href="https://protobuf.dev" target="_blank">protocol buffers</a> mã nguồn mở, trung lập ngôn ngữ của Google.</p>
+
+    <p>Với gRPC transporter, Nest sử dụng các file <code>.proto</code> để liên kết động các client và server nhằm dễ dàng triển khai remote procedure call, tự động serialize và deserialize dữ liệu có cấu trúc.</p>
+
+    <!-- ═══ Installation ═══ -->
+    <h3 id="installation">Installation <a class="anchor" href="#installation">#</a></h3>
+
+    <p>Để bắt đầu xây dựng microservice dựa trên gRPC, trước tiên hãy cài đặt các package cần thiết:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre>$ npm i --save @grpc/grpc-js @grpc/proto-loader</pre></div>
+
+    <!-- ═══ Overview ═══ -->
+    <h3 id="overview">Overview <a class="anchor" href="#overview">#</a></h3>
+
+    <p>Giống như các triển khai transport layer microservice khác của Nest, bạn chọn cơ chế gRPC transporter bằng thuộc tính <code>transport</code> của object options được truyền vào phương thức <code>createMicroservice()</code>. Trong ví dụ sau, chúng ta sẽ thiết lập một hero service. Thuộc tính <code>options</code> cung cấp metadata về service đó; các thuộc tính của nó được mô tả <a href="#options">bên dưới</a>.</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">main</div><div class="cb-right"><div class="tab-group"><button class="tab-btn active" onclick="switchTab(this,'ts')">TypeScript</button><button class="tab-btn" onclick="switchTab(this,'js')">JavaScript</button></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div class="tab-content active" data-tab="ts"><pre><span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> NestFactory<span class="pn">.</span><span class="fn">createMicroservice</span><span class="pn">&lt;</span><span class="typ">MicroserviceOptions</span><span class="pn">&gt;(</span>AppModule<span class="pn">, {</span>
+  transport<span class="pn">:</span> Transport<span class="pn">.</span>GRPC<span class="pn">,</span>
+  options<span class="pn">: {</span>
+    package<span class="pn">:</span> <span class="str">'hero'</span><span class="pn">,</span>
+    protoPath<span class="pn">:</span> <span class="fn">join</span><span class="pn">(</span>__dirname<span class="pn">,</span> <span class="str">'hero/hero.proto'</span><span class="pn">),</span>
+  <span class="pn">},</span>
+<span class="pn">});</span></pre></div><div class="tab-content" data-tab="js"><pre><span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> NestFactory<span class="pn">.</span><span class="fn">createMicroservice</span><span class="pn">(</span>AppModule<span class="pn">, {</span>
+  transport<span class="pn">:</span> Transport<span class="pn">.</span>GRPC<span class="pn">,</span>
+  options<span class="pn">: {</span>
+    package<span class="pn">:</span> <span class="str">'hero'</span><span class="pn">,</span>
+    protoPath<span class="pn">:</span> <span class="fn">join</span><span class="pn">(</span>__dirname<span class="pn">,</span> <span class="str">'hero/hero.proto'</span><span class="pn">),</span>
+  <span class="pn">},</span>
+<span class="pn">});</span></pre></div></div>
+
+<div class="hint"><span class="lbl">Gợi ý</span><p>Hàm <code>join()</code> được import từ package <code>path</code>; enum <code>Transport</code> được import từ package <code>@nestjs/microservices</code>.</p></div>
+
+    <p>Trong file <code>nest-cli.json</code>, chúng ta thêm thuộc tính <code>assets</code> cho phép phân phối các file không phải TypeScript, và <code>watchAssets</code> để bật theo dõi tất cả các asset không phải TypeScript. Trong trường hợp này, chúng ta muốn các file <code>.proto</code> được tự động sao chép vào thư mục <code>dist</code>.</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">nest-cli.json</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="pn">{</span>
+  <span class="str">"compilerOptions"</span><span class="pn">: {</span>
+    <span class="str">"assets"</span><span class="pn">: [</span><span class="str">"**/*.proto"</span><span class="pn">],</span>
+    <span class="str">"watchAssets"</span><span class="pn">:</span> <span class="kw">true</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+
+    <!-- ═══ Options ═══ -->
+    <h3 id="options">Options <a class="anchor" href="#options">#</a></h3>
+
+    <p>Object options của <strong>gRPC</strong> transporter hiển thị các thuộc tính được mô tả bên dưới.</p>
+
+    <table>
+      <tr><td><code>package</code></td><td>Tên Protobuf package (khớp với thiết lập <code>package</code> trong file <code>.proto</code>). Bắt buộc</td></tr>
+      <tr><td><code>protoPath</code></td><td>Đường dẫn tuyệt đối (hoặc tương đối với thư mục root) tới file <code>.proto</code>. Bắt buộc</td></tr>
+      <tr><td><code>url</code></td><td>URL kết nối. Chuỗi có định dạng <code>ip address/dns name:port</code> (ví dụ: <code>'0.0.0.0:50051'</code> cho Docker server) xác định địa chỉ/cổng mà transporter thiết lập kết nối. Tùy chọn. Mặc định là <code>'localhost:5000'</code></td></tr>
+      <tr><td><code>protoLoader</code></td><td>Tên NPM package cho tiện ích tải file <code>.proto</code>. Tùy chọn. Mặc định là <code>'@grpc/proto-loader'</code></td></tr>
+      <tr><td><code>loader</code></td><td>Các tùy chọn của <code>@grpc/proto-loader</code>. Cung cấp quyền kiểm soát chi tiết hành vi của file <code>.proto</code>. Tùy chọn. Xem <a href="https://github.com/grpc/grpc-node/blob/master/packages/proto-loader/README.md" target="_blank">tại đây</a> để biết thêm chi tiết</td></tr>
+      <tr><td><code>credentials</code></td><td>Server credentials. Tùy chọn. <a href="https://grpc.io/grpc/node/grpc.ServerCredentials.html" target="_blank">Đọc thêm tại đây</a></td></tr>
+    </table>
+
+    <!-- ═══ Sample gRPC service ═══ -->
+    <h3 id="sample-grpc-service">Sample gRPC service <a class="anchor" href="#sample-grpc-service">#</a></h3>
+
+    <p>Hãy định nghĩa service gRPC mẫu có tên <code>HeroesService</code>. Trong object <code>options</code> ở trên, thuộc tính <code>protoPath</code> thiết lập đường dẫn tới file định nghĩa <code>.proto</code> <code>hero.proto</code>. File <code>hero.proto</code> được cấu trúc sử dụng <a href="https://developers.google.com/protocol-buffers" target="_blank">protocol buffers</a>. Đây là nội dung của nó:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">hero/hero.proto</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="cm">// hero/hero.proto</span>
+syntax <span class="pn">=</span> <span class="str">"proto3"</span><span class="pn">;</span>
+
+<span class="kw">package</span> hero<span class="pn">;</span>
+
+<span class="kw">service</span> <span class="typ">HeroesService</span> <span class="pn">{</span>
+  <span class="kw">rpc</span> <span class="fn">FindOne</span> <span class="pn">(</span><span class="typ">HeroById</span><span class="pn">)</span> <span class="kw">returns</span> <span class="pn">(</span><span class="typ">Hero</span><span class="pn">)</span> <span class="pn">{}</span>
+<span class="pn">}</span>
+
+<span class="kw">message</span> <span class="typ">HeroById</span> <span class="pn">{</span>
+  <span class="typ">int32</span> id <span class="pn">=</span> <span class="num">1</span><span class="pn">;</span>
+<span class="pn">}</span>
+
+<span class="kw">message</span> <span class="typ">Hero</span> <span class="pn">{</span>
+  <span class="typ">int32</span> id <span class="pn">=</span> <span class="num">1</span><span class="pn">;</span>
+  <span class="typ">string</span> name <span class="pn">=</span> <span class="num">2</span><span class="pn">;</span>
+<span class="pn">}</span></pre></div>
+
+    <p><code>HeroesService</code> của chúng ta hiển thị một phương thức <code>FindOne()</code>. Phương thức này nhận đối số đầu vào kiểu <code>HeroById</code> và trả về message <code>Hero</code> (protocol buffers sử dụng phần tử <code>message</code> để định nghĩa cả kiểu tham số và kiểu trả về).</p>
+
+    <p>Tiếp theo, chúng ta cần triển khai service. Để định nghĩa một handler thực hiện định nghĩa này, chúng ta sử dụng decorator <code>@GrpcMethod()</code> trong controller, như được hiển thị bên dưới. Decorator này cung cấp metadata cần thiết để khai báo một method là gRPC service method.</p>
+
+<div class="hint"><span class="lbl">Gợi ý</span><p>Decorator <code>@MessagePattern()</code> (<a href="https://docs.nestjs.com/microservices/basics#request-response" target="_blank">đọc thêm</a>) được giới thiệu trong các chương microservice trước không được sử dụng với microservice dựa trên gRPC. Decorator <code>@GrpcMethod()</code> thay thế hiệu quả cho microservice dựa trên gRPC.</p></div>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">heroes.controller</div><div class="cb-right"><div class="tab-group"><button class="tab-btn active" onclick="switchTab(this,'ts')">TypeScript</button><button class="tab-btn" onclick="switchTab(this,'js')">JavaScript</button></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div class="tab-content active" data-tab="ts"><pre><span class="dec">@Controller</span><span class="pn">()</span>
+<span class="kw">export</span> <span class="kw">class</span> <span class="typ">HeroesController</span> <span class="pn">{</span>
+  <span class="dec">@GrpcMethod</span><span class="pn">(</span><span class="str">'HeroesService'</span><span class="pn">,</span> <span class="str">'FindOne'</span><span class="pn">)</span>
+  <span class="fn">findOne</span><span class="pn">(</span>data<span class="pn">:</span> <span class="typ">HeroById</span><span class="pn">,</span> metadata<span class="pn">:</span> <span class="typ">Metadata</span><span class="pn">,</span> call<span class="pn">:</span> <span class="typ">ServerUnaryCall</span><span class="pn">&lt;</span><span class="typ">any</span><span class="pn">,</span> <span class="typ">any</span><span class="pn">&gt;):</span> <span class="typ">Hero</span> <span class="pn">{</span>
+    <span class="kw">const</span> items <span class="pn">= [</span>
+      <span class="pn">{</span> id<span class="pn">:</span> <span class="num">1</span><span class="pn">,</span> name<span class="pn">:</span> <span class="str">'John'</span> <span class="pn">},</span>
+      <span class="pn">{</span> id<span class="pn">:</span> <span class="num">2</span><span class="pn">,</span> name<span class="pn">:</span> <span class="str">'Doe'</span> <span class="pn">},</span>
+    <span class="pn">];</span>
+    <span class="kw">return</span> items<span class="pn">.</span><span class="fn">find</span><span class="pn">(({</span> id <span class="pn">}) =&gt;</span> id <span class="pn">===</span> data<span class="pn">.</span>id<span class="pn">);</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div><div class="tab-content" data-tab="js"><pre><span class="dec">@Controller</span><span class="pn">()</span>
+<span class="kw">export</span> <span class="kw">class</span> <span class="typ">HeroesController</span> <span class="pn">{</span>
+  <span class="dec">@GrpcMethod</span><span class="pn">(</span><span class="str">'HeroesService'</span><span class="pn">,</span> <span class="str">'FindOne'</span><span class="pn">)</span>
+  <span class="fn">findOne</span><span class="pn">(</span>data<span class="pn">,</span> metadata<span class="pn">,</span> call<span class="pn">) {</span>
+    <span class="kw">const</span> items <span class="pn">= [</span>
+      <span class="pn">{</span> id<span class="pn">:</span> <span class="num">1</span><span class="pn">,</span> name<span class="pn">:</span> <span class="str">'John'</span> <span class="pn">},</span>
+      <span class="pn">{</span> id<span class="pn">:</span> <span class="num">2</span><span class="pn">,</span> name<span class="pn">:</span> <span class="str">'Doe'</span> <span class="pn">},</span>
+    <span class="pn">];</span>
+    <span class="kw">return</span> items<span class="pn">.</span><span class="fn">find</span><span class="pn">(({</span> id <span class="pn">}) =&gt;</span> id <span class="pn">===</span> data<span class="pn">.</span>id<span class="pn">);</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div></div>
+
+<div class="hint"><span class="lbl">Gợi ý</span><p>Decorator <code>@GrpcMethod()</code> được import từ package <code>@nestjs/microservices</code>, trong khi <code>Metadata</code> và <code>ServerUnaryCall</code> từ package <code>grpc</code>.</p></div>
+
+    <p>Decorator được hiển thị ở trên nhận hai đối số. Đối số đầu tiên là tên service (ví dụ: <code>'HeroesService'</code>), tương ứng với định nghĩa service <code>HeroesService</code> trong <code>hero.proto</code>. Đối số thứ hai (chuỗi <code>'FindOne'</code>) tương ứng với phương thức rpc <code>FindOne()</code> được định nghĩa trong <code>HeroesService</code> trong file <code>hero.proto</code>.</p>
+
+    <p>Phương thức handler <code>findOne()</code> nhận ba đối số: <code>data</code> được truyền từ caller, <code>metadata</code> lưu trữ gRPC request metadata và <code>call</code> để lấy các thuộc tính object <code>GrpcCall</code> như <code>sendMetadata</code> để gửi metadata tới client.</p>
+
+    <p>Cả hai đối số của decorator <code>@GrpcMethod()</code> đều là tùy chọn. Nếu gọi không có đối số thứ hai (ví dụ: <code>'FindOne'</code>), Nest sẽ tự động liên kết phương thức rpc trong file <code>.proto</code> với handler dựa trên việc chuyển đổi tên handler sang upper camel case (ví dụ: handler <code>findOne</code> được liên kết với định nghĩa rpc call <code>FindOne</code>). Điều này được hiển thị bên dưới.</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">heroes.controller</div><div class="cb-right"><div class="tab-group"><button class="tab-btn active" onclick="switchTab(this,'ts')">TypeScript</button><button class="tab-btn" onclick="switchTab(this,'js')">JavaScript</button></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div class="tab-content active" data-tab="ts"><pre><span class="dec">@Controller</span><span class="pn">()</span>
+<span class="kw">export</span> <span class="kw">class</span> <span class="typ">HeroesController</span> <span class="pn">{</span>
+  <span class="dec">@GrpcMethod</span><span class="pn">(</span><span class="str">'HeroesService'</span><span class="pn">)</span>
+  <span class="fn">findOne</span><span class="pn">(</span>data<span class="pn">:</span> <span class="typ">HeroById</span><span class="pn">,</span> metadata<span class="pn">:</span> <span class="typ">Metadata</span><span class="pn">,</span> call<span class="pn">:</span> <span class="typ">ServerUnaryCall</span><span class="pn">&lt;</span><span class="typ">any</span><span class="pn">,</span> <span class="typ">any</span><span class="pn">&gt;):</span> <span class="typ">Hero</span> <span class="pn">{</span>
+    <span class="kw">const</span> items <span class="pn">= [</span>
+      <span class="pn">{</span> id<span class="pn">:</span> <span class="num">1</span><span class="pn">,</span> name<span class="pn">:</span> <span class="str">'John'</span> <span class="pn">},</span>
+      <span class="pn">{</span> id<span class="pn">:</span> <span class="num">2</span><span class="pn">,</span> name<span class="pn">:</span> <span class="str">'Doe'</span> <span class="pn">},</span>
+    <span class="pn">];</span>
+    <span class="kw">return</span> items<span class="pn">.</span><span class="fn">find</span><span class="pn">(({</span> id <span class="pn">}) =&gt;</span> id <span class="pn">===</span> data<span class="pn">.</span>id<span class="pn">);</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div><div class="tab-content" data-tab="js"><pre><span class="dec">@Controller</span><span class="pn">()</span>
+<span class="kw">export</span> <span class="kw">class</span> <span class="typ">HeroesController</span> <span class="pn">{</span>
+  <span class="dec">@GrpcMethod</span><span class="pn">(</span><span class="str">'HeroesService'</span><span class="pn">)</span>
+  <span class="fn">findOne</span><span class="pn">(</span>data<span class="pn">,</span> metadata<span class="pn">,</span> call<span class="pn">) {</span>
+    <span class="kw">const</span> items <span class="pn">= [</span>
+      <span class="pn">{</span> id<span class="pn">:</span> <span class="num">1</span><span class="pn">,</span> name<span class="pn">:</span> <span class="str">'John'</span> <span class="pn">},</span>
+      <span class="pn">{</span> id<span class="pn">:</span> <span class="num">2</span><span class="pn">,</span> name<span class="pn">:</span> <span class="str">'Doe'</span> <span class="pn">},</span>
+    <span class="pn">];</span>
+    <span class="kw">return</span> items<span class="pn">.</span><span class="fn">find</span><span class="pn">(({</span> id <span class="pn">}) =&gt;</span> id <span class="pn">===</span> data<span class="pn">.</span>id<span class="pn">);</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div></div>
+
+    <p>Bạn cũng có thể bỏ qua đối số đầu tiên của <code>@GrpcMethod()</code>. Trong trường hợp này, Nest sẽ tự động liên kết handler với định nghĩa service từ file proto dựa trên tên <strong>class</strong> nơi handler được định nghĩa. Ví dụ, trong đoạn code sau, class <code>HeroesService</code> liên kết các phương thức handler của nó với định nghĩa service <code>HeroesService</code> trong file <code>hero.proto</code> dựa trên khớp tên <code>'HeroesService'</code>.</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">heroes.controller</div><div class="cb-right"><div class="tab-group"><button class="tab-btn active" onclick="switchTab(this,'ts')">TypeScript</button><button class="tab-btn" onclick="switchTab(this,'js')">JavaScript</button></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div class="tab-content active" data-tab="ts"><pre><span class="dec">@Controller</span><span class="pn">()</span>
+<span class="kw">export</span> <span class="kw">class</span> <span class="typ">HeroesService</span> <span class="pn">{</span>
+  <span class="dec">@GrpcMethod</span><span class="pn">()</span>
+  <span class="fn">findOne</span><span class="pn">(</span>data<span class="pn">:</span> <span class="typ">HeroById</span><span class="pn">,</span> metadata<span class="pn">:</span> <span class="typ">Metadata</span><span class="pn">,</span> call<span class="pn">:</span> <span class="typ">ServerUnaryCall</span><span class="pn">&lt;</span><span class="typ">any</span><span class="pn">,</span> <span class="typ">any</span><span class="pn">&gt;):</span> <span class="typ">Hero</span> <span class="pn">{</span>
+    <span class="kw">const</span> items <span class="pn">= [</span>
+      <span class="pn">{</span> id<span class="pn">:</span> <span class="num">1</span><span class="pn">,</span> name<span class="pn">:</span> <span class="str">'John'</span> <span class="pn">},</span>
+      <span class="pn">{</span> id<span class="pn">:</span> <span class="num">2</span><span class="pn">,</span> name<span class="pn">:</span> <span class="str">'Doe'</span> <span class="pn">},</span>
+    <span class="pn">];</span>
+    <span class="kw">return</span> items<span class="pn">.</span><span class="fn">find</span><span class="pn">(({</span> id <span class="pn">}) =&gt;</span> id <span class="pn">===</span> data<span class="pn">.</span>id<span class="pn">);</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div><div class="tab-content" data-tab="js"><pre><span class="dec">@Controller</span><span class="pn">()</span>
+<span class="kw">export</span> <span class="kw">class</span> <span class="typ">HeroesService</span> <span class="pn">{</span>
+  <span class="dec">@GrpcMethod</span><span class="pn">()</span>
+  <span class="fn">findOne</span><span class="pn">(</span>data<span class="pn">,</span> metadata<span class="pn">,</span> call<span class="pn">) {</span>
+    <span class="kw">const</span> items <span class="pn">= [</span>
+      <span class="pn">{</span> id<span class="pn">:</span> <span class="num">1</span><span class="pn">,</span> name<span class="pn">:</span> <span class="str">'John'</span> <span class="pn">},</span>
+      <span class="pn">{</span> id<span class="pn">:</span> <span class="num">2</span><span class="pn">,</span> name<span class="pn">:</span> <span class="str">'Doe'</span> <span class="pn">},</span>
+    <span class="pn">];</span>
+    <span class="kw">return</span> items<span class="pn">.</span><span class="fn">find</span><span class="pn">(({</span> id <span class="pn">}) =&gt;</span> id <span class="pn">===</span> data<span class="pn">.</span>id<span class="pn">);</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div></div>
+
+    <!-- ═══ Client ═══ -->
+    <h3 id="client">Client <a class="anchor" href="#client">#</a></h3>
+
+    <p>Ứng dụng Nest có thể hoạt động như gRPC client, sử dụng các service được định nghĩa trong file <code>.proto</code>. Bạn truy cập các remote service thông qua object <code>ClientGrpc</code>. Bạn có thể lấy object <code>ClientGrpc</code> theo nhiều cách.</p>
+
+    <p>Kỹ thuật được ưu tiên là import <code>ClientsModule</code>. Sử dụng phương thức <code>register()</code> để bind một package service được định nghĩa trong file <code>.proto</code> với một injection token, và để cấu hình service. Thuộc tính <code>name</code> là injection token. Đối với gRPC service, sử dụng <code>transport: Transport.GRPC</code>. Thuộc tính <code>options</code> là object có cùng các thuộc tính đã mô tả <a href="#options">ở trên</a>.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre>imports<span class="pn">: [</span>
+  ClientsModule<span class="pn">.</span><span class="fn">register</span><span class="pn">([</span>
+    <span class="pn">{</span>
+      name<span class="pn">:</span> <span class="str">'HERO_PACKAGE'</span><span class="pn">,</span>
+      transport<span class="pn">:</span> Transport<span class="pn">.</span>GRPC<span class="pn">,</span>
+      options<span class="pn">: {</span>
+        package<span class="pn">:</span> <span class="str">'hero'</span><span class="pn">,</span>
+        protoPath<span class="pn">:</span> <span class="fn">join</span><span class="pn">(</span>__dirname<span class="pn">,</span> <span class="str">'hero/hero.proto'</span><span class="pn">),</span>
+      <span class="pn">},</span>
+    <span class="pn">},</span>
+  <span class="pn">]),</span>
+<span class="pn">];</span></pre></div>
+
+<div class="hint"><span class="lbl">Gợi ý</span><p>Phương thức <code>register()</code> nhận một mảng các object. Đăng ký nhiều package bằng cách cung cấp một danh sách các object đăng ký phân tách bằng dấu phẩy.</p></div>
+
+    <p>Sau khi đăng ký, chúng ta có thể inject object <code>ClientGrpc</code> đã cấu hình với <code>@Inject()</code>. Sau đó chúng ta sử dụng phương thức <code>getService()</code> của object <code>ClientGrpc</code> để lấy instance service, như được hiển thị bên dưới.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export</span> <span class="kw">class</span> <span class="typ">AppService</span> <span class="kw">implements</span> <span class="typ">OnModuleInit</span> <span class="pn">{</span>
+  <span class="kw">private</span> heroesService<span class="pn">:</span> <span class="typ">HeroesService</span><span class="pn">;</span>
+
+  <span class="fn">constructor</span><span class="pn">(</span><span class="dec">@Inject</span><span class="pn">(</span><span class="str">'HERO_PACKAGE'</span><span class="pn">)</span> <span class="kw">private</span> client<span class="pn">:</span> <span class="typ">ClientGrpc</span><span class="pn">) {}</span>
+
+  <span class="fn">onModuleInit</span><span class="pn">() {</span>
+    <span class="kw">this</span><span class="pn">.</span>heroesService <span class="pn">=</span> <span class="kw">this</span><span class="pn">.</span>client<span class="pn">.</span><span class="fn">getService</span><span class="pn">&lt;</span><span class="typ">HeroesService</span><span class="pn">&gt;(</span><span class="str">'HeroesService'</span><span class="pn">);</span>
+  <span class="pn">}</span>
+
+  <span class="fn">getHero</span><span class="pn">():</span> <span class="typ">Observable</span><span class="pn">&lt;</span><span class="typ">string</span><span class="pn">&gt; {</span>
+    <span class="kw">return</span> <span class="kw">this</span><span class="pn">.</span>heroesService<span class="pn">.</span><span class="fn">findOne</span><span class="pn">({</span> id<span class="pn">:</span> <span class="num">1</span> <span class="pn">});</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+
+<div class="warn"><span class="lbl">Lưu ý</span><p>gRPC Client sẽ không gửi các field chứa dấu gạch dưới <code>_</code> trong tên của chúng trừ khi tùy chọn <code>keepCase</code> được thiết lập thành <code>true</code> trong cấu hình proto loader (<code>options.loader.keepcase</code> trong cấu hình microservice transporter).</p></div>
+
+    <p>Lưu ý rằng có một sự khác biệt nhỏ so với kỹ thuật được sử dụng trong các phương thức transport microservice khác. Thay vì class <code>ClientProxy</code>, chúng ta sử dụng class <code>ClientGrpc</code>, cung cấp phương thức <code>getService()</code>. Phương thức generic <code>getService()</code> nhận tên service làm đối số và trả về instance của nó (nếu có sẵn).</p>
+
+    <p>Ngoài ra, bạn có thể sử dụng decorator <code>@Client()</code> để khởi tạo object <code>ClientGrpc</code>, như sau:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export</span> <span class="kw">class</span> <span class="typ">AppService</span> <span class="kw">implements</span> <span class="typ">OnModuleInit</span> <span class="pn">{</span>
+  <span class="dec">@Client</span><span class="pn">({</span>
+    transport<span class="pn">:</span> Transport<span class="pn">.</span>GRPC<span class="pn">,</span>
+    options<span class="pn">: {</span>
+      package<span class="pn">:</span> <span class="str">'hero'</span><span class="pn">,</span>
+      protoPath<span class="pn">:</span> <span class="fn">join</span><span class="pn">(</span>__dirname<span class="pn">,</span> <span class="str">'hero/hero.proto'</span><span class="pn">),</span>
+    <span class="pn">},</span>
+  <span class="pn">})</span>
+  client<span class="pn">:</span> <span class="typ">ClientGrpc</span><span class="pn">;</span>
+
+  <span class="kw">private</span> heroesService<span class="pn">:</span> <span class="typ">HeroesService</span><span class="pn">;</span>
+
+  <span class="fn">onModuleInit</span><span class="pn">() {</span>
+    <span class="kw">this</span><span class="pn">.</span>heroesService <span class="pn">=</span> <span class="kw">this</span><span class="pn">.</span>client<span class="pn">.</span><span class="fn">getService</span><span class="pn">&lt;</span><span class="typ">HeroesService</span><span class="pn">&gt;(</span><span class="str">'HeroesService'</span><span class="pn">);</span>
+  <span class="pn">}</span>
+
+  <span class="fn">getHero</span><span class="pn">():</span> <span class="typ">Observable</span><span class="pn">&lt;</span><span class="typ">string</span><span class="pn">&gt; {</span>
+    <span class="kw">return</span> <span class="kw">this</span><span class="pn">.</span>heroesService<span class="pn">.</span><span class="fn">findOne</span><span class="pn">({</span> id<span class="pn">:</span> <span class="num">1</span> <span class="pn">});</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+
+    <p>Cuối cùng, đối với các tình huống phức tạp hơn, chúng ta có thể inject một client được cấu hình động sử dụng class <code>ClientProxyFactory</code> như đã mô tả <a href="https://docs.nestjs.com/microservices/basics#client" target="_blank">tại đây</a>.</p>
+
+    <p>Trong cả hai trường hợp, chúng ta đều có tham chiếu tới object proxy <code>HeroesService</code>, hiển thị cùng tập hợp các method được định nghĩa bên trong file <code>.proto</code>. Bây giờ, khi chúng ta truy cập object proxy này (tức là <code>heroesService</code>), hệ thống gRPC tự động serialize request, chuyển tiếp chúng tới hệ thống từ xa, trả về response và deserialize response. Vì gRPC bảo vệ chúng ta khỏi các chi tiết truyền thông mạng, <code>heroesService</code> trông và hoạt động giống như một local provider.</p>
+
+    <p>Lưu ý, tất cả các service method đều ở dạng <strong>lower camel case</strong> (để tuân theo quy ước tự nhiên của ngôn ngữ). Vì vậy, ví dụ, trong khi định nghĩa <code>HeroesService</code> trong file <code>.proto</code> chứa hàm <code>FindOne()</code>, instance <code>heroesService</code> sẽ cung cấp phương thức <code>findOne()</code>.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">interface</span> <span class="typ">HeroesService</span> <span class="pn">{</span>
+  <span class="fn">findOne</span><span class="pn">(</span>data<span class="pn">: {</span> id<span class="pn">:</span> <span class="typ">number</span> <span class="pn">}):</span> <span class="typ">Observable</span><span class="pn">&lt;</span><span class="typ">any</span><span class="pn">&gt;;</span>
+<span class="pn">}</span></pre></div>
+
+    <p>Một message handler cũng có thể trả về <code>Observable</code>, trong trường hợp đó các giá trị kết quả sẽ được phát ra cho đến khi stream hoàn thành.</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">heroes.controller</div><div class="cb-right"><div class="tab-group"><button class="tab-btn active" onclick="switchTab(this,'ts')">TypeScript</button><button class="tab-btn" onclick="switchTab(this,'js')">JavaScript</button></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div class="tab-content active" data-tab="ts"><pre><span class="dec">@Get</span><span class="pn">()</span>
+<span class="fn">call</span><span class="pn">():</span> <span class="typ">Observable</span><span class="pn">&lt;</span><span class="typ">any</span><span class="pn">&gt; {</span>
+  <span class="kw">return</span> <span class="kw">this</span><span class="pn">.</span>heroesService<span class="pn">.</span><span class="fn">findOne</span><span class="pn">({</span> id<span class="pn">:</span> <span class="num">1</span> <span class="pn">});</span>
+<span class="pn">}</span></pre></div><div class="tab-content" data-tab="js"><pre><span class="dec">@Get</span><span class="pn">()</span>
+<span class="fn">call</span><span class="pn">() {</span>
+  <span class="kw">return</span> <span class="kw">this</span><span class="pn">.</span>heroesService<span class="pn">.</span><span class="fn">findOne</span><span class="pn">({</span> id<span class="pn">:</span> <span class="num">1</span> <span class="pn">});</span>
+<span class="pn">}</span></pre></div></div>
+
+    <p>Để gửi gRPC metadata (cùng với request), bạn có thể truyền đối số thứ hai, như sau:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="fn">call</span><span class="pn">():</span> <span class="typ">Observable</span><span class="pn">&lt;</span><span class="typ">any</span><span class="pn">&gt; {</span>
+  <span class="kw">const</span> metadata <span class="pn">=</span> <span class="kw">new</span> <span class="typ">Metadata</span><span class="pn">();</span>
+  metadata<span class="pn">.</span><span class="fn">add</span><span class="pn">(</span><span class="str">'Set-Cookie'</span><span class="pn">,</span> <span class="str">'yummy_cookie=choco'</span><span class="pn">);</span>
+
+  <span class="kw">return</span> <span class="kw">this</span><span class="pn">.</span>heroesService<span class="pn">.</span><span class="fn">findOne</span><span class="pn">({</span> id<span class="pn">:</span> <span class="num">1</span> <span class="pn">},</span> metadata<span class="pn">);</span>
+<span class="pn">}</span></pre></div>
+
+<div class="hint"><span class="lbl">Gợi ý</span><p>Class <code>Metadata</code> được import từ package <code>grpc</code>.</p></div>
+
+    <p>Xin lưu ý rằng điều này yêu cầu cập nhật interface <code>HeroesService</code> mà chúng ta đã định nghĩa ở các bước trước.</p>
+
+    <!-- ═══ Example ═══ -->
+    <h3 id="example">Example <a class="anchor" href="#example">#</a></h3>
+
+    <p>Một ví dụ hoạt động có sẵn <a href="https://github.com/nestjs/nest/tree/master/sample/04-grpc" target="_blank">tại đây</a>.</p>
+
+    <!-- ═══ gRPC Reflection ═══ -->
+    <h3 id="grpc-reflection">gRPC Reflection <a class="anchor" href="#grpc-reflection">#</a></h3>
+
+    <p><a href="https://grpc.io/docs/guides/reflection/#overview" target="_blank">gRPC Server Reflection Specification</a> là một tiêu chuẩn cho phép gRPC client yêu cầu chi tiết về API mà server hiển thị, tương tự như việc hiển thị tài liệu OpenAPI cho REST API. Điều này có thể giúp việc làm việc với các công cụ debug dành cho developer như grpc-ui hoặc postman trở nên dễ dàng hơn đáng kể.</p>
+
+    <p>Để thêm hỗ trợ gRPC reflection vào server, trước tiên hãy cài đặt package triển khai cần thiết:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre>$ npm i --save @grpc/reflection</pre></div>
+
+    <p>Sau đó nó có thể được hook vào gRPC server sử dụng hook <code>onLoadPackageDefinition</code> trong các tùy chọn gRPC server, như sau:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">main</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">import</span> <span class="pn">{</span> ReflectionService <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@grpc/reflection'</span><span class="pn">;</span>
+
+<span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> NestFactory<span class="pn">.</span><span class="fn">createMicroservice</span><span class="pn">&lt;</span><span class="typ">MicroserviceOptions</span><span class="pn">&gt;(</span>AppModule<span class="pn">, {</span>
+  options<span class="pn">: {</span>
+    onLoadPackageDefinition<span class="pn">: (</span>pkg<span class="pn">,</span> server<span class="pn">) =&gt; {</span>
+      <span class="kw">new</span> <span class="typ">ReflectionService</span><span class="pn">(</span>pkg<span class="pn">).</span><span class="fn">addToServer</span><span class="pn">(</span>server<span class="pn">);</span>
+    <span class="pn">},</span>
+  <span class="pn">},</span>
+<span class="pn">});</span></pre></div>
+
+    <p>Bây giờ server của bạn sẽ phản hồi các message yêu cầu chi tiết API sử dụng reflection specification.</p>
+
+    <!-- ═══ gRPC Streaming ═══ -->
+    <h3 id="grpc-streaming">gRPC Streaming <a class="anchor" href="#grpc-streaming">#</a></h3>
+
+    <p>gRPC tự bản thân hỗ trợ các kết nối sống lâu dài, thường được gọi là <code>streams</code>. Stream rất hữu ích cho các trường hợp như Chat, Observations hoặc truyền dữ liệu theo Chunk. Tìm thêm chi tiết trong tài liệu chính thức <a href="https://grpc.io/docs/guides/concepts/" target="_blank">tại đây</a>.</p>
+
+    <p>Nest hỗ trợ GRPC stream handler theo hai cách có thể:</p>
+    <ul>
+      <li>RxJS <code>Subject</code> + <code>Observable</code> handler: có thể hữu ích để viết response ngay bên trong phương thức Controller hoặc được truyền xuống consumer <code>Subject</code>/<code>Observable</code></li>
+      <li>Pure GRPC call stream handler: có thể hữu ích để được truyền tới một executor sẽ xử lý phần còn lại của dispatch cho Node standard <code>Duplex</code> stream handler.</li>
+    </ul>
+
+    <!-- ═══ Streaming sample ═══ -->
+    <h3 id="streaming-sample">Streaming sample <a class="anchor" href="#streaming-sample">#</a></h3>
+
+    <p>Hãy định nghĩa một gRPC service mẫu mới có tên <code>HelloService</code>. File <code>hello.proto</code> được cấu trúc sử dụng <a href="https://developers.google.com/protocol-buffers" target="_blank">protocol buffers</a>. Đây là nội dung của nó:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">hello/hello.proto</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="cm">// hello/hello.proto</span>
+syntax <span class="pn">=</span> <span class="str">"proto3"</span><span class="pn">;</span>
+
+<span class="kw">package</span> hello<span class="pn">;</span>
+
+<span class="kw">service</span> <span class="typ">HelloService</span> <span class="pn">{</span>
+  <span class="kw">rpc</span> <span class="fn">BidiHello</span><span class="pn">(</span><span class="kw">stream</span> <span class="typ">HelloRequest</span><span class="pn">)</span> <span class="kw">returns</span> <span class="pn">(</span><span class="kw">stream</span> <span class="typ">HelloResponse</span><span class="pn">);</span>
+  <span class="kw">rpc</span> <span class="fn">LotsOfGreetings</span><span class="pn">(</span><span class="kw">stream</span> <span class="typ">HelloRequest</span><span class="pn">)</span> <span class="kw">returns</span> <span class="pn">(</span><span class="typ">HelloResponse</span><span class="pn">);</span>
+<span class="pn">}</span>
+
+<span class="kw">message</span> <span class="typ">HelloRequest</span> <span class="pn">{</span>
+  <span class="typ">string</span> greeting <span class="pn">=</span> <span class="num">1</span><span class="pn">;</span>
+<span class="pn">}</span>
+
+<span class="kw">message</span> <span class="typ">HelloResponse</span> <span class="pn">{</span>
+  <span class="typ">string</span> reply <span class="pn">=</span> <span class="num">1</span><span class="pn">;</span>
+<span class="pn">}</span></pre></div>
+
+<div class="hint"><span class="lbl">Gợi ý</span><p>Phương thức <code>LotsOfGreetings</code> có thể được triển khai đơn giản với decorator <code>@GrpcMethod</code> (như trong các ví dụ ở trên) vì stream trả về có thể phát ra nhiều giá trị.</p></div>
+
+    <p>Dựa trên file <code>.proto</code> này, hãy định nghĩa interface <code>HelloService</code>:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">interface</span> <span class="typ">HelloService</span> <span class="pn">{</span>
+  <span class="fn">bidiHello</span><span class="pn">(</span>upstream<span class="pn">:</span> <span class="typ">Observable</span><span class="pn">&lt;</span><span class="typ">HelloRequest</span><span class="pn">&gt;):</span> <span class="typ">Observable</span><span class="pn">&lt;</span><span class="typ">HelloResponse</span><span class="pn">&gt;;</span>
+  <span class="fn">lotsOfGreetings</span><span class="pn">(</span>
+    upstream<span class="pn">:</span> <span class="typ">Observable</span><span class="pn">&lt;</span><span class="typ">HelloRequest</span><span class="pn">&gt;,</span>
+  <span class="pn">):</span> <span class="typ">Observable</span><span class="pn">&lt;</span><span class="typ">HelloResponse</span><span class="pn">&gt;;</span>
+<span class="pn">}</span>
+
+<span class="kw">interface</span> <span class="typ">HelloRequest</span> <span class="pn">{</span>
+  greeting<span class="pn">:</span> <span class="typ">string</span><span class="pn">;</span>
+<span class="pn">}</span>
+
+<span class="kw">interface</span> <span class="typ">HelloResponse</span> <span class="pn">{</span>
+  reply<span class="pn">:</span> <span class="typ">string</span><span class="pn">;</span>
+<span class="pn">}</span></pre></div>
+
+<div class="hint"><span class="lbl">Gợi ý</span><p>Proto interface có thể được tạo tự động bởi package <a href="https://github.com/stephenh/ts-proto" target="_blank">ts-proto</a>, tìm hiểu thêm <a href="https://github.com/stephenh/ts-proto/blob/main/NESTJS.markdown" target="_blank">tại đây</a>.</p></div>
+
+    <!-- ═══ Subject strategy ═══ -->
+    <h3 id="subject-strategy">Subject strategy <a class="anchor" href="#subject-strategy">#</a></h3>
+
+    <p>Decorator <code>@GrpcStreamMethod()</code> cung cấp tham số function dưới dạng RxJS <code>Observable</code>. Do đó, chúng ta có thể nhận và xử lý nhiều message.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@GrpcStreamMethod</span><span class="pn">()</span>
+<span class="fn">bidiHello</span><span class="pn">(</span>messages<span class="pn">:</span> <span class="typ">Observable</span><span class="pn">&lt;</span><span class="typ">any</span><span class="pn">&gt;,</span> metadata<span class="pn">:</span> <span class="typ">Metadata</span><span class="pn">,</span> call<span class="pn">:</span> <span class="typ">ServerDuplexStream</span><span class="pn">&lt;</span><span class="typ">any</span><span class="pn">,</span> <span class="typ">any</span><span class="pn">&gt;):</span> <span class="typ">Observable</span><span class="pn">&lt;</span><span class="typ">any</span><span class="pn">&gt; {</span>
+  <span class="kw">const</span> subject <span class="pn">=</span> <span class="kw">new</span> <span class="typ">Subject</span><span class="pn">();</span>
+
+  <span class="kw">const</span> <span class="fn">onNext</span> <span class="pn">=</span> message <span class="pn">=&gt; {</span>
+    <span class="fn">console</span><span class="pn">.</span><span class="fn">log</span><span class="pn">(</span>message<span class="pn">);</span>
+    subject<span class="pn">.</span><span class="fn">next</span><span class="pn">({</span>
+      reply<span class="pn">:</span> <span class="str">'Hello, world!'</span>
+    <span class="pn">});</span>
+  <span class="pn">};</span>
+  <span class="kw">const</span> <span class="fn">onComplete</span> <span class="pn">= () =&gt;</span> subject<span class="pn">.</span><span class="fn">complete</span><span class="pn">();</span>
+  messages<span class="pn">.</span><span class="fn">subscribe</span><span class="pn">({</span>
+    next<span class="pn">:</span> onNext<span class="pn">,</span>
+    complete<span class="pn">:</span> onComplete<span class="pn">,</span>
+  <span class="pn">});</span>
+
+  <span class="kw">return</span> subject<span class="pn">.</span><span class="fn">asObservable</span><span class="pn">();</span>
+<span class="pn">}</span></pre></div>
+
+<div class="warn"><span class="lbl">Cảnh báo</span><p>Để hỗ trợ tương tác full-duplex với decorator <code>@GrpcStreamMethod()</code>, phương thức controller phải trả về RxJS <code>Observable</code>.</p></div>
+
+<div class="hint"><span class="lbl">Gợi ý</span><p>Class/interface <code>Metadata</code> và <code>ServerUnaryCall</code> được import từ package <code>grpc</code>.</p></div>
+
+    <p>Theo định nghĩa service (trong file <code>.proto</code>), phương thức <code>BidiHello</code> nên stream request tới service. Để gửi nhiều message bất đồng bộ tới stream từ client, chúng ta sử dụng class <code>ReplaySubject</code> của RxJS.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">const</span> helloService <span class="pn">=</span> <span class="kw">this</span><span class="pn">.</span>client<span class="pn">.</span><span class="fn">getService</span><span class="pn">&lt;</span><span class="typ">HelloService</span><span class="pn">&gt;(</span><span class="str">'HelloService'</span><span class="pn">);</span>
+<span class="kw">const</span> helloRequest$ <span class="pn">=</span> <span class="kw">new</span> <span class="typ">ReplaySubject</span><span class="pn">&lt;</span><span class="typ">HelloRequest</span><span class="pn">&gt;();</span>
+
+helloRequest$<span class="pn">.</span><span class="fn">next</span><span class="pn">({</span> greeting<span class="pn">:</span> <span class="str">'Hello (1)!'</span> <span class="pn">});</span>
+helloRequest$<span class="pn">.</span><span class="fn">next</span><span class="pn">({</span> greeting<span class="pn">:</span> <span class="str">'Hello (2)!'</span> <span class="pn">});</span>
+helloRequest$<span class="pn">.</span><span class="fn">complete</span><span class="pn">();</span>
+
+<span class="kw">return</span> helloService<span class="pn">.</span><span class="fn">bidiHello</span><span class="pn">(</span>helloRequest$<span class="pn">);</span></pre></div>
+
+    <p>Trong ví dụ trên, chúng ta đã viết hai message vào stream (các lệnh gọi <code>next()</code>) và thông báo cho service rằng chúng ta đã hoàn thành gửi dữ liệu (lệnh gọi <code>complete()</code>).</p>
+
+    <!-- ═══ Call stream handler ═══ -->
+    <h3 id="call-stream-handler">Call stream handler <a class="anchor" href="#call-stream-handler">#</a></h3>
+
+    <p>Khi giá trị trả về của method được định nghĩa là <code>stream</code>, decorator <code>@GrpcStreamCall()</code> cung cấp tham số function dưới dạng <code>grpc.ServerDuplexStream</code>, hỗ trợ các phương thức tiêu chuẩn như <code>.on('data', callback)</code>, <code>.write(message)</code> hoặc <code>.cancel()</code>. Tài liệu đầy đủ về các phương thức có sẵn có thể tìm thấy <a href="https://grpc.github.io/grpc/node/grpc-ClientDuplexStream.html" target="_blank">tại đây</a>.</p>
+
+    <p>Ngoài ra, khi giá trị trả về của method không phải là <code>stream</code>, decorator <code>@GrpcStreamCall()</code> cung cấp hai tham số function, lần lượt là <code>grpc.ServerReadableStream</code> (đọc thêm <a href="https://grpc.github.io/grpc/node/grpc-ServerReadableStream.html" target="_blank">tại đây</a>) và <code>callback</code>.</p>
+
+    <p>Hãy bắt đầu với triển khai <code>BidiHello</code> hỗ trợ tương tác full-duplex.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@GrpcStreamCall</span><span class="pn">()</span>
+<span class="fn">bidiHello</span><span class="pn">(</span>requestStream<span class="pn">:</span> <span class="typ">any</span><span class="pn">) {</span>
+  requestStream<span class="pn">.</span><span class="fn">on</span><span class="pn">(</span><span class="str">'data'</span><span class="pn">,</span> message <span class="pn">=&gt; {</span>
+    <span class="fn">console</span><span class="pn">.</span><span class="fn">log</span><span class="pn">(</span>message<span class="pn">);</span>
+    requestStream<span class="pn">.</span><span class="fn">write</span><span class="pn">({</span>
+      reply<span class="pn">:</span> <span class="str">'Hello, world!'</span>
+    <span class="pn">});</span>
+  <span class="pn">});</span>
+<span class="pn">}</span></pre></div>
+
+<div class="hint"><span class="lbl">Gợi ý</span><p>Decorator này không yêu cầu bất kỳ tham số trả về cụ thể nào. Stream được mong đợi sẽ được xử lý tương tự như bất kỳ kiểu stream tiêu chuẩn nào khác.</p></div>
+
+    <p>Trong ví dụ trên, chúng ta đã sử dụng phương thức <code>write()</code> để viết object vào response stream. Callback được truyền vào phương thức <code>.on()</code> làm tham số thứ hai sẽ được gọi mỗi khi service nhận được chunk dữ liệu mới.</p>
+
+    <p>Hãy triển khai phương thức <code>LotsOfGreetings</code>.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@GrpcStreamCall</span><span class="pn">()</span>
+<span class="fn">lotsOfGreetings</span><span class="pn">(</span>requestStream<span class="pn">:</span> <span class="typ">any</span><span class="pn">,</span> callback<span class="pn">: (</span>err<span class="pn">:</span> <span class="typ">unknown</span><span class="pn">,</span> value<span class="pn">:</span> <span class="typ">HelloResponse</span><span class="pn">) =&gt;</span> <span class="typ">void</span><span class="pn">) {</span>
+  requestStream<span class="pn">.</span><span class="fn">on</span><span class="pn">(</span><span class="str">'data'</span><span class="pn">,</span> message <span class="pn">=&gt; {</span>
+    <span class="fn">console</span><span class="pn">.</span><span class="fn">log</span><span class="pn">(</span>message<span class="pn">);</span>
+  <span class="pn">});</span>
+  requestStream<span class="pn">.</span><span class="fn">on</span><span class="pn">(</span><span class="str">'end'</span><span class="pn">, () =&gt;</span> <span class="fn">callback</span><span class="pn">(</span><span class="kw">null</span><span class="pn">, {</span> reply<span class="pn">:</span> <span class="str">'Hello, world!'</span> <span class="pn">}));</span>
+<span class="pn">}</span></pre></div>
+
+    <p>Ở đây chúng ta đã sử dụng hàm <code>callback</code> để gửi response sau khi xử lý <code>requestStream</code> đã hoàn thành.</p>
+
+    <!-- ═══ Health checks ═══ -->
+    <h3 id="health-checks">Health checks <a class="anchor" href="#health-checks">#</a></h3>
+
+    <p>Khi chạy ứng dụng gRPC trong một orchestrator như Kubernetes, bạn có thể cần biết liệu nó có đang chạy và ở trạng thái healthy hay không. <a href="https://grpc.io/docs/guides/health-checking/" target="_blank">gRPC Health Check specification</a> là một tiêu chuẩn cho phép gRPC client hiển thị trạng thái health để cho phép orchestrator hành động phù hợp.</p>
+
+    <p>Để thêm hỗ trợ gRPC health check, trước tiên hãy cài đặt package <a href="https://github.com/grpc/grpc-node/tree/master/packages/grpc-health-check" target="_blank">grpc-node</a>:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre>$ npm i --save grpc-health-check</pre></div>
+
+    <p>Sau đó nó có thể được hook vào gRPC service sử dụng hook <code>onLoadPackageDefinition</code> trong các tùy chọn gRPC server, như sau. Lưu ý rằng <code>protoPath</code> cần có cả health check và hero package.</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">main</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">import</span> <span class="pn">{</span> HealthImplementation<span class="pn">,</span> protoPath <span class="kw">as</span> healthCheckProtoPath <span class="pn">}</span> <span class="kw">from</span> <span class="str">'grpc-health-check'</span><span class="pn">;</span>
+
+<span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> NestFactory<span class="pn">.</span><span class="fn">createMicroservice</span><span class="pn">&lt;</span><span class="typ">MicroserviceOptions</span><span class="pn">&gt;(</span>AppModule<span class="pn">, {</span>
+  options<span class="pn">: {</span>
+    protoPath<span class="pn">: [</span>
+      healthCheckProtoPath<span class="pn">,</span>
+      <span class="fn">join</span><span class="pn">(</span>__dirname<span class="pn">,</span> <span class="str">'hero/hero.proto'</span><span class="pn">),</span>
+    <span class="pn">],</span>
+    onLoadPackageDefinition<span class="pn">: (</span>pkg<span class="pn">,</span> server<span class="pn">) =&gt; {</span>
+      <span class="kw">const</span> healthImpl <span class="pn">=</span> <span class="kw">new</span> <span class="typ">HealthImplementation</span><span class="pn">({</span>
+        <span class="str">''</span><span class="pn">:</span> <span class="str">'UNKNOWN'</span><span class="pn">,</span>
+      <span class="pn">});</span>
+
+      healthImpl<span class="pn">.</span><span class="fn">addToServer</span><span class="pn">(</span>server<span class="pn">);</span>
+      healthImpl<span class="pn">.</span><span class="fn">setStatus</span><span class="pn">(</span><span class="str">''</span><span class="pn">,</span> <span class="str">'SERVING'</span><span class="pn">);</span>
+    <span class="pn">},</span>
+  <span class="pn">},</span>
+<span class="pn">});</span></pre></div>
+
+<div class="hint"><span class="lbl">Gợi ý</span><p><a href="https://github.com/grpc-ecosystem/grpc-health-probe" target="_blank">gRPC health probe</a> là một CLI hữu ích để kiểm tra gRPC health check trong môi trường containerized.</p></div>
+
+    <!-- ═══ gRPC Metadata ═══ -->
+    <h3 id="grpc-metadata">gRPC Metadata <a class="anchor" href="#grpc-metadata">#</a></h3>
+
+    <p>Metadata là thông tin về một lời gọi RPC cụ thể dưới dạng danh sách các cặp key-value, trong đó key là string và value thường là string nhưng có thể là dữ liệu nhị phân. Metadata là opaque (không trong suốt) đối với bản thân gRPC - nó cho phép client cung cấp thông tin liên quan đến lời gọi cho server và ngược lại. Metadata có thể bao gồm authentication token, request identifier và tag cho mục đích monitoring, và thông tin dữ liệu như số lượng record trong một tập dữ liệu.</p>
+
+    <p>Để đọc metadata trong handler <code>@GrpcMethod()</code>, sử dụng đối số thứ hai (metadata), có kiểu <code>Metadata</code> (được import từ package <code>grpc</code>).</p>
+
+    <p>Để gửi lại metadata từ handler, sử dụng phương thức <code>ServerUnaryCall#sendMetadata()</code> (đối số handler thứ ba).</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">heroes.controller</div><div class="cb-right"><div class="tab-group"><button class="tab-btn active" onclick="switchTab(this,'ts')">TypeScript</button><button class="tab-btn" onclick="switchTab(this,'js')">JavaScript</button></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div class="tab-content active" data-tab="ts"><pre><span class="dec">@Controller</span><span class="pn">()</span>
+<span class="kw">export</span> <span class="kw">class</span> <span class="typ">HeroesService</span> <span class="pn">{</span>
+  <span class="dec">@GrpcMethod</span><span class="pn">()</span>
+  <span class="fn">findOne</span><span class="pn">(</span>data<span class="pn">:</span> <span class="typ">HeroById</span><span class="pn">,</span> metadata<span class="pn">:</span> <span class="typ">Metadata</span><span class="pn">,</span> call<span class="pn">:</span> <span class="typ">ServerUnaryCall</span><span class="pn">&lt;</span><span class="typ">any</span><span class="pn">,</span> <span class="typ">any</span><span class="pn">&gt;):</span> <span class="typ">Hero</span> <span class="pn">{</span>
+    <span class="kw">const</span> serverMetadata <span class="pn">=</span> <span class="kw">new</span> <span class="typ">Metadata</span><span class="pn">();</span>
+    <span class="kw">const</span> items <span class="pn">= [</span>
+      <span class="pn">{</span> id<span class="pn">:</span> <span class="num">1</span><span class="pn">,</span> name<span class="pn">:</span> <span class="str">'John'</span> <span class="pn">},</span>
+      <span class="pn">{</span> id<span class="pn">:</span> <span class="num">2</span><span class="pn">,</span> name<span class="pn">:</span> <span class="str">'Doe'</span> <span class="pn">},</span>
+    <span class="pn">];</span>
+
+    serverMetadata<span class="pn">.</span><span class="fn">add</span><span class="pn">(</span><span class="str">'Set-Cookie'</span><span class="pn">,</span> <span class="str">'yummy_cookie=choco'</span><span class="pn">);</span>
+    call<span class="pn">.</span><span class="fn">sendMetadata</span><span class="pn">(</span>serverMetadata<span class="pn">);</span>
+
+    <span class="kw">return</span> items<span class="pn">.</span><span class="fn">find</span><span class="pn">(({</span> id <span class="pn">}) =&gt;</span> id <span class="pn">===</span> data<span class="pn">.</span>id<span class="pn">);</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div><div class="tab-content" data-tab="js"><pre><span class="dec">@Controller</span><span class="pn">()</span>
+<span class="kw">export</span> <span class="kw">class</span> <span class="typ">HeroesService</span> <span class="pn">{</span>
+  <span class="dec">@GrpcMethod</span><span class="pn">()</span>
+  <span class="fn">findOne</span><span class="pn">(</span>data<span class="pn">,</span> metadata<span class="pn">,</span> call<span class="pn">) {</span>
+    <span class="kw">const</span> serverMetadata <span class="pn">=</span> <span class="kw">new</span> <span class="typ">Metadata</span><span class="pn">();</span>
+    <span class="kw">const</span> items <span class="pn">= [</span>
+      <span class="pn">{</span> id<span class="pn">:</span> <span class="num">1</span><span class="pn">,</span> name<span class="pn">:</span> <span class="str">'John'</span> <span class="pn">},</span>
+      <span class="pn">{</span> id<span class="pn">:</span> <span class="num">2</span><span class="pn">,</span> name<span class="pn">:</span> <span class="str">'Doe'</span> <span class="pn">},</span>
+    <span class="pn">];</span>
+
+    serverMetadata<span class="pn">.</span><span class="fn">add</span><span class="pn">(</span><span class="str">'Set-Cookie'</span><span class="pn">,</span> <span class="str">'yummy_cookie=choco'</span><span class="pn">);</span>
+    call<span class="pn">.</span><span class="fn">sendMetadata</span><span class="pn">(</span>serverMetadata<span class="pn">);</span>
+
+    <span class="kw">return</span> items<span class="pn">.</span><span class="fn">find</span><span class="pn">(({</span> id <span class="pn">}) =&gt;</span> id <span class="pn">===</span> data<span class="pn">.</span>id<span class="pn">);</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div></div>
+
+    <p>Tương tự, để đọc metadata trong handler được gắn decorator <code>@GrpcStreamMethod()</code> (<a href="#subject-strategy">subject strategy</a>), sử dụng đối số thứ hai (metadata), có kiểu <code>Metadata</code> (được import từ package <code>grpc</code>).</p>
+
+    <p>Để gửi lại metadata từ handler, sử dụng phương thức <code>ServerDuplexStream#sendMetadata()</code> (đối số handler thứ ba).</p>
+
+    <p>Để đọc metadata từ bên trong <a href="#call-stream-handler">call stream handler</a> (handler được gắn decorator <code>@GrpcStreamCall()</code>), lắng nghe event <code>metadata</code> trên tham chiếu <code>requestStream</code>, như sau:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre>requestStream<span class="pn">.</span><span class="fn">on</span><span class="pn">(</span><span class="str">'metadata'</span><span class="pn">, (</span>metadata<span class="pn">:</span> <span class="typ">Metadata</span><span class="pn">) =&gt; {</span>
+  <span class="kw">const</span> meta <span class="pn">=</span> metadata<span class="pn">.</span><span class="fn">get</span><span class="pn">(</span><span class="str">'X-Meta'</span><span class="pn">);</span>
+<span class="pn">});</span></pre></div>
+
+    <!-- Page Navigation -->
+    <div class="page-nav">
+      <a href="Kafka.html" class="pnbtn">
+        <span class="pnlbl">&larr; Trước</span>
+        <span class="pntitle">Kafka</span>
+      </a>
+      <a href="CustomTransport.html" class="pnbtn r">
+        <span class="pnlbl">Tiếp &rarr;</span>
+        <span class="pntitle">Custom Transport</span>
+      </a>
+    </div>
+
+  </main>
+
+  <!-- TOC -->
+  <aside class="toc">
+    <div class="toc-title">Nội dung</div>
+    <ul>
+      <li><a href="#installation">Installation</a></li>
+      <li><a href="#overview">Overview</a></li>
+      <li><a href="#options">Options</a></li>
+      <li><a href="#sample-grpc-service">Sample gRPC service</a></li>
+      <li><a href="#client">Client</a></li>
+      <li><a href="#example">Example</a></li>
+      <li><a href="#grpc-reflection">gRPC Reflection</a></li>
+      <li><a href="#grpc-streaming">gRPC Streaming</a></li>
+      <li><a href="#streaming-sample">Streaming sample</a></li>
+      <li><a href="#subject-strategy">Subject strategy</a></li>
+      <li><a href="#call-stream-handler">Call stream handler</a></li>
+      <li><a href="#health-checks">Health checks</a></li>
+      <li><a href="#grpc-metadata">gRPC Metadata</a></li>
+    </ul>
+  </aside>
+
+</div>
+
+<script>
+  function cp(btn){var w=btn.closest('.cb');var p=w.querySelector('.tab-content.active pre')||w.querySelector('pre');if(!p)return;navigator.clipboard.writeText(p.textContent.trim()).then(function(){var o=btn.textContent;btn.textContent='Copied!';btn.style.color='#4ade80';setTimeout(function(){btn.textContent=o;btn.style.color=''},1500)})}
+  function switchTab(btn,tab){var cb=btn.closest('.cb');cb.querySelectorAll('.tab-btn').forEach(function(b){b.classList.toggle('active',b===btn)});cb.querySelectorAll('.tab-content').forEach(function(c){c.classList.toggle('active',c.dataset.tab===tab)})}
+  document.querySelectorAll('.toc a').forEach(function(l){l.addEventListener('click',function(e){e.preventDefault();var t=document.querySelector(this.getAttribute('href'));if(t)t.scrollIntoView({behavior:'smooth',block:'start'})})});
+  var tocLinks=document.querySelectorAll('.toc a'),heads=document.querySelectorAll('h3[id]');
+  function hi(){var c='';heads.forEach(function(h){if(scrollY>=h.offsetTop-120)c=h.id});tocLinks.forEach(function(a){a.classList.toggle('active',a.getAttribute('href')==='#'+c)})}
+  window.addEventListener('scroll',hi,{passive:true});hi();
+</script>
+</body>
+</html>

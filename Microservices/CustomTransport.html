@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Custom Transporters | NestJS Microservices - Tài liệu tiếng Việt</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root{--bg:#0e0e0e;--surface:#1a1a1a;--surface2:#222;--border:#2a2a2a;--border-l:#333;--red:#ea2845;--red-l:#ff4d6a;--red-glow:rgba(234,40,69,.15);--text:#e8e8e8;--muted:#888;--sec:#b0b0b0;--code-bg:#1e1e1e;--code-bd:#2d2d2d;--hint-bg:#0d2a1a;--hint-c:#4ade80;--warn-bg:#2a1a0d;--warn-c:#fb923c;--note-bg:#0d1a2a;--note-c:#60a0d0;--toc-w:220px;--font:'Inter',sans-serif;--mono:'Source Code Pro',monospace;--r:6px;--rl:10px}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+    body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:15px;line-height:1.78}
+    .page{max-width:1060px;margin:0 auto;padding:48px 32px 96px;display:flex;gap:56px;align-items:flex-start}.content{flex:1;min-width:0}
+    .toc{width:var(--toc-w);flex-shrink:0;position:sticky;top:32px;align-self:flex-start;max-height:calc(100vh - 48px);overflow-y:auto}
+    .toc::-webkit-scrollbar{width:3px}.toc::-webkit-scrollbar-thumb{background:var(--border-l);border-radius:2px}
+    .toc-title{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding-bottom:8px;margin-bottom:8px;border-bottom:1px solid var(--border)}
+    .toc ul{list-style:none}.toc ul li a{display:block;padding:3.5px 0;font-size:12.5px;color:var(--muted);text-decoration:none;line-height:1.5;transition:color .15s;cursor:pointer}
+    .toc ul li a:hover,.toc ul li a.active{color:var(--red-l)}
+    .vi-banner{display:flex;align-items:center;gap:10px;padding:11px 16px;border:1px solid rgba(234,40,69,.3);border-radius:var(--rl);background:linear-gradient(135deg,rgba(234,40,69,.1),rgba(234,40,69,.04));font-size:13px;color:var(--sec);margin-bottom:32px}.vi-banner strong{color:var(--red-l)}
+    h1{font-size:36px;font-weight:700;letter-spacing:-.5px;line-height:1.2;margin-bottom:6px}h1::after{content:'';display:block;width:44px;height:3px;background:var(--red);border-radius:2px;margin-top:12px}
+    h3{font-size:19px;font-weight:600;letter-spacing:-.2px;margin:40px 0 12px;display:flex;align-items:center;gap:8px;scroll-margin-top:80px}
+    .anchor{font-size:14px;color:var(--muted);text-decoration:none;opacity:0;transition:opacity .2s}h3:hover .anchor{opacity:1}
+    p{color:var(--sec);line-height:1.82;margin-bottom:16px}p:last-child{margin-bottom:0}
+    a{color:var(--red-l);text-decoration:none}a:hover{text-decoration:underline}strong{color:var(--text);font-weight:600}
+    ul,ol{color:var(--sec);padding-left:22px;line-height:2.1;margin:16px 0}ul li{margin-bottom:6px}
+    code{font-family:var(--mono);font-size:13px;background:var(--code-bg);border:1px solid var(--code-bd);padding:1px 6px;border-radius:4px;color:#f9a8d4}
+    .hint,.warn,.note{margin:18px 0;padding:12px 16px;border-left:3px solid;border-radius:var(--r);font-size:13.5px;line-height:1.72}
+    .hint{background:var(--hint-bg);border-color:var(--hint-c);color:#a7f3d0}.warn{background:var(--warn-bg);border-color:var(--warn-c);color:#fed7aa}.note{background:var(--note-bg);border-color:var(--note-c);color:#bae6fd}
+    .hint p,.warn p,.note p{margin:0;color:inherit}.lbl{display:block;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
+    .hint .lbl{color:var(--hint-c)}.warn .lbl{color:var(--warn-c)}.note .lbl{color:var(--note-c)}
+    .cb{margin:18px 0;border:1px solid var(--code-bd);border-radius:var(--rl);overflow:hidden;background:var(--code-bg)}
+    .cb-head{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:#181818;border-bottom:1px solid var(--code-bd);min-height:38px}
+    .cb-fname{font-family:var(--mono);font-size:11.5px;color:var(--muted);display:flex;align-items:center;gap:6px}.cb-fname::before{content:'';display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--red)}
+    .cb-right{display:flex;align-items:center;gap:6px}
+    .cpbtn{padding:3px 9px;font-size:10.5px;font-family:var(--mono);background:var(--surface);border:1px solid var(--border-l);color:var(--muted);border-radius:4px;cursor:pointer;transition:all .14s}.cpbtn:hover{background:var(--surface2);color:var(--text)}
+    pre{padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:13.5px;line-height:1.65;color:#abb2bf}pre::-webkit-scrollbar{height:5px}pre::-webkit-scrollbar-thumb{background:var(--border-l);border-radius:3px}
+    .kw{color:#c678dd}.fn{color:#61afef}.str{color:#98c379}.dec{color:#e5c07b}.typ{color:#e5c07b}.cm{color:#5c6370;font-style:italic}.pn{color:#abb2bf}.num{color:#d19a66}.cl{color:#e06c75}
+    .tab-group{display:flex;gap:0;margin-bottom:0}.tab-btn{padding:5px 16px;font-size:11.5px;font-family:var(--mono);background:transparent;border:1px solid var(--code-bd);border-bottom:none;color:var(--muted);cursor:pointer;transition:all .15s;border-radius:6px 6px 0 0;margin-right:-1px}.tab-btn:hover{color:var(--text)}.tab-btn.active{background:var(--code-bg);color:var(--red-l);border-color:var(--code-bd)}.tab-content{display:none}.tab-content.active{display:block}
+    table{width:100%;border-collapse:collapse;margin:18px 0;font-size:13.5px}
+    table td{padding:10px 14px;border:1px solid var(--border);color:var(--sec);vertical-align:top}
+    table tr:nth-child(even){background:var(--surface)}
+    table td:first-child{white-space:nowrap;color:var(--text);font-weight:500}
+    .page-nav{display:flex;justify-content:space-between;margin-top:52px;gap:16px}.pnbtn{display:flex;flex-direction:column;padding:14px 18px;border:1px solid var(--border);border-radius:var(--rl);text-decoration:none;transition:all .2s;min-width:150px}.pnbtn:hover{border-color:var(--red);background:var(--red-glow);text-decoration:none}.pnlbl{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:3px}.pntitle{font-size:14px;font-weight:600;color:var(--text)}.pnbtn.r{text-align:right;margin-left:auto}
+    @media(max-width:860px){.toc{display:none}}@media(max-width:600px){.page{padding:24px 16px 64px}}
+  </style>
+</head>
+<body>
+<div class="page">
+  <main class="content">
+    <div class="vi-banner"><span style="font-size:17px">&#x1f1fb;&#x1f1f3;</span><div>Dịch từ <strong><a href="https://docs.nestjs.com/microservices/custom-transport" target="_blank">docs.nestjs.com/microservices/custom-transport</a></strong>. Thuật ngữ kỹ thuật giữ nguyên tiếng Anh.</div></div>
+
+    <h1>Custom Transporters</h1>
+
+    <p style="margin-top:18px">Nest cung cấp sẵn một số <strong>transport layer</strong> implementations, cũng như khả năng tạo <strong>custom transport strategies</strong> của riêng bạn, cho phép bạn tích hợp với bất kỳ messaging system hoặc platform nào.</p>
+
+    <p>Các transporter được xây dựng sẵn bao gồm <code>TCP</code>, <code>Redis</code>, <code>NATS</code>, <code>MQTT</code>, <code>Kafka</code>, và <code>gRPC</code>. Để tạo một custom transport strategy, bạn cần implement các protocol giao tiếp cần thiết được Nest sử dụng.</p>
+
+    <p>Một Nest microservice là một ứng dụng sử dụng một <strong>transport layer</strong> khác so với HTTP. Nest trừu tượng hoá các chi tiết implementation của mỗi transporter đằng sau một interface được gọi là <code>CustomTransportStrategy</code>, đồng thời cung cấp một client proxy để gửi và nhận messages/events tới microservice từ xa.</p>
+
+    <div class="hint"><span class="lbl">Gợi ý</span><p>Việc tạo custom transporter từ đầu không bắt buộc. Nếu bạn chỉ cần tích hợp với một messaging system hiện có (như <code>RabbitMQ</code> hoặc <code>Amazon SQS</code>), hãy cân nhắc sử dụng các <a href="https://docs.nestjs.com/microservices/basics">Nest community packages</a> có sẵn trước khi tự tạo custom strategy.</p></div>
+
+    <!-- ═══ Creating a strategy ═══ -->
+    <h3 id="creating-a-strategy">Creating a strategy <a class="anchor" href="#creating-a-strategy">#</a></h3>
+
+    <p>Để định nghĩa một custom transport strategy, trước tiên bạn cần tạo một class extend từ <code>Server</code> (được import từ <code>@nestjs/microservices</code>) và implement interface <code>CustomTransportStrategy</code>.</p>
+
+    <p>Interface <code>CustomTransportStrategy</code> bắt buộc bạn phải implement các method sau:</p>
+
+    <ul>
+      <li><code>listen(callback: (...optionalParams: unknown[]) =&gt; any)</code> - Khởi động server transport và bắt đầu lắng nghe các message đến.</li>
+      <li><code>close()</code> - Huỷ server transport.</li>
+    </ul>
+
+    <p>Ngoài ra, class <code>Server</code> cũng cung cấp một số method hữu ích, bao gồm khả năng đăng ký message handlers với Nest runtime.</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">google-cloud-pub-sub-server.ts</div><div class="cb-right"><div class="tab-group"><button class="tab-btn active" onclick="switchTab(this,'ts')">TypeScript</button><button class="tab-btn" onclick="switchTab(this,'js')">JavaScript</button></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div class="tab-content active" data-tab="ts"><pre><span class="kw">import</span> <span class="pn">{</span> CustomTransportStrategy<span class="pn">,</span> Server <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/microservices'</span><span class="pn">;</span>
+
+<span class="kw">export</span> <span class="kw">class</span> <span class="typ">GoogleCloudPubSubServer</span>
+  <span class="kw">extends</span> <span class="typ">Server</span>
+  <span class="kw">implements</span> <span class="typ">CustomTransportStrategy</span>
+<span class="pn">{</span>
+  <span class="cm">/**
+   * This method is triggered when you run "app.listen()".
+   */</span>
+  <span class="fn">listen</span><span class="pn">(</span>callback<span class="pn">: () =&gt;</span> <span class="typ">void</span><span class="pn">) {</span>
+    callback<span class="pn">();</span>
+  <span class="pn">}</span>
+
+  <span class="cm">/**
+   * This method is triggered on application shutdown.
+   */</span>
+  <span class="fn">close</span><span class="pn">() {}</span>
+<span class="pn">}</span></pre></div><div class="tab-content" data-tab="js"><pre><span class="kw">import</span> <span class="pn">{</span> Server <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/microservices'</span><span class="pn">;</span>
+
+<span class="kw">export</span> <span class="kw">class</span> <span class="typ">GoogleCloudPubSubServer</span> <span class="kw">extends</span> <span class="typ">Server</span> <span class="pn">{</span>
+  <span class="cm">/**
+   * This method is triggered when you run "app.listen()".
+   */</span>
+  <span class="fn">listen</span><span class="pn">(</span>callback<span class="pn">) {</span>
+    callback<span class="pn">();</span>
+  <span class="pn">}</span>
+
+  <span class="cm">/**
+   * This method is triggered on application shutdown.
+   */</span>
+  <span class="fn">close</span><span class="pn">() {}</span>
+<span class="pn">}</span></pre></div></div>
+
+    <p>Với class này đã được định nghĩa, chúng ta có thể sử dụng custom strategy của mình trong method <code>createMicroservice()</code>, thay vì truyền một transport enum thông thường.</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">main.ts</div><div class="cb-right"><div class="tab-group"><button class="tab-btn active" onclick="switchTab(this,'ts')">TypeScript</button><button class="tab-btn" onclick="switchTab(this,'js')">JavaScript</button></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div class="tab-content active" data-tab="ts"><pre><span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> NestFactory<span class="pn">.</span><span class="fn">createMicroservice</span><span class="pn">&lt;</span><span class="typ">MicroserviceOptions</span><span class="pn">&gt;(</span>AppModule<span class="pn">, {</span>
+  strategy<span class="pn">:</span> <span class="kw">new</span> <span class="typ">GoogleCloudPubSubServer</span><span class="pn">(),</span>
+<span class="pn">});</span></pre></div><div class="tab-content" data-tab="js"><pre><span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> NestFactory<span class="pn">.</span><span class="fn">createMicroservice</span><span class="pn">(</span>AppModule<span class="pn">, {</span>
+  strategy<span class="pn">:</span> <span class="kw">new</span> <span class="typ">GoogleCloudPubSubServer</span><span class="pn">(),</span>
+<span class="pn">});</span></pre></div></div>
+
+    <p>Thay vì truyền thuộc tính <code>transport</code> cùng với các <code>options</code>, chúng ta truyền một thuộc tính duy nhất: <code>strategy</code>, có giá trị là một instance của custom transport strategy class của chúng ta.</p>
+
+    <p>Quay lại class <code>GoogleCloudPubSubServer</code>, trong một ứng dụng thực tế, chúng ta sẽ thiết lập kết nối tới message broker/external service của mình và đăng ký subscribers/listeners trong method <code>listen()</code> (sau đó gọi <code>callback</code>), và ngắt kết nối trong method <code>close()</code>.</p>
+
+    <p>Class <code>Server</code> của <code>@nestjs/microservices</code> có vai trò quan trọng vì nó cung cấp một số method hữu ích, ví dụ, khả năng truy cập các message handler đã được đăng ký bởi Nest runtime. Nó cũng cung cấp một số method tiện ích cơ bản để implement các custom transport strategies. Hãy xem xét chi tiết hơn.</p>
+
+    <p>Thuộc tính <code>messageHandlers</code> là một <code>Map</code> chứa tất cả các message handlers đã được đăng ký bởi Nest runtime (thông qua các decorator như <code>@MessagePattern()</code> và <code>@EventPattern()</code>), trong đó key là pattern tương ứng và value là handler function.</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">google-cloud-pub-sub-server.ts</div><div class="cb-right"><div class="tab-group"><button class="tab-btn active" onclick="switchTab(this,'ts')">TypeScript</button><button class="tab-btn" onclick="switchTab(this,'js')">JavaScript</button></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div class="tab-content active" data-tab="ts"><pre><span class="kw">import</span> <span class="pn">{</span> CustomTransportStrategy<span class="pn">,</span> Server <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/microservices'</span><span class="pn">;</span>
+
+<span class="kw">export</span> <span class="kw">class</span> <span class="typ">GoogleCloudPubSubServer</span>
+  <span class="kw">extends</span> <span class="typ">Server</span>
+  <span class="kw">implements</span> <span class="typ">CustomTransportStrategy</span>
+<span class="pn">{</span>
+  <span class="fn">listen</span><span class="pn">(</span>callback<span class="pn">: () =&gt;</span> <span class="typ">void</span><span class="pn">) {</span>
+    <span class="cm">// Create the subscription to the Google Cloud Pub/Sub topic</span>
+    <span class="cm">// In a real application, here you would set up the connection</span>
+    <span class="cm">// to the message broker and register subscribers.</span>
+
+    <span class="cm">// For each received message, use the "handleEvent"</span>
+    <span class="cm">// or "handleMessage" method (provided by the "Server" class)</span>
+    <span class="cm">// to delegate processing to the appropriate handler</span>
+    <span class="cm">// registered in your Nest application.</span>
+    <span class="kw">this</span><span class="pn">.</span>messageHandlers<span class="pn">.</span><span class="fn">forEach</span><span class="pn">((</span>handler<span class="pn">,</span> pattern<span class="pn">) =&gt; {</span>
+      <span class="cm">// The "handler" here is a reference to the handler registered</span>
+      <span class="cm">// through the "@MessagePattern" and "@EventPattern" decorators</span>
+      <span class="cm">// in your Nest application.</span>
+    <span class="pn">});</span>
+
+    callback<span class="pn">();</span>
+  <span class="pn">}</span>
+
+  <span class="fn">close</span><span class="pn">() {}</span>
+<span class="pn">}</span></pre></div><div class="tab-content" data-tab="js"><pre><span class="kw">import</span> <span class="pn">{</span> Server <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/microservices'</span><span class="pn">;</span>
+
+<span class="kw">export</span> <span class="kw">class</span> <span class="typ">GoogleCloudPubSubServer</span> <span class="kw">extends</span> <span class="typ">Server</span> <span class="pn">{</span>
+  <span class="fn">listen</span><span class="pn">(</span>callback<span class="pn">) {</span>
+    <span class="kw">this</span><span class="pn">.</span>messageHandlers<span class="pn">.</span><span class="fn">forEach</span><span class="pn">((</span>handler<span class="pn">,</span> pattern<span class="pn">) =&gt; {</span>
+      <span class="cm">// The "handler" here is a reference to the handler registered</span>
+      <span class="cm">// through the "@MessagePattern" and "@EventPattern" decorators</span>
+      <span class="cm">// in your Nest application.</span>
+    <span class="pn">});</span>
+
+    callback<span class="pn">();</span>
+  <span class="pn">}</span>
+
+  <span class="fn">close</span><span class="pn">() {}</span>
+<span class="pn">}</span></pre></div></div>
+
+    <p>Mỗi handler được đăng ký qua <code>@MessagePattern()</code> và <code>@EventPattern()</code> sẽ có một entry tương ứng trong <code>messageHandlers</code> Map, với pattern được sử dụng làm key. Method <code>on()</code> được kế thừa từ class <code>Server</code> cho phép bạn đăng ký thêm các handlers cho các pattern cụ thể.</p>
+
+    <p>Để phân biệt giữa message handler (request-response) và event handler (event-based), bạn có thể sử dụng thuộc tính <code>isEventHandler</code> của handler. Nếu <code>handler.isEventHandler</code> là <code>true</code>, nó là event handler (được đăng ký với <code>@EventPattern()</code>). Ngược lại, nó là message handler (được đăng ký với <code>@MessagePattern()</code>).</p>
+
+    <p>Method <code>unwrap()</code> được sử dụng để giải nén (unwrap) các incoming payloads. Các transporter có thể gửi message dưới nhiều format khác nhau, và method này cho phép bạn chuyển đổi payload thành định dạng mà Nest có thể xử lý.</p>
+
+    <!-- ═══ Client proxy ═══ -->
+    <h3 id="client-proxy">Client proxy <a class="anchor" href="#client-proxy">#</a></h3>
+
+    <p>Để gửi messages (hoặc events) tới custom transporter của bạn từ một ứng dụng Nest khác (hoặc từ cùng ứng dụng), bạn cần tạo một custom <code>ClientProxy</code> class.</p>
+
+    <p>Để tạo một custom client, bạn extend class <code>ClientProxy</code> và implement các method <code>connect()</code>, <code>close()</code>, <code>publish()</code> (cho messages) và <code>dispatchEvent()</code> (cho events).</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">google-cloud-pub-sub-client.ts</div><div class="cb-right"><div class="tab-group"><button class="tab-btn active" onclick="switchTab(this,'ts')">TypeScript</button><button class="tab-btn" onclick="switchTab(this,'js')">JavaScript</button></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div class="tab-content active" data-tab="ts"><pre><span class="kw">import</span> <span class="pn">{</span> ClientProxy<span class="pn">,</span> ReadPacket<span class="pn">,</span> WritePacket <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/microservices'</span><span class="pn">;</span>
+
+<span class="kw">export</span> <span class="kw">class</span> <span class="typ">GoogleCloudPubSubClient</span> <span class="kw">extends</span> <span class="typ">ClientProxy</span> <span class="pn">{</span>
+  <span class="kw">async</span> <span class="fn">connect</span><span class="pn">():</span> <span class="typ">Promise</span><span class="pn">&lt;</span><span class="typ">any</span><span class="pn">&gt; {</span>
+    <span class="cm">// Create the connection to the Google Cloud Pub/Sub</span>
+  <span class="pn">}</span>
+
+  <span class="kw">async</span> <span class="fn">close</span><span class="pn">() {</span>
+    <span class="cm">// Close the connection to the Google Cloud Pub/Sub</span>
+  <span class="pn">}</span>
+
+  <span class="kw">async</span> <span class="fn">dispatchEvent</span><span class="pn">(</span>packet<span class="pn">:</span> <span class="typ">ReadPacket</span><span class="pn">&lt;</span><span class="typ">any</span><span class="pn">&gt;):</span> <span class="typ">Promise</span><span class="pn">&lt;</span><span class="typ">any</span><span class="pn">&gt; {</span>
+    <span class="cm">// This method is triggered when you use "client.emit()".</span>
+    <span class="cm">// It should publish an event to the Google Cloud Pub/Sub topic.</span>
+    <span class="kw">return</span><span class="pn">;</span>
+  <span class="pn">}</span>
+
+  <span class="fn">publish</span><span class="pn">(</span>
+    packet<span class="pn">:</span> <span class="typ">ReadPacket</span><span class="pn">&lt;</span><span class="typ">any</span><span class="pn">&gt;,</span>
+    callback<span class="pn">: (</span>packet<span class="pn">:</span> <span class="typ">WritePacket</span><span class="pn">&lt;</span><span class="typ">any</span><span class="pn">&gt;) =&gt;</span> <span class="typ">void</span><span class="pn">,</span>
+  <span class="pn">):</span> <span class="pn">() =&gt;</span> <span class="typ">void</span> <span class="pn">{</span>
+    <span class="cm">// This method is triggered when you use "client.send()".</span>
+    <span class="cm">// It should publish a message to the Google Cloud Pub/Sub topic</span>
+    <span class="cm">// and subscribe to the response topic to receive the response.</span>
+    <span class="cm">// The "callback" function should be called with the response packet.</span>
+    <span class="kw">return</span> <span class="pn">() =&gt; {</span>
+      <span class="cm">// This function is called when the subscriber unsubscribes.</span>
+      <span class="cm">// Perform any cleanup here.</span>
+    <span class="pn">};</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div><div class="tab-content" data-tab="js"><pre><span class="kw">import</span> <span class="pn">{</span> ClientProxy <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/microservices'</span><span class="pn">;</span>
+
+<span class="kw">export</span> <span class="kw">class</span> <span class="typ">GoogleCloudPubSubClient</span> <span class="kw">extends</span> <span class="typ">ClientProxy</span> <span class="pn">{</span>
+  <span class="kw">async</span> <span class="fn">connect</span><span class="pn">() {</span>
+    <span class="cm">// Create the connection to the Google Cloud Pub/Sub</span>
+  <span class="pn">}</span>
+
+  <span class="kw">async</span> <span class="fn">close</span><span class="pn">() {</span>
+    <span class="cm">// Close the connection to the Google Cloud Pub/Sub</span>
+  <span class="pn">}</span>
+
+  <span class="kw">async</span> <span class="fn">dispatchEvent</span><span class="pn">(</span>packet<span class="pn">) {</span>
+    <span class="cm">// This method is triggered when you use "client.emit()".</span>
+    <span class="kw">return</span><span class="pn">;</span>
+  <span class="pn">}</span>
+
+  <span class="fn">publish</span><span class="pn">(</span>packet<span class="pn">,</span> callback<span class="pn">) {</span>
+    <span class="cm">// This method is triggered when you use "client.send()".</span>
+    <span class="kw">return</span> <span class="pn">() =&gt; {</span>
+      <span class="cm">// Cleanup on unsubscribe.</span>
+    <span class="pn">};</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div></div>
+
+    <p>Method <code>connect()</code> được gọi khi khởi tạo kết nối tới transport layer. Nó trả về một <code>Promise</code> resolve khi kết nối thành công.</p>
+
+    <p>Method <code>close()</code> được gọi khi ngắt kết nối từ transport layer.</p>
+
+    <p>Method <code>publish()</code> được kích hoạt khi bạn sử dụng <code>client.send()</code>. Nó gửi một message và nhận response từ microservice. Method này trả về một function cleanup được gọi khi subscriber huỷ đăng ký.</p>
+
+    <p>Method <code>dispatchEvent()</code> được kích hoạt khi bạn sử dụng <code>client.emit()</code>. Nó gửi một event tới microservice mà không chờ đợi response.</p>
+
+    <p>Method <code>unwrap()</code> được sử dụng để giải nén (unwrap) các outgoing payloads, tương tự như phía server. Nó cho phép bạn chuyển đổi payload trước khi gửi đi.</p>
+
+    <p>Khi custom client proxy đã được tạo, bạn có thể sử dụng nó trực tiếp với decorator <code>@Client()</code> hoặc đăng ký nó như một custom provider.</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">app.controller.ts</div><div class="cb-right"><div class="tab-group"><button class="tab-btn active" onclick="switchTab(this,'ts')">TypeScript</button><button class="tab-btn" onclick="switchTab(this,'js')">JavaScript</button></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div class="tab-content active" data-tab="ts"><pre><span class="dec">@Controller</span><span class="pn">()</span>
+<span class="kw">export</span> <span class="kw">class</span> <span class="typ">AppController</span> <span class="pn">{</span>
+  <span class="kw">constructor</span><span class="pn">(</span>
+    <span class="dec">@Inject</span><span class="pn">(</span><span class="str">'GOOGLE_CLOUD_PUB_SUB'</span><span class="pn">)</span>
+    <span class="kw">private</span> <span class="kw">readonly</span> client<span class="pn">:</span> <span class="typ">GoogleCloudPubSubClient</span><span class="pn">,</span>
+  <span class="pn">) {}</span>
+
+  <span class="dec">@Get</span><span class="pn">()</span>
+  <span class="fn">sendMessage</span><span class="pn">() {</span>
+    <span class="cm">// Use "send" for request-response messaging</span>
+    <span class="kw">return</span> <span class="kw">this</span><span class="pn">.</span>client<span class="pn">.</span><span class="fn">send</span><span class="pn">(</span><span class="str">'pattern'</span><span class="pn">, {</span> data<span class="pn">:</span> <span class="str">'value'</span> <span class="pn">});</span>
+  <span class="pn">}</span>
+
+  <span class="dec">@Get</span><span class="pn">(</span><span class="str">'emit'</span><span class="pn">)</span>
+  <span class="fn">emitEvent</span><span class="pn">() {</span>
+    <span class="cm">// Use "emit" for event-based messaging</span>
+    <span class="kw">this</span><span class="pn">.</span>client<span class="pn">.</span><span class="fn">emit</span><span class="pn">(</span><span class="str">'event'</span><span class="pn">, {</span> data<span class="pn">:</span> <span class="str">'value'</span> <span class="pn">});</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div><div class="tab-content" data-tab="js"><pre><span class="dec">@Controller</span><span class="pn">()</span>
+<span class="kw">export</span> <span class="kw">class</span> <span class="typ">AppController</span> <span class="pn">{</span>
+  client<span class="pn">;</span>
+
+  <span class="kw">constructor</span><span class="pn">(</span>client<span class="pn">) {</span>
+    <span class="kw">this</span><span class="pn">.</span>client <span class="pn">=</span> client<span class="pn">;</span>
+  <span class="pn">}</span>
+
+  <span class="dec">@Get</span><span class="pn">()</span>
+  <span class="fn">sendMessage</span><span class="pn">() {</span>
+    <span class="kw">return</span> <span class="kw">this</span><span class="pn">.</span>client<span class="pn">.</span><span class="fn">send</span><span class="pn">(</span><span class="str">'pattern'</span><span class="pn">, {</span> data<span class="pn">:</span> <span class="str">'value'</span> <span class="pn">});</span>
+  <span class="pn">}</span>
+
+  <span class="dec">@Get</span><span class="pn">(</span><span class="str">'emit'</span><span class="pn">)</span>
+  <span class="fn">emitEvent</span><span class="pn">() {</span>
+    <span class="kw">this</span><span class="pn">.</span>client<span class="pn">.</span><span class="fn">emit</span><span class="pn">(</span><span class="str">'event'</span><span class="pn">, {</span> data<span class="pn">:</span> <span class="str">'value'</span> <span class="pn">});</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div></div>
+
+    <p>Method <code>send()</code> trả về một <code>Observable</code> mà bạn có thể subscribe để nhận response từ microservice. Method <code>emit()</code> gửi một event theo kiểu fire-and-forget và không chờ đợi response.</p>
+
+    <!-- ═══ Message serialization ═══ -->
+    <h3 id="message-serialization">Message serialization <a class="anchor" href="#message-serialization">#</a></h3>
+
+    <p>Nếu bạn cần thêm logic tuỳ chỉnh xung quanh việc serialization của responses phía server, bạn có thể sử dụng các method <code>serializeResponse()</code> và <code>serializeError()</code> được cung cấp bởi class <code>Server</code>.</p>
+
+    <p>Method <code>serializeResponse()</code> được gọi để serialize response data trước khi gửi lại cho client. Method <code>serializeError()</code> được gọi để serialize một error response.</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">google-cloud-pub-sub-server.ts</div><div class="cb-right"><div class="tab-group"><button class="tab-btn active" onclick="switchTab(this,'ts')">TypeScript</button><button class="tab-btn" onclick="switchTab(this,'js')">JavaScript</button></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div class="tab-content active" data-tab="ts"><pre><span class="kw">import</span> <span class="pn">{</span>
+  CustomTransportStrategy<span class="pn">,</span>
+  IncomingResponse<span class="pn">,</span>
+  Server<span class="pn">,</span>
+<span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/microservices'</span><span class="pn">;</span>
+
+<span class="kw">export</span> <span class="kw">class</span> <span class="typ">GoogleCloudPubSubServer</span>
+  <span class="kw">extends</span> <span class="typ">Server</span>
+  <span class="kw">implements</span> <span class="typ">CustomTransportStrategy</span>
+<span class="pn">{</span>
+  <span class="fn">listen</span><span class="pn">(</span>callback<span class="pn">: () =&gt;</span> <span class="typ">void</span><span class="pn">) {</span>
+    callback<span class="pn">();</span>
+  <span class="pn">}</span>
+
+  <span class="fn">close</span><span class="pn">() {}</span>
+
+  <span class="fn">sendMessage</span><span class="pn">(</span>response<span class="pn">:</span> <span class="typ">IncomingResponse</span><span class="pn">) {</span>
+    <span class="cm">// Here you can see how to use the "serializeResponse"</span>
+    <span class="cm">// and "serializeError" methods to serialize the response.</span>
+    <span class="kw">const</span> serializedResponse <span class="pn">=</span> response<span class="pn">.</span>err
+      <span class="pn">?</span> <span class="kw">this</span><span class="pn">.</span><span class="fn">serializeError</span><span class="pn">(</span>response<span class="pn">.</span>err<span class="pn">)</span>
+      <span class="pn">:</span> <span class="kw">this</span><span class="pn">.</span><span class="fn">serializeResponse</span><span class="pn">(</span>response<span class="pn">.</span>response<span class="pn">);</span>
+    <span class="cm">// ... send the serialized response to the client</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div><div class="tab-content" data-tab="js"><pre><span class="kw">import</span> <span class="pn">{</span> Server <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/microservices'</span><span class="pn">;</span>
+
+<span class="kw">export</span> <span class="kw">class</span> <span class="typ">GoogleCloudPubSubServer</span> <span class="kw">extends</span> <span class="typ">Server</span> <span class="pn">{</span>
+  <span class="fn">listen</span><span class="pn">(</span>callback<span class="pn">) {</span>
+    callback<span class="pn">();</span>
+  <span class="pn">}</span>
+
+  <span class="fn">close</span><span class="pn">() {}</span>
+
+  <span class="fn">sendMessage</span><span class="pn">(</span>response<span class="pn">) {</span>
+    <span class="kw">const</span> serializedResponse <span class="pn">=</span> response<span class="pn">.</span>err
+      <span class="pn">?</span> <span class="kw">this</span><span class="pn">.</span><span class="fn">serializeError</span><span class="pn">(</span>response<span class="pn">.</span>err<span class="pn">)</span>
+      <span class="pn">:</span> <span class="kw">this</span><span class="pn">.</span><span class="fn">serializeResponse</span><span class="pn">(</span>response<span class="pn">.</span>response<span class="pn">);</span>
+    <span class="cm">// ... send the serialized response to the client</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div></div>
+
+    <p>Để tuỳ chỉnh hoàn toàn việc serialization, bạn có thể cung cấp một custom serializer class implement interface <code>Serializer</code>. Điều này cho phép bạn kiểm soát cách messages được serialized trước khi gửi qua transport layer.</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">custom-serializer.ts</div><div class="cb-right"><div class="tab-group"><button class="tab-btn active" onclick="switchTab(this,'ts')">TypeScript</button><button class="tab-btn" onclick="switchTab(this,'js')">JavaScript</button></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div class="tab-content active" data-tab="ts"><pre><span class="kw">import</span> <span class="pn">{</span> Serializer<span class="pn">,</span> OutgoingResponse <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/microservices'</span><span class="pn">;</span>
+
+<span class="kw">export</span> <span class="kw">class</span> <span class="typ">CustomSerializer</span> <span class="kw">implements</span> <span class="typ">Serializer</span> <span class="pn">{</span>
+  <span class="fn">serialize</span><span class="pn">(</span>value<span class="pn">:</span> <span class="typ">OutgoingResponse</span><span class="pn">):</span> <span class="typ">OutgoingResponse</span> <span class="pn">{</span>
+    <span class="cm">// Custom serialization logic</span>
+    <span class="cm">// For example, adding metadata, transforming the payload, etc.</span>
+    <span class="kw">return</span> value<span class="pn">;</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div><div class="tab-content" data-tab="js"><pre><span class="kw">export</span> <span class="kw">class</span> <span class="typ">CustomSerializer</span> <span class="pn">{</span>
+  <span class="fn">serialize</span><span class="pn">(</span>value<span class="pn">) {</span>
+    <span class="cm">// Custom serialization logic</span>
+    <span class="kw">return</span> value<span class="pn">;</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div></div>
+
+    <p>Để sử dụng custom serializer, truyền nó vào constructor options của <code>Server</code> hoặc <code>ClientProxy</code>:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">main.ts</div><div class="cb-right"><div class="tab-group"><button class="tab-btn active" onclick="switchTab(this,'ts')">TypeScript</button><button class="tab-btn" onclick="switchTab(this,'js')">JavaScript</button></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div class="tab-content active" data-tab="ts"><pre><span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> NestFactory<span class="pn">.</span><span class="fn">createMicroservice</span><span class="pn">&lt;</span><span class="typ">MicroserviceOptions</span><span class="pn">&gt;(</span>AppModule<span class="pn">, {</span>
+  strategy<span class="pn">:</span> <span class="kw">new</span> <span class="typ">GoogleCloudPubSubServer</span><span class="pn">({</span>
+    serializer<span class="pn">:</span> <span class="kw">new</span> <span class="typ">CustomSerializer</span><span class="pn">(),</span>
+  <span class="pn">}),</span>
+<span class="pn">});</span></pre></div><div class="tab-content" data-tab="js"><pre><span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> NestFactory<span class="pn">.</span><span class="fn">createMicroservice</span><span class="pn">(</span>AppModule<span class="pn">, {</span>
+  strategy<span class="pn">:</span> <span class="kw">new</span> <span class="typ">GoogleCloudPubSubServer</span><span class="pn">({</span>
+    serializer<span class="pn">:</span> <span class="kw">new</span> <span class="typ">CustomSerializer</span><span class="pn">(),</span>
+  <span class="pn">}),</span>
+<span class="pn">});</span></pre></div></div>
+
+    <div class="note"><span class="lbl">Lưu ý</span><p>Ngoài custom serializer, bạn cũng có thể implement một custom <code>Deserializer</code> bằng cách implement interface <code>Deserializer</code> để tuỳ chỉnh cách messages được deserialized khi nhận.</p></div>
+
+    <!-- Page Navigation -->
+    <div class="page-nav">
+      <a href="gRPC.html" class="pnbtn">
+        <span class="pnlbl">&larr; Trước</span>
+        <span class="pntitle">gRPC</span>
+      </a>
+      <a href="ExceptionFilters.html" class="pnbtn r">
+        <span class="pnlbl">Tiếp &rarr;</span>
+        <span class="pntitle">Exception Filters</span>
+      </a>
+    </div>
+
+  </main>
+
+  <!-- TOC -->
+  <aside class="toc">
+    <div class="toc-title">Nội dung</div>
+    <ul>
+      <li><a href="#creating-a-strategy">Creating a strategy</a></li>
+      <li><a href="#client-proxy">Client proxy</a></li>
+      <li><a href="#message-serialization">Message serialization</a></li>
+    </ul>
+  </aside>
+
+</div>
+
+<script>
+  function cp(btn){var w=btn.closest('.cb');var p=w.querySelector('.tab-content.active pre')||w.querySelector('pre');if(!p)return;navigator.clipboard.writeText(p.textContent.trim()).then(function(){var o=btn.textContent;btn.textContent='Copied!';btn.style.color='#4ade80';setTimeout(function(){btn.textContent=o;btn.style.color=''},1500)})}
+  function switchTab(btn,tab){var cb=btn.closest('.cb');cb.querySelectorAll('.tab-btn').forEach(function(b){b.classList.toggle('active',b===btn)});cb.querySelectorAll('.tab-content').forEach(function(c){c.classList.toggle('active',c.dataset.tab===tab)})}
+  document.querySelectorAll('.toc a').forEach(function(l){l.addEventListener('click',function(e){e.preventDefault();var t=document.querySelector(this.getAttribute('href'));if(t)t.scrollIntoView({behavior:'smooth',block:'start'})})});
+  var tocLinks=document.querySelectorAll('.toc a'),heads=document.querySelectorAll('h3[id]');
+  function hi(){var c='';heads.forEach(function(h){if(scrollY>=h.offsetTop-120)c=h.id});tocLinks.forEach(function(a){a.classList.toggle('active',a.getAttribute('href')==='#'+c)})}
+  window.addEventListener('scroll',hi,{passive:true});hi();
+</script>
+</body>
+</html>

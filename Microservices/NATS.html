@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NATS | NestJS Microservices - Tài liệu tiếng Việt</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root{--bg:#0e0e0e;--surface:#1a1a1a;--surface2:#222;--border:#2a2a2a;--border-l:#333;--red:#ea2845;--red-l:#ff4d6a;--red-glow:rgba(234,40,69,.15);--text:#e8e8e8;--muted:#888;--sec:#b0b0b0;--code-bg:#1e1e1e;--code-bd:#2d2d2d;--hint-bg:#0d2a1a;--hint-c:#4ade80;--warn-bg:#2a1a0d;--warn-c:#fb923c;--note-bg:#0d1a2a;--note-c:#60a0d0;--toc-w:220px;--font:'Inter',sans-serif;--mono:'Source Code Pro',monospace;--r:6px;--rl:10px}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+    body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:15px;line-height:1.78}
+    .page{max-width:1060px;margin:0 auto;padding:48px 32px 96px;display:flex;gap:56px;align-items:flex-start}.content{flex:1;min-width:0}
+    .toc{width:var(--toc-w);flex-shrink:0;position:sticky;top:32px;align-self:flex-start;max-height:calc(100vh - 48px);overflow-y:auto}
+    .toc::-webkit-scrollbar{width:3px}.toc::-webkit-scrollbar-thumb{background:var(--border-l);border-radius:2px}
+    .toc-title{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding-bottom:8px;margin-bottom:8px;border-bottom:1px solid var(--border)}
+    .toc ul{list-style:none}.toc ul li a{display:block;padding:3.5px 0;font-size:12.5px;color:var(--muted);text-decoration:none;line-height:1.5;transition:color .15s;cursor:pointer}
+    .toc ul li a:hover,.toc ul li a.active{color:var(--red-l)}
+    .vi-banner{display:flex;align-items:center;gap:10px;padding:11px 16px;border:1px solid rgba(234,40,69,.3);border-radius:var(--rl);background:linear-gradient(135deg,rgba(234,40,69,.1),rgba(234,40,69,.04));font-size:13px;color:var(--sec);margin-bottom:32px}.vi-banner strong{color:var(--red-l)}
+    h1{font-size:36px;font-weight:700;letter-spacing:-.5px;line-height:1.2;margin-bottom:6px}h1::after{content:'';display:block;width:44px;height:3px;background:var(--red);border-radius:2px;margin-top:12px}
+    h3{font-size:19px;font-weight:600;letter-spacing:-.2px;margin:40px 0 12px;display:flex;align-items:center;gap:8px;scroll-margin-top:80px}
+    .anchor{font-size:14px;color:var(--muted);text-decoration:none;opacity:0;transition:opacity .2s}h3:hover .anchor{opacity:1}
+    p{color:var(--sec);line-height:1.82;margin-bottom:16px}p:last-child{margin-bottom:0}
+    a{color:var(--red-l);text-decoration:none}a:hover{text-decoration:underline}strong{color:var(--text);font-weight:600}
+    ul,ol{color:var(--sec);padding-left:22px;line-height:2.1;margin:16px 0}ul li{margin-bottom:6px}
+    code{font-family:var(--mono);font-size:13px;background:var(--code-bg);border:1px solid var(--code-bd);padding:1px 6px;border-radius:4px;color:#f9a8d4}
+    .hint,.warn,.note{margin:18px 0;padding:12px 16px;border-left:3px solid;border-radius:var(--r);font-size:13.5px;line-height:1.72}
+    .hint{background:var(--hint-bg);border-color:var(--hint-c);color:#a7f3d0}.warn{background:var(--warn-bg);border-color:var(--warn-c);color:#fed7aa}.note{background:var(--note-bg);border-color:var(--note-c);color:#bae6fd}
+    .hint p,.warn p,.note p{margin:0;color:inherit}.lbl{display:block;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
+    .hint .lbl{color:var(--hint-c)}.warn .lbl{color:var(--warn-c)}.note .lbl{color:var(--note-c)}
+    .cb{margin:18px 0;border:1px solid var(--code-bd);border-radius:var(--rl);overflow:hidden;background:var(--code-bg)}
+    .cb-head{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:#181818;border-bottom:1px solid var(--code-bd);min-height:38px}
+    .cb-fname{font-family:var(--mono);font-size:11.5px;color:var(--muted);display:flex;align-items:center;gap:6px}.cb-fname::before{content:'';display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--red)}
+    .cb-right{display:flex;align-items:center;gap:6px}
+    .cpbtn{padding:3px 9px;font-size:10.5px;font-family:var(--mono);background:var(--surface);border:1px solid var(--border-l);color:var(--muted);border-radius:4px;cursor:pointer;transition:all .14s}.cpbtn:hover{background:var(--surface2);color:var(--text)}
+    pre{padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:13.5px;line-height:1.65;color:#abb2bf}pre::-webkit-scrollbar{height:5px}pre::-webkit-scrollbar-thumb{background:var(--border-l);border-radius:3px}
+    .kw{color:#c678dd}.fn{color:#61afef}.str{color:#98c379}.dec{color:#e5c07b}.typ{color:#e5c07b}.cm{color:#5c6370;font-style:italic}.pn{color:#abb2bf}.num{color:#d19a66}.cl{color:#e06c75}
+    .tab-group{display:flex;gap:0;margin-bottom:0}.tab-btn{padding:5px 16px;font-size:11.5px;font-family:var(--mono);background:transparent;border:1px solid var(--code-bd);border-bottom:none;color:var(--muted);cursor:pointer;transition:all .15s;border-radius:6px 6px 0 0;margin-right:-1px}.tab-btn:hover{color:var(--text)}.tab-btn.active{background:var(--code-bg);color:var(--red-l);border-color:var(--code-bd)}.tab-content{display:none}.tab-content.active{display:block}
+    table{width:100%;border-collapse:collapse;margin:18px 0;font-size:13.5px}
+    table td{padding:10px 14px;border:1px solid var(--border);color:var(--sec);vertical-align:top}
+    table tr:nth-child(even){background:var(--surface)}
+    table td:first-child{white-space:nowrap;color:var(--text);font-weight:500}
+    .page-nav{display:flex;justify-content:space-between;margin-top:52px;gap:16px}.pnbtn{display:flex;flex-direction:column;padding:14px 18px;border:1px solid var(--border);border-radius:var(--rl);text-decoration:none;transition:all .2s;min-width:150px}.pnbtn:hover{border-color:var(--red);background:var(--red-glow);text-decoration:none}.pnlbl{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:3px}.pntitle{font-size:14px;font-weight:600;color:var(--text)}.pnbtn.r{text-align:right;margin-left:auto}
+    @media(max-width:860px){.toc{display:none}}@media(max-width:600px){.page{padding:24px 16px 64px}}
+  </style>
+</head>
+<body>
+<div class="page">
+  <main class="content">
+    <div class="vi-banner"><span style="font-size:17px">🇻🇳</span><div>Dịch từ <strong><a href="https://docs.nestjs.com/microservices/nats" target="_blank">docs.nestjs.com/microservices/nats</a></strong>. Thuật ngữ kỹ thuật giữ nguyên tiếng Anh.</div></div>
+
+    <h1>NATS</h1>
+
+    <p style="margin-top:18px"><a href="https://nats.io" target="_blank">NATS</a> là một hệ thống messaging mã nguồn mở, đơn giản, bảo mật và hiệu suất cao dành cho các ứng dụng cloud native, IoT messaging và kiến trúc microservices. NATS server được viết bằng ngôn ngữ lập trình Go nhưng client tương tác với server có sẵn cho hàng tá ngôn ngữ lập trình chính. NATS hỗ trợ cả chế độ phân phối <strong>At Most Once</strong> và <strong>At Least Once</strong>. Nó có thể chạy ở bất kỳ đâu, từ các edge device lớn đến server, đến cloud, hoặc thậm chí trên Docker và Kubernetes.</p>
+
+    <!-- ═══ Installation ═══ -->
+    <h3 id="installation">Installation <a class="anchor" href="#installation">#</a></h3>
+
+    <p>Để bắt đầu xây dựng microservices dựa trên NATS, trước tiên hãy cài đặt package cần thiết:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre>$ npm i --save nats</pre></div>
+
+    <!-- ═══ Overview ═══ -->
+    <h3 id="overview">Overview <a class="anchor" href="#overview">#</a></h3>
+
+    <p>Để sử dụng NATS transporter, hãy truyền object options sau vào phương thức <code>createMicroservice()</code>:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">main</div><div class="cb-right"><div class="tab-group"><button class="tab-btn active" onclick="switchTab(this,'ts')">TypeScript</button><button class="tab-btn" onclick="switchTab(this,'js')">JavaScript</button></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div class="tab-content active" data-tab="ts"><pre><span class="kw">import</span> <span class="pn">{</span> NestFactory <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/core'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> Transport<span class="pn">,</span> MicroserviceOptions <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/microservices'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> AppModule <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./app.module'</span><span class="pn">;</span>
+
+<span class="kw">async</span> <span class="kw">function</span> <span class="fn">bootstrap</span><span class="pn">() {</span>
+  <span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> NestFactory<span class="pn">.</span><span class="fn">createMicroservice</span><span class="pn">&lt;</span><span class="typ">MicroserviceOptions</span><span class="pn">&gt;(</span>AppModule<span class="pn">, {</span>
+    transport<span class="pn">:</span> Transport<span class="pn">.</span>NATS<span class="pn">,</span>
+    options<span class="pn">: {</span>
+      servers<span class="pn">: [</span><span class="str">'nats://localhost:4222'</span><span class="pn">],</span>
+    <span class="pn">},</span>
+  <span class="pn">});</span>
+  <span class="kw">await</span> app<span class="pn">.</span><span class="fn">listen</span><span class="pn">();</span>
+<span class="pn">}</span>
+<span class="fn">bootstrap</span><span class="pn">();</span></pre></div><div class="tab-content" data-tab="js"><pre><span class="kw">const</span> <span class="pn">{</span> NestFactory <span class="pn">}</span> <span class="pn">=</span> <span class="fn">require</span><span class="pn">(</span><span class="str">'@nestjs/core'</span><span class="pn">);</span>
+<span class="kw">const</span> <span class="pn">{</span> Transport <span class="pn">}</span> <span class="pn">=</span> <span class="fn">require</span><span class="pn">(</span><span class="str">'@nestjs/microservices'</span><span class="pn">);</span>
+<span class="kw">const</span> <span class="pn">{</span> AppModule <span class="pn">}</span> <span class="pn">=</span> <span class="fn">require</span><span class="pn">(</span><span class="str">'./app.module'</span><span class="pn">);</span>
+
+<span class="kw">async</span> <span class="kw">function</span> <span class="fn">bootstrap</span><span class="pn">() {</span>
+  <span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> NestFactory<span class="pn">.</span><span class="fn">createMicroservice</span><span class="pn">(</span>AppModule<span class="pn">, {</span>
+    transport<span class="pn">:</span> Transport<span class="pn">.</span>NATS<span class="pn">,</span>
+    options<span class="pn">: {</span>
+      servers<span class="pn">: [</span><span class="str">'nats://localhost:4222'</span><span class="pn">],</span>
+    <span class="pn">},</span>
+  <span class="pn">});</span>
+  <span class="kw">await</span> app<span class="pn">.</span><span class="fn">listen</span><span class="pn">();</span>
+<span class="pn">}</span>
+<span class="fn">bootstrap</span><span class="pn">();</span></pre></div></div>
+
+<div class="hint"><span class="lbl">Gợi ý</span><p>Thuộc tính <code>servers</code> chấp nhận một mảng các URL. Bạn có thể kết nối đến nhiều NATS server (cluster) bằng cách cung cấp nhiều URL.</p></div>
+
+    <!-- ═══ Options ═══ -->
+    <h3 id="options">Options <a class="anchor" href="#options">#</a></h3>
+
+    <p>Object <code>options</code> dành riêng cho transporter NATS đã chọn. Ngoài các tùy chọn kết nối NATS tiêu chuẩn (có thể tham khảo trong tài liệu <a href="https://github.com/nats-io/nats.js" target="_blank">nats.js</a>), nó còn hỗ trợ các thuộc tính sau:</p>
+
+    <table>
+      <tr><td><code>queue</code></td><td>Tên queue group mà server sẽ subscribe (để trống để bỏ qua cài đặt queue group). Đọc thêm <a href="#queue-groups">bên dưới</a></td></tr>
+      <tr><td><code>gracefulShutdown</code></td><td>Nếu được bật, server sẽ unsubscribe khỏi tất cả các channel trước khi đóng kết nối thay vì buộc ngắt kết nối. Mặc định là <code>false</code></td></tr>
+      <tr><td><code>gracePeriod</code></td><td>Thời gian tính bằng milliseconds để chờ sau khi unsubscribe khỏi tất cả các channel. Mặc định là <code>10000</code> ms</td></tr>
+    </table>
+
+    <p>Bạn có thể truyền bất kỳ tùy chọn kết nối NATS nào được hỗ trợ bởi driver (<a href="https://github.com/nats-io/nats.js" target="_blank">xem thêm</a>).</p>
+
+    <!-- ═══ Client ═══ -->
+    <h3 id="client">Client <a class="anchor" href="#client">#</a></h3>
+
+    <p>Giống như các microservice transporter khác, bạn có <a href="https://docs.nestjs.com/microservices/basics#client" target="_blank">nhiều tùy chọn</a> để tạo một NATS <code>ClientProxy</code> instance.</p>
+
+    <p>Một phương pháp để tạo instance là sử dụng <code>ClientsModule</code>. Để tạo một client instance với <code>ClientsModule</code>, import nó và sử dụng phương thức <code>register()</code> để truyền một object options có cùng các thuộc tính như đã hiển thị ở trên trong phương thức <code>createMicroservice()</code>, cộng thêm thuộc tính <code>name</code> được sử dụng làm injection token. Đọc thêm về <code>ClientsModule</code> <a href="https://docs.nestjs.com/microservices/basics#client" target="_blank">tại đây</a>.</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">app.module</div><div class="cb-right"><div class="tab-group"><button class="tab-btn active" onclick="switchTab(this,'ts')">TypeScript</button><button class="tab-btn" onclick="switchTab(this,'js')">JavaScript</button></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div class="tab-content active" data-tab="ts"><pre><span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">: [</span>
+    ClientsModule<span class="pn">.</span><span class="fn">register</span><span class="pn">([</span>
+      <span class="pn">{</span>
+        name<span class="pn">:</span> <span class="str">'MATH_SERVICE'</span><span class="pn">,</span>
+        transport<span class="pn">:</span> Transport<span class="pn">.</span>NATS<span class="pn">,</span>
+        options<span class="pn">: {</span>
+          servers<span class="pn">: [</span><span class="str">'nats://localhost:4222'</span><span class="pn">],</span>
+        <span class="pn">},</span>
+      <span class="pn">},</span>
+    <span class="pn">]),</span>
+  <span class="pn">],</span>
+  <span class="pn">...</span>
+<span class="pn">})</span>
+<span class="kw">export</span> <span class="kw">class</span> <span class="typ">AppModule</span> <span class="pn">{}</span></pre></div><div class="tab-content" data-tab="js"><pre><span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">: [</span>
+    ClientsModule<span class="pn">.</span><span class="fn">register</span><span class="pn">([</span>
+      <span class="pn">{</span>
+        name<span class="pn">:</span> <span class="str">'MATH_SERVICE'</span><span class="pn">,</span>
+        transport<span class="pn">:</span> Transport<span class="pn">.</span>NATS<span class="pn">,</span>
+        options<span class="pn">: {</span>
+          servers<span class="pn">: [</span><span class="str">'nats://localhost:4222'</span><span class="pn">],</span>
+        <span class="pn">},</span>
+      <span class="pn">},</span>
+    <span class="pn">]),</span>
+  <span class="pn">],</span>
+  <span class="pn">...</span>
+<span class="pn">})</span>
+<span class="kw">export</span> <span class="kw">class</span> <span class="typ">AppModule</span> <span class="pn">{}</span></pre></div></div>
+
+    <p>Các phương pháp khác để tạo client (class factories, async) cũng có thể được sử dụng. Đọc thêm <a href="https://docs.nestjs.com/microservices/basics#client" target="_blank">tại đây</a>.</p>
+
+    <!-- ═══ Request-response ═══ -->
+    <h3 id="request-response">Request-response <a class="anchor" href="#request-response">#</a></h3>
+
+    <p>Đối với kiểu trao đổi message <strong>request-response</strong> (<a href="https://docs.nestjs.com/microservices/basics#request-response" target="_blank">đọc thêm</a>), NATS transporter sử dụng cơ chế <a href="https://docs.nats.io/nats-concepts/core-nats/reqreply" target="_blank">Request-Reply</a> tích hợp sẵn của NATS. Một request được publish trên một subject nhất định với một reply subject, và các responders lắng nghe trên subject đó và gửi response đến reply subject. Reply subjects thường là một subject được chuyển hướng động, bất kể vị trí nào trong mạng.</p>
+
+    <!-- ═══ Event-based ═══ -->
+    <h3 id="event-based">Event-based <a class="anchor" href="#event-based">#</a></h3>
+
+    <p>Đối với kiểu trao đổi message <strong>event-based</strong> (<a href="https://docs.nestjs.com/microservices/basics#event-based" target="_blank">đọc thêm</a>), NATS transporter sử dụng cơ chế <a href="https://docs.nats.io/nats-concepts/core-nats/pubsub" target="_blank">Publish-Subscribe</a> tích hợp sẵn của NATS. Một publisher gửi message trên một subject và bất kỳ subscriber đang active nào đang lắng nghe trên subject đó sẽ nhận được message. Subscriber cũng có thể đăng ký wildcard subjects hoạt động giống như regex. Mô hình one-to-many này đôi khi được gọi là fan-out.</p>
+
+    <!-- ═══ Queue groups ═══ -->
+    <h3 id="queue-groups">Queue groups <a class="anchor" href="#queue-groups">#</a></h3>
+
+    <p>NATS cung cấp một tính năng tích hợp gọi là <a href="https://docs.nats.io/nats-concepts/core-nats/queue" target="_blank">distributed queues</a>. Để tạo một queue subscription, sử dụng thuộc tính <code>queue</code> như sau:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">main</div><div class="cb-right"><div class="tab-group"><button class="tab-btn active" onclick="switchTab(this,'ts')">TypeScript</button><button class="tab-btn" onclick="switchTab(this,'js')">JavaScript</button></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div class="tab-content active" data-tab="ts"><pre><span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> NestFactory<span class="pn">.</span><span class="fn">createMicroservice</span><span class="pn">&lt;</span><span class="typ">MicroserviceOptions</span><span class="pn">&gt;(</span>AppModule<span class="pn">, {</span>
+  transport<span class="pn">:</span> Transport<span class="pn">.</span>NATS<span class="pn">,</span>
+  options<span class="pn">: {</span>
+    servers<span class="pn">: [</span><span class="str">'nats://localhost:4222'</span><span class="pn">],</span>
+    queue<span class="pn">:</span> <span class="str">'cats_queue'</span><span class="pn">,</span>
+  <span class="pn">},</span>
+<span class="pn">});</span></pre></div><div class="tab-content" data-tab="js"><pre><span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> NestFactory<span class="pn">.</span><span class="fn">createMicroservice</span><span class="pn">(</span>AppModule<span class="pn">, {</span>
+  transport<span class="pn">:</span> Transport<span class="pn">.</span>NATS<span class="pn">,</span>
+  options<span class="pn">: {</span>
+    servers<span class="pn">: [</span><span class="str">'nats://localhost:4222'</span><span class="pn">],</span>
+    queue<span class="pn">:</span> <span class="str">'cats_queue'</span><span class="pn">,</span>
+  <span class="pn">},</span>
+<span class="pn">});</span></pre></div></div>
+
+    <p>Khi nhiều subscriber subscribe cùng một queue group, chỉ một subscriber sẽ nhận message tại một thời điểm. Điều này cho phép bạn đảm bảo rằng mỗi message chỉ được xử lý bởi một instance duy nhất, đặc biệt hữu ích trong kiến trúc load-balanced.</p>
+
+    <!-- ═══ Context ═══ -->
+    <h3 id="context">Context <a class="anchor" href="#context">#</a></h3>
+
+    <p>Trong các tình huống phức tạp hơn, bạn có thể muốn truy cập thêm thông tin về request đến. Khi sử dụng NATS transporter, bạn có thể truy cập object <code>NatsContext</code>.</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">app.controller</div><div class="cb-right"><div class="tab-group"><button class="tab-btn active" onclick="switchTab(this,'ts')">TypeScript</button><button class="tab-btn" onclick="switchTab(this,'js')">JavaScript</button></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div class="tab-content active" data-tab="ts"><pre><span class="dec">@MessagePattern</span><span class="pn">(</span><span class="str">'notifications'</span><span class="pn">)</span>
+<span class="fn">getNotifications</span><span class="pn">(</span><span class="dec">@Payload</span><span class="pn">()</span> data<span class="pn">:</span> <span class="typ">number</span><span class="pn">[],</span> <span class="dec">@Ctx</span><span class="pn">()</span> context<span class="pn">:</span> <span class="typ">NatsContext</span><span class="pn">) {</span>
+  console<span class="pn">.</span><span class="fn">log</span><span class="pn">(</span><span class="str">`Subject: ${context.getSubject()}`</span><span class="pn">);</span>
+<span class="pn">}</span></pre></div><div class="tab-content" data-tab="js"><pre><span class="dec">@MessagePattern</span><span class="pn">(</span><span class="str">'notifications'</span><span class="pn">)</span>
+<span class="fn">getNotifications</span><span class="pn">(</span><span class="dec">@Payload</span><span class="pn">()</span> data<span class="pn">,</span> <span class="dec">@Ctx</span><span class="pn">()</span> context<span class="pn">) {</span>
+  console<span class="pn">.</span><span class="fn">log</span><span class="pn">(</span><span class="str">`Subject: ${context.getSubject()}`</span><span class="pn">);</span>
+<span class="pn">}</span></pre></div></div>
+
+<div class="hint"><span class="lbl">Gợi ý</span><p><code>@Payload()</code>, <code>@Ctx()</code> và <code>NatsContext</code> được import từ package <code>@nestjs/microservices</code>.</p></div>
+
+    <p><code>NatsContext</code> cung cấp hai phương thức hữu ích - <code>getSubject()</code> và <code>getHeaders()</code>. <code>getSubject()</code> trả về subject mà message hiện tại đã được publish đến (hoặc mà subscriber đang lắng nghe).</p>
+
+    <!-- ═══ Wildcards ═══ -->
+    <h3 id="wildcards">Wildcards <a class="anchor" href="#wildcards">#</a></h3>
+
+    <p>Một subscription có thể dành cho một subject cụ thể hoặc có thể bao gồm wildcard. Có hai loại wildcard: <code>*</code> khớp với bất kỳ token nào tại vị trí nhất định, và <code>&gt;</code> khớp với phần đuôi của subject (trả về tất cả matching subjects).</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">app.controller</div><div class="cb-right"><div class="tab-group"><button class="tab-btn active" onclick="switchTab(this,'ts')">TypeScript</button><button class="tab-btn" onclick="switchTab(this,'js')">JavaScript</button></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div class="tab-content active" data-tab="ts"><pre><span class="dec">@MessagePattern</span><span class="pn">(</span><span class="str">'time.us.*'</span><span class="pn">)</span>
+<span class="fn">getDate</span><span class="pn">(</span><span class="dec">@Payload</span><span class="pn">()</span> data<span class="pn">:</span> <span class="typ">number</span><span class="pn">[],</span> <span class="dec">@Ctx</span><span class="pn">()</span> context<span class="pn">:</span> <span class="typ">NatsContext</span><span class="pn">):</span> <span class="typ">string</span> <span class="pn">{</span>
+  console<span class="pn">.</span><span class="fn">log</span><span class="pn">(</span><span class="str">`Subject: ${context.getSubject()}`</span><span class="pn">);</span> <span class="cm">// ví dụ: "time.us.east"</span>
+  <span class="kw">return</span> <span class="kw">new</span> <span class="typ">Date</span><span class="pn">().</span><span class="fn">toLocaleTimeString</span><span class="pn">(...</span>args<span class="pn">);</span>
+<span class="pn">}</span></pre></div><div class="tab-content" data-tab="js"><pre><span class="dec">@MessagePattern</span><span class="pn">(</span><span class="str">'time.us.*'</span><span class="pn">)</span>
+<span class="fn">getDate</span><span class="pn">(</span><span class="dec">@Payload</span><span class="pn">()</span> data<span class="pn">,</span> <span class="dec">@Ctx</span><span class="pn">()</span> context<span class="pn">) {</span>
+  console<span class="pn">.</span><span class="fn">log</span><span class="pn">(</span><span class="str">`Subject: ${context.getSubject()}`</span><span class="pn">);</span> <span class="cm">// ví dụ: "time.us.east"</span>
+  <span class="kw">return</span> <span class="kw">new</span> <span class="typ">Date</span><span class="pn">().</span><span class="fn">toLocaleTimeString</span><span class="pn">(...</span>args<span class="pn">);</span>
+<span class="pn">}</span></pre></div></div>
+
+    <!-- ═══ Record builders ═══ -->
+    <h3 id="record-builders">Record builders <a class="anchor" href="#record-builders">#</a></h3>
+
+    <p>Để cấu hình các tùy chọn message, bạn có thể sử dụng class <code>NatsRecordBuilder</code> (lưu ý: điều này cũng có thể thực hiện cho các flow event-based). Ví dụ, để thêm headers, sử dụng phương thức <code>setHeaders</code>, như sau:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">publish-record</div><div class="cb-right"><div class="tab-group"><button class="tab-btn active" onclick="switchTab(this,'ts')">TypeScript</button><button class="tab-btn" onclick="switchTab(this,'js')">JavaScript</button></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div class="tab-content active" data-tab="ts"><pre><span class="kw">import</span> <span class="pn">{</span> NatsRecordBuilder <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/microservices'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">*</span> <span class="kw">as</span> nats <span class="kw">from</span> <span class="str">'nats'</span><span class="pn">;</span>
+
+<span class="kw">const</span> headers <span class="pn">=</span> nats<span class="pn">.</span><span class="fn">headers</span><span class="pn">();</span>
+headers<span class="pn">.</span><span class="fn">set</span><span class="pn">(</span><span class="str">'x-version'</span><span class="pn">,</span> <span class="str">'1.0.0'</span><span class="pn">);</span>
+
+<span class="kw">const</span> record <span class="pn">=</span> <span class="kw">new</span> <span class="typ">NatsRecordBuilder</span><span class="pn">(</span><span class="str">':cat:'</span><span class="pn">).</span><span class="fn">setHeaders</span><span class="pn">(</span>headers<span class="pn">).</span><span class="fn">build</span><span class="pn">();</span>
+<span class="kw">this</span><span class="pn">.</span>client<span class="pn">.</span><span class="fn">send</span><span class="pn">(</span><span class="str">'replace-emoji'</span><span class="pn">,</span> record<span class="pn">).</span><span class="fn">subscribe</span><span class="pn">(...);</span></pre></div><div class="tab-content" data-tab="js"><pre><span class="kw">const</span> <span class="pn">{</span> NatsRecordBuilder <span class="pn">}</span> <span class="pn">=</span> <span class="fn">require</span><span class="pn">(</span><span class="str">'@nestjs/microservices'</span><span class="pn">);</span>
+<span class="kw">const</span> nats <span class="pn">=</span> <span class="fn">require</span><span class="pn">(</span><span class="str">'nats'</span><span class="pn">);</span>
+
+<span class="kw">const</span> headers <span class="pn">=</span> nats<span class="pn">.</span><span class="fn">headers</span><span class="pn">();</span>
+headers<span class="pn">.</span><span class="fn">set</span><span class="pn">(</span><span class="str">'x-version'</span><span class="pn">,</span> <span class="str">'1.0.0'</span><span class="pn">);</span>
+
+<span class="kw">const</span> record <span class="pn">=</span> <span class="kw">new</span> <span class="typ">NatsRecordBuilder</span><span class="pn">(</span><span class="str">':cat:'</span><span class="pn">).</span><span class="fn">setHeaders</span><span class="pn">(</span>headers<span class="pn">).</span><span class="fn">build</span><span class="pn">();</span>
+<span class="kw">this</span><span class="pn">.</span>client<span class="pn">.</span><span class="fn">send</span><span class="pn">(</span><span class="str">'replace-emoji'</span><span class="pn">,</span> record<span class="pn">).</span><span class="fn">subscribe</span><span class="pn">(...);</span></pre></div></div>
+
+<div class="hint"><span class="lbl">Gợi ý</span><p><code>NatsRecordBuilder</code> được export từ package <code>@nestjs/microservices</code>.</p></div>
+
+    <p>Và bạn cũng có thể đọc các headers này ở phía server bằng cách truy cập <code>NatsContext</code>, như sau:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">app.controller</div><div class="cb-right"><div class="tab-group"><button class="tab-btn active" onclick="switchTab(this,'ts')">TypeScript</button><button class="tab-btn" onclick="switchTab(this,'js')">JavaScript</button></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div class="tab-content active" data-tab="ts"><pre><span class="dec">@MessagePattern</span><span class="pn">(</span><span class="str">'replace-emoji'</span><span class="pn">)</span>
+<span class="fn">replaceEmoji</span><span class="pn">(</span><span class="dec">@Payload</span><span class="pn">()</span> data<span class="pn">:</span> <span class="typ">string</span><span class="pn">,</span> <span class="dec">@Ctx</span><span class="pn">()</span> context<span class="pn">:</span> <span class="typ">NatsContext</span><span class="pn">):</span> <span class="typ">string</span> <span class="pn">{</span>
+  <span class="kw">const</span> headers <span class="pn">=</span> context<span class="pn">.</span><span class="fn">getHeaders</span><span class="pn">();</span>
+  <span class="kw">return</span> headers<span class="pn">[</span><span class="str">'x-version'</span><span class="pn">]</span> <span class="pn">===</span> <span class="str">'1.0.0'</span> <span class="pn">?</span> <span class="str">'&#x1f431;'</span> <span class="pn">:</span> <span class="str">'&#x1f408;'</span><span class="pn">;</span>
+<span class="pn">}</span></pre></div><div class="tab-content" data-tab="js"><pre><span class="dec">@MessagePattern</span><span class="pn">(</span><span class="str">'replace-emoji'</span><span class="pn">)</span>
+<span class="fn">replaceEmoji</span><span class="pn">(</span><span class="dec">@Payload</span><span class="pn">()</span> data<span class="pn">,</span> <span class="dec">@Ctx</span><span class="pn">()</span> context<span class="pn">) {</span>
+  <span class="kw">const</span> headers <span class="pn">=</span> context<span class="pn">.</span><span class="fn">getHeaders</span><span class="pn">();</span>
+  <span class="kw">return</span> headers<span class="pn">[</span><span class="str">'x-version'</span><span class="pn">]</span> <span class="pn">===</span> <span class="str">'1.0.0'</span> <span class="pn">?</span> <span class="str">'&#x1f431;'</span> <span class="pn">:</span> <span class="str">'&#x1f408;'</span><span class="pn">;</span>
+<span class="pn">}</span></pre></div></div>
+
+    <!-- ═══ Instance status updates ═══ -->
+    <h3 id="instance-status-updates">Instance status updates <a class="anchor" href="#instance-status-updates">#</a></h3>
+
+    <p>Để nhận thông báo về trạng thái kết nối của client hoặc server, bạn có thể subscribe vào thuộc tính <code>status</code> observable. Observable này cung cấp các cập nhật trạng thái dành riêng cho transporter đã chọn.</p>
+
+    <p>Đối với NATS transporter, thuộc tính <code>status</code> observable phát ra các object <code>NatsStatus</code>.</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">client-status</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">this</span><span class="pn">.</span>client<span class="pn">.</span>status<span class="pn">.</span><span class="fn">subscribe</span><span class="pn">((</span>status<span class="pn">:</span> <span class="typ">NatsStatus</span><span class="pn">) =&gt; {</span>
+  console<span class="pn">.</span><span class="fn">log</span><span class="pn">(</span>status<span class="pn">);</span>
+<span class="pn">});</span></pre></div>
+
+    <p>Tương tự, đối với server, bạn cũng có thể subscribe vào thuộc tính <code>status</code>:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">server-status</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">const</span> server <span class="pn">=</span> app<span class="pn">.</span><span class="fn">connectMicroservice</span><span class="pn">&lt;</span><span class="typ">MicroserviceOptions</span><span class="pn">&gt;(...);</span>
+server<span class="pn">.</span>status<span class="pn">.</span><span class="fn">subscribe</span><span class="pn">((</span>status<span class="pn">:</span> <span class="typ">NatsStatus</span><span class="pn">) =&gt; {</span>
+  console<span class="pn">.</span><span class="fn">log</span><span class="pn">(</span>status<span class="pn">);</span>
+<span class="pn">});</span></pre></div>
+
+    <!-- ═══ Listening to Nats events ═══ -->
+    <h3 id="listening-to-nats-events">Listening to Nats events <a class="anchor" href="#listening-to-nats-events">#</a></h3>
+
+    <p>Trong một số trường hợp, bạn có thể muốn lắng nghe các event nội bộ được phát ra bởi driver bên dưới. Ví dụ, bạn có thể muốn lắng nghe event <code>error</code> để ghi log khi xảy ra lỗi kết nối. Để làm điều đó, sử dụng phương thức <code>on()</code>, như sau:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">client-events</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">this</span><span class="pn">.</span>client<span class="pn">.</span><span class="fn">on</span><span class="pn">(</span><span class="str">'error'</span><span class="pn">, (</span>err<span class="pn">) =&gt; {</span>
+  console<span class="pn">.</span><span class="fn">error</span><span class="pn">(</span>err<span class="pn">);</span>
+<span class="pn">});</span></pre></div>
+
+    <p>Tương tự, đối với server:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">server-events</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">const</span> server <span class="pn">=</span> app<span class="pn">.</span><span class="fn">connectMicroservice</span><span class="pn">&lt;</span><span class="typ">MicroserviceOptions</span><span class="pn">&gt;(...);</span>
+server<span class="pn">.</span><span class="fn">on</span><span class="pn">&lt;</span><span class="typ">NatsEvents</span><span class="pn">&gt;(</span><span class="str">'error'</span><span class="pn">, (</span>err<span class="pn">) =&gt; {</span>
+  console<span class="pn">.</span><span class="fn">error</span><span class="pn">(</span>err<span class="pn">);</span>
+<span class="pn">});</span></pre></div>
+
+<div class="warn"><span class="lbl">Lưu ý</span><p>Phương thức <code>on()</code> được sử dụng để lắng nghe các event cấp thấp được phát ra bởi driver bên dưới. Để theo dõi trạng thái kết nối, hãy sử dụng thuộc tính <code>status</code> thay thế (xem phần <a href="#instance-status-updates">Instance status updates</a>).</p></div>
+
+    <!-- ═══ Underlying driver access ═══ -->
+    <h3 id="underlying-driver-access">Underlying driver access <a class="anchor" href="#underlying-driver-access">#</a></h3>
+
+    <p>Đối với các trường hợp sử dụng nâng cao hơn, bạn có thể cần truy cập instance driver bên dưới. Để làm điều đó, sử dụng phương thức <code>unwrap()</code>, như sau:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">client-unwrap</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">const</span> natsConnection <span class="pn">=</span> <span class="kw">this</span><span class="pn">.</span>client<span class="pn">.</span><span class="fn">unwrap</span><span class="pn">&lt;</span><span class="kw">import</span><span class="pn">(</span><span class="str">'nats'</span><span class="pn">).</span><span class="typ">NatsConnection</span><span class="pn">&gt;();</span></pre></div>
+
+    <p>Tương tự, đối với server:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">server-unwrap</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">const</span> natsConnection <span class="pn">=</span> server<span class="pn">.</span><span class="fn">unwrap</span><span class="pn">&lt;</span><span class="kw">import</span><span class="pn">(</span><span class="str">'nats'</span><span class="pn">).</span><span class="typ">NatsConnection</span><span class="pn">&gt;();</span></pre></div>
+
+<div class="warn"><span class="lbl">Lưu ý</span><p>Phương thức <code>unwrap()</code> chỉ khả dụng sau khi kết nối đã được thiết lập. Nếu kết nối chưa được thiết lập, phương thức <code>unwrap()</code> sẽ throw một error.</p></div>
+
+    <!-- Page Navigation -->
+    <div class="page-nav">
+      <a href="MQTT.html" class="pnbtn">
+        <span class="pnlbl">&larr; Trước</span>
+        <span class="pntitle">MQTT</span>
+      </a>
+      <a href="RabbitMQ.html" class="pnbtn r">
+        <span class="pnlbl">Tiếp &rarr;</span>
+        <span class="pntitle">RabbitMQ</span>
+      </a>
+    </div>
+
+  </main>
+
+  <!-- TOC -->
+  <aside class="toc">
+    <div class="toc-title">Nội dung</div>
+    <ul>
+      <li><a href="#installation">Installation</a></li>
+      <li><a href="#overview">Overview</a></li>
+      <li><a href="#options">Options</a></li>
+      <li><a href="#client">Client</a></li>
+      <li><a href="#request-response">Request-response</a></li>
+      <li><a href="#event-based">Event-based</a></li>
+      <li><a href="#queue-groups">Queue groups</a></li>
+      <li><a href="#context">Context</a></li>
+      <li><a href="#wildcards">Wildcards</a></li>
+      <li><a href="#record-builders">Record builders</a></li>
+      <li><a href="#instance-status-updates">Instance status updates</a></li>
+      <li><a href="#listening-to-nats-events">Listening to Nats events</a></li>
+      <li><a href="#underlying-driver-access">Underlying driver access</a></li>
+    </ul>
+  </aside>
+
+</div>
+
+<script>
+  function cp(btn){var w=btn.closest('.cb');var p=w.querySelector('.tab-content.active pre')||w.querySelector('pre');if(!p)return;navigator.clipboard.writeText(p.textContent.trim()).then(function(){var o=btn.textContent;btn.textContent='Copied!';btn.style.color='#4ade80';setTimeout(function(){btn.textContent=o;btn.style.color=''},1500)})}
+  function switchTab(btn,tab){var cb=btn.closest('.cb');cb.querySelectorAll('.tab-btn').forEach(function(b){b.classList.toggle('active',b===btn)});cb.querySelectorAll('.tab-content').forEach(function(c){c.classList.toggle('active',c.dataset.tab===tab)})}
+  document.querySelectorAll('.toc a').forEach(function(l){l.addEventListener('click',function(e){e.preventDefault();var t=document.querySelector(this.getAttribute('href'));if(t)t.scrollIntoView({behavior:'smooth',block:'start'})})});
+  var tocLinks=document.querySelectorAll('.toc a'),heads=document.querySelectorAll('h3[id]');
+  function hi(){var c='';heads.forEach(function(h){if(scrollY>=h.offsetTop-120)c=h.id});tocLinks.forEach(function(a){a.classList.toggle('active',a.getAttribute('href')==='#'+c)})}
+  window.addEventListener('scroll',hi,{passive:true});hi();
+</script>
+</body>
+</html>

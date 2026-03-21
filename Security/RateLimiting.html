@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rate Limiting | NestJS - Tài liệu tiếng Việt</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root{--bg:#0e0e0e;--surface:#1a1a1a;--surface2:#222;--border:#2a2a2a;--border-l:#333;--red:#ea2845;--red-l:#ff4d6a;--red-glow:rgba(234,40,69,.15);--text:#e8e8e8;--muted:#888;--sec:#b0b0b0;--code-bg:#1e1e1e;--code-bd:#2d2d2d;--hint-bg:#0d2a1a;--hint-c:#4ade80;--warn-bg:#2a1a0d;--warn-c:#fb923c;--note-bg:#0d1a2a;--note-c:#60a0d0;--toc-w:220px;--font:'Inter',sans-serif;--mono:'Source Code Pro',monospace;--r:6px;--rl:10px}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+    body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:15px;line-height:1.78}
+    .page{max-width:1060px;margin:0 auto;padding:48px 32px 96px;display:flex;gap:56px;align-items:flex-start}.content{flex:1;min-width:0}
+    .toc{width:var(--toc-w);flex-shrink:0;position:sticky;top:32px;align-self:flex-start;max-height:calc(100vh - 48px);overflow-y:auto}
+    .toc::-webkit-scrollbar{width:3px}.toc::-webkit-scrollbar-thumb{background:var(--border-l);border-radius:2px}
+    .toc-title{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding-bottom:8px;margin-bottom:8px;border-bottom:1px solid var(--border)}
+    .toc ul{list-style:none}.toc ul li a{display:block;padding:3.5px 0;font-size:12.5px;color:var(--muted);text-decoration:none;line-height:1.5;transition:color .15s;cursor:pointer}
+    .toc ul li a:hover,.toc ul li a.active{color:var(--red-l)}
+    .vi-banner{display:flex;align-items:center;gap:10px;padding:11px 16px;border:1px solid rgba(234,40,69,.3);border-radius:var(--rl);background:linear-gradient(135deg,rgba(234,40,69,.1),rgba(234,40,69,.04));font-size:13px;color:var(--sec);margin-bottom:32px}.vi-banner strong{color:var(--red-l)}
+    h1{font-size:36px;font-weight:700;letter-spacing:-.5px;line-height:1.2;margin-bottom:6px}h1::after{content:'';display:block;width:44px;height:3px;background:var(--red);border-radius:2px;margin-top:12px}
+    h3{font-size:19px;font-weight:600;letter-spacing:-.2px;margin:40px 0 12px;display:flex;align-items:center;gap:8px;scroll-margin-top:80px}
+    .anchor{font-size:14px;color:var(--muted);text-decoration:none;opacity:0;transition:opacity .2s}h3:hover .anchor{opacity:1}
+    p{color:var(--sec);line-height:1.82;margin-bottom:16px}p:last-child{margin-bottom:0}
+    a{color:var(--red-l);text-decoration:none}a:hover{text-decoration:underline}strong{color:var(--text);font-weight:600}
+    ul,ol{color:var(--sec);padding-left:22px;line-height:2.1;margin:16px 0}ul li{margin-bottom:6px}
+    code{font-family:var(--mono);font-size:13px;background:var(--code-bg);border:1px solid var(--code-bd);padding:1px 6px;border-radius:4px;color:#f9a8d4}
+    .hint,.warn,.note{margin:18px 0;padding:12px 16px;border-left:3px solid;border-radius:var(--r);font-size:13.5px;line-height:1.72}
+    .hint{background:var(--hint-bg);border-color:var(--hint-c);color:#a7f3d0}.warn{background:var(--warn-bg);border-color:var(--warn-c);color:#fed7aa}.note{background:var(--note-bg);border-color:var(--note-c);color:#bae6fd}
+    .hint p,.warn p,.note p{margin:0;color:inherit}.lbl{display:block;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
+    .hint .lbl{color:var(--hint-c)}.warn .lbl{color:var(--warn-c)}.note .lbl{color:var(--note-c)}
+    .cb{margin:18px 0;border:1px solid var(--code-bd);border-radius:var(--rl);overflow:hidden;background:var(--code-bg)}
+    .cb-head{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:#181818;border-bottom:1px solid var(--code-bd);min-height:38px}
+    .cb-fname{font-family:var(--mono);font-size:11.5px;color:var(--muted);display:flex;align-items:center;gap:6px}.cb-fname::before{content:'';display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--red)}
+    .cb-right{display:flex;align-items:center;gap:6px}
+    .cpbtn{padding:3px 9px;font-size:10.5px;font-family:var(--mono);background:var(--surface);border:1px solid var(--border-l);color:var(--muted);border-radius:4px;cursor:pointer;transition:all .14s}.cpbtn:hover{background:var(--surface2);color:var(--text)}
+    pre{padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:13.5px;line-height:1.65;color:#abb2bf}pre::-webkit-scrollbar{height:5px}pre::-webkit-scrollbar-thumb{background:var(--border-l);border-radius:3px}
+    .kw{color:#c678dd}.fn{color:#61afef}.str{color:#98c379}.dec{color:#e5c07b}.typ{color:#e5c07b}.cm{color:#5c6370;font-style:italic}.pn{color:#abb2bf}.num{color:#d19a66}.cl{color:#e06c75}
+    .tab-group{display:flex;gap:0;margin-bottom:0}.tab-btn{padding:5px 16px;font-size:11.5px;font-family:var(--mono);background:transparent;border:1px solid var(--code-bd);border-bottom:none;color:var(--muted);cursor:pointer;transition:all .15s;border-radius:6px 6px 0 0;margin-right:-1px}.tab-btn:hover{color:var(--text)}.tab-btn.active{background:var(--code-bg);color:var(--red-l);border-color:var(--code-bd)}.tab-content{display:none}.tab-content.active{display:block}
+    table{width:100%;border-collapse:collapse;margin:18px 0;font-size:13.5px}
+    table td{padding:10px 14px;border:1px solid var(--border);color:var(--sec);vertical-align:top}
+    table tr:nth-child(even){background:var(--surface)}
+    table td:first-child{white-space:nowrap;color:var(--text);font-weight:500}
+    .page-nav{display:flex;justify-content:space-between;margin-top:52px;gap:16px}.pnbtn{display:flex;flex-direction:column;padding:14px 18px;border:1px solid var(--border);border-radius:var(--rl);text-decoration:none;transition:all .2s;min-width:150px}.pnbtn:hover{border-color:var(--red);background:var(--red-glow);text-decoration:none}.pnlbl{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:3px}.pntitle{font-size:14px;font-weight:600;color:var(--text)}.pnbtn.r{text-align:right;margin-left:auto}
+    @media(max-width:860px){.toc{display:none}}@media(max-width:600px){.page{padding:24px 16px 64px}}
+  </style>
+</head>
+<body>
+<div class="page">
+  <main class="content">
+    <div class="vi-banner"><span style="font-size:17px">🇻🇳</span><div>Dịch từ <strong><a href="https://docs.nestjs.com/security/rate-limiting" target="_blank">docs.nestjs.com/security/rate-limiting</a></strong>. Thuật ngữ kỹ thuật giữ nguyên tiếng Anh.</div></div>
+
+    <h1>Rate Limiting</h1>
+
+    <p style="margin-top:18px">Một kỹ thuật phổ biến để bảo vệ ứng dụng khỏi các cuộc tấn công brute-force là <strong>rate-limiting</strong>. Để bắt đầu, bạn cần cài đặt package <code>@nestjs/throttler</code>.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre>$ npm i --save @nestjs/throttler</pre></div>
+
+    <p>Sau khi cài đặt xong, <code>ThrottlerModule</code> có thể được cấu hình như bất kỳ package Nest nào khác với các phương thức <code>forRoot</code> hoặc <code>forRootAsync</code>.</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">app.module</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">: [</span>
+     ThrottlerModule<span class="pn">.</span><span class="fn">forRoot</span><span class="pn">({</span>
+      throttlers<span class="pn">: [</span>
+        <span class="pn">{</span>
+          ttl<span class="pn">:</span> <span class="num">60000</span><span class="pn">,</span>
+          limit<span class="pn">:</span> <span class="num">10</span><span class="pn">,</span>
+        <span class="pn">},</span>
+      <span class="pn">],</span>
+    <span class="pn">}),</span>
+  <span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export</span> <span class="kw">class</span> <span class="typ">AppModule</span> <span class="pn">{}</span></pre></div>
+
+    <p>Đoạn code trên sẽ thiết lập các tùy chọn toàn cục cho <code>ttl</code>, thời gian sống tính bằng milliseconds, và <code>limit</code>, số lượng request tối đa trong khoảng thời gian ttl, cho các route của ứng dụng được bảo vệ bởi guard.</p>
+
+    <p>Sau khi module đã được import, bạn có thể chọn cách bind <code>ThrottlerGuard</code>. Bất kỳ kiểu binding nào như đã đề cập trong phần <a href="https://docs.nestjs.com/guards">guards</a> đều được. Ví dụ, nếu bạn muốn bind guard một cách toàn cục, bạn có thể thực hiện bằng cách thêm provider này vào bất kỳ module nào:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="pn">{</span>
+  provide<span class="pn">:</span> APP_GUARD<span class="pn">,</span>
+  useClass<span class="pn">:</span> ThrottlerGuard
+<span class="pn">}</span></pre></div>
+
+    <!-- ═══ Multiple Throttler Definitions ═══ -->
+    <h3 id="multiple-throttler-definitions">Multiple Throttler Definitions <a class="anchor" href="#multiple-throttler-definitions">#</a></h3>
+
+    <p>Có thể sẽ có lúc bạn muốn thiết lập nhiều định nghĩa throttling, ví dụ không quá 3 lần gọi trong một giây, 20 lần gọi trong 10 giây, và 100 lần gọi trong một phút.</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">app.module</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">: [</span>
+    ThrottlerModule<span class="pn">.</span><span class="fn">forRoot</span><span class="pn">([</span>
+      <span class="pn">{</span>
+        name<span class="pn">:</span> <span class="str">'short'</span><span class="pn">,</span>
+        ttl<span class="pn">:</span> <span class="num">1000</span><span class="pn">,</span>
+        limit<span class="pn">:</span> <span class="num">3</span><span class="pn">,</span>
+      <span class="pn">},</span>
+      <span class="pn">{</span>
+        name<span class="pn">:</span> <span class="str">'medium'</span><span class="pn">,</span>
+        ttl<span class="pn">:</span> <span class="num">10000</span><span class="pn">,</span>
+        limit<span class="pn">:</span> <span class="num">20</span>
+      <span class="pn">},</span>
+      <span class="pn">{</span>
+        name<span class="pn">:</span> <span class="str">'long'</span><span class="pn">,</span>
+        ttl<span class="pn">:</span> <span class="num">60000</span><span class="pn">,</span>
+        limit<span class="pn">:</span> <span class="num">100</span>
+      <span class="pn">}</span>
+    <span class="pn">]),</span>
+  <span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export</span> <span class="kw">class</span> <span class="typ">AppModule</span> <span class="pn">{}</span></pre></div>
+
+    <!-- ═══ Customization ═══ -->
+    <h3 id="customization">Customization <a class="anchor" href="#customization">#</a></h3>
+
+    <p>Có thể sẽ có lúc bạn muốn bind guard vào một controller hoặc toàn cục, nhưng muốn tắt rate limiting cho một hoặc nhiều endpoint của bạn. Để làm điều đó, bạn có thể sử dụng decorator <code>@SkipThrottle()</code>, để bỏ qua throttler cho toàn bộ class hoặc một route đơn lẻ. Decorator <code>@SkipThrottle()</code> cũng có thể nhận vào một object với các key là string và value là boolean cho trường hợp bạn muốn loại trừ <em>hầu hết</em> controller, nhưng không phải mọi route, và cấu hình theo từng throttler set nếu bạn có nhiều hơn một. Nếu bạn không truyền object, mặc định sẽ sử dụng <code>{ default: true }</code>.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@SkipThrottle</span><span class="pn">()</span>
+<span class="dec">@Controller</span><span class="pn">(</span><span class="str">'users'</span><span class="pn">)</span>
+<span class="kw">export</span> <span class="kw">class</span> <span class="typ">UsersController</span> <span class="pn">{}</span></pre></div>
+
+    <p>Decorator <code>@SkipThrottle()</code> này có thể được sử dụng để bỏ qua một route hoặc một class hoặc để phủ định việc bỏ qua một route trong một class đã được bỏ qua.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@SkipThrottle</span><span class="pn">()</span>
+<span class="dec">@Controller</span><span class="pn">(</span><span class="str">'users'</span><span class="pn">)</span>
+<span class="kw">export</span> <span class="kw">class</span> <span class="typ">UsersController</span> <span class="pn">{</span>
+  <span class="cm">// Rate limiting is applied to this route.</span>
+  <span class="dec">@SkipThrottle</span><span class="pn">({</span> default<span class="pn">:</span> <span class="kw">false</span> <span class="pn">})</span>
+  <span class="fn">dontSkip</span><span class="pn">() {</span>
+    <span class="kw">return</span> <span class="str">'List users work with Rate limiting.'</span><span class="pn">;</span>
+  <span class="pn">}</span>
+  <span class="cm">// This route will skip rate limiting.</span>
+  <span class="fn">doSkip</span><span class="pn">() {</span>
+    <span class="kw">return</span> <span class="str">'List users work without Rate limiting.'</span><span class="pn">;</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+
+    <p>Ngoài ra còn có decorator <code>@Throttle()</code> có thể được sử dụng để ghi đè <code>limit</code> và <code>ttl</code> đã thiết lập trong module toàn cục, để cung cấp các tùy chọn bảo mật chặt chẽ hơn hoặc lỏng hơn.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="cm">// Override default configuration for Rate limiting and duration.</span>
+<span class="dec">@Throttle</span><span class="pn">({</span> default<span class="pn">:</span> <span class="pn">{</span> limit<span class="pn">:</span> <span class="num">3</span><span class="pn">,</span> ttl<span class="pn">:</span> <span class="num">60000</span> <span class="pn">}</span> <span class="pn">})</span>
+<span class="dec">@Get</span><span class="pn">()</span>
+<span class="fn">findAll</span><span class="pn">() {</span>
+  <span class="kw">return</span> <span class="str">"List users works with custom rate limiting."</span><span class="pn">;</span>
+<span class="pn">}</span></pre></div>
+
+    <!-- ═══ Proxies ═══ -->
+    <h3 id="proxies">Proxies <a class="anchor" href="#proxies">#</a></h3>
+
+    <p>Nếu ứng dụng của bạn đang chạy phía sau một proxy server, điều cần thiết là phải cấu hình HTTP adapter để tin tưởng proxy. Bạn có thể tham khảo các tùy chọn HTTP adapter cụ thể cho <a href="http://expressjs.com/en/guide/behind-proxies.html" target="_blank">Express</a> và <a href="https://www.fastify.io/docs/latest/Reference/Server/#trustproxy" target="_blank">Fastify</a> để kích hoạt thiết lập <code>trust proxy</code>.</p>
+
+    <p>Đây là một ví dụ:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">main</div><div class="cb-right"><div class="tab-group"><button class="tab-btn active" onclick="switchTab(this,'ts')">TypeScript</button><button class="tab-btn" onclick="switchTab(this,'js')">JavaScript</button></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div class="tab-content active" data-tab="ts"><pre><span class="kw">import</span> <span class="pn">{</span> NestFactory <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/core'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> AppModule <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./app.module'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> NestExpressApplication <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/platform-express'</span><span class="pn">;</span>
+
+<span class="kw">async</span> <span class="kw">function</span> <span class="fn">bootstrap</span><span class="pn">() {</span>
+  <span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> NestFactory<span class="pn">.</span><span class="fn">create</span><span class="pn">&lt;</span><span class="typ">NestExpressApplication</span><span class="pn">&gt;(</span>AppModule<span class="pn">);</span>
+  app<span class="pn">.</span><span class="fn">set</span><span class="pn">(</span><span class="str">'trust proxy'</span><span class="pn">,</span> <span class="str">'loopback'</span><span class="pn">);</span> <span class="cm">// Trust requests from the loopback address</span>
+  <span class="kw">await</span> app<span class="pn">.</span><span class="fn">listen</span><span class="pn">(</span><span class="num">3000</span><span class="pn">);</span>
+<span class="pn">}</span>
+
+<span class="fn">bootstrap</span><span class="pn">();</span></pre></div><div class="tab-content" data-tab="js"><pre><span class="kw">import</span> <span class="pn">{</span> NestFactory <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/core'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> AppModule <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./app.module'</span><span class="pn">;</span>
+
+<span class="kw">async</span> <span class="kw">function</span> <span class="fn">bootstrap</span><span class="pn">() {</span>
+  <span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> NestFactory<span class="pn">.</span><span class="fn">create</span><span class="pn">(</span>AppModule<span class="pn">);</span>
+  app<span class="pn">.</span><span class="fn">set</span><span class="pn">(</span><span class="str">'trust proxy'</span><span class="pn">,</span> <span class="str">'loopback'</span><span class="pn">);</span> <span class="cm">// Trust requests from the loopback address</span>
+  <span class="kw">await</span> app<span class="pn">.</span><span class="fn">listen</span><span class="pn">(</span><span class="num">3000</span><span class="pn">);</span>
+<span class="pn">}</span>
+
+<span class="fn">bootstrap</span><span class="pn">();</span></pre></div></div>
+
+    <p>Việc bật <code>trust proxy</code> cho phép bạn lấy địa chỉ IP gốc từ header <code>X-Forwarded-For</code>. Bạn cũng có thể tùy chỉnh hành vi của ứng dụng bằng cách ghi đè phương thức <code>getTracker()</code>:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">throttler-behind-proxy.guard</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">import</span> <span class="pn">{</span> ThrottlerGuard <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/throttler'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> Injectable <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+
+<span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export</span> <span class="kw">class</span> <span class="typ">ThrottlerBehindProxyGuard</span> <span class="kw">extends</span> <span class="typ">ThrottlerGuard</span> <span class="pn">{</span>
+  <span class="kw">protected</span> <span class="kw">async</span> <span class="fn">getTracker</span><span class="pn">(</span>req<span class="pn">:</span> <span class="typ">Record</span><span class="pn">&lt;</span><span class="typ">string</span><span class="pn">,</span> <span class="typ">any</span><span class="pn">&gt;):</span> <span class="typ">Promise</span><span class="pn">&lt;</span><span class="typ">string</span><span class="pn">&gt; {</span>
+    <span class="kw">return</span> req<span class="pn">.</span>ips<span class="pn">.</span>length <span class="pn">?</span> req<span class="pn">.</span>ips<span class="pn">[</span><span class="num">0</span><span class="pn">]</span> <span class="pn">:</span> req<span class="pn">.</span>ip<span class="pn">;</span> <span class="cm">// individualize IP extraction to meet your own needs</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+
+<div class="hint"><span class="lbl">Gợi ý</span><p>Bạn có thể tìm API của object <code>req</code> Request cho express <a href="https://expressjs.com/en/api.html#req.ips" target="_blank">tại đây</a> và cho fastify <a href="https://www.fastify.io/docs/latest/Reference/Request/" target="_blank">tại đây</a>.</p></div>
+
+    <!-- ═══ Websockets ═══ -->
+    <h3 id="websockets">Websockets <a class="anchor" href="#websockets">#</a></h3>
+
+    <p>Module này có thể hoạt động với websockets, nhưng cần một số mở rộng class. Bạn có thể mở rộng <code>ThrottlerGuard</code> và ghi đè phương thức <code>handleRequest</code> như sau:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export</span> <span class="kw">class</span> <span class="typ">WsThrottlerGuard</span> <span class="kw">extends</span> <span class="typ">ThrottlerGuard</span> <span class="pn">{</span>
+  <span class="kw">async</span> <span class="fn">handleRequest</span><span class="pn">(</span>requestProps<span class="pn">:</span> <span class="typ">ThrottlerRequest</span><span class="pn">):</span> <span class="typ">Promise</span><span class="pn">&lt;</span><span class="typ">boolean</span><span class="pn">&gt; {</span>
+    <span class="kw">const</span> <span class="pn">{</span>
+      context<span class="pn">,</span>
+      limit<span class="pn">,</span>
+      ttl<span class="pn">,</span>
+      throttler<span class="pn">,</span>
+      blockDuration<span class="pn">,</span>
+      getTracker<span class="pn">,</span>
+      generateKey<span class="pn">,</span>
+    <span class="pn">}</span> <span class="pn">=</span> requestProps<span class="pn">;</span>
+
+    <span class="kw">const</span> client <span class="pn">=</span> context<span class="pn">.</span><span class="fn">switchToWs</span><span class="pn">().</span><span class="fn">getClient</span><span class="pn">();</span>
+    <span class="kw">const</span> tracker <span class="pn">=</span> client<span class="pn">.</span>_socket<span class="pn">.</span>remoteAddress<span class="pn">;</span>
+    <span class="kw">const</span> key <span class="pn">=</span> <span class="fn">generateKey</span><span class="pn">(</span>context<span class="pn">,</span> tracker<span class="pn">,</span> throttler<span class="pn">.</span>name<span class="pn">);</span>
+    <span class="kw">const</span> <span class="pn">{</span> totalHits<span class="pn">,</span> timeToExpire<span class="pn">,</span> isBlocked<span class="pn">,</span> timeToBlockExpire <span class="pn">}</span> <span class="pn">=</span>
+      <span class="kw">await</span> <span class="kw">this</span><span class="pn">.</span>storageService<span class="pn">.</span><span class="fn">increment</span><span class="pn">(</span>
+        key<span class="pn">,</span>
+        ttl<span class="pn">,</span>
+        limit<span class="pn">,</span>
+        blockDuration<span class="pn">,</span>
+        throttler<span class="pn">.</span>name<span class="pn">,</span>
+      <span class="pn">);</span>
+
+    <span class="kw">const</span> <span class="fn">getThrottlerSuffix</span> <span class="pn">= (</span>name<span class="pn">:</span> <span class="typ">string</span><span class="pn">) =&gt;</span>
+      name <span class="pn">===</span> <span class="str">'default'</span> <span class="pn">?</span> <span class="str">''</span> <span class="pn">:</span> <span class="str">`-${name}`</span><span class="pn">;</span>
+
+    <span class="cm">// Throw an error when the user reached their limit.</span>
+    <span class="kw">if</span> <span class="pn">(</span>isBlocked<span class="pn">) {</span>
+      <span class="kw">await</span> <span class="kw">this</span><span class="pn">.</span><span class="fn">throwThrottlingException</span><span class="pn">(</span>context<span class="pn">, {</span>
+        limit<span class="pn">,</span>
+        ttl<span class="pn">,</span>
+        key<span class="pn">,</span>
+        tracker<span class="pn">,</span>
+        totalHits<span class="pn">,</span>
+        timeToExpire<span class="pn">,</span>
+        isBlocked<span class="pn">,</span>
+        timeToBlockExpire<span class="pn">,</span>
+      <span class="pn">});</span>
+    <span class="pn">}</span>
+
+    <span class="kw">return</span> <span class="kw">true</span><span class="pn">;</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+
+<div class="hint"><span class="lbl">Gợi ý</span><p>Nếu bạn đang sử dụng ws, cần thay thế <code>_socket</code> bằng <code>conn</code></p></div>
+
+    <p>Có một vài điều cần lưu ý khi làm việc với WebSockets:</p>
+    <ul>
+      <li>Guard không thể được đăng ký với <code>APP_GUARD</code> hoặc <code>app.useGlobalGuards()</code></li>
+      <li>Khi đạt đến giới hạn, Nest sẽ phát ra một event <code>exception</code>, vì vậy hãy đảm bảo có một listener sẵn sàng cho điều này</li>
+    </ul>
+
+<div class="hint"><span class="lbl">Gợi ý</span><p>Nếu bạn đang sử dụng package <code>@nestjs/platform-ws</code>, bạn có thể sử dụng <code>client._socket.remoteAddress</code> thay thế.</p></div>
+
+    <!-- ═══ GraphQL ═══ -->
+    <h3 id="graphql">GraphQL <a class="anchor" href="#graphql">#</a></h3>
+
+    <p><code>ThrottlerGuard</code> cũng có thể được sử dụng để làm việc với các request GraphQL. Một lần nữa, guard có thể được mở rộng, nhưng lần này phương thức <code>getRequestResponse</code> sẽ được ghi đè:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export</span> <span class="kw">class</span> <span class="typ">GqlThrottlerGuard</span> <span class="kw">extends</span> <span class="typ">ThrottlerGuard</span> <span class="pn">{</span>
+  <span class="fn">getRequestResponse</span><span class="pn">(</span>context<span class="pn">:</span> <span class="typ">ExecutionContext</span><span class="pn">) {</span>
+    <span class="kw">const</span> gqlCtx <span class="pn">=</span> GqlExecutionContext<span class="pn">.</span><span class="fn">create</span><span class="pn">(</span>context<span class="pn">);</span>
+    <span class="kw">const</span> ctx <span class="pn">=</span> gqlCtx<span class="pn">.</span><span class="fn">getContext</span><span class="pn">();</span>
+    <span class="kw">return</span> <span class="pn">{</span> req<span class="pn">:</span> ctx<span class="pn">.</span>req<span class="pn">,</span> res<span class="pn">:</span> ctx<span class="pn">.</span>res <span class="pn">};</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+
+    <!-- ═══ Configuration ═══ -->
+    <h3 id="configuration">Configuration <a class="anchor" href="#configuration">#</a></h3>
+
+    <p>Các tùy chọn sau đây hợp lệ cho object được truyền vào mảng options của <code>ThrottlerModule</code>:</p>
+
+    <table>
+      <tr><td><code>name</code></td><td>tên để theo dõi nội bộ throttler set nào đang được sử dụng. Mặc định là <code>default</code> nếu không được truyền</td></tr>
+      <tr><td><code>ttl</code></td><td>số milliseconds mà mỗi request sẽ tồn tại trong storage</td></tr>
+      <tr><td><code>limit</code></td><td>số lượng request tối đa trong khoảng thời gian TTL</td></tr>
+      <tr><td><code>blockDuration</code></td><td>số milliseconds mà request sẽ bị chặn trong khoảng thời gian đó</td></tr>
+      <tr><td><code>ignoreUserAgents</code></td><td>một mảng các biểu thức chính quy của user-agents cần bỏ qua khi throttling request</td></tr>
+      <tr><td><code>skipIf</code></td><td>một function nhận vào <code>ExecutionContext</code> và trả về <code>boolean</code> để bỏ qua logic throttler. Giống như <code>@SkipThrottler()</code>, nhưng dựa trên request</td></tr>
+    </table>
+
+    <p>Nếu bạn cần thiết lập storage, hoặc muốn sử dụng một số tùy chọn trên theo nghĩa toàn cục hơn, áp dụng cho mỗi throttler set, bạn có thể truyền các tùy chọn trên qua key <code>throttlers</code> và sử dụng bảng dưới đây:</p>
+
+    <table>
+      <tr><td><code>storage</code></td><td>một custom storage service cho nơi lưu trữ theo dõi throttling. <a href="#storages">Xem tại đây.</a></td></tr>
+      <tr><td><code>ignoreUserAgents</code></td><td>một mảng các biểu thức chính quy của user-agents cần bỏ qua khi throttling request</td></tr>
+      <tr><td><code>skipIf</code></td><td>một function nhận vào <code>ExecutionContext</code> và trả về <code>boolean</code> để bỏ qua logic throttler</td></tr>
+      <tr><td><code>throttlers</code></td><td>một mảng các throttler set, được định nghĩa sử dụng bảng ở trên</td></tr>
+      <tr><td><code>errorMessage</code></td><td>một <code>string</code> HOẶC một function nhận vào <code>ExecutionContext</code> và <code>ThrottlerLimitDetail</code> rồi trả về một <code>string</code> để ghi đè thông báo lỗi throttler mặc định</td></tr>
+      <tr><td><code>getTracker</code></td><td>một function nhận vào <code>Request</code> và trả về một <code>string</code> để ghi đè logic mặc định của phương thức <code>getTracker</code></td></tr>
+      <tr><td><code>generateKey</code></td><td>một function nhận vào <code>ExecutionContext</code>, tracker <code>string</code> và tên throttler dưới dạng <code>string</code> rồi trả về một <code>string</code> để ghi đè key cuối cùng được sử dụng để lưu trữ giá trị rate limit</td></tr>
+    </table>
+
+    <!-- ═══ Async Configuration ═══ -->
+    <h3 id="async-configuration">Async Configuration <a class="anchor" href="#async-configuration">#</a></h3>
+
+    <p>Bạn có thể muốn lấy cấu hình rate-limiting một cách bất đồng bộ thay vì đồng bộ. Bạn có thể sử dụng phương thức <code>forRootAsync()</code>.</p>
+
+    <p>Một cách tiếp cận là sử dụng factory function:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">: [</span>
+    ThrottlerModule<span class="pn">.</span><span class="fn">forRootAsync</span><span class="pn">({</span>
+      imports<span class="pn">: [</span>ConfigModule<span class="pn">],</span>
+      inject<span class="pn">: [</span>ConfigService<span class="pn">],</span>
+      useFactory<span class="pn">: (</span>config<span class="pn">:</span> <span class="typ">ConfigService</span><span class="pn">) =&gt; [</span>
+        <span class="pn">{</span>
+          ttl<span class="pn">:</span> config<span class="pn">.</span><span class="fn">get</span><span class="pn">(</span><span class="str">'THROTTLE_TTL'</span><span class="pn">),</span>
+          limit<span class="pn">:</span> config<span class="pn">.</span><span class="fn">get</span><span class="pn">(</span><span class="str">'THROTTLE_LIMIT'</span><span class="pn">),</span>
+        <span class="pn">},</span>
+      <span class="pn">],</span>
+    <span class="pn">}),</span>
+  <span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export</span> <span class="kw">class</span> <span class="typ">AppModule</span> <span class="pn">{}</span></pre></div>
+
+    <p>Bạn cũng có thể sử dụng cú pháp <code>useClass</code>:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">: [</span>
+    ThrottlerModule<span class="pn">.</span><span class="fn">forRootAsync</span><span class="pn">({</span>
+      imports<span class="pn">: [</span>ConfigModule<span class="pn">],</span>
+      useClass<span class="pn">:</span> ThrottlerConfigService<span class="pn">,</span>
+    <span class="pn">}),</span>
+  <span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export</span> <span class="kw">class</span> <span class="typ">AppModule</span> <span class="pn">{}</span></pre></div>
+
+    <p>Điều này hoàn toàn khả thi, miễn là <code>ThrottlerConfigService</code> implement interface <code>ThrottlerOptionsFactory</code>.</p>
+
+    <!-- ═══ Storages ═══ -->
+    <h3 id="storages">Storages <a class="anchor" href="#storages">#</a></h3>
+
+    <p>Storage tích hợp sẵn là một in memory cache theo dõi các request đã thực hiện cho đến khi chúng vượt qua TTL được thiết lập bởi các tùy chọn toàn cục. Bạn có thể cung cấp storage option riêng cho tùy chọn <code>storage</code> của <code>ThrottlerModule</code> miễn là class đó implement interface <code>ThrottlerStorage</code>.</p>
+
+    <p>Đối với distributed servers, bạn có thể sử dụng community storage provider cho <a href="https://github.com/jmcdo29/nest-lab/tree/main/packages/throttler-storage-redis" target="_blank">Redis</a> để có một nguồn dữ liệu duy nhất.</p>
+
+<div class="note"><span class="lbl">Lưu ý</span><p><code>ThrottlerStorage</code> có thể được import từ <code>@nestjs/throttler</code>.</p></div>
+
+    <!-- ═══ Time Helpers ═══ -->
+    <h3 id="time-helpers">Time Helpers <a class="anchor" href="#time-helpers">#</a></h3>
+
+    <p>Có một vài phương thức helper để làm cho các khoảng thời gian dễ đọc hơn nếu bạn muốn sử dụng chúng thay vì định nghĩa trực tiếp. <code>@nestjs/throttler</code> export năm helper khác nhau: <code>seconds</code>, <code>minutes</code>, <code>hours</code>, <code>days</code>, và <code>weeks</code>. Để sử dụng chúng, chỉ cần gọi <code>seconds(5)</code> hoặc bất kỳ helper nào khác, và số milliseconds chính xác sẽ được trả về.</p>
+
+    <!-- ═══ Migration Guide ═══ -->
+    <h3 id="migration-guide">Migration Guide <a class="anchor" href="#migration-guide">#</a></h3>
+
+    <p>Đối với hầu hết mọi người, việc bọc các options trong một mảng là đủ.</p>
+
+    <p>Nếu bạn đang sử dụng custom storage, bạn nên bọc <code>ttl</code> và <code>limit</code> trong một mảng và gán nó cho thuộc tính <code>throttlers</code> của object options.</p>
+
+    <p>Bất kỳ decorator <code>@SkipThrottle()</code> nào đều có thể được sử dụng để bỏ qua throttling cho các route hoặc method cụ thể.</p>
+
+    <p>Bất kỳ decorator <code>@Throttle()</code> nào bây giờ cũng nên nhận vào một object với các key là string, liên quan đến tên của các throttler context (một lần nữa, <code>'default'</code> nếu không có tên) và giá trị là các object có key <code>limit</code> và <code>ttl</code>.</p>
+
+<div class="warn"><span class="lbl">Quan trọng</span><p><code>ttl</code> hiện tại tính bằng <strong>milliseconds</strong>. Nếu bạn muốn giữ ttl tính bằng giây để dễ đọc, hãy sử dụng helper <code>seconds</code> từ package này. Nó chỉ đơn giản nhân ttl với 1000 để chuyển sang milliseconds.</p></div>
+
+    <p>Để biết thêm thông tin, xem <a href="https://github.com/nestjs/throttler/blob/master/CHANGELOG.md#500" target="_blank">Changelog</a>.</p>
+
+    <!-- Page Navigation -->
+    <div class="page-nav">
+      <a href="CSRF.html" class="pnbtn">
+        <span class="pnlbl">&larr; Trước</span>
+        <span class="pntitle">CSRF Protection</span>
+      </a>
+    </div>
+
+  </main>
+
+  <!-- TOC -->
+  <aside class="toc">
+    <div class="toc-title">Nội dung</div>
+    <ul>
+      <li><a href="#multiple-throttler-definitions">Multiple Throttler Definitions</a></li>
+      <li><a href="#customization">Customization</a></li>
+      <li><a href="#proxies">Proxies</a></li>
+      <li><a href="#websockets">Websockets</a></li>
+      <li><a href="#graphql">GraphQL</a></li>
+      <li><a href="#configuration">Configuration</a></li>
+      <li><a href="#async-configuration">Async Configuration</a></li>
+      <li><a href="#storages">Storages</a></li>
+      <li><a href="#time-helpers">Time Helpers</a></li>
+      <li><a href="#migration-guide">Migration Guide</a></li>
+    </ul>
+  </aside>
+
+</div>
+
+<script>
+  function cp(btn){var w=btn.closest('.cb');var p=w.querySelector('.tab-content.active pre')||w.querySelector('pre');if(!p)return;navigator.clipboard.writeText(p.textContent.trim()).then(function(){var o=btn.textContent;btn.textContent='Copied!';btn.style.color='#4ade80';setTimeout(function(){btn.textContent=o;btn.style.color=''},1500)})}
+  function switchTab(btn,tab){var cb=btn.closest('.cb');cb.querySelectorAll('.tab-btn').forEach(function(b){b.classList.toggle('active',b===btn)});cb.querySelectorAll('.tab-content').forEach(function(c){c.classList.toggle('active',c.dataset.tab===tab)})}
+  document.querySelectorAll('.toc a').forEach(function(l){l.addEventListener('click',function(e){e.preventDefault();var t=document.querySelector(this.getAttribute('href'));if(t)t.scrollIntoView({behavior:'smooth',block:'start'})})});
+  var tocLinks=document.querySelectorAll('.toc a'),heads=document.querySelectorAll('h3[id]');
+  function hi(){var c='';heads.forEach(function(h){if(scrollY>=h.offsetTop-120)c=h.id});tocLinks.forEach(function(a){a.classList.toggle('active',a.getAttribute('href')==='#'+c)})}
+  window.addEventListener('scroll',hi,{passive:true});hi();
+</script>
+</body>
+</html>

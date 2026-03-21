@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Performance (Fastify) | NestJS - Tài liệu tiếng Việt</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root{--bg:#0e0e0e;--surface:#1a1a1a;--surface2:#222;--border:#2a2a2a;--border-l:#333;--red:#ea2845;--red-l:#ff4d6a;--red-glow:rgba(234,40,69,.15);--text:#e8e8e8;--muted:#888;--sec:#b0b0b0;--code-bg:#1e1e1e;--code-bd:#2d2d2d;--hint-bg:#0d2a1a;--hint-c:#4ade80;--warn-bg:#2a1a0d;--warn-c:#fb923c;--note-bg:#0d1a2a;--note-c:#60a0d0;--toc-w:220px;--font:'Inter',sans-serif;--mono:'Source Code Pro',monospace;--r:6px;--rl:10px}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+    body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:15px;line-height:1.78}
+    .page{max-width:1060px;margin:0 auto;padding:48px 32px 96px;display:flex;gap:56px;align-items:flex-start}.content{flex:1;min-width:0}
+    .toc{width:var(--toc-w);flex-shrink:0;position:sticky;top:32px;align-self:flex-start;max-height:calc(100vh - 48px);overflow-y:auto}
+    .toc::-webkit-scrollbar{width:3px}.toc::-webkit-scrollbar-thumb{background:var(--border-l);border-radius:2px}
+    .toc-title{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding-bottom:8px;margin-bottom:8px;border-bottom:1px solid var(--border)}
+    .toc ul{list-style:none}.toc ul li a{display:block;padding:3.5px 0;font-size:12.5px;color:var(--muted);text-decoration:none;line-height:1.5;transition:color .15s;cursor:pointer}
+    .toc ul li a:hover,.toc ul li a.active{color:var(--red-l)}
+    .vi-banner{display:flex;align-items:center;gap:10px;padding:11px 16px;border:1px solid rgba(234,40,69,.3);border-radius:var(--rl);background:linear-gradient(135deg,rgba(234,40,69,.1),rgba(234,40,69,.04));font-size:13px;color:var(--sec);margin-bottom:32px}.vi-banner strong{color:var(--red-l)}
+    h1{font-size:36px;font-weight:700;letter-spacing:-.5px;line-height:1.2;margin-bottom:6px}h1::after{content:'';display:block;width:44px;height:3px;background:var(--red);border-radius:2px;margin-top:12px}
+    h3{font-size:19px;font-weight:600;letter-spacing:-.2px;margin:40px 0 12px;display:flex;align-items:center;gap:8px;scroll-margin-top:80px}
+    .anchor{font-size:14px;color:var(--muted);text-decoration:none;opacity:0;transition:opacity .2s}h3:hover .anchor{opacity:1}
+    p{color:var(--sec);line-height:1.82;margin-bottom:16px}p:last-child{margin-bottom:0}
+    a{color:var(--red-l);text-decoration:none}a:hover{text-decoration:underline}strong{color:var(--text);font-weight:600}
+    ul,ol{color:var(--sec);padding-left:22px;line-height:2.1;margin:16px 0}ul li{margin-bottom:6px}
+    code{font-family:var(--mono);font-size:13px;background:var(--code-bg);border:1px solid var(--code-bd);padding:1px 6px;border-radius:4px;color:#f9a8d4}
+    .hint,.warn,.note{margin:18px 0;padding:12px 16px;border-left:3px solid;border-radius:var(--r);font-size:13.5px;line-height:1.72}
+    .hint{background:var(--hint-bg);border-color:var(--hint-c);color:#a7f3d0}.warn{background:var(--warn-bg);border-color:var(--warn-c);color:#fed7aa}.note{background:var(--note-bg);border-color:var(--note-c);color:#bae6fd}
+    .hint p,.warn p,.note p{margin:0;color:inherit}.lbl{display:block;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
+    .hint .lbl{color:var(--hint-c)}.warn .lbl{color:var(--warn-c)}.note .lbl{color:var(--note-c)}
+    .cb{margin:18px 0;border:1px solid var(--code-bd);border-radius:var(--rl);overflow:hidden;background:var(--code-bg)}
+    .cb-head{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:#181818;border-bottom:1px solid var(--code-bd);min-height:38px}
+    .cb-fname{font-family:var(--mono);font-size:11.5px;color:var(--muted);display:flex;align-items:center;gap:6px}.cb-fname::before{content:'';display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--red)}
+    .cb-right{display:flex;align-items:center;gap:6px}
+    .cpbtn{padding:3px 9px;font-size:10.5px;font-family:var(--mono);background:var(--surface);border:1px solid var(--border-l);color:var(--muted);border-radius:4px;cursor:pointer;transition:all .14s}.cpbtn:hover{background:var(--surface2);color:var(--text)}
+    pre{padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:13.5px;line-height:1.65;color:#abb2bf}pre::-webkit-scrollbar{height:5px}pre::-webkit-scrollbar-thumb{background:var(--border-l);border-radius:3px}
+    .kw{color:#c678dd}.fn{color:#61afef}.str{color:#98c379}.dec{color:#e5c07b}.typ{color:#e5c07b}.cm{color:#5c6370;font-style:italic}.pn{color:#abb2bf}.num{color:#d19a66}.cl{color:#e06c75}
+    .page-nav{display:flex;justify-content:space-between;margin-top:52px;gap:16px}.pnbtn{display:flex;flex-direction:column;padding:14px 18px;border:1px solid var(--border);border-radius:var(--rl);text-decoration:none;transition:all .2s;min-width:150px}.pnbtn:hover{border-color:var(--red);background:var(--red-glow);text-decoration:none}.pnlbl{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:3px}.pntitle{font-size:14px;font-weight:600;color:var(--text)}.pnbtn.r{text-align:right;margin-left:auto}
+    .tab-group{display:flex;gap:0;margin-bottom:0}.tab-btn{padding:5px 16px;font-size:11.5px;font-family:var(--mono);background:transparent;border:1px solid var(--code-bd);border-bottom:none;color:var(--muted);cursor:pointer;transition:all .15s;border-radius:6px 6px 0 0;margin-right:-1px}.tab-btn:hover{color:var(--text)}.tab-btn.active{background:var(--code-bg);color:var(--red-l);border-color:var(--code-bd)}.tab-content{display:none}.tab-content.active{display:block}
+    @media(max-width:860px){.toc{display:none}}@media(max-width:600px){.page{padding:24px 16px 64px}}
+  </style>
+</head>
+<body>
+<div class="page">
+  <main class="content">
+    <div class="vi-banner"><span style="font-size:17px">🇻🇳</span><div>Dịch từ <strong><a href="https://docs.nestjs.com/techniques/performance" target="_blank">docs.nestjs.com/techniques/performance</a></strong>. Thuật ngữ kỹ thuật giữ nguyên tiếng Anh.</div></div>
+
+    <h1>Performance (Fastify)</h1>
+
+    <p style="margin-top:18px">Mặc định, Nest sử dụng framework <a href="https://expressjs.com/" target="_blank">Express</a>. Như đã đề cập trước đó, Nest cũng cung cấp khả năng tương thích với các library khác như, ví dụ, <a href="https://github.com/fastify/fastify" target="_blank">Fastify</a>. Nest đạt được sự độc lập framework này bằng cách triển khai một framework adapter mà chức năng chính của nó là proxy middleware và handler đến các implementation tương ứng theo từng library cụ thể.</p>
+
+<div class="hint"><span class="lbl">💡 Hint</span><p>Lưu ý rằng để một framework adapter được triển khai, library đích phải cung cấp pipeline xử lý request/response tương tự như được tìm thấy trong Express.</p></div>
+
+    <p><a href="https://github.com/fastify/fastify" target="_blank">Fastify</a> cung cấp một framework thay thế tốt cho Nest bởi vì nó giải quyết các vấn đề thiết kế theo cách tương tự như Express. Tuy nhiên, fastify <strong>nhanh hơn nhiều</strong> so với Express, đạt được kết quả benchmark gần gấp đôi. Một câu hỏi hợp lý là tại sao Nest sử dụng Express làm HTTP provider mặc định? Lý do là Express được sử dụng rộng rãi, nổi tiếng, và có một bộ middleware tương thích khổng lồ, có sẵn cho người dùng Nest ngay lập tức.</p>
+
+    <p>Nhưng vì Nest cung cấp sự độc lập framework, bạn có thể dễ dàng di chuyển giữa chúng. Fastify có thể là lựa chọn tốt hơn khi bạn đặt giá trị cao vào hiệu suất rất nhanh. Để sử dụng Fastify, chỉ cần chọn <code>FastifyAdapter</code> tích hợp sẵn như được trình bày trong chương này.</p>
+
+    <!-- ═══ Installation ═══ -->
+    <h3 id="installation">Installation <a class="anchor" href="#installation">#</a></h3>
+
+    <p>Trước tiên, chúng ta cần cài đặt package cần thiết:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre>$ npm i --save @nestjs/platform-fastify</pre></div>
+
+    <!-- ═══ Adapter ═══ -->
+    <h3 id="adapter">Adapter <a class="anchor" href="#adapter">#</a></h3>
+
+    <p>Khi Fastify platform đã được cài đặt, chúng ta có thể sử dụng <code>FastifyAdapter</code>.</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">main</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">import</span> <span class="pn">{</span> NestFactory <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/core'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span>
+  FastifyAdapter<span class="pn">,</span>
+  NestFastifyApplication<span class="pn">,</span>
+<span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/platform-fastify'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> AppModule <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./app.module'</span><span class="pn">;</span>
+
+<span class="kw">async function</span> <span class="fn">bootstrap</span><span class="pn">() {</span>
+  <span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> NestFactory<span class="pn">.</span><span class="fn">create</span><span class="pn">&lt;</span><span class="typ">NestFastifyApplication</span><span class="pn">&gt;(</span>
+    AppModule<span class="pn">,</span>
+    <span class="kw">new</span> <span class="cl">FastifyAdapter</span><span class="pn">()</span>
+  <span class="pn">);</span>
+  <span class="kw">await</span> app<span class="pn">.</span><span class="fn">listen</span><span class="pn">(</span>process<span class="pn">.</span>env<span class="pn">.</span>PORT <span class="pn">??</span> <span class="num">3000</span><span class="pn">);</span>
+<span class="pn">}</span>
+<span class="fn">bootstrap</span><span class="pn">();</span></pre></div>
+
+    <p>Mặc định, Fastify chỉ lắng nghe trên interface <code>localhost 127.0.0.1</code> (<a href="https://www.fastify.io/docs/latest/Guides/Getting-Started/#your-first-server" target="_blank">đọc thêm</a>). Nếu bạn muốn chấp nhận kết nối từ các host khác, bạn nên chỉ định <code>'0.0.0.0'</code> trong lời gọi <code>listen()</code>:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">async function</span> <span class="fn">bootstrap</span><span class="pn">() {</span>
+  <span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> NestFactory<span class="pn">.</span><span class="fn">create</span><span class="pn">&lt;</span><span class="typ">NestFastifyApplication</span><span class="pn">&gt;(</span>
+    AppModule<span class="pn">,</span>
+    <span class="kw">new</span> <span class="cl">FastifyAdapter</span><span class="pn">(),</span>
+  <span class="pn">);</span>
+  <span class="kw">await</span> app<span class="pn">.</span><span class="fn">listen</span><span class="pn">(</span><span class="num">3000</span><span class="pn">,</span> <span class="str">'0.0.0.0'</span><span class="pn">);</span>
+<span class="pn">}</span></pre></div>
+
+    <!-- ═══ Platform specific packages ═══ -->
+    <h3 id="platform-specific-packages">Platform specific packages <a class="anchor" href="#platform-specific-packages">#</a></h3>
+
+    <p>Hãy nhớ rằng khi bạn sử dụng <code>FastifyAdapter</code>, Nest sử dụng Fastify làm <strong>HTTP provider</strong>. Điều này có nghĩa là mỗi recipe dựa trên Express có thể không còn hoạt động. Thay vào đó, bạn nên sử dụng các package tương đương của Fastify.</p>
+
+    <!-- ═══ Redirect response ═══ -->
+    <h3 id="redirect-response">Redirect response <a class="anchor" href="#redirect-response">#</a></h3>
+
+    <p>Fastify xử lý redirect response hơi khác so với Express. Để thực hiện redirect đúng cách với Fastify, trả về cả status code và URL, như sau:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@Get</span><span class="pn">()</span>
+<span class="fn">index</span><span class="pn">(</span><span class="dec">@Res</span><span class="pn">()</span> res<span class="pn">) {</span>
+  res<span class="pn">.</span><span class="fn">status</span><span class="pn">(</span><span class="num">302</span><span class="pn">).</span><span class="fn">redirect</span><span class="pn">(</span><span class="str">'/login'</span><span class="pn">);</span>
+<span class="pn">}</span></pre></div>
+
+    <!-- ═══ Fastify options ═══ -->
+    <h3 id="fastify-options">Fastify options <a class="anchor" href="#fastify-options">#</a></h3>
+
+    <p>Bạn có thể truyền options vào Fastify constructor thông qua constructor của <code>FastifyAdapter</code>. Ví dụ:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">new</span> <span class="cl">FastifyAdapter</span><span class="pn">({</span> logger<span class="pn">:</span> <span class="num">true</span> <span class="pn">});</span></pre></div>
+
+    <!-- ═══ Middleware ═══ -->
+    <h3 id="middleware">Middleware <a class="anchor" href="#middleware">#</a></h3>
+
+    <p>Các hàm middleware nhận các object <code>req</code> và <code>res</code> raw thay vì các wrapper của Fastify. Đây là cách mà package <code>middie</code> hoạt động (được sử dụng ngầm bên dưới) và <code>fastify</code> - xem <a href="https://www.fastify.io/docs/latest/Reference/Middleware/" target="_blank">trang này</a> để biết thêm thông tin.</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">logger.middleware</div><div class="cb-right"><div class="tab-group"><button class="tab-btn active" onclick="switchTab(this,'ts')">TypeScript</button><button class="tab-btn" onclick="switchTab(this,'js')">JavaScript</button></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div class="tab-content active" data-tab="ts"><pre><span class="kw">import</span> <span class="pn">{</span> Injectable<span class="pn">,</span> NestMiddleware <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> FastifyRequest<span class="pn">,</span> FastifyReply <span class="pn">}</span> <span class="kw">from</span> <span class="str">'fastify'</span><span class="pn">;</span>
+
+<span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">LoggerMiddleware</span> <span class="kw">implements</span> <span class="typ">NestMiddleware</span> <span class="pn">{</span>
+  <span class="fn">use</span><span class="pn">(</span>req<span class="pn">:</span> <span class="typ">FastifyRequest</span><span class="pn">[</span><span class="str">'raw'</span><span class="pn">],</span> res<span class="pn">:</span> <span class="typ">FastifyReply</span><span class="pn">[</span><span class="str">'raw'</span><span class="pn">],</span> next<span class="pn">:</span> <span class="pn">() =&gt;</span> <span class="typ">void</span><span class="pn">) {</span>
+    console<span class="pn">.</span><span class="fn">log</span><span class="pn">(</span><span class="str">'Request...'</span><span class="pn">);</span>
+    <span class="fn">next</span><span class="pn">();</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div><div class="tab-content" data-tab="js"><pre><span class="kw">import</span> <span class="pn">{</span> Injectable <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+
+<span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">LoggerMiddleware</span> <span class="pn">{</span>
+  <span class="fn">use</span><span class="pn">(</span>req<span class="pn">,</span> res<span class="pn">,</span> next<span class="pn">) {</span>
+    console<span class="pn">.</span><span class="fn">log</span><span class="pn">(</span><span class="str">'Request...'</span><span class="pn">);</span>
+    <span class="fn">next</span><span class="pn">();</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div></div>
+
+    <!-- ═══ Route Config ═══ -->
+    <h3 id="route-config">Route Config <a class="anchor" href="#route-config">#</a></h3>
+
+    <p>Bạn có thể sử dụng tính năng <a href="https://fastify.dev/docs/latest/Reference/Routes/#config" target="_blank">route config</a> của Fastify với decorator <code>@RouteConfig()</code>.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@RouteConfig</span><span class="pn">({</span> output<span class="pn">:</span> <span class="str">'hello world'</span> <span class="pn">})</span>
+<span class="dec">@Get</span><span class="pn">()</span>
+<span class="fn">index</span><span class="pn">(</span><span class="dec">@Req</span><span class="pn">()</span> req<span class="pn">) {</span>
+  <span class="kw">return</span> req<span class="pn">.</span>routeConfig<span class="pn">.</span>output<span class="pn">;</span>
+<span class="pn">}</span></pre></div>
+
+    <!-- ═══ Route Constraints ═══ -->
+    <h3 id="route-constraints">Route Constraints <a class="anchor" href="#route-constraints">#</a></h3>
+
+    <p>Kể từ v10.3.0, <code>@nestjs/platform-fastify</code> hỗ trợ tính năng <a href="https://fastify.dev/docs/latest/Reference/Routes/#constraints" target="_blank">route constraints</a> của Fastify với decorator <code>@RouteConstraints</code>.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@RouteConstraints</span><span class="pn">({</span> version<span class="pn">:</span> <span class="str">'1.2.x'</span> <span class="pn">})</span>
+<span class="fn">newFeature</span><span class="pn">() {</span>
+  <span class="kw">return</span> <span class="str">'This works only for version >= 1.2.x'</span><span class="pn">;</span>
+<span class="pn">}</span></pre></div>
+
+<div class="hint"><span class="lbl">💡 Hint</span><p><code>@RouteConfig()</code> và <code>@RouteConstraints</code> được import từ <code>@nestjs/platform-fastify</code>.</p></div>
+
+    <!-- ═══ Example ═══ -->
+    <h3 id="example">Example <a class="anchor" href="#example">#</a></h3>
+
+    <p>Một ví dụ hoạt động có sẵn <a href="https://github.com/nestjs/nest/tree/master/sample/10-fastify" target="_blank">tại đây</a>.</p>
+
+    <!-- Page Navigation -->
+    <div class="page-nav">
+      <a href="Versioning.html" class="pnbtn">
+        <span class="pnlbl">← Trước</span>
+        <span class="pntitle">Versioning</span>
+      </a>
+      <a href="Compression.html" class="pnbtn r">
+        <span class="pnlbl">Tiếp →</span>
+        <span class="pntitle">Compression</span>
+      </a>
+    </div>
+
+  </main>
+
+  <!-- TOC -->
+  <aside class="toc">
+    <div class="toc-title">Nội dung</div>
+    <ul>
+      <li><a href="#installation">Installation</a></li>
+      <li><a href="#adapter">Adapter</a></li>
+      <li><a href="#platform-specific-packages">Platform specific packages</a></li>
+      <li><a href="#redirect-response">Redirect response</a></li>
+      <li><a href="#fastify-options">Fastify options</a></li>
+      <li><a href="#middleware">Middleware</a></li>
+      <li><a href="#route-config">Route Config</a></li>
+      <li><a href="#route-constraints">Route Constraints</a></li>
+      <li><a href="#example">Example</a></li>
+    </ul>
+  </aside>
+
+</div>
+
+<script>
+  function cp(btn){var w=btn.closest('.cb');var p=w.querySelector('.tab-content.active pre')||w.querySelector('pre');if(!p)return;navigator.clipboard.writeText(p.textContent.trim()).then(function(){var o=btn.textContent;btn.textContent='Copied!';btn.style.color='#4ade80';setTimeout(function(){btn.textContent=o;btn.style.color=''},1500)})}
+  function switchTab(btn,tab){var cb=btn.closest('.cb');cb.querySelectorAll('.tab-btn').forEach(function(b){b.classList.toggle('active',b===btn)});cb.querySelectorAll('.tab-content').forEach(function(c){c.classList.toggle('active',c.dataset.tab===tab)})}
+  document.querySelectorAll('.toc a').forEach(function(l){l.addEventListener('click',function(e){e.preventDefault();var t=document.querySelector(this.getAttribute('href'));if(t)t.scrollIntoView({behavior:'smooth',block:'start'})})});
+  var tocLinks=document.querySelectorAll('.toc a'),heads=document.querySelectorAll('h3[id]');
+  function hi(){var c='';heads.forEach(function(h){if(scrollY>=h.offsetTop-120)c=h.id});tocLinks.forEach(function(a){a.classList.toggle('active',a.getAttribute('href')==='#'+c)})}
+  window.addEventListener('scroll',hi,{passive:true});hi();
+</script>
+</body>
+</html>

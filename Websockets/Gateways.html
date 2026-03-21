@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gateways | NestJS - Tài liệu tiếng Việt</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root{--bg:#0e0e0e;--surface:#1a1a1a;--surface2:#222;--border:#2a2a2a;--border-l:#333;--red:#ea2845;--red-l:#ff4d6a;--red-glow:rgba(234,40,69,.15);--text:#e8e8e8;--muted:#888;--sec:#b0b0b0;--code-bg:#1e1e1e;--code-bd:#2d2d2d;--hint-bg:#0d2a1a;--hint-c:#4ade80;--warn-bg:#2a1a0d;--warn-c:#fb923c;--note-bg:#0d1a2a;--note-c:#60a0d0;--toc-w:220px;--font:'Inter',sans-serif;--mono:'Source Code Pro',monospace;--r:6px;--rl:10px}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+    body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:15px;line-height:1.78}
+    .page{max-width:1060px;margin:0 auto;padding:48px 32px 96px;display:flex;gap:56px;align-items:flex-start}.content{flex:1;min-width:0}
+    .toc{width:var(--toc-w);flex-shrink:0;position:sticky;top:32px;align-self:flex-start;max-height:calc(100vh - 48px);overflow-y:auto}
+    .toc::-webkit-scrollbar{width:3px}.toc::-webkit-scrollbar-thumb{background:var(--border-l);border-radius:2px}
+    .toc-title{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding-bottom:8px;margin-bottom:8px;border-bottom:1px solid var(--border)}
+    .toc ul{list-style:none}.toc ul li a{display:block;padding:3.5px 0;font-size:12.5px;color:var(--muted);text-decoration:none;line-height:1.5;transition:color .15s;cursor:pointer}
+    .toc ul li a:hover,.toc ul li a.active{color:var(--red-l)}
+    .vi-banner{display:flex;align-items:center;gap:10px;padding:11px 16px;border:1px solid rgba(234,40,69,.3);border-radius:var(--rl);background:linear-gradient(135deg,rgba(234,40,69,.1),rgba(234,40,69,.04));font-size:13px;color:var(--sec);margin-bottom:32px}.vi-banner strong{color:var(--red-l)}
+    h1{font-size:36px;font-weight:700;letter-spacing:-.5px;line-height:1.2;margin-bottom:6px}h1::after{content:'';display:block;width:44px;height:3px;background:var(--red);border-radius:2px;margin-top:12px}
+    h3{font-size:19px;font-weight:600;letter-spacing:-.2px;margin:40px 0 12px;display:flex;align-items:center;gap:8px;scroll-margin-top:80px}
+    .anchor{font-size:14px;color:var(--muted);text-decoration:none;opacity:0;transition:opacity .2s}h3:hover .anchor{opacity:1}
+    p{color:var(--sec);line-height:1.82;margin-bottom:16px}p:last-child{margin-bottom:0}
+    a{color:var(--red-l);text-decoration:none}a:hover{text-decoration:underline}strong{color:var(--text);font-weight:600}
+    ul,ol{color:var(--sec);padding-left:22px;line-height:2.1;margin:16px 0}ul li{margin-bottom:6px}
+    code{font-family:var(--mono);font-size:13px;background:var(--code-bg);border:1px solid var(--code-bd);padding:1px 6px;border-radius:4px;color:#f9a8d4}
+    .hint,.warn,.note{margin:18px 0;padding:12px 16px;border-left:3px solid;border-radius:var(--r);font-size:13.5px;line-height:1.72}
+    .hint{background:var(--hint-bg);border-color:var(--hint-c);color:#a7f3d0}.warn{background:var(--warn-bg);border-color:var(--warn-c);color:#fed7aa}.note{background:var(--note-bg);border-color:var(--note-c);color:#bae6fd}
+    .hint p,.warn p,.note p{margin:0;color:inherit}.lbl{display:block;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
+    .hint .lbl{color:var(--hint-c)}.warn .lbl{color:var(--warn-c)}.note .lbl{color:var(--note-c)}
+    .cb{margin:18px 0;border:1px solid var(--code-bd);border-radius:var(--rl);overflow:hidden;background:var(--code-bg)}
+    .cb-head{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:#181818;border-bottom:1px solid var(--code-bd);min-height:38px}
+    .cb-fname{font-family:var(--mono);font-size:11.5px;color:var(--muted);display:flex;align-items:center;gap:6px}.cb-fname::before{content:'';display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--red)}
+    .cb-right{display:flex;align-items:center;gap:6px}
+    .cpbtn{padding:3px 9px;font-size:10.5px;font-family:var(--mono);background:var(--surface);border:1px solid var(--border-l);color:var(--muted);border-radius:4px;cursor:pointer;transition:all .14s}.cpbtn:hover{background:var(--surface2);color:var(--text)}
+    pre{padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:13.5px;line-height:1.65;color:#abb2bf}pre::-webkit-scrollbar{height:5px}pre::-webkit-scrollbar-thumb{background:var(--border-l);border-radius:3px}
+    .kw{color:#c678dd}.fn{color:#61afef}.str{color:#98c379}.dec{color:#e5c07b}.typ{color:#e5c07b}.cm{color:#5c6370;font-style:italic}.pn{color:#abb2bf}.num{color:#d19a66}.cl{color:#e06c75}
+    .tab-group{display:flex;gap:0;margin-bottom:0}.tab-btn{padding:5px 16px;font-size:11.5px;font-family:var(--mono);background:transparent;border:1px solid var(--code-bd);border-bottom:none;color:var(--muted);cursor:pointer;transition:all .15s;border-radius:6px 6px 0 0;margin-right:-1px}.tab-btn:hover{color:var(--text)}.tab-btn.active{background:var(--code-bg);color:var(--red-l);border-color:var(--code-bd)}.tab-content{display:none}.tab-content.active{display:block}
+    table{width:100%;border-collapse:collapse;margin:18px 0;font-size:13.5px}table td{padding:10px 14px;border:1px solid var(--border);color:var(--sec);vertical-align:top}table tr:nth-child(even){background:var(--surface)}table td:first-child{white-space:nowrap;color:var(--text);font-weight:500}
+    .page-nav{display:flex;justify-content:space-between;margin-top:52px;gap:16px}.pnbtn{display:flex;flex-direction:column;padding:14px 18px;border:1px solid var(--border);border-radius:var(--rl);text-decoration:none;transition:all .2s;min-width:150px}.pnbtn:hover{border-color:var(--red);background:var(--red-glow);text-decoration:none}.pnlbl{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:3px}.pntitle{font-size:14px;font-weight:600;color:var(--text)}.pnbtn.r{text-align:right;margin-left:auto}
+    @media(max-width:860px){.toc{display:none}}@media(max-width:600px){.page{padding:24px 16px 64px}}
+  </style>
+</head>
+<body>
+<div class="page">
+  <article class="content">
+
+    <div class="vi-banner">
+      <strong>Bản dịch tiếng Việt</strong> &mdash; Tài liệu gốc:
+      <a href="https://docs.nestjs.com/websockets/gateways" target="_blank" rel="noopener">docs.nestjs.com/websockets/gateways</a>
+    </div>
+
+    <h1>Gateways</h1>
+
+    <p>Hầu hết các khái niệm đã được thảo luận ở các phần khác trong tài liệu này, chẳng hạn như dependency injection, decorators, exception filters, pipes, guards và interceptors, đều áp dụng tương tự cho gateways. Bất cứ khi nào có thể, Nest trừu tượng hóa các chi tiết triển khai để các component giống nhau có thể chạy trên các nền tảng dựa trên HTTP, WebSockets và Microservices. Phần này đề cập đến các khía cạnh của Nest dành riêng cho WebSockets.</p>
+
+    <p>Trong Nest, một gateway đơn giản là một class được đánh dấu bằng decorator <code>@WebSocketGateway()</code>. Về mặt kỹ thuật, gateways không phụ thuộc vào nền tảng (platform-agnostic) khiến chúng tương thích với bất kỳ thư viện WebSockets nào sau khi một adapter được tạo. Có hai nền tảng WS được hỗ trợ sẵn: <a href="https://github.com/socketio/socket.io" target="_blank" rel="noopener">socket.io</a> và <a href="https://github.com/websockets/ws" target="_blank" rel="noopener">ws</a>. Bạn có thể chọn nền tảng phù hợp nhất với nhu cầu của mình. Ngoài ra, bạn có thể xây dựng adapter riêng bằng cách làm theo <a href="/websockets/adapter">hướng dẫn</a> này.</p>
+
+    <div class="hint">
+      <span class="lbl">Gợi ý</span>
+      <p>Gateways có thể được coi là <a href="/providers">providers</a>; điều này có nghĩa là chúng có thể inject các dependencies thông qua constructor của class. Ngoài ra, gateways cũng có thể được inject bởi các class khác (providers và controllers).</p>
+    </div>
+
+    <!-- Installation -->
+    <h3 id="installation">Cài đặt <a class="anchor" href="#installation">#</a></h3>
+
+    <p>Để bắt đầu xây dựng các ứng dụng dựa trên WebSockets, trước tiên hãy cài đặt package cần thiết:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-fname">bash</span>
+        <div class="cb-right">
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+<pre>$ npm i --save @nestjs/websockets @nestjs/platform-socket.io</pre>
+    </div>
+
+    <!-- Overview -->
+    <h3 id="overview">Tổng quan <a class="anchor" href="#overview">#</a></h3>
+
+    <p>Nói chung, mỗi gateway lắng nghe trên cùng một cổng với <strong>HTTP server</strong>, trừ khi ứng dụng của bạn không phải là ứng dụng web, hoặc bạn đã thay đổi cổng thủ công. Hành vi mặc định này có thể được sửa đổi bằng cách truyền một đối số vào decorator <code>@WebSocketGateway(80)</code> trong đó <code>80</code> là số cổng được chọn. Bạn cũng có thể thiết lập một <a href="https://socket.io/docs/v4/namespaces/" target="_blank" rel="noopener">namespace</a> được sử dụng bởi gateway bằng cách sử dụng cấu trúc sau:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-fname">TypeScript</span>
+        <div class="cb-right">
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+<pre><span class="dec">@WebSocketGateway</span>(<span class="num">80</span>, { namespace: <span class="str">'events'</span> })</pre>
+    </div>
+
+    <div class="warn">
+      <span class="lbl">Cảnh báo</span>
+      <p>Gateways không được khởi tạo cho đến khi chúng được tham chiếu trong mảng providers của một module hiện có.</p>
+    </div>
+
+    <p>Bạn có thể truyền bất kỳ <a href="https://socket.io/docs/v4/server-options/" target="_blank" rel="noopener">tùy chọn</a> được hỗ trợ nào vào socket constructor bằng đối số thứ hai của decorator <code>@WebSocketGateway()</code>, như được hiển thị dưới đây:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-fname">TypeScript</span>
+        <div class="cb-right">
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+<pre><span class="dec">@WebSocketGateway</span>(<span class="num">81</span>, { transports: [<span class="str">'websocket'</span>] })</pre>
+    </div>
+
+    <p>Gateway hiện đã lắng nghe, nhưng chúng ta vẫn chưa đăng ký bất kỳ tin nhắn đến nào. Hãy tạo một handler sẽ đăng ký nhận tin nhắn <code>events</code> và phản hồi cho người dùng với cùng dữ liệu đó.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-fname">events.gateway</span>
+        <div class="cb-right">
+          <div class="tab-group">
+            <button class="tab-btn active" onclick="switchTab(this,'ts')">TypeScript</button>
+            <button class="tab-btn" onclick="switchTab(this,'js')">JavaScript</button>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div class="tab-content active" data-tab="ts">
+<pre><span class="dec">@SubscribeMessage</span>(<span class="str">'events'</span>)
+<span class="fn">handleEvent</span>(<span class="dec">@MessageBody</span>() data: <span class="typ">string</span>): <span class="typ">string</span> {
+  <span class="kw">return</span> data;
+}</pre>
+      </div>
+      <div class="tab-content" data-tab="js">
+<pre><span class="dec">@Bind</span>(<span class="fn">MessageBody</span>())
+<span class="dec">@SubscribeMessage</span>(<span class="str">'events'</span>)
+<span class="fn">handleEvent</span>(data) {
+  <span class="kw">return</span> data;
+}</pre>
+      </div>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">Gợi ý</span>
+      <p>Các decorator <code>@SubscribeMessage()</code> và <code>@MessageBody()</code> được import từ package <code>@nestjs/websockets</code>.</p>
+    </div>
+
+    <p>Sau khi gateway được tạo, chúng ta có thể đăng ký nó trong module.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-fname">events.module</span>
+        <div class="cb-right">
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+<pre><span class="kw">import</span> { Module } <span class="kw">from</span> <span class="str">'@nestjs/common'</span>;
+<span class="kw">import</span> { EventsGateway } <span class="kw">from</span> <span class="str">'./events.gateway'</span>;
+
+<span class="dec">@Module</span>({
+  providers: [EventsGateway]
+})
+<span class="kw">export class</span> <span class="typ">EventsModule</span> {}</pre>
+    </div>
+
+    <p>Bạn cũng có thể truyền một property key vào decorator để trích xuất nó từ body của tin nhắn đến:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-fname">events.gateway</span>
+        <div class="cb-right">
+          <div class="tab-group">
+            <button class="tab-btn active" onclick="switchTab(this,'ts')">TypeScript</button>
+            <button class="tab-btn" onclick="switchTab(this,'js')">JavaScript</button>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div class="tab-content active" data-tab="ts">
+<pre><span class="dec">@SubscribeMessage</span>(<span class="str">'events'</span>)
+<span class="fn">handleEvent</span>(<span class="dec">@MessageBody</span>(<span class="str">'id'</span>) id: <span class="typ">number</span>): <span class="typ">number</span> {
+  <span class="cm">// id === messageBody.id</span>
+  <span class="kw">return</span> id;
+}</pre>
+      </div>
+      <div class="tab-content" data-tab="js">
+<pre><span class="dec">@Bind</span>(<span class="fn">MessageBody</span>(<span class="str">'id'</span>))
+<span class="dec">@SubscribeMessage</span>(<span class="str">'events'</span>)
+<span class="fn">handleEvent</span>(id) {
+  <span class="cm">// id === messageBody.id</span>
+  <span class="kw">return</span> id;
+}</pre>
+      </div>
+    </div>
+
+    <p>Nếu bạn không muốn sử dụng decorators, đoạn code sau có chức năng tương đương:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-fname">events.gateway</span>
+        <div class="cb-right">
+          <div class="tab-group">
+            <button class="tab-btn active" onclick="switchTab(this,'ts')">TypeScript</button>
+            <button class="tab-btn" onclick="switchTab(this,'js')">JavaScript</button>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div class="tab-content active" data-tab="ts">
+<pre><span class="dec">@SubscribeMessage</span>(<span class="str">'events'</span>)
+<span class="fn">handleEvent</span>(client: <span class="typ">Socket</span>, data: <span class="typ">string</span>): <span class="typ">string</span> {
+  <span class="kw">return</span> data;
+}</pre>
+      </div>
+      <div class="tab-content" data-tab="js">
+<pre><span class="dec">@SubscribeMessage</span>(<span class="str">'events'</span>)
+<span class="fn">handleEvent</span>(client, data) {
+  <span class="kw">return</span> data;
+}</pre>
+      </div>
+    </div>
+
+    <p>Trong ví dụ trên, hàm <code>handleEvent()</code> nhận hai đối số. Đối số đầu tiên là một <a href="https://socket.io/docs/v4/server-api/#socket" target="_blank" rel="noopener">socket instance</a> dành riêng cho nền tảng, trong khi đối số thứ hai là dữ liệu nhận được từ client. Tuy nhiên, cách tiếp cận này không được khuyến khích vì nó yêu cầu mock <code>socket</code> instance trong mỗi unit test.</p>
+
+    <p>Sau khi tin nhắn <code>events</code> được nhận, handler sẽ gửi một acknowledgment với cùng dữ liệu đã được gửi qua mạng. Ngoài ra, có thể phát (emit) tin nhắn bằng cách tiếp cận dành riêng cho thư viện, ví dụ, bằng cách sử dụng phương thức <code>client.emit()</code>. Để truy cập socket instance đã kết nối, hãy sử dụng decorator <code>@ConnectedSocket()</code>.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-fname">events.gateway</span>
+        <div class="cb-right">
+          <div class="tab-group">
+            <button class="tab-btn active" onclick="switchTab(this,'ts')">TypeScript</button>
+            <button class="tab-btn" onclick="switchTab(this,'js')">JavaScript</button>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div class="tab-content active" data-tab="ts">
+<pre><span class="dec">@SubscribeMessage</span>(<span class="str">'events'</span>)
+<span class="fn">handleEvent</span>(
+  <span class="dec">@MessageBody</span>() data: <span class="typ">string</span>,
+  <span class="dec">@ConnectedSocket</span>() client: <span class="typ">Socket</span>,
+): <span class="typ">string</span> {
+  <span class="kw">return</span> data;
+}</pre>
+      </div>
+      <div class="tab-content" data-tab="js">
+<pre><span class="dec">@Bind</span>(<span class="fn">MessageBody</span>(), <span class="fn">ConnectedSocket</span>())
+<span class="dec">@SubscribeMessage</span>(<span class="str">'events'</span>)
+<span class="fn">handleEvent</span>(data, client) {
+  <span class="kw">return</span> data;
+}</pre>
+      </div>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">Gợi ý</span>
+      <p>Decorator <code>@ConnectedSocket()</code> được import từ package <code>@nestjs/websockets</code>.</p>
+    </div>
+
+    <p>Tuy nhiên, trong trường hợp này, bạn sẽ không thể tận dụng interceptors. Nếu bạn không muốn phản hồi cho người dùng, bạn có thể đơn giản bỏ qua câu lệnh <code>return</code> (hoặc trả về một giá trị "falsy" một cách rõ ràng, ví dụ <code>undefined</code>).</p>
+
+    <p>Bây giờ khi client phát tin nhắn như sau:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-fname">TypeScript</span>
+        <div class="cb-right">
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+<pre>socket.<span class="fn">emit</span>(<span class="str">'events'</span>, { name: <span class="str">'Nest'</span> });</pre>
+    </div>
+
+    <p>Phương thức <code>handleEvent()</code> sẽ được thực thi. Để lắng nghe các tin nhắn được phát từ handler trên, client phải đính kèm một acknowledgment listener tương ứng:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-fname">TypeScript</span>
+        <div class="cb-right">
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+<pre>socket.<span class="fn">emit</span>(<span class="str">'events'</span>, { name: <span class="str">'Nest'</span> }, (data) => console.<span class="fn">log</span>(data));</pre>
+    </div>
+
+    <p>Mặc dù việc trả về giá trị từ message handler ngầm gửi một acknowledgement, các tình huống nâng cao thường yêu cầu kiểm soát trực tiếp acknowledgement callback.</p>
+
+    <p>Decorator tham số <code>@Ack()</code> cho phép inject hàm callback <code>ack</code> trực tiếp vào message handler.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-fname">events.gateway</span>
+        <div class="cb-right">
+          <div class="tab-group">
+            <button class="tab-btn active" onclick="switchTab(this,'ts')">TypeScript</button>
+            <button class="tab-btn" onclick="switchTab(this,'js')">JavaScript</button>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div class="tab-content active" data-tab="ts">
+<pre><span class="dec">@SubscribeMessage</span>(<span class="str">'events'</span>)
+<span class="fn">handleEvent</span>(
+  <span class="dec">@MessageBody</span>() data: <span class="typ">string</span>,
+  <span class="dec">@Ack</span>() ack: (response: { status: <span class="typ">string</span>; data: <span class="typ">string</span> }) => <span class="typ">void</span>,
+) {
+  <span class="fn">ack</span>({ status: <span class="str">'received'</span>, data });
+}</pre>
+      </div>
+      <div class="tab-content" data-tab="js">
+<pre><span class="dec">@Bind</span>(<span class="fn">MessageBody</span>(), <span class="fn">Ack</span>())
+<span class="dec">@SubscribeMessage</span>(<span class="str">'events'</span>)
+<span class="fn">handleEvent</span>(data, ack) {
+  <span class="fn">ack</span>({ status: <span class="str">'received'</span>, data });
+}</pre>
+      </div>
+    </div>
+
+    <!-- Multiple responses -->
+    <h3 id="multiple-responses">Nhiều phản hồi <a class="anchor" href="#multiple-responses">#</a></h3>
+
+    <p>Acknowledgment chỉ được gửi một lần. Hơn nữa, nó không được hỗ trợ bởi triển khai WebSockets gốc. Để giải quyết hạn chế này, bạn có thể trả về một object bao gồm hai thuộc tính. <code>event</code> là tên của sự kiện được phát và <code>data</code> là dữ liệu cần được chuyển tiếp đến client.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-fname">events.gateway</span>
+        <div class="cb-right">
+          <div class="tab-group">
+            <button class="tab-btn active" onclick="switchTab(this,'ts')">TypeScript</button>
+            <button class="tab-btn" onclick="switchTab(this,'js')">JavaScript</button>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div class="tab-content active" data-tab="ts">
+<pre><span class="dec">@SubscribeMessage</span>(<span class="str">'events'</span>)
+<span class="fn">handleEvent</span>(<span class="dec">@MessageBody</span>() data: <span class="typ">unknown</span>): <span class="typ">WsResponse</span>&lt;<span class="typ">unknown</span>&gt; {
+  <span class="kw">const</span> event = <span class="str">'events'</span>;
+  <span class="kw">return</span> { event, data };
+}</pre>
+      </div>
+      <div class="tab-content" data-tab="js">
+<pre><span class="dec">@Bind</span>(<span class="fn">MessageBody</span>())
+<span class="dec">@SubscribeMessage</span>(<span class="str">'events'</span>)
+<span class="fn">handleEvent</span>(data) {
+  <span class="kw">const</span> event = <span class="str">'events'</span>;
+  <span class="kw">return</span> { event, data };
+}</pre>
+      </div>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">Gợi ý</span>
+      <p>Interface <code>WsResponse</code> được import từ package <code>@nestjs/websockets</code>.</p>
+    </div>
+
+    <div class="warn">
+      <span class="lbl">Cảnh báo</span>
+      <p>Bạn nên trả về một class instance implement <code>WsResponse</code> nếu trường <code>data</code> của bạn dựa vào <code>ClassSerializerInterceptor</code>, vì nó bỏ qua các phản hồi là plain JavaScript object.</p>
+    </div>
+
+    <p>Để lắng nghe (các) phản hồi đến, client phải áp dụng một event listener khác.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-fname">TypeScript</span>
+        <div class="cb-right">
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+<pre>socket.<span class="fn">on</span>(<span class="str">'events'</span>, (data) => console.<span class="fn">log</span>(data));</pre>
+    </div>
+
+    <!-- Asynchronous responses -->
+    <h3 id="asynchronous-responses">Phản hồi bất đồng bộ <a class="anchor" href="#asynchronous-responses">#</a></h3>
+
+    <p>Message handlers có thể phản hồi đồng bộ hoặc <strong>bất đồng bộ</strong>. Do đó, các phương thức <code>async</code> được hỗ trợ. Một message handler cũng có thể trả về một <code>Observable</code>, trong trường hợp đó các giá trị kết quả sẽ được phát cho đến khi stream hoàn thành.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-fname">events.gateway</span>
+        <div class="cb-right">
+          <div class="tab-group">
+            <button class="tab-btn active" onclick="switchTab(this,'ts')">TypeScript</button>
+            <button class="tab-btn" onclick="switchTab(this,'js')">JavaScript</button>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div class="tab-content active" data-tab="ts">
+<pre><span class="dec">@SubscribeMessage</span>(<span class="str">'events'</span>)
+<span class="fn">onEvent</span>(<span class="dec">@MessageBody</span>() data: <span class="typ">unknown</span>): <span class="typ">Observable</span>&lt;<span class="typ">WsResponse</span>&lt;<span class="typ">number</span>&gt;&gt; {
+  <span class="kw">const</span> event = <span class="str">'events'</span>;
+  <span class="kw">const</span> response = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>];
+
+  <span class="kw">return</span> <span class="fn">from</span>(response).<span class="fn">pipe</span>(
+    <span class="fn">map</span>(data => ({ event, data })),
+  );
+}</pre>
+      </div>
+      <div class="tab-content" data-tab="js">
+<pre><span class="dec">@Bind</span>(<span class="fn">MessageBody</span>())
+<span class="dec">@SubscribeMessage</span>(<span class="str">'events'</span>)
+<span class="fn">onEvent</span>(data) {
+  <span class="kw">const</span> event = <span class="str">'events'</span>;
+  <span class="kw">const</span> response = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>];
+
+  <span class="kw">return</span> <span class="fn">from</span>(response).<span class="fn">pipe</span>(
+    <span class="fn">map</span>(data => ({ event, data })),
+  );
+}</pre>
+      </div>
+    </div>
+
+    <p>Trong ví dụ trên, message handler sẽ phản hồi <strong>3 lần</strong> (với mỗi phần tử trong mảng).</p>
+
+    <!-- Lifecycle hooks -->
+    <h3 id="lifecycle-hooks">Lifecycle hooks <a class="anchor" href="#lifecycle-hooks">#</a></h3>
+
+    <p>Có 3 lifecycle hooks hữu ích có sẵn. Tất cả đều có interface tương ứng và được mô tả trong bảng sau:</p>
+
+    <table>
+      <tr>
+        <td><code>OnGatewayInit</code></td>
+        <td>Bắt buộc implement phương thức <code>afterInit()</code>. Nhận server instance dành riêng cho thư viện làm đối số (và spread phần còn lại nếu cần).</td>
+      </tr>
+      <tr>
+        <td><code>OnGatewayConnection</code></td>
+        <td>Bắt buộc implement phương thức <code>handleConnection()</code>. Nhận client socket instance dành riêng cho thư viện làm đối số.</td>
+      </tr>
+      <tr>
+        <td><code>OnGatewayDisconnect</code></td>
+        <td>Bắt buộc implement phương thức <code>handleDisconnect()</code>. Nhận client socket instance dành riêng cho thư viện làm đối số.</td>
+      </tr>
+    </table>
+
+    <div class="hint">
+      <span class="lbl">Gợi ý</span>
+      <p>Mỗi lifecycle interface được export từ package <code>@nestjs/websockets</code>.</p>
+    </div>
+
+    <!-- Server and Namespace -->
+    <h3 id="server-namespace">Server và Namespace <a class="anchor" href="#server-namespace">#</a></h3>
+
+    <p>Đôi khi, bạn có thể muốn truy cập trực tiếp vào server instance gốc, <strong>dành riêng cho nền tảng</strong>. Tham chiếu đến object này được truyền làm đối số cho phương thức <code>afterInit()</code> (interface <code>OnGatewayInit</code>). Một tùy chọn khác là sử dụng decorator <code>@WebSocketServer()</code>.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-fname">TypeScript</span>
+        <div class="cb-right">
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+<pre><span class="dec">@WebSocketServer</span>()
+server: <span class="typ">Server</span>;</pre>
+    </div>
+
+    <p>Ngoài ra, bạn có thể truy xuất namespace tương ứng bằng cách sử dụng thuộc tính <code>namespace</code>:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <span class="cb-fname">TypeScript</span>
+        <div class="cb-right">
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+<pre><span class="dec">@WebSocketGateway</span>({ namespace: <span class="str">'my-namespace'</span> })
+<span class="kw">export class</span> <span class="typ">EventsGateway</span> {
+  <span class="dec">@WebSocketServer</span>()
+  namespace: <span class="typ">Namespace</span>;
+}</pre>
+    </div>
+
+    <div class="warn">
+      <span class="lbl">Lưu ý</span>
+      <p>Decorator <code>@WebSocketServer()</code> được import từ package <code>@nestjs/websockets</code>.</p>
+    </div>
+
+    <p>Nest sẽ tự động gán server instance cho thuộc tính này khi nó sẵn sàng sử dụng.</p>
+
+    <!-- Example -->
+    <h3 id="example">Ví dụ <a class="anchor" href="#example">#</a></h3>
+
+    <p>Một ví dụ hoạt động có sẵn <a href="https://github.com/nestjs/nest/tree/master/sample/02-gateways" target="_blank" rel="noopener">tại đây</a>.</p>
+
+    <!-- Page navigation -->
+    <div class="page-nav">
+      <div></div>
+      <a class="pnbtn r" href="ExceptionFilters.html">
+        <span class="pnlbl">Tiếp theo</span>
+        <span class="pntitle">Exception Filters</span>
+      </a>
+    </div>
+
+  </article>
+
+  <nav class="toc">
+    <div class="toc-title">Nội dung</div>
+    <ul>
+      <li><a href="#installation">Cài đặt</a></li>
+      <li><a href="#overview">Tổng quan</a></li>
+      <li><a href="#multiple-responses">Nhiều phản hồi</a></li>
+      <li><a href="#asynchronous-responses">Phản hồi bất đồng bộ</a></li>
+      <li><a href="#lifecycle-hooks">Lifecycle hooks</a></li>
+      <li><a href="#server-namespace">Server và Namespace</a></li>
+      <li><a href="#example">Ví dụ</a></li>
+    </ul>
+  </nav>
+</div>
+
+<script>
+  function cp(btn){var w=btn.closest('.cb');var p=w.querySelector('.tab-content.active pre')||w.querySelector('pre');if(!p)return;navigator.clipboard.writeText(p.textContent.trim()).then(function(){var o=btn.textContent;btn.textContent='Copied!';btn.style.color='#4ade80';setTimeout(function(){btn.textContent=o;btn.style.color=''},1500)})}
+  function switchTab(btn,tab){var cb=btn.closest('.cb');cb.querySelectorAll('.tab-btn').forEach(function(b){b.classList.toggle('active',b===btn)});cb.querySelectorAll('.tab-content').forEach(function(c){c.classList.toggle('active',c.dataset.tab===tab)})}
+  document.querySelectorAll('.toc a').forEach(function(l){l.addEventListener('click',function(e){e.preventDefault();var t=document.querySelector(this.getAttribute('href'));if(t)t.scrollIntoView({behavior:'smooth',block:'start'})})});
+  var tocLinks=document.querySelectorAll('.toc a'),heads=document.querySelectorAll('h3[id]');
+  function hi(){var c='';heads.forEach(function(h){if(scrollY>=h.offsetTop-120)c=h.id});tocLinks.forEach(function(a){a.classList.toggle('active',a.getAttribute('href')==='#'+c)})}
+  window.addEventListener('scroll',hi,{passive:true});hi();
+</script>
+</body>
+</html>

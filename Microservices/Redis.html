@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Redis | NestJS Microservices - Tài liệu tiếng Việt</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root{--bg:#0e0e0e;--surface:#1a1a1a;--surface2:#222;--border:#2a2a2a;--border-l:#333;--red:#ea2845;--red-l:#ff4d6a;--red-glow:rgba(234,40,69,.15);--text:#e8e8e8;--muted:#888;--sec:#b0b0b0;--code-bg:#1e1e1e;--code-bd:#2d2d2d;--hint-bg:#0d2a1a;--hint-c:#4ade80;--warn-bg:#2a1a0d;--warn-c:#fb923c;--note-bg:#0d1a2a;--note-c:#60a0d0;--toc-w:220px;--font:'Inter',sans-serif;--mono:'Source Code Pro',monospace;--r:6px;--rl:10px}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+    body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:15px;line-height:1.78}
+    .page{max-width:1060px;margin:0 auto;padding:48px 32px 96px;display:flex;gap:56px;align-items:flex-start}.content{flex:1;min-width:0}
+    .toc{width:var(--toc-w);flex-shrink:0;position:sticky;top:32px;align-self:flex-start;max-height:calc(100vh - 48px);overflow-y:auto}
+    .toc::-webkit-scrollbar{width:3px}.toc::-webkit-scrollbar-thumb{background:var(--border-l);border-radius:2px}
+    .toc-title{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding-bottom:8px;margin-bottom:8px;border-bottom:1px solid var(--border)}
+    .toc ul{list-style:none}.toc ul li a{display:block;padding:3.5px 0;font-size:12.5px;color:var(--muted);text-decoration:none;line-height:1.5;transition:color .15s;cursor:pointer}
+    .toc ul li a:hover,.toc ul li a.active{color:var(--red-l)}
+    .vi-banner{display:flex;align-items:center;gap:10px;padding:11px 16px;border:1px solid rgba(234,40,69,.3);border-radius:var(--rl);background:linear-gradient(135deg,rgba(234,40,69,.1),rgba(234,40,69,.04));font-size:13px;color:var(--sec);margin-bottom:32px}.vi-banner strong{color:var(--red-l)}
+    h1{font-size:36px;font-weight:700;letter-spacing:-.5px;line-height:1.2;margin-bottom:6px}h1::after{content:'';display:block;width:44px;height:3px;background:var(--red);border-radius:2px;margin-top:12px}
+    h3{font-size:19px;font-weight:600;letter-spacing:-.2px;margin:40px 0 12px;display:flex;align-items:center;gap:8px;scroll-margin-top:80px}
+    .anchor{font-size:14px;color:var(--muted);text-decoration:none;opacity:0;transition:opacity .2s}h3:hover .anchor{opacity:1}
+    p{color:var(--sec);line-height:1.82;margin-bottom:16px}p:last-child{margin-bottom:0}
+    a{color:var(--red-l);text-decoration:none}a:hover{text-decoration:underline}strong{color:var(--text);font-weight:600}
+    ul,ol{color:var(--sec);padding-left:22px;line-height:2.1;margin:16px 0}ul li{margin-bottom:6px}
+    code{font-family:var(--mono);font-size:13px;background:var(--code-bg);border:1px solid var(--code-bd);padding:1px 6px;border-radius:4px;color:#f9a8d4}
+    .hint,.warn,.note{margin:18px 0;padding:12px 16px;border-left:3px solid;border-radius:var(--r);font-size:13.5px;line-height:1.72}
+    .hint{background:var(--hint-bg);border-color:var(--hint-c);color:#a7f3d0}.warn{background:var(--warn-bg);border-color:var(--warn-c);color:#fed7aa}.note{background:var(--note-bg);border-color:var(--note-c);color:#bae6fd}
+    .hint p,.warn p,.note p{margin:0;color:inherit}.lbl{display:block;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
+    .hint .lbl{color:var(--hint-c)}.warn .lbl{color:var(--warn-c)}.note .lbl{color:var(--note-c)}
+    .cb{margin:18px 0;border:1px solid var(--code-bd);border-radius:var(--rl);overflow:hidden;background:var(--code-bg)}
+    .cb-head{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:#181818;border-bottom:1px solid var(--code-bd);min-height:38px}
+    .cb-fname{font-family:var(--mono);font-size:11.5px;color:var(--muted);display:flex;align-items:center;gap:6px}.cb-fname::before{content:'';display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--red)}
+    .cb-right{display:flex;align-items:center;gap:6px}
+    .cpbtn{padding:3px 9px;font-size:10.5px;font-family:var(--mono);background:var(--surface);border:1px solid var(--border-l);color:var(--muted);border-radius:4px;cursor:pointer;transition:all .14s}.cpbtn:hover{background:var(--surface2);color:var(--text)}
+    pre{padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:13.5px;line-height:1.65;color:#abb2bf}pre::-webkit-scrollbar{height:5px}pre::-webkit-scrollbar-thumb{background:var(--border-l);border-radius:3px}
+    .kw{color:#c678dd}.fn{color:#61afef}.str{color:#98c379}.dec{color:#e5c07b}.typ{color:#e5c07b}.cm{color:#5c6370;font-style:italic}.pn{color:#abb2bf}.num{color:#d19a66}.cl{color:#e06c75}
+    .tab-group{display:flex;gap:0;margin-bottom:0}.tab-btn{padding:5px 16px;font-size:11.5px;font-family:var(--mono);background:transparent;border:1px solid var(--code-bd);border-bottom:none;color:var(--muted);cursor:pointer;transition:all .15s;border-radius:6px 6px 0 0;margin-right:-1px}.tab-btn:hover{color:var(--text)}.tab-btn.active{background:var(--code-bg);color:var(--red-l);border-color:var(--code-bd)}.tab-content{display:none}.tab-content.active{display:block}
+    table{width:100%;border-collapse:collapse;margin:18px 0;font-size:13.5px}
+    table td{padding:10px 14px;border:1px solid var(--border);color:var(--sec);vertical-align:top}
+    table tr:nth-child(even){background:var(--surface)}
+    table td:first-child{white-space:nowrap;color:var(--text);font-weight:500}
+    .page-nav{display:flex;justify-content:space-between;margin-top:52px;gap:16px}.pnbtn{display:flex;flex-direction:column;padding:14px 18px;border:1px solid var(--border);border-radius:var(--rl);text-decoration:none;transition:all .2s;min-width:150px}.pnbtn:hover{border-color:var(--red);background:var(--red-glow);text-decoration:none}.pnlbl{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:3px}.pntitle{font-size:14px;font-weight:600;color:var(--text)}.pnbtn.r{text-align:right;margin-left:auto}
+    @media(max-width:860px){.toc{display:none}}@media(max-width:600px){.page{padding:24px 16px 64px}}
+  </style>
+</head>
+<body>
+<div class="page">
+  <main class="content">
+    <div class="vi-banner"><span style="font-size:17px">🇻🇳</span><div>Dịch từ <strong><a href="https://docs.nestjs.com/microservices/redis" target="_blank">docs.nestjs.com/microservices/redis</a></strong>. Thuật ngữ kỹ thuật giữ nguyên tiếng Anh.</div></div>
+
+    <h1>Redis</h1>
+
+    <p style="margin-top:18px"><a href="https://redis.io/" target="_blank">Redis</a> transporter triển khai mô hình messaging publish/subscribe, tận dụng tính năng <a href="https://redis.io/topics/pubsub" target="_blank">pub/sub</a> của Redis. Các message đã publish được phân loại vào các channel, mà không cần biết subscriber nào (nếu có) sẽ nhận message. Mỗi microservice có thể subscribe vào bất kỳ số lượng channel nào. Ngoài ra, nhiều hơn một channel có thể được subscribe cùng lúc. Các message được trao đổi là <strong>fire-and-forget</strong>, nghĩa là nếu một message được publish và không có subscriber nào quan tâm đến nó, message sẽ bị loại bỏ và không thể khôi phục. Do đó, bạn không có đảm bảo rằng message hoặc event sẽ được xử lý bởi ít nhất một service. Một message có thể được subscribe (và nhận) bởi nhiều subscriber.</p>
+
+    <figure style="margin:24px 0;text-align:center">
+      <img src="https://docs.nestjs.com/assets/Redis_1.png" alt="Redis pub/sub diagram" style="max-width:100%;border-radius:var(--rl)" />
+    </figure>
+
+    <!-- ═══ Installation ═══ -->
+    <h3 id="installation">Installation <a class="anchor" href="#installation">#</a></h3>
+
+    <p>Để bắt đầu xây dựng microservices dựa trên Redis, trước tiên hãy cài đặt package cần thiết:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre>$ npm i --save ioredis</pre></div>
+
+    <!-- ═══ Overview ═══ -->
+    <h3 id="overview">Overview <a class="anchor" href="#overview">#</a></h3>
+
+    <p>Để sử dụng Redis transporter, truyền object options sau vào phương thức <code>createMicroservice()</code>:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">main</div><div class="cb-right"><div class="tab-group"><button class="tab-btn active" onclick="switchTab(this,'ts')">TypeScript</button><button class="tab-btn" onclick="switchTab(this,'js')">JavaScript</button></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div class="tab-content active" data-tab="ts"><pre><span class="kw">import</span> <span class="pn">{</span> NestFactory <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/core'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> Transport<span class="pn">,</span> MicroserviceOptions <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/microservices'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> AppModule <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./app.module'</span><span class="pn">;</span>
+
+<span class="kw">async</span> <span class="kw">function</span> <span class="fn">bootstrap</span><span class="pn">() {</span>
+  <span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> NestFactory<span class="pn">.</span><span class="fn">createMicroservice</span><span class="pn">&lt;</span><span class="typ">MicroserviceOptions</span><span class="pn">&gt;(</span>AppModule<span class="pn">, {</span>
+    transport<span class="pn">:</span> Transport<span class="pn">.</span>REDIS<span class="pn">,</span>
+    options<span class="pn">: {</span>
+      host<span class="pn">:</span> <span class="str">'localhost'</span><span class="pn">,</span>
+      port<span class="pn">:</span> <span class="num">6379</span><span class="pn">,</span>
+    <span class="pn">},</span>
+  <span class="pn">});</span>
+  <span class="kw">await</span> app<span class="pn">.</span><span class="fn">listen</span><span class="pn">();</span>
+<span class="pn">}</span>
+<span class="fn">bootstrap</span><span class="pn">();</span></pre></div><div class="tab-content" data-tab="js"><pre><span class="kw">import</span> <span class="pn">{</span> NestFactory <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/core'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> Transport <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/microservices'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> AppModule <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./app.module'</span><span class="pn">;</span>
+
+<span class="kw">async</span> <span class="kw">function</span> <span class="fn">bootstrap</span><span class="pn">() {</span>
+  <span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> NestFactory<span class="pn">.</span><span class="fn">createMicroservice</span><span class="pn">(</span>AppModule<span class="pn">, {</span>
+    transport<span class="pn">:</span> Transport<span class="pn">.</span>REDIS<span class="pn">,</span>
+    options<span class="pn">: {</span>
+      host<span class="pn">:</span> <span class="str">'localhost'</span><span class="pn">,</span>
+      port<span class="pn">:</span> <span class="num">6379</span><span class="pn">,</span>
+    <span class="pn">},</span>
+  <span class="pn">});</span>
+  <span class="kw">await</span> app<span class="pn">.</span><span class="fn">listen</span><span class="pn">();</span>
+<span class="pn">}</span>
+<span class="fn">bootstrap</span><span class="pn">();</span></pre></div></div>
+
+<div class="hint"><span class="lbl">Gợi ý</span><p>Enum <code>Transport</code> được import từ package <code>@nestjs/microservices</code>.</p></div>
+
+    <!-- ═══ Options ═══ -->
+    <h3 id="options">Options <a class="anchor" href="#options">#</a></h3>
+
+    <p>Object <code>options</code> là riêng cho transporter đã chọn. <strong>Redis</strong> transporter cung cấp các thuộc tính được mô tả dưới đây.</p>
+
+    <table>
+      <tr><td><code>host</code></td><td>URL kết nối (mặc định: <code>'localhost'</code>)</td></tr>
+      <tr><td><code>port</code></td><td>Cổng kết nối (mặc định: <code>6379</code>)</td></tr>
+      <tr><td><code>retryAttempts</code></td><td>Số lần thử lại message (mặc định: <code>0</code>)</td></tr>
+      <tr><td><code>retryDelay</code></td><td>Độ trễ giữa các lần thử lại message (ms) (mặc định: <code>0</code>)</td></tr>
+      <tr><td><code>wildcards</code></td><td>Bật subscription dựa trên pattern của Redis, cho phép subscribe bằng wildcard (mặc định: <code>false</code>)</td></tr>
+    </table>
+
+    <p>Tất cả các thuộc tính được hỗ trợ bởi driver <code>ioredis</code> chính thức cũng được transporter này hỗ trợ.</p>
+
+    <!-- ═══ Client ═══ -->
+    <h3 id="client">Client <a class="anchor" href="#client">#</a></h3>
+
+    <p>Giống như các transporter của microservice khác, bạn có <a href="https://docs.nestjs.com/microservices/basics#client" target="_blank">một số tùy chọn</a> để tạo một Redis <code>ClientProxy</code> instance.</p>
+
+    <p>Một phương thức để tạo instance là sử dụng <code>ClientsModule</code>. Để tạo một client instance với <code>ClientsModule</code>, import nó và sử dụng phương thức <code>register()</code> để truyền một object options có cùng thuộc tính như đã trình bày ở trên trong phương thức <code>createMicroservice()</code>, cùng với thuộc tính <code>name</code> được sử dụng làm injection token. Đọc thêm về <code>ClientsModule</code> <a href="https://docs.nestjs.com/microservices/basics#client" target="_blank">tại đây</a>.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><div class="tab-group"><button class="tab-btn active" onclick="switchTab(this,'ts')">TypeScript</button><button class="tab-btn" onclick="switchTab(this,'js')">JavaScript</button></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div class="tab-content active" data-tab="ts"><pre><span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">: [</span>
+    ClientsModule<span class="pn">.</span><span class="fn">register</span><span class="pn">([</span>
+      <span class="pn">{</span>
+        name<span class="pn">:</span> <span class="str">'MATH_SERVICE'</span><span class="pn">,</span>
+        transport<span class="pn">:</span> Transport<span class="pn">.</span>REDIS<span class="pn">,</span>
+        options<span class="pn">: {</span>
+          host<span class="pn">:</span> <span class="str">'localhost'</span><span class="pn">,</span>
+          port<span class="pn">:</span> <span class="num">6379</span><span class="pn">,</span>
+        <span class="pn">}</span>
+      <span class="pn">},</span>
+    <span class="pn">]),</span>
+  <span class="pn">],</span>
+  <span class="pn">...</span>
+<span class="pn">})</span></pre></div><div class="tab-content" data-tab="js"><pre><span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">: [</span>
+    ClientsModule<span class="pn">.</span><span class="fn">register</span><span class="pn">([</span>
+      <span class="pn">{</span>
+        name<span class="pn">:</span> <span class="str">'MATH_SERVICE'</span><span class="pn">,</span>
+        transport<span class="pn">:</span> Transport<span class="pn">.</span>REDIS<span class="pn">,</span>
+        options<span class="pn">: {</span>
+          host<span class="pn">:</span> <span class="str">'localhost'</span><span class="pn">,</span>
+          port<span class="pn">:</span> <span class="num">6379</span><span class="pn">,</span>
+        <span class="pn">}</span>
+      <span class="pn">},</span>
+    <span class="pn">]),</span>
+  <span class="pn">],</span>
+  <span class="pn">...</span>
+<span class="pn">})</span></pre></div></div>
+
+    <p>Các factory khác cũng có thể được sử dụng để tạo client (<code>ClientProxyFactory</code> hoặc <code>@Client()</code>). Bạn có thể đọc thêm về chúng <a href="https://docs.nestjs.com/microservices/basics#client" target="_blank">tại đây</a>.</p>
+
+    <!-- ═══ Context ═══ -->
+    <h3 id="context">Context <a class="anchor" href="#context">#</a></h3>
+
+    <p>Trong các pattern phức tạp hơn, bạn có thể muốn truy cập thêm thông tin về request đến. Khi sử dụng Redis transporter, bạn có thể truy cập object <code>RedisContext</code>.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><div class="tab-group"><button class="tab-btn active" onclick="switchTab(this,'ts')">TypeScript</button><button class="tab-btn" onclick="switchTab(this,'js')">JavaScript</button></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div class="tab-content active" data-tab="ts"><pre><span class="dec">@MessagePattern</span><span class="pn">(</span><span class="str">'notifications'</span><span class="pn">)</span>
+<span class="fn">getNotifications</span><span class="pn">(</span><span class="dec">@Payload</span><span class="pn">()</span> data<span class="pn">:</span> <span class="typ">number</span><span class="pn">[],</span> <span class="dec">@Ctx</span><span class="pn">()</span> context<span class="pn">:</span> <span class="typ">RedisContext</span><span class="pn">) {</span>
+  console<span class="pn">.</span><span class="fn">log</span><span class="pn">(</span><span class="str">`Channel: ${context.getChannel()}`</span><span class="pn">);</span>
+<span class="pn">}</span></pre></div><div class="tab-content" data-tab="js"><pre><span class="dec">@MessagePattern</span><span class="pn">(</span><span class="str">'notifications'</span><span class="pn">)</span>
+<span class="fn">getNotifications</span><span class="pn">(</span><span class="dec">@Payload</span><span class="pn">()</span> data<span class="pn">,</span> <span class="dec">@Ctx</span><span class="pn">()</span> context<span class="pn">) {</span>
+  console<span class="pn">.</span><span class="fn">log</span><span class="pn">(</span><span class="str">`Channel: ${context.getChannel()}`</span><span class="pn">);</span>
+<span class="pn">}</span></pre></div></div>
+
+<div class="hint"><span class="lbl">Gợi ý</span><p><code>@Payload()</code>, <code>@Ctx()</code> và <code>RedisContext</code> được import từ package <code>@nestjs/microservices</code>.</p></div>
+
+    <!-- ═══ Wildcards ═══ -->
+    <h3 id="wildcards">Wildcards <a class="anchor" href="#wildcards">#</a></h3>
+
+    <p>Một subscription có thể sử dụng glob-style pattern (wildcard). Đây là tính năng <code>psubscribe</code> / <code>pmessage</code> gốc của Redis. Ví dụ, để subscribe vào tất cả các channel bắt đầu bằng <code>order.</code>, bạn sẽ sử dụng pattern sau:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><div class="tab-group"><button class="tab-btn active" onclick="switchTab(this,'ts')">TypeScript</button><button class="tab-btn" onclick="switchTab(this,'js')">JavaScript</button></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div class="tab-content active" data-tab="ts"><pre><span class="dec">@MessagePattern</span><span class="pn">(</span><span class="str">'order.*'</span><span class="pn">)</span>
+<span class="fn">getOrders</span><span class="pn">(</span><span class="dec">@Payload</span><span class="pn">()</span> data<span class="pn">:</span> <span class="typ">number</span><span class="pn">[],</span> <span class="dec">@Ctx</span><span class="pn">()</span> context<span class="pn">:</span> <span class="typ">RedisContext</span><span class="pn">) {</span>
+  console<span class="pn">.</span><span class="fn">log</span><span class="pn">(</span><span class="str">`Channel: ${context.getChannel()}`</span><span class="pn">);</span>
+<span class="pn">}</span></pre></div><div class="tab-content" data-tab="js"><pre><span class="dec">@MessagePattern</span><span class="pn">(</span><span class="str">'order.*'</span><span class="pn">)</span>
+<span class="fn">getOrders</span><span class="pn">(</span><span class="dec">@Payload</span><span class="pn">()</span> data<span class="pn">,</span> <span class="dec">@Ctx</span><span class="pn">()</span> context<span class="pn">) {</span>
+  console<span class="pn">.</span><span class="fn">log</span><span class="pn">(</span><span class="str">`Channel: ${context.getChannel()}`</span><span class="pn">);</span>
+<span class="pn">}</span></pre></div></div>
+
+    <p>Để bật tính năng wildcard subscription, bạn cần thiết lập option <code>wildcards</code> thành <code>true</code> trong cấu hình transporter:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">main</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> NestFactory<span class="pn">.</span><span class="fn">createMicroservice</span><span class="pn">&lt;</span><span class="typ">MicroserviceOptions</span><span class="pn">&gt;(</span>AppModule<span class="pn">, {</span>
+  transport<span class="pn">:</span> Transport<span class="pn">.</span>REDIS<span class="pn">,</span>
+  options<span class="pn">: {</span>
+    host<span class="pn">:</span> <span class="str">'localhost'</span><span class="pn">,</span>
+    port<span class="pn">:</span> <span class="num">6379</span><span class="pn">,</span>
+    wildcards<span class="pn">:</span> <span class="kw">true</span><span class="pn">,</span>
+  <span class="pn">},</span>
+<span class="pn">});</span></pre></div>
+
+    <!-- ═══ Instance status updates ═══ -->
+    <h3 id="instance-status-updates">Instance status updates <a class="anchor" href="#instance-status-updates">#</a></h3>
+
+    <p>Để nhận thông tin cập nhật về trạng thái kết nối và hoạt động của driver, bạn có thể subscribe vào các stream status cụ thể, như sau:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">main</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> NestFactory<span class="pn">.</span><span class="fn">createMicroservice</span><span class="pn">&lt;</span><span class="typ">MicroserviceOptions</span><span class="pn">&gt;(</span>AppModule<span class="pn">, {</span>
+  transport<span class="pn">:</span> Transport<span class="pn">.</span>REDIS<span class="pn">,</span>
+  options<span class="pn">: {</span>
+    host<span class="pn">:</span> <span class="str">'localhost'</span><span class="pn">,</span>
+    port<span class="pn">:</span> <span class="num">6379</span><span class="pn">,</span>
+  <span class="pn">},</span>
+<span class="pn">});</span>
+
+<span class="kw">const</span> redisClient <span class="pn">=</span> app<span class="pn">.</span><span class="fn">status</span><span class="pn">;</span>
+redisClient<span class="pn">.</span><span class="fn">subscribe</span><span class="pn">((</span>status<span class="pn">) =&gt; {</span>
+  console<span class="pn">.</span><span class="fn">log</span><span class="pn">(</span>status<span class="pn">);</span>
+<span class="pn">});</span></pre></div>
+
+    <p>Thuộc tính <code>status</code> là một <code>Observable</code> phát ra các sự kiện trạng thái của driver. Các trạng thái có thể bao gồm: <code>connected</code>, <code>disconnected</code>, <code>reconnecting</code>, <code>ready</code>. Điều này cho phép bạn theo dõi tình trạng kết nối của driver.</p>
+
+    <p>Tương tự, bạn cũng có thể lắng nghe trạng thái của client proxy:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">const</span> client <span class="pn">=</span> app<span class="pn">.</span><span class="fn">get</span><span class="pn">&lt;</span><span class="typ">ClientProxy</span><span class="pn">&gt;(</span><span class="str">'MATH_SERVICE'</span><span class="pn">);</span>
+client<span class="pn">.</span>status<span class="pn">.</span><span class="fn">subscribe</span><span class="pn">((</span>status<span class="pn">) =&gt; {</span>
+  console<span class="pn">.</span><span class="fn">log</span><span class="pn">(</span>status<span class="pn">);</span>
+<span class="pn">});</span></pre></div>
+
+    <!-- ═══ Listening to Redis events ═══ -->
+    <h3 id="listening-to-redis-events">Listening to Redis events <a class="anchor" href="#listening-to-redis-events">#</a></h3>
+
+    <p>Trong một số trường hợp, bạn có thể muốn lắng nghe các sự kiện nội bộ được phát ra bởi Redis client. Ví dụ, bạn có thể muốn lắng nghe sự kiện <code>error</code> để ghi log các lỗi xảy ra. Để làm điều này, sử dụng phương thức <code>unwrap</code> để lấy underlying driver instance.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> NestFactory<span class="pn">.</span><span class="fn">createMicroservice</span><span class="pn">&lt;</span><span class="typ">MicroserviceOptions</span><span class="pn">&gt;(</span>AppModule<span class="pn">, {</span>
+  transport<span class="pn">:</span> Transport<span class="pn">.</span>REDIS<span class="pn">,</span>
+  options<span class="pn">: {</span>
+    host<span class="pn">:</span> <span class="str">'localhost'</span><span class="pn">,</span>
+    port<span class="pn">:</span> <span class="num">6379</span><span class="pn">,</span>
+  <span class="pn">},</span>
+<span class="pn">});</span>
+
+<span class="kw">const</span> <span class="pn">[</span>subClient<span class="pn">,</span> pubClient<span class="pn">]</span> <span class="pn">=</span> app<span class="pn">.</span><span class="fn">unwrap</span><span class="pn">&lt;[</span><span class="typ">Redis</span><span class="pn">,</span> <span class="typ">Redis</span><span class="pn">]&gt;();</span>
+subClient<span class="pn">.</span><span class="fn">on</span><span class="pn">(</span><span class="str">'error'</span><span class="pn">, (</span>err<span class="pn">) =&gt; {</span>
+  console<span class="pn">.</span><span class="fn">error</span><span class="pn">(</span>err<span class="pn">);</span>
+<span class="pn">});</span></pre></div>
+
+    <p>Tương tự, bạn cũng có thể lấy underlying driver instance từ client proxy:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">const</span> client <span class="pn">=</span> app<span class="pn">.</span><span class="fn">get</span><span class="pn">&lt;</span><span class="typ">ClientProxy</span><span class="pn">&gt;(</span><span class="str">'MATH_SERVICE'</span><span class="pn">);</span>
+<span class="kw">const</span> <span class="pn">[</span>subClient<span class="pn">,</span> pubClient<span class="pn">]</span> <span class="pn">=</span> client<span class="pn">.</span><span class="fn">unwrap</span><span class="pn">&lt;[</span><span class="typ">Redis</span><span class="pn">,</span> <span class="typ">Redis</span><span class="pn">]&gt;();</span>
+subClient<span class="pn">.</span><span class="fn">on</span><span class="pn">(</span><span class="str">'error'</span><span class="pn">, (</span>err<span class="pn">) =&gt; {</span>
+  console<span class="pn">.</span><span class="fn">error</span><span class="pn">(</span>err<span class="pn">);</span>
+<span class="pn">});</span></pre></div>
+
+    <!-- ═══ Underlying driver access ═══ -->
+    <h3 id="underlying-driver-access">Underlying driver access <a class="anchor" href="#underlying-driver-access">#</a></h3>
+
+    <p>Để truy cập trực tiếp vào driver instance (ioredis), sử dụng phương thức <code>unwrap()</code>. Phương thức này trả về một tuple gồm hai ioredis instance: cái đầu tiên cho <strong>subscriber</strong> và cái thứ hai cho <strong>publisher</strong>.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">const</span> <span class="pn">[</span>subClient<span class="pn">,</span> pubClient<span class="pn">]</span> <span class="pn">=</span> app<span class="pn">.</span><span class="fn">unwrap</span><span class="pn">&lt;[</span><span class="typ">Redis</span><span class="pn">,</span> <span class="typ">Redis</span><span class="pn">]&gt;();</span></pre></div>
+
+    <p>Phương thức <code>unwrap()</code> cho phép bạn truy cập trực tiếp vào các ioredis client bên dưới, cho phép bạn thực hiện các thao tác nâng cao mà NestJS abstraction layer không trực tiếp hỗ trợ, chẳng hạn như lắng nghe các sự kiện Redis nội bộ hoặc sử dụng các lệnh Redis tùy chỉnh.</p>
+
+<div class="warn"><span class="lbl">Lưu ý</span><p>Khi sử dụng <code>unwrap()</code>, bạn đang tương tác trực tiếp với driver, do đó NestJS sẽ không quản lý kết nối hay theo dõi trạng thái của nó nữa.</p></div>
+
+    <!-- Page Navigation -->
+    <div class="page-nav">
+      <a href="Basics.html" class="pnbtn">
+        <span class="pnlbl">&larr; Trước</span>
+        <span class="pntitle">Basics</span>
+      </a>
+      <a href="MQTT.html" class="pnbtn r">
+        <span class="pnlbl">Tiếp &rarr;</span>
+        <span class="pntitle">MQTT</span>
+      </a>
+    </div>
+
+  </main>
+
+  <!-- TOC -->
+  <aside class="toc">
+    <div class="toc-title">Nội dung</div>
+    <ul>
+      <li><a href="#installation">Installation</a></li>
+      <li><a href="#overview">Overview</a></li>
+      <li><a href="#options">Options</a></li>
+      <li><a href="#client">Client</a></li>
+      <li><a href="#context">Context</a></li>
+      <li><a href="#wildcards">Wildcards</a></li>
+      <li><a href="#instance-status-updates">Instance status updates</a></li>
+      <li><a href="#listening-to-redis-events">Listening to Redis events</a></li>
+      <li><a href="#underlying-driver-access">Underlying driver access</a></li>
+    </ul>
+  </aside>
+
+</div>
+
+<script>
+  function cp(btn){var w=btn.closest('.cb');var p=w.querySelector('.tab-content.active pre')||w.querySelector('pre');if(!p)return;navigator.clipboard.writeText(p.textContent.trim()).then(function(){var o=btn.textContent;btn.textContent='Copied!';btn.style.color='#4ade80';setTimeout(function(){btn.textContent=o;btn.style.color=''},1500)})}
+  function switchTab(btn,tab){var cb=btn.closest('.cb');cb.querySelectorAll('.tab-btn').forEach(function(b){b.classList.toggle('active',b===btn)});cb.querySelectorAll('.tab-content').forEach(function(c){c.classList.toggle('active',c.dataset.tab===tab)})}
+  document.querySelectorAll('.toc a').forEach(function(l){l.addEventListener('click',function(e){e.preventDefault();var t=document.querySelector(this.getAttribute('href'));if(t)t.scrollIntoView({behavior:'smooth',block:'start'})})});
+  var tocLinks=document.querySelectorAll('.toc a'),heads=document.querySelectorAll('h3[id]');
+  function hi(){var c='';heads.forEach(function(h){if(scrollY>=h.offsetTop-120)c=h.id});tocLinks.forEach(function(a){a.classList.toggle('active',a.getAttribute('href')==='#'+c)})}
+  window.addEventListener('scroll',hi,{passive:true});hi();
+</script>
+</body>
+</html>

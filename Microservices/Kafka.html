@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kafka | NestJS Microservices - Tài liệu tiếng Việt</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root{--bg:#0e0e0e;--surface:#1a1a1a;--surface2:#222;--border:#2a2a2a;--border-l:#333;--red:#ea2845;--red-l:#ff4d6a;--red-glow:rgba(234,40,69,.15);--text:#e8e8e8;--muted:#888;--sec:#b0b0b0;--code-bg:#1e1e1e;--code-bd:#2d2d2d;--hint-bg:#0d2a1a;--hint-c:#4ade80;--warn-bg:#2a1a0d;--warn-c:#fb923c;--note-bg:#0d1a2a;--note-c:#60a0d0;--toc-w:220px;--font:'Inter',sans-serif;--mono:'Source Code Pro',monospace;--r:6px;--rl:10px}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+    body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:15px;line-height:1.78}
+    .page{max-width:1060px;margin:0 auto;padding:48px 32px 96px;display:flex;gap:56px;align-items:flex-start}.content{flex:1;min-width:0}
+    .toc{width:var(--toc-w);flex-shrink:0;position:sticky;top:32px;align-self:flex-start;max-height:calc(100vh - 48px);overflow-y:auto}
+    .toc::-webkit-scrollbar{width:3px}.toc::-webkit-scrollbar-thumb{background:var(--border-l);border-radius:2px}
+    .toc-title{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding-bottom:8px;margin-bottom:8px;border-bottom:1px solid var(--border)}
+    .toc ul{list-style:none}.toc ul li a{display:block;padding:3.5px 0;font-size:12.5px;color:var(--muted);text-decoration:none;line-height:1.5;transition:color .15s;cursor:pointer}
+    .toc ul li a:hover,.toc ul li a.active{color:var(--red-l)}
+    .vi-banner{display:flex;align-items:center;gap:10px;padding:11px 16px;border:1px solid rgba(234,40,69,.3);border-radius:var(--rl);background:linear-gradient(135deg,rgba(234,40,69,.1),rgba(234,40,69,.04));font-size:13px;color:var(--sec);margin-bottom:32px}.vi-banner strong{color:var(--red-l)}
+    h1{font-size:36px;font-weight:700;letter-spacing:-.5px;line-height:1.2;margin-bottom:6px}h1::after{content:'';display:block;width:44px;height:3px;background:var(--red);border-radius:2px;margin-top:12px}
+    h3{font-size:19px;font-weight:600;letter-spacing:-.2px;margin:40px 0 12px;display:flex;align-items:center;gap:8px;scroll-margin-top:80px}
+    .anchor{font-size:14px;color:var(--muted);text-decoration:none;opacity:0;transition:opacity .2s}h3:hover .anchor{opacity:1}
+    p{color:var(--sec);line-height:1.82;margin-bottom:16px}p:last-child{margin-bottom:0}
+    a{color:var(--red-l);text-decoration:none}a:hover{text-decoration:underline}strong{color:var(--text);font-weight:600}
+    ul,ol{color:var(--sec);padding-left:22px;line-height:2.1;margin:16px 0}ul li{margin-bottom:6px}
+    code{font-family:var(--mono);font-size:13px;background:var(--code-bg);border:1px solid var(--code-bd);padding:1px 6px;border-radius:4px;color:#f9a8d4}
+    .hint,.warn,.note{margin:18px 0;padding:12px 16px;border-left:3px solid;border-radius:var(--r);font-size:13.5px;line-height:1.72}
+    .hint{background:var(--hint-bg);border-color:var(--hint-c);color:#a7f3d0}.warn{background:var(--warn-bg);border-color:var(--warn-c);color:#fed7aa}.note{background:var(--note-bg);border-color:var(--note-c);color:#bae6fd}
+    .hint p,.warn p,.note p{margin:0;color:inherit}.lbl{display:block;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
+    .hint .lbl{color:var(--hint-c)}.warn .lbl{color:var(--warn-c)}.note .lbl{color:var(--note-c)}
+    .cb{margin:18px 0;border:1px solid var(--code-bd);border-radius:var(--rl);overflow:hidden;background:var(--code-bg)}
+    .cb-head{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:#181818;border-bottom:1px solid var(--code-bd);min-height:38px}
+    .cb-fname{font-family:var(--mono);font-size:11.5px;color:var(--muted);display:flex;align-items:center;gap:6px}.cb-fname::before{content:'';display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--red)}
+    .cb-right{display:flex;align-items:center;gap:6px}
+    .cpbtn{padding:3px 9px;font-size:10.5px;font-family:var(--mono);background:var(--surface);border:1px solid var(--border-l);color:var(--muted);border-radius:4px;cursor:pointer;transition:all .14s}.cpbtn:hover{background:var(--surface2);color:var(--text)}
+    pre{padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:13.5px;line-height:1.65;color:#abb2bf}pre::-webkit-scrollbar{height:5px}pre::-webkit-scrollbar-thumb{background:var(--border-l);border-radius:3px}
+    .kw{color:#c678dd}.fn{color:#61afef}.str{color:#98c379}.dec{color:#e5c07b}.typ{color:#e5c07b}.cm{color:#5c6370;font-style:italic}.pn{color:#abb2bf}.num{color:#d19a66}.cl{color:#e06c75}
+    .tab-group{display:flex;gap:0;margin-bottom:0}.tab-btn{padding:5px 16px;font-size:11.5px;font-family:var(--mono);background:transparent;border:1px solid var(--code-bd);border-bottom:none;color:var(--muted);cursor:pointer;transition:all .15s;border-radius:6px 6px 0 0;margin-right:-1px}.tab-btn:hover{color:var(--text)}.tab-btn.active{background:var(--code-bg);color:var(--red-l);border-color:var(--code-bd)}.tab-content{display:none}.tab-content.active{display:block}
+    table{width:100%;border-collapse:collapse;margin:18px 0;font-size:13.5px}
+    table td{padding:10px 14px;border:1px solid var(--border);color:var(--sec);vertical-align:top}
+    table tr:nth-child(even){background:var(--surface)}
+    table td:first-child{white-space:nowrap;color:var(--text);font-weight:500}
+    .page-nav{display:flex;justify-content:space-between;margin-top:52px;gap:16px}.pnbtn{display:flex;flex-direction:column;padding:14px 18px;border:1px solid var(--border);border-radius:var(--rl);text-decoration:none;transition:all .2s;min-width:150px}.pnbtn:hover{border-color:var(--red);background:var(--red-glow);text-decoration:none}.pnlbl{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:3px}.pntitle{font-size:14px;font-weight:600;color:var(--text)}.pnbtn.r{text-align:right;margin-left:auto}
+    @media(max-width:860px){.toc{display:none}}@media(max-width:600px){.page{padding:24px 16px 64px}}
+  </style>
+</head>
+<body>
+<div class="page">
+  <main class="content">
+    <div class="vi-banner"><span style="font-size:17px">🇻🇳</span><div>Dịch từ <strong><a href="https://docs.nestjs.com/microservices/kafka" target="_blank">docs.nestjs.com/microservices/kafka</a></strong>. Thuật ngữ kỹ thuật giữ nguyên tiếng Anh.</div></div>
+
+    <h1>Kafka</h1>
+
+    <p style="margin-top:18px"><a href="https://kafka.apache.org/" target="_blank">Kafka</a> là một nền tảng streaming phân tán mã nguồn mở có ba khả năng chính:</p>
+
+    <ul>
+      <li>Publish và subscribe các stream of records, tương tự như message queue hoặc hệ thống enterprise messaging.</li>
+      <li>Lưu trữ các stream of records một cách bền vững và chịu lỗi.</li>
+      <li>Xử lý các stream of records khi chúng xảy ra.</li>
+    </ul>
+
+    <p>Dự án Kafka nhằm cung cấp một nền tảng thống nhất, throughput cao, độ trễ thấp để xử lý các data feed thời gian thực. Nó tích hợp rất tốt với Apache Storm và Spark để phân tích dữ liệu streaming thời gian thực.</p>
+
+    <!-- ═══ Installation ═══ -->
+    <h3 id="installation">Installation <a class="anchor" href="#installation">#</a></h3>
+
+    <p>Để bắt đầu xây dựng các microservice dựa trên Kafka, trước tiên hãy cài đặt package cần thiết:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre>$ npm i --save kafkajs</pre></div>
+
+    <!-- ═══ Overview ═══ -->
+    <h3 id="overview">Overview <a class="anchor" href="#overview">#</a></h3>
+
+    <p>Giống như các implementation transport layer microservice khác của Nest, bạn chọn cơ chế Kafka transporter bằng cách sử dụng thuộc tính <code>transport</code> của object options được truyền vào phương thức <code>createMicroservice()</code>, cùng với thuộc tính <code>options</code> tùy chọn, như được hiển thị dưới đây:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">main</div><div class="cb-right"><div class="tab-group"><button class="tab-btn active" onclick="switchTab(this,'ts')">TypeScript</button><button class="tab-btn" onclick="switchTab(this,'js')">JavaScript</button></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div class="tab-content active" data-tab="ts"><pre><span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> NestFactory<span class="pn">.</span><span class="fn">createMicroservice</span><span class="pn">&lt;</span><span class="typ">MicroserviceOptions</span><span class="pn">&gt;(</span>AppModule<span class="pn">, {</span>
+  transport<span class="pn">:</span> Transport<span class="pn">.</span>KAFKA<span class="pn">,</span>
+  options<span class="pn">: {</span>
+    client<span class="pn">: {</span>
+      brokers<span class="pn">: [</span><span class="str">'localhost:9092'</span><span class="pn">],</span>
+    <span class="pn">}</span>
+  <span class="pn">}</span>
+<span class="pn">});</span></pre></div><div class="tab-content" data-tab="js"><pre><span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> NestFactory<span class="pn">.</span><span class="fn">createMicroservice</span><span class="pn">(</span>AppModule<span class="pn">, {</span>
+  transport<span class="pn">:</span> Transport<span class="pn">.</span>KAFKA<span class="pn">,</span>
+  options<span class="pn">: {</span>
+    client<span class="pn">: {</span>
+      brokers<span class="pn">: [</span><span class="str">'localhost:9092'</span><span class="pn">],</span>
+    <span class="pn">}</span>
+  <span class="pn">}</span>
+<span class="pn">});</span></pre></div></div>
+
+<div class="hint"><span class="lbl">Gợi ý</span><p>Enum <code>Transport</code> được import từ package <code>@nestjs/microservices</code>.</p></div>
+
+    <!-- ═══ Options ═══ -->
+    <h3 id="options">Options <a class="anchor" href="#options">#</a></h3>
+
+    <p>Thuộc tính <code>options</code> dành riêng cho transporter được chọn. <strong>Kafka</strong> transporter expose các thuộc tính được mô tả dưới đây.</p>
+
+    <table>
+      <tr><td><code>client</code></td><td>Các tùy chọn cấu hình client (đọc thêm <a href="https://kafka.js.org/docs/configuration" target="_blank">tại đây</a>)</td></tr>
+      <tr><td><code>consumer</code></td><td>Các tùy chọn cấu hình consumer (đọc thêm <a href="https://kafka.js.org/docs/consuming#a-name-options-a-options" target="_blank">tại đây</a>)</td></tr>
+      <tr><td><code>run</code></td><td>Các tùy chọn cấu hình run (đọc thêm <a href="https://kafka.js.org/docs/consuming" target="_blank">tại đây</a>)</td></tr>
+      <tr><td><code>subscribe</code></td><td>Các tùy chọn cấu hình subscribe (đọc thêm <a href="https://kafka.js.org/docs/consuming#frombeginning" target="_blank">tại đây</a>)</td></tr>
+      <tr><td><code>producer</code></td><td>Các tùy chọn cấu hình producer (đọc thêm <a href="https://kafka.js.org/docs/producing#options" target="_blank">tại đây</a>)</td></tr>
+      <tr><td><code>send</code></td><td>Các tùy chọn cấu hình send (đọc thêm <a href="https://kafka.js.org/docs/producing#options" target="_blank">tại đây</a>)</td></tr>
+      <tr><td><code>producerOnlyMode</code></td><td>Feature flag để bỏ qua đăng ký consumer group và chỉ hoạt động như một producer (<code>boolean</code>)</td></tr>
+      <tr><td><code>postfixId</code></td><td>Thay đổi hậu tố của giá trị clientId (<code>string</code>)</td></tr>
+    </table>
+
+    <!-- ═══ Client ═══ -->
+    <h3 id="client">Client <a class="anchor" href="#client">#</a></h3>
+
+    <p>Có một sự khác biệt nhỏ trong Kafka so với các microservice transporter khác. Thay vì class <code>ClientProxy</code>, chúng ta sử dụng class <code>ClientKafkaProxy</code>.</p>
+
+    <p>Giống như các microservice transporter khác, bạn có <a href="https://docs.nestjs.com/microservices/basics#client" target="_blank">một số tùy chọn</a> để tạo instance <code>ClientKafkaProxy</code>.</p>
+
+    <p>Một phương pháp để tạo instance là sử dụng <code>ClientsModule</code>. Để tạo client instance với <code>ClientsModule</code>, hãy import nó và sử dụng phương thức <code>register()</code> để truyền vào một object options có cùng các thuộc tính như được hiển thị ở trên trong phương thức <code>createMicroservice()</code>, cùng với thuộc tính <code>name</code> được sử dụng làm injection token. Đọc thêm về <code>ClientsModule</code> <a href="https://docs.nestjs.com/microservices/basics#client" target="_blank">tại đây</a>.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">: [</span>
+    ClientsModule<span class="pn">.</span><span class="fn">register</span><span class="pn">([</span>
+      <span class="pn">{</span>
+        name<span class="pn">:</span> <span class="str">'HERO_SERVICE'</span><span class="pn">,</span>
+        transport<span class="pn">:</span> Transport<span class="pn">.</span>KAFKA<span class="pn">,</span>
+        options<span class="pn">: {</span>
+          client<span class="pn">: {</span>
+            clientId<span class="pn">:</span> <span class="str">'hero'</span><span class="pn">,</span>
+            brokers<span class="pn">: [</span><span class="str">'localhost:9092'</span><span class="pn">],</span>
+          <span class="pn">},</span>
+          consumer<span class="pn">: {</span>
+            groupId<span class="pn">:</span> <span class="str">'hero-consumer'</span>
+          <span class="pn">}</span>
+        <span class="pn">}</span>
+      <span class="pn">},</span>
+    <span class="pn">]),</span>
+  <span class="pn">]</span>
+  ...
+<span class="pn">})</span></pre></div>
+
+    <p>Các tùy chọn khác để tạo client (hoặc <code>ClientProxyFactory</code> hoặc <code>@Client()</code>) cũng có thể được sử dụng. Bạn có thể đọc về chúng <a href="https://docs.nestjs.com/microservices/basics#client" target="_blank">tại đây</a>.</p>
+
+    <p>Sử dụng decorator <code>@Client()</code> như sau:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@Client</span><span class="pn">({</span>
+  transport<span class="pn">:</span> Transport<span class="pn">.</span>KAFKA<span class="pn">,</span>
+  options<span class="pn">: {</span>
+    client<span class="pn">: {</span>
+      clientId<span class="pn">:</span> <span class="str">'hero'</span><span class="pn">,</span>
+      brokers<span class="pn">: [</span><span class="str">'localhost:9092'</span><span class="pn">],</span>
+    <span class="pn">},</span>
+    consumer<span class="pn">: {</span>
+      groupId<span class="pn">:</span> <span class="str">'hero-consumer'</span>
+    <span class="pn">}</span>
+  <span class="pn">}</span>
+<span class="pn">})</span>
+client<span class="pn">:</span> <span class="typ">ClientKafkaProxy</span><span class="pn">;</span></pre></div>
+
+    <!-- ═══ Message pattern ═══ -->
+    <h3 id="message-pattern">Message pattern <a class="anchor" href="#message-pattern">#</a></h3>
+
+    <p>Message pattern của Kafka microservice sử dụng hai topic cho các kênh request và reply. Phương thức <code>ClientKafkaProxy.send()</code> gửi message với một <a href="https://www.enterpriseintegrationpatterns.com/patterns/messaging/ReturnAddress.html" target="_blank">return address</a> bằng cách liên kết một <a href="https://www.enterpriseintegrationpatterns.com/patterns/messaging/CorrelationIdentifier.html" target="_blank">correlation id</a>, reply topic, và reply partition với request message. Điều này yêu cầu instance <code>ClientKafkaProxy</code> phải subscribe vào reply topic và được gán ít nhất một partition trước khi gửi message.</p>
+
+    <p>Do đó, bạn cần có ít nhất một reply topic partition cho mỗi ứng dụng Nest đang chạy. Ví dụ, nếu bạn đang chạy 4 ứng dụng Nest nhưng reply topic chỉ có 3 partition, thì 1 trong 4 ứng dụng Nest sẽ gặp lỗi khi cố gắng gửi message.</p>
+
+    <p>Khi các instance <code>ClientKafkaProxy</code> mới được khởi chạy, chúng sẽ tham gia consumer group và subscribe vào các topic tương ứng. Quá trình này kích hoạt việc rebalance các topic partition được gán cho các consumer trong consumer group.</p>
+
+    <p>Thông thường, các topic partition được gán bằng round robin partitioner, gán các topic partition cho một tập hợp consumer được sắp xếp theo tên consumer được đặt ngẫu nhiên khi khởi chạy ứng dụng. Tuy nhiên, khi một consumer mới tham gia consumer group, consumer mới có thể được đặt ở bất kỳ vị trí nào trong tập hợp consumer. Điều này tạo ra một điều kiện mà các consumer đã tồn tại có thể bị gán các partition khác nhau khi consumer hiện tại nằm sau consumer mới. Kết quả là, các consumer bị gán partition khác nhau sẽ mất các response message của các request đã gửi trước khi rebalance.</p>
+
+    <p>Để ngăn các consumer <code>ClientKafkaProxy</code> mất response message, một custom partitioner tích hợp sẵn dành riêng cho Nest được sử dụng. Custom partitioner này gán partition cho một tập hợp consumer được sắp xếp theo high-resolution timestamp (<code>process.hrtime()</code>) được đặt khi khởi chạy ứng dụng.</p>
+
+    <!-- ═══ Message response subscription ═══ -->
+    <h3 id="message-response-subscription">Message response subscription <a class="anchor" href="#message-response-subscription">#</a></h3>
+
+<div class="warn"><span class="lbl">Lưu ý</span><p>Phần này chỉ liên quan nếu bạn sử dụng kiểu message <a href="https://docs.nestjs.com/microservices/basics#request-response" target="_blank">request-response</a> (với decorator <code>@MessagePattern</code> và phương thức <code>ClientKafkaProxy.send</code>). Việc subscribe vào response topic không cần thiết cho giao tiếp <a href="https://docs.nestjs.com/microservices/basics#event-based" target="_blank">event-based</a> (decorator <code>@EventPattern</code> và phương thức <code>ClientKafkaProxy.emit</code>).</p></div>
+
+    <p>Class <code>ClientKafkaProxy</code> cung cấp phương thức <code>subscribeToResponseOf()</code>. Phương thức <code>subscribeToResponseOf()</code> nhận tên topic của request làm đối số và thêm tên reply topic dẫn xuất vào một tập hợp các reply topic. Phương thức này là bắt buộc khi triển khai message pattern.</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">heroes.controller</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="fn">onModuleInit</span><span class="pn">() {</span>
+  <span class="kw">this</span><span class="pn">.</span>client<span class="pn">.</span><span class="fn">subscribeToResponseOf</span><span class="pn">(</span><span class="str">'hero.kill.dragon'</span><span class="pn">);</span>
+<span class="pn">}</span></pre></div>
+
+    <p>Nếu instance <code>ClientKafkaProxy</code> được tạo bất đồng bộ, phương thức <code>subscribeToResponseOf()</code> phải được gọi trước khi gọi phương thức <code>connect()</code>.</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">heroes.controller</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">async</span> <span class="fn">onModuleInit</span><span class="pn">() {</span>
+  <span class="kw">this</span><span class="pn">.</span>client<span class="pn">.</span><span class="fn">subscribeToResponseOf</span><span class="pn">(</span><span class="str">'hero.kill.dragon'</span><span class="pn">);</span>
+  <span class="kw">await</span> <span class="kw">this</span><span class="pn">.</span>client<span class="pn">.</span><span class="fn">connect</span><span class="pn">();</span>
+<span class="pn">}</span></pre></div>
+
+    <!-- ═══ Incoming ═══ -->
+    <h3 id="incoming">Incoming <a class="anchor" href="#incoming">#</a></h3>
+
+    <p>Nest nhận các Kafka message đến dưới dạng object có các thuộc tính <code>key</code>, <code>value</code>, và <code>headers</code> với giá trị kiểu <code>Buffer</code>. Sau đó Nest phân tích các giá trị này bằng cách chuyển đổi buffer thành string. Nếu string có dạng "object like", Nest sẽ cố gắng phân tích string đó dưới dạng <code>JSON</code>. Giá trị <code>value</code> sau đó được truyền cho handler tương ứng.</p>
+
+    <!-- ═══ Outgoing ═══ -->
+    <h3 id="outgoing">Outgoing <a class="anchor" href="#outgoing">#</a></h3>
+
+    <p>Nest gửi các Kafka message đi sau quá trình serialization khi publish event hoặc gửi message. Điều này xảy ra trên các đối số được truyền cho các phương thức <code>emit()</code> và <code>send()</code> của <code>ClientKafkaProxy</code> hoặc trên các giá trị được trả về từ phương thức <code>@MessagePattern</code>. Quá trình serialization này "stringify" các object không phải string hoặc buffer bằng cách sử dụng <code>JSON.stringify()</code> hoặc phương thức prototype <code>toString()</code>.</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">heroes.controller</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@Controller</span><span class="pn">()</span>
+<span class="kw">export</span> <span class="kw">class</span> <span class="typ">HeroesController</span> <span class="pn">{</span>
+  <span class="dec">@MessagePattern</span><span class="pn">(</span><span class="str">'hero.kill.dragon'</span><span class="pn">)</span>
+  <span class="fn">killDragon</span><span class="pn">(</span><span class="dec">@Payload</span><span class="pn">()</span> message<span class="pn">:</span> <span class="typ">KillDragonMessage</span><span class="pn">):</span> <span class="typ">any</span> <span class="pn">{</span>
+    <span class="kw">const</span> dragonId <span class="pn">=</span> message<span class="pn">.</span>dragonId<span class="pn">;</span>
+    <span class="kw">const</span> items <span class="pn">= [</span>
+      <span class="pn">{</span> id<span class="pn">:</span> <span class="num">1</span><span class="pn">,</span> name<span class="pn">:</span> <span class="str">'Mythical Sword'</span> <span class="pn">},</span>
+      <span class="pn">{</span> id<span class="pn">:</span> <span class="num">2</span><span class="pn">,</span> name<span class="pn">:</span> <span class="str">'Key to Dungeon'</span> <span class="pn">},</span>
+    <span class="pn">];</span>
+    <span class="kw">return</span> items<span class="pn">;</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+
+<div class="hint"><span class="lbl">Gợi ý</span><p><code>@Payload()</code> được import từ package <code>@nestjs/microservices</code>.</p></div>
+
+    <p>Các message đi cũng có thể được key bằng cách truyền một object có các thuộc tính <code>key</code> và <code>value</code>. Việc key message rất quan trọng để đáp ứng <a href="https://docs.confluent.io/current/ksql/docs/developer-guide/partition-data.html#co-partitioning-requirements" target="_blank">yêu cầu co-partitioning</a>.</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">heroes.controller</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@Controller</span><span class="pn">()</span>
+<span class="kw">export</span> <span class="kw">class</span> <span class="typ">HeroesController</span> <span class="pn">{</span>
+  <span class="dec">@MessagePattern</span><span class="pn">(</span><span class="str">'hero.kill.dragon'</span><span class="pn">)</span>
+  <span class="fn">killDragon</span><span class="pn">(</span><span class="dec">@Payload</span><span class="pn">()</span> message<span class="pn">:</span> <span class="typ">KillDragonMessage</span><span class="pn">):</span> <span class="typ">any</span> <span class="pn">{</span>
+    <span class="kw">const</span> realm <span class="pn">=</span> <span class="str">'Nest'</span><span class="pn">;</span>
+    <span class="kw">const</span> heroId <span class="pn">=</span> message<span class="pn">.</span>heroId<span class="pn">;</span>
+    <span class="kw">const</span> dragonId <span class="pn">=</span> message<span class="pn">.</span>dragonId<span class="pn">;</span>
+
+    <span class="kw">const</span> items <span class="pn">= [</span>
+      <span class="pn">{</span> id<span class="pn">:</span> <span class="num">1</span><span class="pn">,</span> name<span class="pn">:</span> <span class="str">'Mythical Sword'</span> <span class="pn">},</span>
+      <span class="pn">{</span> id<span class="pn">:</span> <span class="num">2</span><span class="pn">,</span> name<span class="pn">:</span> <span class="str">'Key to Dungeon'</span> <span class="pn">},</span>
+    <span class="pn">];</span>
+
+    <span class="kw">return</span> <span class="pn">{</span>
+      headers<span class="pn">: {</span>
+        realm
+      <span class="pn">},</span>
+      key<span class="pn">:</span> heroId<span class="pn">,</span>
+      value<span class="pn">:</span> items
+    <span class="pn">}</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+
+    <p>Ngoài ra, các message được truyền theo format này cũng có thể chứa custom header được đặt trong thuộc tính hash <code>headers</code>. Giá trị thuộc tính hash header phải có kiểu <code>string</code> hoặc kiểu <code>Buffer</code>.</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">heroes.controller</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@Controller</span><span class="pn">()</span>
+<span class="kw">export</span> <span class="kw">class</span> <span class="typ">HeroesController</span> <span class="pn">{</span>
+  <span class="dec">@MessagePattern</span><span class="pn">(</span><span class="str">'hero.kill.dragon'</span><span class="pn">)</span>
+  <span class="fn">killDragon</span><span class="pn">(</span><span class="dec">@Payload</span><span class="pn">()</span> message<span class="pn">:</span> <span class="typ">KillDragonMessage</span><span class="pn">):</span> <span class="typ">any</span> <span class="pn">{</span>
+    <span class="kw">const</span> realm <span class="pn">=</span> <span class="str">'Nest'</span><span class="pn">;</span>
+    <span class="kw">const</span> heroId <span class="pn">=</span> message<span class="pn">.</span>heroId<span class="pn">;</span>
+    <span class="kw">const</span> dragonId <span class="pn">=</span> message<span class="pn">.</span>dragonId<span class="pn">;</span>
+
+    <span class="kw">const</span> items <span class="pn">= [</span>
+      <span class="pn">{</span> id<span class="pn">:</span> <span class="num">1</span><span class="pn">,</span> name<span class="pn">:</span> <span class="str">'Mythical Sword'</span> <span class="pn">},</span>
+      <span class="pn">{</span> id<span class="pn">:</span> <span class="num">2</span><span class="pn">,</span> name<span class="pn">:</span> <span class="str">'Key to Dungeon'</span> <span class="pn">},</span>
+    <span class="pn">];</span>
+
+    <span class="kw">return</span> <span class="pn">{</span>
+      headers<span class="pn">: {</span>
+        kafka_nestRealm<span class="pn">:</span> realm
+      <span class="pn">},</span>
+      key<span class="pn">:</span> heroId<span class="pn">,</span>
+      value<span class="pn">:</span> items
+    <span class="pn">}</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+
+    <!-- ═══ Event-based ═══ -->
+    <h3 id="event-based">Event-based <a class="anchor" href="#event-based">#</a></h3>
+
+    <p>Mặc dù phương pháp request-response là lý tưởng cho việc trao đổi message giữa các service, nó ít phù hợp hơn khi kiểu message của bạn là event-based (điều này lại là lý tưởng cho Kafka) - khi bạn chỉ muốn publish event <strong>mà không cần chờ response</strong>. Trong trường hợp đó, bạn không muốn overhead cần thiết của request-response để duy trì hai topic.</p>
+
+    <p>Hãy xem hai phần này để tìm hiểu thêm: <a href="https://docs.nestjs.com/microservices/basics#event-based" target="_blank">Overview: Event-based</a> và <a href="https://docs.nestjs.com/microservices/basics#publishing-events" target="_blank">Overview: Publishing events</a>.</p>
+
+    <!-- ═══ Context ═══ -->
+    <h3 id="context">Context <a class="anchor" href="#context">#</a></h3>
+
+    <p>Trong các tình huống phức tạp hơn, bạn có thể cần truy cập thêm thông tin về request đến. Khi sử dụng Kafka transporter, bạn có thể truy cập object <code>KafkaContext</code>.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><div class="tab-group"><button class="tab-btn active" onclick="switchTab(this,'ts')">TypeScript</button><button class="tab-btn" onclick="switchTab(this,'js')">JavaScript</button></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div class="tab-content active" data-tab="ts"><pre><span class="dec">@MessagePattern</span><span class="pn">(</span><span class="str">'hero.kill.dragon'</span><span class="pn">)</span>
+<span class="fn">killDragon</span><span class="pn">(</span><span class="dec">@Payload</span><span class="pn">()</span> message<span class="pn">:</span> <span class="typ">KillDragonMessage</span><span class="pn">,</span> <span class="dec">@Ctx</span><span class="pn">()</span> context<span class="pn">:</span> <span class="typ">KafkaContext</span><span class="pn">) {</span>
+  console<span class="pn">.</span><span class="fn">log</span><span class="pn">(</span><span class="str">`Topic: ${context.getTopic()}`</span><span class="pn">);</span>
+<span class="pn">}</span></pre></div><div class="tab-content" data-tab="js"><pre><span class="dec">@Bind</span><span class="pn">(</span><span class="fn">Payload</span><span class="pn">(),</span> <span class="fn">Ctx</span><span class="pn">())</span>
+<span class="dec">@MessagePattern</span><span class="pn">(</span><span class="str">'hero.kill.dragon'</span><span class="pn">)</span>
+<span class="fn">killDragon</span><span class="pn">(</span>message<span class="pn">,</span> context<span class="pn">) {</span>
+  console<span class="pn">.</span><span class="fn">log</span><span class="pn">(</span><span class="str">`Topic: ${context.getTopic()}`</span><span class="pn">);</span>
+<span class="pn">}</span></pre></div></div>
+
+<div class="hint"><span class="lbl">Gợi ý</span><p><code>@Payload()</code>, <code>@Ctx()</code> và <code>KafkaContext</code> được import từ package <code>@nestjs/microservices</code>.</p></div>
+
+    <p>Để truy cập object Kafka <code>IncomingMessage</code> gốc, sử dụng phương thức <code>getMessage()</code> của object <code>KafkaContext</code>, như sau:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><div class="tab-group"><button class="tab-btn active" onclick="switchTab(this,'ts')">TypeScript</button><button class="tab-btn" onclick="switchTab(this,'js')">JavaScript</button></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div class="tab-content active" data-tab="ts"><pre><span class="dec">@MessagePattern</span><span class="pn">(</span><span class="str">'hero.kill.dragon'</span><span class="pn">)</span>
+<span class="fn">killDragon</span><span class="pn">(</span><span class="dec">@Payload</span><span class="pn">()</span> message<span class="pn">:</span> <span class="typ">KillDragonMessage</span><span class="pn">,</span> <span class="dec">@Ctx</span><span class="pn">()</span> context<span class="pn">:</span> <span class="typ">KafkaContext</span><span class="pn">) {</span>
+  <span class="kw">const</span> originalMessage <span class="pn">=</span> context<span class="pn">.</span><span class="fn">getMessage</span><span class="pn">();</span>
+  <span class="kw">const</span> partition <span class="pn">=</span> context<span class="pn">.</span><span class="fn">getPartition</span><span class="pn">();</span>
+  <span class="kw">const</span> <span class="pn">{</span> headers<span class="pn">,</span> timestamp <span class="pn">}</span> <span class="pn">=</span> originalMessage<span class="pn">;</span>
+<span class="pn">}</span></pre></div><div class="tab-content" data-tab="js"><pre><span class="dec">@Bind</span><span class="pn">(</span><span class="fn">Payload</span><span class="pn">(),</span> <span class="fn">Ctx</span><span class="pn">())</span>
+<span class="dec">@MessagePattern</span><span class="pn">(</span><span class="str">'hero.kill.dragon'</span><span class="pn">)</span>
+<span class="fn">killDragon</span><span class="pn">(</span>message<span class="pn">,</span> context<span class="pn">) {</span>
+  <span class="kw">const</span> originalMessage <span class="pn">=</span> context<span class="pn">.</span><span class="fn">getMessage</span><span class="pn">();</span>
+  <span class="kw">const</span> partition <span class="pn">=</span> context<span class="pn">.</span><span class="fn">getPartition</span><span class="pn">();</span>
+  <span class="kw">const</span> <span class="pn">{</span> headers<span class="pn">,</span> timestamp <span class="pn">}</span> <span class="pn">=</span> originalMessage<span class="pn">;</span>
+<span class="pn">}</span></pre></div></div>
+
+    <p>Trong đó <code>IncomingMessage</code> thực hiện interface sau:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">interface</span> <span class="typ">IncomingMessage</span> <span class="pn">{</span>
+  topic<span class="pn">:</span> <span class="typ">string</span><span class="pn">;</span>
+  partition<span class="pn">:</span> <span class="typ">number</span><span class="pn">;</span>
+  timestamp<span class="pn">:</span> <span class="typ">string</span><span class="pn">;</span>
+  size<span class="pn">:</span> <span class="typ">number</span><span class="pn">;</span>
+  attributes<span class="pn">:</span> <span class="typ">number</span><span class="pn">;</span>
+  offset<span class="pn">:</span> <span class="typ">string</span><span class="pn">;</span>
+  key<span class="pn">:</span> <span class="typ">any</span><span class="pn">;</span>
+  value<span class="pn">:</span> <span class="typ">any</span><span class="pn">;</span>
+  headers<span class="pn">:</span> <span class="typ">Record</span><span class="pn">&lt;</span><span class="typ">string</span><span class="pn">,</span> <span class="typ">any</span><span class="pn">&gt;;</span>
+<span class="pn">}</span></pre></div>
+
+    <p>Nếu handler của bạn có thời gian xử lý chậm cho mỗi message nhận được, bạn nên cân nhắc sử dụng callback <code>heartbeat</code>. Để lấy function <code>heartbeat</code>, sử dụng phương thức <code>getHeartbeat()</code> của <code>KafkaContext</code>, như sau:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@MessagePattern</span><span class="pn">(</span><span class="str">'hero.kill.dragon'</span><span class="pn">)</span>
+<span class="kw">async</span> <span class="fn">killDragon</span><span class="pn">(</span><span class="dec">@Payload</span><span class="pn">()</span> message<span class="pn">:</span> <span class="typ">KillDragonMessage</span><span class="pn">,</span> <span class="dec">@Ctx</span><span class="pn">()</span> context<span class="pn">:</span> <span class="typ">KafkaContext</span><span class="pn">) {</span>
+  <span class="kw">const</span> heartbeat <span class="pn">=</span> context<span class="pn">.</span><span class="fn">getHeartbeat</span><span class="pn">();</span>
+
+  <span class="cm">// Do some slow processing</span>
+  <span class="kw">await</span> <span class="fn">doWorkPart1</span><span class="pn">();</span>
+
+  <span class="cm">// Send heartbeat to not exceed the sessionTimeout</span>
+  <span class="kw">await</span> <span class="fn">heartbeat</span><span class="pn">();</span>
+
+  <span class="cm">// Do some slow processing again</span>
+  <span class="kw">await</span> <span class="fn">doWorkPart2</span><span class="pn">();</span>
+<span class="pn">}</span></pre></div>
+
+    <!-- ═══ Naming conventions ═══ -->
+    <h3 id="naming-conventions">Naming conventions <a class="anchor" href="#naming-conventions">#</a></h3>
+
+    <p>Các thành phần Kafka microservice thêm mô tả vai trò tương ứng vào các tùy chọn <code>client.clientId</code> và <code>consumer.groupId</code> để ngăn xung đột giữa các thành phần client và server của Nest microservice. Theo mặc định, các thành phần <code>ClientKafkaProxy</code> thêm hậu tố <code>-client</code> và các thành phần <code>ServerKafka</code> thêm hậu tố <code>-server</code> vào cả hai tùy chọn này. Lưu ý cách các giá trị được cung cấp bên dưới được chuyển đổi theo cách đó (như hiển thị trong comments).</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">main</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> NestFactory<span class="pn">.</span><span class="fn">createMicroservice</span><span class="pn">&lt;</span><span class="typ">MicroserviceOptions</span><span class="pn">&gt;(</span>AppModule<span class="pn">, {</span>
+  transport<span class="pn">:</span> Transport<span class="pn">.</span>KAFKA<span class="pn">,</span>
+  options<span class="pn">: {</span>
+    client<span class="pn">: {</span>
+      clientId<span class="pn">:</span> <span class="str">'hero'</span><span class="pn">,</span> <span class="cm">// hero-server</span>
+      brokers<span class="pn">: [</span><span class="str">'localhost:9092'</span><span class="pn">],</span>
+    <span class="pn">},</span>
+    consumer<span class="pn">: {</span>
+      groupId<span class="pn">:</span> <span class="str">'hero-consumer'</span> <span class="cm">// hero-consumer-server</span>
+    <span class="pn">},</span>
+  <span class="pn">}</span>
+<span class="pn">});</span></pre></div>
+
+    <p>Và cho client:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">heroes.controller</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@Client</span><span class="pn">({</span>
+  transport<span class="pn">:</span> Transport<span class="pn">.</span>KAFKA<span class="pn">,</span>
+  options<span class="pn">: {</span>
+    client<span class="pn">: {</span>
+      clientId<span class="pn">:</span> <span class="str">'hero'</span><span class="pn">,</span> <span class="cm">// hero-client</span>
+      brokers<span class="pn">: [</span><span class="str">'localhost:9092'</span><span class="pn">],</span>
+    <span class="pn">},</span>
+    consumer<span class="pn">: {</span>
+      groupId<span class="pn">:</span> <span class="str">'hero-consumer'</span> <span class="cm">// hero-consumer-client</span>
+    <span class="pn">}</span>
+  <span class="pn">}</span>
+<span class="pn">})</span>
+client<span class="pn">:</span> <span class="typ">ClientKafkaProxy</span><span class="pn">;</span></pre></div>
+
+<div class="hint"><span class="lbl">Gợi ý</span><p>Quy ước đặt tên Kafka client và consumer có thể được tùy chỉnh bằng cách extend <code>ClientKafkaProxy</code> và <code>KafkaServer</code> trong custom provider của bạn và override constructor.</p></div>
+
+    <p>Vì message pattern của Kafka microservice sử dụng hai topic cho các kênh request và reply, nên một reply pattern nên được dẫn xuất từ request topic. Theo mặc định, tên của reply topic là tên request topic với <code>.reply</code> được thêm vào cuối.</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">heroes.controller</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="fn">onModuleInit</span><span class="pn">() {</span>
+  <span class="kw">this</span><span class="pn">.</span>client<span class="pn">.</span><span class="fn">subscribeToResponseOf</span><span class="pn">(</span><span class="str">'hero.get'</span><span class="pn">);</span> <span class="cm">// hero.get.reply</span>
+<span class="pn">}</span></pre></div>
+
+<div class="hint"><span class="lbl">Gợi ý</span><p>Quy ước đặt tên Kafka reply topic có thể được tùy chỉnh bằng cách extend <code>ClientKafkaProxy</code> trong custom provider của bạn và override phương thức <code>getResponsePatternName</code>.</p></div>
+
+    <!-- ═══ Retriable exceptions ═══ -->
+    <h3 id="retriable-exceptions">Retriable exceptions <a class="anchor" href="#retriable-exceptions">#</a></h3>
+
+    <p>Tương tự như các transporter khác, tất cả unhandled exception đều được tự động bọc trong <code>RpcException</code> và chuyển đổi sang format "thân thiện với người dùng". Tuy nhiên, có những edge-case mà bạn có thể muốn bỏ qua cơ chế này và để exception được consume bởi driver <code>kafkajs</code>. Việc throw exception khi xử lý message sẽ chỉ thị cho <code>kafkajs</code> <strong>retry</strong> nó (redeliver nó), có nghĩa là ngay cả khi message (hoặc event) handler đã được kích hoạt, offset sẽ không được commit vào Kafka.</p>
+
+<div class="warn"><span class="lbl">Cảnh báo</span><p>Đối với event handler (giao tiếp event-based), tất cả unhandled exception được coi là <strong>retriable exception</strong> theo mặc định.</p></div>
+
+    <p>Để thực hiện điều này, bạn có thể sử dụng class chuyên dụng <code>KafkaRetriableException</code>, như sau:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">throw</span> <span class="kw">new</span> <span class="typ">KafkaRetriableException</span><span class="pn">(</span><span class="str">'...'</span><span class="pn">);</span></pre></div>
+
+<div class="hint"><span class="lbl">Gợi ý</span><p>Class <code>KafkaRetriableException</code> được export từ package <code>@nestjs/microservices</code>.</p></div>
+
+    <!-- ═══ Custom exception handling ═══ -->
+    <h3 id="custom-exception-handling">Custom exception handling <a class="anchor" href="#custom-exception-handling">#</a></h3>
+
+    <p>Cùng với các cơ chế xử lý lỗi mặc định, bạn có thể tạo một custom Exception Filter cho các Kafka event để quản lý retry logic. Ví dụ, ví dụ dưới đây minh họa cách bỏ qua một event có vấn đề sau một số lần retry có thể cấu hình:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">import</span> <span class="pn">{</span> Catch<span class="pn">,</span> ArgumentsHost<span class="pn">,</span> Logger <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> BaseExceptionFilter <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/core'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> KafkaContext <span class="pn">}</span> <span class="kw">from</span> <span class="str">'../ctx-host'</span><span class="pn">;</span>
+
+<span class="dec">@Catch</span><span class="pn">()</span>
+<span class="kw">export</span> <span class="kw">class</span> <span class="typ">KafkaMaxRetryExceptionFilter</span> <span class="kw">extends</span> <span class="typ">BaseExceptionFilter</span> <span class="pn">{</span>
+  <span class="kw">private</span> <span class="kw">readonly</span> logger <span class="pn">=</span> <span class="kw">new</span> <span class="typ">Logger</span><span class="pn">(</span>KafkaMaxRetryExceptionFilter<span class="pn">.</span>name<span class="pn">);</span>
+
+  <span class="fn">constructor</span><span class="pn">(</span>
+    <span class="kw">private</span> <span class="kw">readonly</span> maxRetries<span class="pn">:</span> <span class="typ">number</span><span class="pn">,</span>
+    <span class="cm">// Optional custom function executed when max retries are exceeded</span>
+    <span class="kw">private</span> <span class="kw">readonly</span> skipHandler<span class="pn">?:</span> <span class="pn">(</span>message<span class="pn">:</span> <span class="typ">any</span><span class="pn">) =&gt;</span> <span class="typ">Promise</span><span class="pn">&lt;</span><span class="typ">void</span><span class="pn">&gt;,</span>
+  <span class="pn">) {</span>
+    <span class="fn">super</span><span class="pn">();</span>
+  <span class="pn">}</span>
+
+  <span class="kw">async</span> <span class="fn">catch</span><span class="pn">(</span>exception<span class="pn">:</span> <span class="typ">unknown</span><span class="pn">,</span> host<span class="pn">:</span> <span class="typ">ArgumentsHost</span><span class="pn">) {</span>
+    <span class="kw">const</span> kafkaContext <span class="pn">=</span> host<span class="pn">.</span><span class="fn">switchToRpc</span><span class="pn">().</span><span class="fn">getContext</span><span class="pn">&lt;</span><span class="typ">KafkaContext</span><span class="pn">&gt;();</span>
+    <span class="kw">const</span> message <span class="pn">=</span> kafkaContext<span class="pn">.</span><span class="fn">getMessage</span><span class="pn">();</span>
+    <span class="kw">const</span> currentRetryCount <span class="pn">=</span> <span class="kw">this</span><span class="pn">.</span><span class="fn">getRetryCountFromContext</span><span class="pn">(</span>kafkaContext<span class="pn">);</span>
+
+    <span class="kw">if</span> <span class="pn">(</span>currentRetryCount <span class="pn">&gt;=</span> <span class="kw">this</span><span class="pn">.</span>maxRetries<span class="pn">) {</span>
+      <span class="kw">this</span><span class="pn">.</span>logger<span class="pn">.</span><span class="fn">warn</span><span class="pn">(</span>
+        <span class="str">`Max retries (${<span class="kw">this</span>.maxRetries}) exceeded for message: ${JSON.stringify(message)}`</span>
+      <span class="pn">);</span>
+
+      <span class="kw">if</span> <span class="pn">(</span><span class="kw">this</span><span class="pn">.</span>skipHandler<span class="pn">) {</span>
+        <span class="kw">try</span> <span class="pn">{</span>
+          <span class="kw">await</span> <span class="kw">this</span><span class="pn">.</span><span class="fn">skipHandler</span><span class="pn">(</span>message<span class="pn">);</span>
+        <span class="pn">}</span> <span class="kw">catch</span> <span class="pn">(</span>err<span class="pn">) {</span>
+          <span class="kw">this</span><span class="pn">.</span>logger<span class="pn">.</span><span class="fn">error</span><span class="pn">(</span><span class="str">'Error in skipHandler:'</span><span class="pn">,</span> err<span class="pn">);</span>
+        <span class="pn">}</span>
+      <span class="pn">}</span>
+
+      <span class="kw">try</span> <span class="pn">{</span>
+        <span class="kw">await</span> <span class="kw">this</span><span class="pn">.</span><span class="fn">commitOffset</span><span class="pn">(</span>kafkaContext<span class="pn">);</span>
+      <span class="pn">}</span> <span class="kw">catch</span> <span class="pn">(</span>commitError<span class="pn">) {</span>
+        <span class="kw">this</span><span class="pn">.</span>logger<span class="pn">.</span><span class="fn">error</span><span class="pn">(</span><span class="str">'Failed to commit offset:'</span><span class="pn">,</span> commitError<span class="pn">);</span>
+      <span class="pn">}</span>
+      <span class="kw">return</span><span class="pn">;</span> <span class="cm">// Stop propagating the exception</span>
+    <span class="pn">}</span>
+
+    <span class="cm">// If retry count is below the maximum, proceed with the default Exception Filter logic</span>
+    <span class="kw">super</span><span class="pn">.</span><span class="fn">catch</span><span class="pn">(</span>exception<span class="pn">,</span> host<span class="pn">);</span>
+  <span class="pn">}</span>
+
+  <span class="kw">private</span> <span class="fn">getRetryCountFromContext</span><span class="pn">(</span>context<span class="pn">:</span> <span class="typ">KafkaContext</span><span class="pn">):</span> <span class="typ">number</span> <span class="pn">{</span>
+    <span class="kw">const</span> headers <span class="pn">=</span> context<span class="pn">.</span><span class="fn">getMessage</span><span class="pn">().</span>headers <span class="pn">||</span> <span class="pn">{};</span>
+    <span class="kw">const</span> retryHeader <span class="pn">=</span> headers<span class="pn">[</span><span class="str">'retryCount'</span><span class="pn">]</span> <span class="pn">||</span> headers<span class="pn">[</span><span class="str">'retry-count'</span><span class="pn">];</span>
+    <span class="kw">return</span> retryHeader <span class="pn">?</span> <span class="fn">Number</span><span class="pn">(</span>retryHeader<span class="pn">)</span> <span class="pn">:</span> <span class="num">0</span><span class="pn">;</span>
+  <span class="pn">}</span>
+
+  <span class="kw">private</span> <span class="kw">async</span> <span class="fn">commitOffset</span><span class="pn">(</span>context<span class="pn">:</span> <span class="typ">KafkaContext</span><span class="pn">):</span> <span class="typ">Promise</span><span class="pn">&lt;</span><span class="typ">void</span><span class="pn">&gt; {</span>
+    <span class="kw">const</span> consumer <span class="pn">=</span> context<span class="pn">.</span>getConsumer <span class="pn">&amp;&amp;</span> context<span class="pn">.</span><span class="fn">getConsumer</span><span class="pn">();</span>
+    <span class="kw">if</span> <span class="pn">(!</span>consumer<span class="pn">) {</span>
+      <span class="kw">throw</span> <span class="kw">new</span> <span class="typ">Error</span><span class="pn">(</span><span class="str">'Consumer instance is not available from KafkaContext.'</span><span class="pn">);</span>
+    <span class="pn">}</span>
+
+    <span class="kw">const</span> topic <span class="pn">=</span> context<span class="pn">.</span>getTopic <span class="pn">&amp;&amp;</span> context<span class="pn">.</span><span class="fn">getTopic</span><span class="pn">();</span>
+    <span class="kw">const</span> partition <span class="pn">=</span> context<span class="pn">.</span>getPartition <span class="pn">&amp;&amp;</span> context<span class="pn">.</span><span class="fn">getPartition</span><span class="pn">();</span>
+    <span class="kw">const</span> message <span class="pn">=</span> context<span class="pn">.</span><span class="fn">getMessage</span><span class="pn">();</span>
+    <span class="kw">const</span> offset <span class="pn">=</span> message<span class="pn">.</span>offset<span class="pn">;</span>
+
+    <span class="kw">if</span> <span class="pn">(!</span>topic <span class="pn">||</span> partition <span class="pn">===</span> <span class="kw">undefined</span> <span class="pn">||</span> offset <span class="pn">===</span> <span class="kw">undefined</span><span class="pn">) {</span>
+      <span class="kw">throw</span> <span class="kw">new</span> <span class="typ">Error</span><span class="pn">(</span>
+        <span class="str">'Incomplete Kafka message context for committing offset.'</span>
+      <span class="pn">);</span>
+    <span class="pn">}</span>
+
+    <span class="kw">await</span> consumer<span class="pn">.</span><span class="fn">commitOffsets</span><span class="pn">([</span>
+      <span class="pn">{</span>
+        topic<span class="pn">,</span>
+        partition<span class="pn">,</span>
+        <span class="cm">// When committing an offset, commit the next number (i.e., current offset + 1)</span>
+        offset<span class="pn">: (</span><span class="fn">Number</span><span class="pn">(</span>offset<span class="pn">)</span> <span class="pn">+</span> <span class="num">1</span><span class="pn">).</span><span class="fn">toString</span><span class="pn">(),</span>
+      <span class="pn">},</span>
+    <span class="pn">]);</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+
+    <p>Filter này cung cấp một cách để retry xử lý Kafka event lên đến một số lần có thể cấu hình. Khi đạt đến số retry tối đa, nó sẽ kích hoạt custom <code>skipHandler</code> (nếu được cung cấp) và commit offset, hiệu quả là bỏ qua event có vấn đề. Điều này cho phép các event tiếp theo được xử lý mà không bị gián đoạn.</p>
+
+    <p>Bạn có thể tích hợp filter này bằng cách thêm nó vào event handler:</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@UseFilters</span><span class="pn">(</span><span class="kw">new</span> <span class="typ">KafkaMaxRetryExceptionFilter</span><span class="pn">(</span><span class="num">5</span><span class="pn">))</span>
+<span class="kw">export</span> <span class="kw">class</span> <span class="typ">MyEventHandler</span> <span class="pn">{</span>
+  <span class="dec">@EventPattern</span><span class="pn">(</span><span class="str">'your-topic'</span><span class="pn">)</span>
+  <span class="kw">async</span> <span class="fn">handleEvent</span><span class="pn">(</span><span class="dec">@Payload</span><span class="pn">()</span> data<span class="pn">:</span> <span class="typ">any</span><span class="pn">,</span> <span class="dec">@Ctx</span><span class="pn">()</span> context<span class="pn">:</span> <span class="typ">KafkaContext</span><span class="pn">) {</span>
+    <span class="cm">// Your event processing logic...</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+
+    <!-- ═══ Commit offsets ═══ -->
+    <h3 id="commit-offsets">Commit offsets <a class="anchor" href="#commit-offsets">#</a></h3>
+
+    <p>Việc commit offset là rất quan trọng khi làm việc với Kafka. Theo mặc định, message sẽ được tự động commit sau một khoảng thời gian nhất định. Để biết thêm thông tin, hãy truy cập <a href="https://kafka.js.org/docs/consuming#autocommit" target="_blank">KafkaJS docs</a>. <code>KafkaContext</code> cung cấp một cách để truy cập active consumer để commit offset thủ công. Consumer chính là KafkaJS consumer và hoạt động như <a href="https://kafka.js.org/docs/consuming#manual-committing" target="_blank">native KafkaJS implementation</a>.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><div class="tab-group"><button class="tab-btn active" onclick="switchTab(this,'ts')">TypeScript</button><button class="tab-btn" onclick="switchTab(this,'js')">JavaScript</button></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div class="tab-content active" data-tab="ts"><pre><span class="dec">@EventPattern</span><span class="pn">(</span><span class="str">'user.created'</span><span class="pn">)</span>
+<span class="kw">async</span> <span class="fn">handleUserCreated</span><span class="pn">(</span><span class="dec">@Payload</span><span class="pn">()</span> data<span class="pn">:</span> <span class="typ">IncomingMessage</span><span class="pn">,</span> <span class="dec">@Ctx</span><span class="pn">()</span> context<span class="pn">:</span> <span class="typ">KafkaContext</span><span class="pn">) {</span>
+  <span class="cm">// business logic</span>
+
+  <span class="kw">const</span> <span class="pn">{</span> offset <span class="pn">}</span> <span class="pn">=</span> context<span class="pn">.</span><span class="fn">getMessage</span><span class="pn">();</span>
+  <span class="kw">const</span> partition <span class="pn">=</span> context<span class="pn">.</span><span class="fn">getPartition</span><span class="pn">();</span>
+  <span class="kw">const</span> topic <span class="pn">=</span> context<span class="pn">.</span><span class="fn">getTopic</span><span class="pn">();</span>
+  <span class="kw">const</span> consumer <span class="pn">=</span> context<span class="pn">.</span><span class="fn">getConsumer</span><span class="pn">();</span>
+  <span class="kw">await</span> consumer<span class="pn">.</span><span class="fn">commitOffsets</span><span class="pn">([{</span> topic<span class="pn">,</span> partition<span class="pn">,</span> offset <span class="pn">}])</span>
+<span class="pn">}</span></pre></div><div class="tab-content" data-tab="js"><pre><span class="dec">@Bind</span><span class="pn">(</span><span class="fn">Payload</span><span class="pn">(),</span> <span class="fn">Ctx</span><span class="pn">())</span>
+<span class="dec">@EventPattern</span><span class="pn">(</span><span class="str">'user.created'</span><span class="pn">)</span>
+<span class="kw">async</span> <span class="fn">handleUserCreated</span><span class="pn">(</span>data<span class="pn">,</span> context<span class="pn">) {</span>
+  <span class="cm">// business logic</span>
+
+  <span class="kw">const</span> <span class="pn">{</span> offset <span class="pn">}</span> <span class="pn">=</span> context<span class="pn">.</span><span class="fn">getMessage</span><span class="pn">();</span>
+  <span class="kw">const</span> partition <span class="pn">=</span> context<span class="pn">.</span><span class="fn">getPartition</span><span class="pn">();</span>
+  <span class="kw">const</span> topic <span class="pn">=</span> context<span class="pn">.</span><span class="fn">getTopic</span><span class="pn">();</span>
+  <span class="kw">const</span> consumer <span class="pn">=</span> context<span class="pn">.</span><span class="fn">getConsumer</span><span class="pn">();</span>
+  <span class="kw">await</span> consumer<span class="pn">.</span><span class="fn">commitOffsets</span><span class="pn">([{</span> topic<span class="pn">,</span> partition<span class="pn">,</span> offset <span class="pn">}])</span>
+<span class="pn">}</span></pre></div></div>
+
+    <p>Để tắt auto-committing message, hãy đặt <code>autoCommit: false</code> trong cấu hình <code>run</code>, như sau:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">main</div><div class="cb-right"><div class="tab-group"><button class="tab-btn active" onclick="switchTab(this,'ts')">TypeScript</button><button class="tab-btn" onclick="switchTab(this,'js')">JavaScript</button></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><div class="tab-content active" data-tab="ts"><pre><span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> NestFactory<span class="pn">.</span><span class="fn">createMicroservice</span><span class="pn">&lt;</span><span class="typ">MicroserviceOptions</span><span class="pn">&gt;(</span>AppModule<span class="pn">, {</span>
+  transport<span class="pn">:</span> Transport<span class="pn">.</span>KAFKA<span class="pn">,</span>
+  options<span class="pn">: {</span>
+    client<span class="pn">: {</span>
+      brokers<span class="pn">: [</span><span class="str">'localhost:9092'</span><span class="pn">],</span>
+    <span class="pn">},</span>
+    run<span class="pn">: {</span>
+      autoCommit<span class="pn">:</span> <span class="kw">false</span>
+    <span class="pn">}</span>
+  <span class="pn">}</span>
+<span class="pn">});</span></pre></div><div class="tab-content" data-tab="js"><pre><span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> NestFactory<span class="pn">.</span><span class="fn">createMicroservice</span><span class="pn">(</span>AppModule<span class="pn">, {</span>
+  transport<span class="pn">:</span> Transport<span class="pn">.</span>KAFKA<span class="pn">,</span>
+  options<span class="pn">: {</span>
+    client<span class="pn">: {</span>
+      brokers<span class="pn">: [</span><span class="str">'localhost:9092'</span><span class="pn">],</span>
+    <span class="pn">},</span>
+    run<span class="pn">: {</span>
+      autoCommit<span class="pn">:</span> <span class="kw">false</span>
+    <span class="pn">}</span>
+  <span class="pn">}</span>
+<span class="pn">});</span></pre></div></div>
+
+    <!-- ═══ Instance status updates ═══ -->
+    <h3 id="instance-status-updates">Instance status updates <a class="anchor" href="#instance-status-updates">#</a></h3>
+
+    <p>Để nhận các cập nhật thời gian thực về kết nối và trạng thái của driver instance bên dưới, bạn có thể subscribe vào stream <code>status</code>. Stream này cung cấp các cập nhật trạng thái dành riêng cho driver được chọn. Đối với Kafka driver, stream <code>status</code> phát ra các event <code>connected</code>, <code>disconnected</code>, <code>rebalancing</code>, <code>crashed</code>, và <code>stopped</code>.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">this</span><span class="pn">.</span>client<span class="pn">.</span>status<span class="pn">.</span><span class="fn">subscribe</span><span class="pn">((</span>status<span class="pn">:</span> <span class="typ">KafkaStatus</span><span class="pn">) =&gt; {</span>
+  console<span class="pn">.</span><span class="fn">log</span><span class="pn">(</span>status<span class="pn">);</span>
+<span class="pn">});</span></pre></div>
+
+<div class="hint"><span class="lbl">Gợi ý</span><p>Kiểu <code>KafkaStatus</code> được import từ package <code>@nestjs/microservices</code>.</p></div>
+
+    <p>Tương tự, bạn có thể subscribe vào stream <code>status</code> của server để nhận thông báo về trạng thái server.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">const</span> server <span class="pn">=</span> app<span class="pn">.</span><span class="fn">connectMicroservice</span><span class="pn">&lt;</span><span class="typ">MicroserviceOptions</span><span class="pn">&gt;(</span>...<span class="pn">);</span>
+server<span class="pn">.</span>status<span class="pn">.</span><span class="fn">subscribe</span><span class="pn">((</span>status<span class="pn">:</span> <span class="typ">KafkaStatus</span><span class="pn">) =&gt; {</span>
+  console<span class="pn">.</span><span class="fn">log</span><span class="pn">(</span>status<span class="pn">);</span>
+<span class="pn">});</span></pre></div>
+
+    <!-- ═══ Underlying producer and consumer ═══ -->
+    <h3 id="underlying-producer-and-consumer">Underlying producer and consumer <a class="anchor" href="#underlying-producer-and-consumer">#</a></h3>
+
+    <p>Đối với các use case nâng cao hơn, bạn có thể cần truy cập các instance producer và consumer bên dưới. Điều này có thể hữu ích cho các tình huống như đóng kết nối thủ công hoặc sử dụng các phương thức dành riêng cho driver. Tuy nhiên, hãy lưu ý rằng trong hầu hết các trường hợp, bạn <strong>không nên cần</strong> truy cập driver trực tiếp.</p>
+
+    <p>Để làm điều này, bạn có thể sử dụng các getter <code>producer</code> và <code>consumer</code> được expose bởi instance <code>ClientKafkaProxy</code>.</p>
+
+<div class="cb"><div class="cb-head"><div style="flex:1"></div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">const</span> producer <span class="pn">=</span> <span class="kw">this</span><span class="pn">.</span>client<span class="pn">.</span>producer<span class="pn">;</span>
+<span class="kw">const</span> consumer <span class="pn">=</span> <span class="kw">this</span><span class="pn">.</span>client<span class="pn">.</span>consumer<span class="pn">;</span></pre></div>
+
+    <!-- Page Navigation -->
+    <div class="page-nav">
+      <a href="RabbitMQ.html" class="pnbtn">
+        <span class="pnlbl">&larr; Trước</span>
+        <span class="pntitle">RabbitMQ</span>
+      </a>
+      <a href="gRPC.html" class="pnbtn r">
+        <span class="pnlbl">Tiếp &rarr;</span>
+        <span class="pntitle">gRPC</span>
+      </a>
+    </div>
+
+  </main>
+
+  <!-- TOC -->
+  <aside class="toc">
+    <div class="toc-title">Nội dung</div>
+    <ul>
+      <li><a href="#installation">Installation</a></li>
+      <li><a href="#overview">Overview</a></li>
+      <li><a href="#options">Options</a></li>
+      <li><a href="#client">Client</a></li>
+      <li><a href="#message-pattern">Message pattern</a></li>
+      <li><a href="#message-response-subscription">Message response subscription</a></li>
+      <li><a href="#incoming">Incoming</a></li>
+      <li><a href="#outgoing">Outgoing</a></li>
+      <li><a href="#event-based">Event-based</a></li>
+      <li><a href="#context">Context</a></li>
+      <li><a href="#naming-conventions">Naming conventions</a></li>
+      <li><a href="#retriable-exceptions">Retriable exceptions</a></li>
+      <li><a href="#custom-exception-handling">Custom exception handling</a></li>
+      <li><a href="#commit-offsets">Commit offsets</a></li>
+      <li><a href="#instance-status-updates">Instance status updates</a></li>
+      <li><a href="#underlying-producer-and-consumer">Underlying producer and consumer</a></li>
+    </ul>
+  </aside>
+
+</div>
+
+<script>
+  function cp(btn){var w=btn.closest('.cb');var p=w.querySelector('.tab-content.active pre')||w.querySelector('pre');if(!p)return;navigator.clipboard.writeText(p.textContent.trim()).then(function(){var o=btn.textContent;btn.textContent='Copied!';btn.style.color='#4ade80';setTimeout(function(){btn.textContent=o;btn.style.color=''},1500)})}
+  function switchTab(btn,tab){var cb=btn.closest('.cb');cb.querySelectorAll('.tab-btn').forEach(function(b){b.classList.toggle('active',b===btn)});cb.querySelectorAll('.tab-content').forEach(function(c){c.classList.toggle('active',c.dataset.tab===tab)})}
+  document.querySelectorAll('.toc a').forEach(function(l){l.addEventListener('click',function(e){e.preventDefault();var t=document.querySelector(this.getAttribute('href'));if(t)t.scrollIntoView({behavior:'smooth',block:'start'})})});
+  var tocLinks=document.querySelectorAll('.toc a'),heads=document.querySelectorAll('h3[id]');
+  function hi(){var c='';heads.forEach(function(h){if(scrollY>=h.offsetTop-120)c=h.id});tocLinks.forEach(function(a){a.classList.toggle('active',a.getAttribute('href')==='#'+c)})}
+  window.addEventListener('scroll',hi,{passive:true});hi();
+</script>
+</body>
+</html>
