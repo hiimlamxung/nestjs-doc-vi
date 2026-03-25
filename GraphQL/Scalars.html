@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scalars | GraphQL | NestJS - Tài liệu tiếng Việt</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root{--bg:#0e0e0e;--surface:#1a1a1a;--surface2:#222;--border:#2a2a2a;--border-l:#333;--red:#ea2845;--red-l:#ff4d6a;--red-glow:rgba(234,40,69,.15);--text:#e8e8e8;--muted:#888;--sec:#b0b0b0;--code-bg:#1e1e1e;--code-bd:#2d2d2d;--hint-bg:#0d2a1a;--hint-c:#4ade80;--warn-bg:#2a1a0d;--warn-c:#fb923c;--note-bg:#0d1a2a;--note-c:#60a0d0;--toc-w:220px;--font:'Inter',sans-serif;--mono:'Source Code Pro',monospace;--r:6px;--rl:10px}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+    body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:15px;line-height:1.78}
+    .page{max-width:1060px;margin:0 auto;padding:48px 32px 96px;display:flex;gap:56px;align-items:flex-start}.content{flex:1;min-width:0}
+    .toc{width:var(--toc-w);flex-shrink:0;position:sticky;top:32px;align-self:flex-start;max-height:calc(100vh - 48px);overflow-y:auto}
+    .toc::-webkit-scrollbar{width:3px}.toc::-webkit-scrollbar-thumb{background:var(--border-l);border-radius:2px}
+    .toc-title{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding-bottom:8px;margin-bottom:8px;border-bottom:1px solid var(--border)}
+    .toc ul{list-style:none}.toc ul li a{display:block;padding:3.5px 0;font-size:12.5px;color:var(--muted);text-decoration:none;line-height:1.5;transition:color .15s;cursor:pointer}
+    .toc ul li a:hover,.toc ul li a.active{color:var(--red-l)}
+    .vi-banner{display:flex;align-items:center;gap:10px;padding:11px 16px;border:1px solid rgba(234,40,69,.3);border-radius:var(--rl);background:linear-gradient(135deg,rgba(234,40,69,.1),rgba(234,40,69,.04));font-size:13px;color:var(--sec);margin-bottom:32px}.vi-banner strong{color:var(--red-l)}
+    h1{font-size:36px;font-weight:700;letter-spacing:-.5px;line-height:1.2;margin-bottom:6px}h1::after{content:'';display:block;width:44px;height:3px;background:var(--red);border-radius:2px;margin-top:12px}
+    h3{font-size:19px;font-weight:600;letter-spacing:-.2px;margin:40px 0 12px;display:flex;align-items:center;gap:8px;scroll-margin-top:80px}
+    h4{font-size:16px;font-weight:600;margin:28px 0 10px;color:var(--text)}
+    .anchor{font-size:14px;color:var(--muted);text-decoration:none;opacity:0;transition:opacity .2s}h3:hover .anchor{opacity:1}
+    p{color:var(--sec);line-height:1.82;margin-bottom:16px}p:last-child{margin-bottom:0}
+    a{color:var(--red-l);text-decoration:none}a:hover{text-decoration:underline}strong{color:var(--text);font-weight:600}
+    ul,ol{color:var(--sec);padding-left:22px;line-height:2.1;margin:16px 0}ul li,ol li{margin-bottom:6px}
+    code{font-family:var(--mono);font-size:13px;background:var(--code-bg);border:1px solid var(--code-bd);padding:1px 6px;border-radius:4px;color:#f9a8d4}
+    .hint,.warn,.note{margin:18px 0;padding:12px 16px;border-left:3px solid;border-radius:var(--r);font-size:13.5px;line-height:1.72}
+    .hint{background:var(--hint-bg);border-color:var(--hint-c);color:#a7f3d0}.warn{background:var(--warn-bg);border-color:var(--warn-c);color:#fed7aa}.note{background:var(--note-bg);border-color:var(--note-c);color:#bae6fd}
+    .hint p,.warn p,.note p{margin:0;color:inherit}.lbl{display:block;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
+    .hint .lbl{color:var(--hint-c)}.warn .lbl{color:var(--warn-c)}.note .lbl{color:var(--note-c)}
+    .cb{margin:18px 0;border:1px solid var(--code-bd);border-radius:var(--rl);overflow:hidden;background:var(--code-bg)}
+    .cb-head{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:#181818;border-bottom:1px solid var(--code-bd);min-height:38px}
+    .cb-fname{font-family:var(--mono);font-size:11.5px;color:var(--muted);display:flex;align-items:center;gap:6px}.cb-fname::before{content:'';display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--red)}
+    .cb-right{display:flex;align-items:center;gap:6px}
+    .tab-btn{padding:3px 10px;font-size:11px;font-family:var(--mono);background:transparent;border:1px solid var(--border-l);color:var(--muted);border-radius:4px;cursor:pointer;transition:all .14s}.tab-btn:hover{color:var(--text)}.tab-btn.active{background:var(--red);border-color:var(--red);color:#fff}
+    .tab-content{display:none}.tab-content.active{display:block}
+    .cpbtn{padding:3px 9px;font-size:10.5px;font-family:var(--mono);background:var(--surface);border:1px solid var(--border-l);color:var(--muted);border-radius:4px;cursor:pointer;transition:all .14s}.cpbtn:hover{background:var(--surface2);color:var(--text)}
+    pre{padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:13.5px;line-height:1.65;color:#abb2bf}pre::-webkit-scrollbar{height:5px}pre::-webkit-scrollbar-thumb{background:var(--border-l);border-radius:3px}
+    .kw{color:#c678dd}.fn{color:#61afef}.str{color:#98c379}.dec{color:#e5c07b}.typ{color:#e5c07b}.cm{color:#5c6370;font-style:italic}.pn{color:#abb2bf}.num{color:#d19a66}.cl{color:#e06c75}
+    table{width:100%;border-collapse:collapse;margin:18px 0;font-size:13.5px}th,td{padding:10px 14px;border:1px solid var(--border);text-align:left}th{background:var(--surface);color:var(--text);font-weight:600}td{color:var(--sec)}
+    .page-nav{display:flex;justify-content:space-between;margin-top:52px;gap:16px}.pnbtn{display:flex;flex-direction:column;padding:14px 18px;border:1px solid var(--border);border-radius:var(--rl);text-decoration:none;transition:all .2s;min-width:150px}.pnbtn:hover{border-color:var(--red);background:var(--red-glow);text-decoration:none}.pnlbl{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:3px}.pntitle{font-size:14px;font-weight:600;color:var(--text)}.pnbtn.r{text-align:right;margin-left:auto}
+    @media(max-width:860px){.toc{display:none}}@media(max-width:600px){.page{padding:24px 16px 64px}}
+  </style>
+</head>
+<body>
+<div class="page">
+  <div class="content">
+
+    <div class="vi-banner">
+      <span>&#127468;&#127483;</span>
+      <span>Tài liệu NestJS tiếng Việt &mdash; <strong>Scalars</strong> &middot; <a href="https://docs.nestjs.com/graphql/scalars" target="_blank">docs.nestjs.com/graphql/scalars</a></span>
+    </div>
+
+    <h1>Scalars</h1>
+
+    <p>Một GraphQL object type có tên và các field, nhưng đến một lúc nào đó các field đó phải resolve thành dữ liệu cụ thể. Đó là lúc các scalar type phát huy tác dụng: chúng đại diện cho các nút lá của query (đọc thêm <a href="https://graphql.org/learn/schema/#scalar-types" target="_blank">tại đây</a>). GraphQL bao gồm các type mặc định sau: <code>Int</code>, <code>Float</code>, <code>String</code>, <code>Boolean</code> và <code>ID</code>. Ngoài các type tích hợp sẵn này, bạn có thể cần hỗ trợ các kiểu dữ liệu nguyên tử tùy chỉnh (ví dụ: <code>Date</code>).</p>
+
+    <!-- ================= CODE FIRST ================= -->
+    <h3 id="code-first">Code first <a class="anchor" href="#code-first">#</a></h3>
+
+    <p>Cách tiếp cận code first đi kèm với năm scalar, trong đó ba scalar là các alias đơn giản cho các GraphQL type hiện có.</p>
+
+    <ul>
+      <li><code>ID</code> (alias cho <code>GraphQLID</code>) - đại diện cho một định danh duy nhất, thường được sử dụng để fetch lại một object hoặc làm key cho cache</li>
+      <li><code>Int</code> (alias cho <code>GraphQLInt</code>) - một số nguyên có dấu 32 bit</li>
+      <li><code>Float</code> (alias cho <code>GraphQLFloat</code>) - một giá trị dấu phẩy động có dấu, độ chính xác kép</li>
+      <li><code>GraphQLISODateTime</code> - một chuỗi date-time ở UTC (được sử dụng mặc định để biểu diễn type <code>Date</code>)</li>
+      <li><code>GraphQLTimestamp</code> - một số nguyên có dấu đại diện cho ngày và giờ dưới dạng số mili giây tính từ đầu UNIX epoch</li>
+    </ul>
+
+    <p><code>GraphQLISODateTime</code> (ví dụ: <code>2019-12-03T09:54:33Z</code>) được sử dụng mặc định để biểu diễn type <code>Date</code>. Để sử dụng <code>GraphQLTimestamp</code> thay thế, hãy đặt <code>dateScalarMode</code> của object <code>buildSchemaOptions</code> thành <code>'timestamp'</code> như sau:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">TypeScript</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="cl">GraphQLModule</span><span class="pn">.</span><span class="fn">forRoot</span><span class="pn">({</span>
+  buildSchemaOptions<span class="pn">:</span> <span class="pn">{</span>
+    dateScalarMode<span class="pn">:</span> <span class="str">'timestamp'</span><span class="pn">,</span>
+  <span class="pn">}</span>
+<span class="pn">}),</span></pre>
+    </div>
+
+    <p>Tương tự, <code>GraphQLFloat</code> được sử dụng mặc định để biểu diễn type <code>number</code>. Để sử dụng <code>GraphQLInt</code> thay thế, hãy đặt <code>numberScalarMode</code> của object <code>buildSchemaOptions</code> thành <code>'integer'</code> như sau:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">TypeScript</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="cl">GraphQLModule</span><span class="pn">.</span><span class="fn">forRoot</span><span class="pn">({</span>
+  buildSchemaOptions<span class="pn">:</span> <span class="pn">{</span>
+    numberScalarMode<span class="pn">:</span> <span class="str">'integer'</span><span class="pn">,</span>
+  <span class="pn">}</span>
+<span class="pn">}),</span></pre>
+    </div>
+
+    <p>Ngoài ra, bạn có thể tạo các custom scalar.</p>
+
+    <!-- ================= OVERRIDE A DEFAULT SCALAR ================= -->
+    <h3 id="override-default-scalar">Override a default scalar <a class="anchor" href="#override-default-scalar">#</a></h3>
+
+    <p>Để tạo một implementation tùy chỉnh cho scalar <code>Date</code>, chỉ cần tạo một class mới.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">TypeScript</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Scalar</span><span class="pn">,</span> <span class="cl">CustomScalar</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/graphql'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">Kind</span><span class="pn">,</span> <span class="cl">ValueNode</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'graphql'</span><span class="pn">;</span>
+
+<span class="dec">@Scalar</span><span class="pn">(</span><span class="str">'Date'</span><span class="pn">,</span> <span class="pn">()</span> <span class="kw">=&gt;</span> <span class="cl">Date</span><span class="pn">)</span>
+<span class="kw">export class</span> <span class="cl">DateScalar</span> <span class="kw">implements</span> <span class="typ">CustomScalar</span><span class="pn">&lt;</span><span class="typ">number</span><span class="pn">,</span> <span class="typ">Date</span><span class="pn">&gt;</span> <span class="pn">{</span>
+  description <span class="pn">=</span> <span class="str">'Date custom scalar type'</span><span class="pn">;</span>
+
+  <span class="fn">parseValue</span><span class="pn">(</span>value<span class="pn">:</span> <span class="typ">number</span><span class="pn">):</span> <span class="typ">Date</span> <span class="pn">{</span>
+    <span class="kw">return new</span> <span class="cl">Date</span><span class="pn">(</span>value<span class="pn">);</span> <span class="cm">// value from the client</span>
+  <span class="pn">}</span>
+
+  <span class="fn">serialize</span><span class="pn">(</span>value<span class="pn">:</span> <span class="typ">Date</span><span class="pn">):</span> <span class="typ">number</span> <span class="pn">{</span>
+    <span class="kw">return</span> value<span class="pn">.</span><span class="fn">getTime</span><span class="pn">();</span> <span class="cm">// value sent to the client</span>
+  <span class="pn">}</span>
+
+  <span class="fn">parseLiteral</span><span class="pn">(</span>ast<span class="pn">:</span> <span class="typ">ValueNode</span><span class="pn">):</span> <span class="typ">Date</span> <span class="pn">{</span>
+    <span class="kw">if</span> <span class="pn">(</span>ast<span class="pn">.</span>kind <span class="pn">===</span> <span class="cl">Kind</span><span class="pn">.</span>INT<span class="pn">)</span> <span class="pn">{</span>
+      <span class="kw">return new</span> <span class="cl">Date</span><span class="pn">(</span>ast<span class="pn">.</span>value<span class="pn">);</span>
+    <span class="pn">}</span>
+    <span class="kw">return</span> <span class="num">null</span><span class="pn">;</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <p>Với điều này, hãy đăng ký <code>DateScalar</code> như một provider.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">TypeScript</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="dec">@Module</span><span class="pn">({</span>
+  providers<span class="pn">:</span> <span class="pn">[</span><span class="cl">DateScalar</span><span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">CommonModule</span> <span class="pn">{}</span></pre>
+    </div>
+
+    <p>Bây giờ chúng ta có thể sử dụng type <code>Date</code> trong các class của mình.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">TypeScript</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="dec">@Field</span><span class="pn">()</span>
+creationDate<span class="pn">:</span> <span class="typ">Date</span><span class="pn">;</span></pre>
+    </div>
+
+    <!-- ================= IMPORT A CUSTOM SCALAR ================= -->
+    <h3 id="import-custom-scalar">Import a custom scalar <a class="anchor" href="#import-custom-scalar">#</a></h3>
+
+    <p>Để sử dụng một custom scalar, hãy import và đăng ký nó như một resolver. Chúng ta sẽ sử dụng package <code>graphql-type-json</code> để minh họa. Package npm này định nghĩa một scalar type <code>JSON</code> cho GraphQL.</p>
+
+    <p>Bắt đầu bằng việc cài đặt package:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">Terminal</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre>$ npm i --save graphql-type-json</pre>
+    </div>
+
+    <p>Sau khi package được cài đặt, chúng ta truyền một custom resolver vào method <code>forRoot()</code>:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">TypeScript</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="kw">import</span> <span class="cl">GraphQLJSON</span> <span class="kw">from</span> <span class="str">'graphql-type-json'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">:</span> <span class="pn">[</span>
+    <span class="cl">GraphQLModule</span><span class="pn">.</span><span class="fn">forRoot</span><span class="pn">({</span>
+      resolvers<span class="pn">:</span> <span class="pn">{</span> JSON<span class="pn">:</span> <span class="cl">GraphQLJSON</span> <span class="pn">},</span>
+    <span class="pn">}),</span>
+  <span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="pn">{}</span></pre>
+    </div>
+
+    <p>Bây giờ chúng ta có thể sử dụng type <code>JSON</code> trong các class của mình.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">TypeScript</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="dec">@Field</span><span class="pn">(()</span> <span class="kw">=&gt;</span> <span class="cl">GraphQLJSON</span><span class="pn">)</span>
+info<span class="pn">:</span> <span class="typ">JSON</span><span class="pn">;</span></pre>
+    </div>
+
+    <p>Để có bộ sưu tập các scalar hữu ích, hãy tham khảo package <a href="https://www.npmjs.com/package/graphql-scalars" target="_blank">graphql-scalars</a>.</p>
+
+    <!-- ================= CREATE A CUSTOM SCALAR ================= -->
+    <h3 id="create-custom-scalar">Create a custom scalar <a class="anchor" href="#create-custom-scalar">#</a></h3>
+
+    <p>Để định nghĩa một custom scalar, hãy tạo một instance <code>GraphQLScalarType</code> mới. Chúng ta sẽ tạo một custom scalar <code>UUID</code>.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">TypeScript</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="kw">const</span> regex <span class="pn">=</span> <span class="str">/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i</span><span class="pn">;</span>
+
+<span class="kw">function</span> <span class="fn">validate</span><span class="pn">(</span>uuid<span class="pn">:</span> <span class="typ">unknown</span><span class="pn">):</span> <span class="typ">string</span> <span class="pn">|</span> <span class="typ">never</span> <span class="pn">{</span>
+  <span class="kw">if</span> <span class="pn">(</span><span class="kw">typeof</span> uuid <span class="pn">!==</span> <span class="str">'string'</span> <span class="pn">||</span> <span class="pn">!</span>regex<span class="pn">.</span><span class="fn">test</span><span class="pn">(</span>uuid<span class="pn">))</span> <span class="pn">{</span>
+    <span class="kw">throw new</span> <span class="cl">Error</span><span class="pn">(</span><span class="str">'invalid uuid'</span><span class="pn">);</span>
+  <span class="pn">}</span>
+  <span class="kw">return</span> uuid<span class="pn">;</span>
+<span class="pn">}</span>
+
+<span class="kw">export const</span> <span class="cl">CustomUuidScalar</span> <span class="pn">=</span> <span class="kw">new</span> <span class="cl">GraphQLScalarType</span><span class="pn">({</span>
+  name<span class="pn">:</span> <span class="str">'UUID'</span><span class="pn">,</span>
+  description<span class="pn">:</span> <span class="str">'A simple UUID parser'</span><span class="pn">,</span>
+  serialize<span class="pn">:</span> <span class="pn">(</span>value<span class="pn">)</span> <span class="kw">=&gt;</span> <span class="fn">validate</span><span class="pn">(</span>value<span class="pn">),</span>
+  parseValue<span class="pn">:</span> <span class="pn">(</span>value<span class="pn">)</span> <span class="kw">=&gt;</span> <span class="fn">validate</span><span class="pn">(</span>value<span class="pn">),</span>
+  parseLiteral<span class="pn">:</span> <span class="pn">(</span>ast<span class="pn">)</span> <span class="kw">=&gt;</span> <span class="fn">validate</span><span class="pn">(</span>ast<span class="pn">.</span>value<span class="pn">),</span>
+<span class="pn">});</span></pre>
+    </div>
+
+    <p>Chúng ta truyền một custom resolver vào method <code>forRoot()</code>:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">TypeScript</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">:</span> <span class="pn">[</span>
+    <span class="cl">GraphQLModule</span><span class="pn">.</span><span class="fn">forRoot</span><span class="pn">({</span>
+      resolvers<span class="pn">:</span> <span class="pn">{</span> UUID<span class="pn">:</span> <span class="cl">CustomUuidScalar</span> <span class="pn">},</span>
+    <span class="pn">}),</span>
+  <span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="pn">{}</span></pre>
+    </div>
+
+    <p>Bây giờ chúng ta có thể sử dụng type <code>UUID</code> trong các class của mình.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">TypeScript</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="dec">@Field</span><span class="pn">(()</span> <span class="kw">=&gt;</span> <span class="cl">CustomUuidScalar</span><span class="pn">)</span>
+uuid<span class="pn">:</span> <span class="typ">string</span><span class="pn">;</span></pre>
+    </div>
+
+    <!-- ================= SCHEMA FIRST ================= -->
+    <h3 id="schema-first">Schema first <a class="anchor" href="#schema-first">#</a></h3>
+
+    <p>Để định nghĩa một custom scalar (đọc thêm về scalar <a href="https://www.apollographql.com/docs/graphql-tools/scalars.html" target="_blank">tại đây</a>), hãy tạo một type definition và một resolver chuyên dụng. Ở đây (giống như trong tài liệu chính thức), chúng ta sẽ sử dụng package <code>graphql-type-json</code> để minh họa. Package npm này định nghĩa một scalar type <code>JSON</code> cho GraphQL.</p>
+
+    <p>Bắt đầu bằng việc cài đặt package:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">Terminal</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre>$ npm i --save graphql-type-json</pre>
+    </div>
+
+    <p>Sau khi package được cài đặt, chúng ta truyền một custom resolver vào method <code>forRoot()</code>:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">TypeScript</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="kw">import</span> <span class="cl">GraphQLJSON</span> <span class="kw">from</span> <span class="str">'graphql-type-json'</span><span class="pn">;</span>
+
+<span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">:</span> <span class="pn">[</span>
+    <span class="cl">GraphQLModule</span><span class="pn">.</span><span class="fn">forRoot</span><span class="pn">({</span>
+      typePaths<span class="pn">:</span> <span class="pn">[</span><span class="str">'./**/*.graphql'</span><span class="pn">],</span>
+      resolvers<span class="pn">:</span> <span class="pn">{</span> JSON<span class="pn">:</span> <span class="cl">GraphQLJSON</span> <span class="pn">},</span>
+    <span class="pn">}),</span>
+  <span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="pn">{}</span></pre>
+    </div>
+
+    <p>Bây giờ chúng ta có thể sử dụng scalar <code>JSON</code> trong các type definition:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">GraphQL</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="kw">scalar</span> <span class="typ">JSON</span>
+
+<span class="kw">type</span> <span class="typ">Foo</span> <span class="pn">{</span>
+  field<span class="pn">:</span> <span class="typ">JSON</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <p>Một cách khác để định nghĩa scalar type là tạo một class đơn giản. Giả sử chúng ta muốn mở rộng schema với type <code>Date</code>.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">TypeScript</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Scalar</span><span class="pn">,</span> <span class="cl">CustomScalar</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/graphql'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">Kind</span><span class="pn">,</span> <span class="cl">ValueNode</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'graphql'</span><span class="pn">;</span>
+
+<span class="dec">@Scalar</span><span class="pn">(</span><span class="str">'Date'</span><span class="pn">)</span>
+<span class="kw">export class</span> <span class="cl">DateScalar</span> <span class="kw">implements</span> <span class="typ">CustomScalar</span><span class="pn">&lt;</span><span class="typ">number</span><span class="pn">,</span> <span class="typ">Date</span><span class="pn">&gt;</span> <span class="pn">{</span>
+  description <span class="pn">=</span> <span class="str">'Date custom scalar type'</span><span class="pn">;</span>
+
+  <span class="fn">parseValue</span><span class="pn">(</span>value<span class="pn">:</span> <span class="typ">number</span><span class="pn">):</span> <span class="typ">Date</span> <span class="pn">{</span>
+    <span class="kw">return new</span> <span class="cl">Date</span><span class="pn">(</span>value<span class="pn">);</span> <span class="cm">// value from the client</span>
+  <span class="pn">}</span>
+
+  <span class="fn">serialize</span><span class="pn">(</span>value<span class="pn">:</span> <span class="typ">Date</span><span class="pn">):</span> <span class="typ">number</span> <span class="pn">{</span>
+    <span class="kw">return</span> value<span class="pn">.</span><span class="fn">getTime</span><span class="pn">();</span> <span class="cm">// value sent to the client</span>
+  <span class="pn">}</span>
+
+  <span class="fn">parseLiteral</span><span class="pn">(</span>ast<span class="pn">:</span> <span class="typ">ValueNode</span><span class="pn">):</span> <span class="typ">Date</span> <span class="pn">{</span>
+    <span class="kw">if</span> <span class="pn">(</span>ast<span class="pn">.</span>kind <span class="pn">===</span> <span class="cl">Kind</span><span class="pn">.</span>INT<span class="pn">)</span> <span class="pn">{</span>
+      <span class="kw">return new</span> <span class="cl">Date</span><span class="pn">(</span>ast<span class="pn">.</span>value<span class="pn">);</span>
+    <span class="pn">}</span>
+    <span class="kw">return</span> <span class="num">null</span><span class="pn">;</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <p>Với điều này, hãy đăng ký <code>DateScalar</code> như một provider.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">TypeScript</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="dec">@Module</span><span class="pn">({</span>
+  providers<span class="pn">:</span> <span class="pn">[</span><span class="cl">DateScalar</span><span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">CommonModule</span> <span class="pn">{}</span></pre>
+    </div>
+
+    <p>Bây giờ chúng ta có thể sử dụng scalar <code>Date</code> trong các type definition.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">GraphQL</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="kw">scalar</span> <span class="typ">Date</span></pre>
+    </div>
+
+    <p>Mặc định, TypeScript definition được tạo cho tất cả scalar là <code>any</code> &mdash; điều này không đặc biệt an toàn về kiểu. Tuy nhiên, bạn có thể cấu hình cách Nest tạo typing cho các custom scalar khi bạn chỉ định cách tạo type:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">TypeScript</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">GraphQLDefinitionsFactory</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/graphql'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="fn">join</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'path'</span><span class="pn">;</span>
+
+<span class="kw">const</span> definitionsFactory <span class="pn">=</span> <span class="kw">new</span> <span class="cl">GraphQLDefinitionsFactory</span><span class="pn">();</span>
+
+definitionsFactory<span class="pn">.</span><span class="fn">generate</span><span class="pn">({</span>
+  typePaths<span class="pn">:</span> <span class="pn">[</span><span class="str">'./src/**/*.graphql'</span><span class="pn">],</span>
+  path<span class="pn">:</span> <span class="fn">join</span><span class="pn">(</span><span class="fn">process</span><span class="pn">.</span><span class="fn">cwd</span><span class="pn">(),</span> <span class="str">'src/graphql.ts'</span><span class="pn">),</span>
+  outputAs<span class="pn">:</span> <span class="str">'class'</span><span class="pn">,</span>
+  defaultScalarType<span class="pn">:</span> <span class="str">'unknown'</span><span class="pn">,</span>
+  customScalarTypeMapping<span class="pn">:</span> <span class="pn">{</span>
+    DateTime<span class="pn">:</span> <span class="str">'Date'</span><span class="pn">,</span>
+    BigNumber<span class="pn">:</span> <span class="str">'_BigNumber'</span><span class="pn">,</span>
+  <span class="pn">},</span>
+  additionalHeader<span class="pn">:</span> <span class="str">"import _BigNumber from 'bignumber.js'"</span><span class="pn">,</span>
+<span class="pn">});</span></pre>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">Gợi ý</span>
+      <p>Ngoài ra, bạn có thể sử dụng type reference, ví dụ: <code>DateTime: Date</code>. Trong trường hợp này, <code>GraphQLDefinitionsFactory</code> sẽ trích xuất property name của type được chỉ định (<code>Date.name</code>) để tạo các TS definition. Lưu ý: việc thêm câu lệnh import cho các type không phải built-in (custom type) là bắt buộc.</p>
+    </div>
+
+    <p>Bây giờ, với các custom scalar type GraphQL sau:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">GraphQL</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="kw">scalar</span> <span class="typ">DateTime</span>
+<span class="kw">scalar</span> <span class="typ">BigNumber</span>
+<span class="kw">scalar</span> <span class="typ">Payload</span></pre>
+    </div>
+
+    <p>Chúng ta sẽ thấy các TypeScript definition được tạo sau đây trong <code>src/graphql.ts</code>:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">src/graphql.ts</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="kw">import</span> <span class="cl">_BigNumber</span> <span class="kw">from</span> <span class="str">'bignumber.js'</span><span class="pn">;</span>
+
+<span class="kw">export type</span> <span class="typ">DateTime</span> <span class="pn">=</span> <span class="typ">Date</span><span class="pn">;</span>
+<span class="kw">export type</span> <span class="typ">BigNumber</span> <span class="pn">=</span> <span class="cl">_BigNumber</span><span class="pn">;</span>
+<span class="kw">export type</span> <span class="typ">Payload</span> <span class="pn">=</span> <span class="typ">unknown</span><span class="pn">;</span></pre>
+    </div>
+
+    <p>Ở đây, chúng ta đã sử dụng property <code>customScalarTypeMapping</code> để cung cấp một map các type mà chúng ta muốn khai báo cho các custom scalar. Chúng ta cũng đã cung cấp property <code>additionalHeader</code> để thêm bất kỳ import nào cần thiết cho các type definition này. Cuối cùng, chúng ta đã thêm <code>defaultScalarType</code> là <code>'unknown'</code>, để bất kỳ custom scalar nào không được chỉ định trong <code>customScalarTypeMapping</code> sẽ được alias thành <code>unknown</code> thay vì <code>any</code> (điều mà <a href="https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-0.html#new-unknown-top-type" target="_blank">TypeScript khuyến nghị</a> sử dụng kể từ phiên bản 3.0 để tăng tính an toàn về kiểu).</p>
+
+    <div class="hint">
+      <span class="lbl">Gợi ý</span>
+      <p>Lưu ý rằng chúng ta đã import <code>_BigNumber</code> từ <code>bignumber.js</code>; đây là để tránh <a href="https://github.com/Microsoft/TypeScript/issues/12525#issuecomment-263166239" target="_blank">circular type reference</a>.</p>
+    </div>
+
+    <!-- Page navigation -->
+    <div class="page-nav">
+      <a class="pnbtn" href="Subscriptions.html">
+        <span class="pnlbl">&laquo; Trước</span>
+        <span class="pntitle">Subscriptions</span>
+      </a>
+      <a class="pnbtn r" href="Directives.html">
+        <span class="pnlbl">Tiếp &raquo;</span>
+        <span class="pntitle">Directives</span>
+      </a>
+    </div>
+
+  </div>
+
+  <nav class="toc">
+    <div class="toc-title">Nội dung</div>
+    <ul>
+      <li><a href="#code-first">Code first</a></li>
+      <li><a href="#override-default-scalar">Override a default scalar</a></li>
+      <li><a href="#import-custom-scalar">Import a custom scalar</a></li>
+      <li><a href="#create-custom-scalar">Create a custom scalar</a></li>
+      <li><a href="#schema-first">Schema first</a></li>
+    </ul>
+  </nav>
+</div>
+
+<script>
+function cp(btn){var w=btn.closest('.cb');var p=w.querySelector('.tab-content.active pre')||w.querySelector('pre');if(!p)return;navigator.clipboard.writeText(p.textContent.trim()).then(function(){var o=btn.textContent;btn.textContent='Copied!';btn.style.color='#4ade80';setTimeout(function(){btn.textContent=o;btn.style.color=''},1500)})}
+function switchTab(btn,tab){var cb=btn.closest('.cb');cb.querySelectorAll('.tab-btn').forEach(function(b){b.classList.toggle('active',b===btn)});cb.querySelectorAll('.tab-content').forEach(function(c){c.classList.toggle('active',c.dataset.tab===tab)})}
+document.addEventListener('DOMContentLoaded',function(){var hs=document.querySelectorAll('h3[id]');var ls=document.querySelectorAll('.toc a');if(!hs.length)return;var obs=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){ls.forEach(function(l){l.classList.toggle('active',l.getAttribute('href')==='#'+e.target.id)})}})},{rootMargin:'-20% 0px -75% 0px'});hs.forEach(function(h){obs.observe(h)})})
+</script>
+</body>
+</html>

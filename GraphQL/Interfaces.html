@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Interfaces | GraphQL | NestJS - Tài liệu tiếng Việt</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root{--bg:#0e0e0e;--surface:#1a1a1a;--surface2:#222;--border:#2a2a2a;--border-l:#333;--red:#ea2845;--red-l:#ff4d6a;--red-glow:rgba(234,40,69,.15);--text:#e8e8e8;--muted:#888;--sec:#b0b0b0;--code-bg:#1e1e1e;--code-bd:#2d2d2d;--hint-bg:#0d2a1a;--hint-c:#4ade80;--warn-bg:#2a1a0d;--warn-c:#fb923c;--note-bg:#0d1a2a;--note-c:#60a0d0;--toc-w:220px;--font:'Inter',sans-serif;--mono:'Source Code Pro',monospace;--r:6px;--rl:10px}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+    body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:15px;line-height:1.78}
+    .page{max-width:1060px;margin:0 auto;padding:48px 32px 96px;display:flex;gap:56px;align-items:flex-start}.content{flex:1;min-width:0}
+    .toc{width:var(--toc-w);flex-shrink:0;position:sticky;top:32px;align-self:flex-start;max-height:calc(100vh - 48px);overflow-y:auto}
+    .toc::-webkit-scrollbar{width:3px}.toc::-webkit-scrollbar-thumb{background:var(--border-l);border-radius:2px}
+    .toc-title{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding-bottom:8px;margin-bottom:8px;border-bottom:1px solid var(--border)}
+    .toc ul{list-style:none}.toc ul li a{display:block;padding:3.5px 0;font-size:12.5px;color:var(--muted);text-decoration:none;line-height:1.5;transition:color .15s;cursor:pointer}
+    .toc ul li a:hover,.toc ul li a.active{color:var(--red-l)}
+    .vi-banner{display:flex;align-items:center;gap:10px;padding:11px 16px;border:1px solid rgba(234,40,69,.3);border-radius:var(--rl);background:linear-gradient(135deg,rgba(234,40,69,.1),rgba(234,40,69,.04));font-size:13px;color:var(--sec);margin-bottom:32px}.vi-banner strong{color:var(--red-l)}
+    h1{font-size:36px;font-weight:700;letter-spacing:-.5px;line-height:1.2;margin-bottom:6px}h1::after{content:'';display:block;width:44px;height:3px;background:var(--red);border-radius:2px;margin-top:12px}
+    h3{font-size:19px;font-weight:600;letter-spacing:-.2px;margin:40px 0 12px;display:flex;align-items:center;gap:8px;scroll-margin-top:80px}
+    h4{font-size:16px;font-weight:600;margin:28px 0 10px;color:var(--text)}
+    .anchor{font-size:14px;color:var(--muted);text-decoration:none;opacity:0;transition:opacity .2s}h3:hover .anchor{opacity:1}
+    p{color:var(--sec);line-height:1.82;margin-bottom:16px}p:last-child{margin-bottom:0}
+    a{color:var(--red-l);text-decoration:none}a:hover{text-decoration:underline}strong{color:var(--text);font-weight:600}
+    ul,ol{color:var(--sec);padding-left:22px;line-height:2.1;margin:16px 0}ul li,ol li{margin-bottom:6px}
+    code{font-family:var(--mono);font-size:13px;background:var(--code-bg);border:1px solid var(--code-bd);padding:1px 6px;border-radius:4px;color:#f9a8d4}
+    .hint,.warn,.note{margin:18px 0;padding:12px 16px;border-left:3px solid;border-radius:var(--r);font-size:13.5px;line-height:1.72}
+    .hint{background:var(--hint-bg);border-color:var(--hint-c);color:#a7f3d0}.warn{background:var(--warn-bg);border-color:var(--warn-c);color:#fed7aa}.note{background:var(--note-bg);border-color:var(--note-c);color:#bae6fd}
+    .hint p,.warn p,.note p{margin:0;color:inherit}.lbl{display:block;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
+    .hint .lbl{color:var(--hint-c)}.warn .lbl{color:var(--warn-c)}.note .lbl{color:var(--note-c)}
+    .cb{margin:18px 0;border:1px solid var(--code-bd);border-radius:var(--rl);overflow:hidden;background:var(--code-bg)}
+    .cb-head{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:#181818;border-bottom:1px solid var(--code-bd);min-height:38px}
+    .cb-fname{font-family:var(--mono);font-size:11.5px;color:var(--muted);display:flex;align-items:center;gap:6px}.cb-fname::before{content:'';display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--red)}
+    .cb-right{display:flex;align-items:center;gap:6px}
+    .tab-btn{padding:3px 10px;font-size:11px;font-family:var(--mono);background:transparent;border:1px solid var(--border-l);color:var(--muted);border-radius:4px;cursor:pointer;transition:all .14s}.tab-btn:hover{color:var(--text)}.tab-btn.active{background:var(--red);border-color:var(--red);color:#fff}
+    .tab-content{display:none}.tab-content.active{display:block}
+    .cpbtn{padding:3px 9px;font-size:10.5px;font-family:var(--mono);background:var(--surface);border:1px solid var(--border-l);color:var(--muted);border-radius:4px;cursor:pointer;transition:all .14s}.cpbtn:hover{background:var(--surface2);color:var(--text)}
+    pre{padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:13.5px;line-height:1.65;color:#abb2bf}pre::-webkit-scrollbar{height:5px}pre::-webkit-scrollbar-thumb{background:var(--border-l);border-radius:3px}
+    .kw{color:#c678dd}.fn{color:#61afef}.str{color:#98c379}.dec{color:#e5c07b}.typ{color:#e5c07b}.cm{color:#5c6370;font-style:italic}.pn{color:#abb2bf}.num{color:#d19a66}.cl{color:#e06c75}
+    table{width:100%;border-collapse:collapse;margin:18px 0;font-size:13.5px}th,td{padding:10px 14px;border:1px solid var(--border);text-align:left}th{background:var(--surface);color:var(--text);font-weight:600}td{color:var(--sec)}
+    .page-nav{display:flex;justify-content:space-between;margin-top:52px;gap:16px}.pnbtn{display:flex;flex-direction:column;padding:14px 18px;border:1px solid var(--border);border-radius:var(--rl);text-decoration:none;transition:all .2s;min-width:150px}.pnbtn:hover{border-color:var(--red);background:var(--red-glow);text-decoration:none}.pnlbl{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:3px}.pntitle{font-size:14px;font-weight:600;color:var(--text)}.pnbtn.r{text-align:right;margin-left:auto}
+    @media(max-width:860px){.toc{display:none}}@media(max-width:600px){.page{padding:24px 16px 64px}}
+  </style>
+</head>
+<body>
+<div class="page">
+  <div class="content">
+
+    <div class="vi-banner">
+      <strong>Tài liệu tiếng Việt</strong> — Bản dịch từ
+      <a href="https://docs.nestjs.com/graphql/interfaces" target="_blank">docs.nestjs.com/graphql/interfaces</a>
+    </div>
+
+    <h1>Interfaces</h1>
+
+    <p>Giống như nhiều hệ thống kiểu dữ liệu khác, GraphQL hỗ trợ interface. Một <strong>Interface</strong> là một kiểu trừu tượng bao gồm một tập hợp các field nhất định mà một type phải bao gồm để implement interface đó (đọc thêm <a href="https://graphql.org/learn/schema/#interfaces" target="_blank">tại đây</a>).</p>
+
+    <!-- Code first -->
+    <h3 id="code-first">Code first <a class="anchor" href="#code-first">#</a></h3>
+
+    <p>Khi sử dụng cách tiếp cận code first, bạn định nghĩa một GraphQL interface bằng cách tạo một abstract class được chú thích bằng decorator <code>@InterfaceType()</code> được export từ <code>@nestjs/graphql</code>.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">TypeScript</div>
+        <div class="cb-right">
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+<pre><span class="kw">import</span> <span class="pn">{</span> <span class="typ">Field</span><span class="pn">,</span> <span class="typ">ID</span><span class="pn">,</span> <span class="typ">InterfaceType</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/graphql'</span><span class="pn">;</span>
+
+<span class="dec">@InterfaceType</span><span class="pn">()</span>
+<span class="kw">export</span> <span class="kw">abstract</span> <span class="kw">class</span> <span class="typ">Character</span> <span class="pn">{</span>
+  <span class="dec">@Field</span><span class="pn">(()</span> <span class="kw">=&gt;</span> <span class="typ">ID</span><span class="pn">)</span>
+  <span class="cl">id</span><span class="pn">:</span> <span class="typ">string</span><span class="pn">;</span>
+
+  <span class="dec">@Field</span><span class="pn">()</span>
+  <span class="cl">name</span><span class="pn">:</span> <span class="typ">string</span><span class="pn">;</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <div class="warn">
+      <span class="lbl">Cảnh báo</span>
+      <p>Các TypeScript interface không thể được sử dụng để định nghĩa GraphQL interface.</p>
+    </div>
+
+    <p>Điều này sẽ tạo ra phần sau trong GraphQL schema bằng SDL:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">GraphQL</div>
+        <div class="cb-right">
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+<pre><span class="kw">interface</span> <span class="typ">Character</span> <span class="pn">{</span>
+  <span class="cl">id</span><span class="pn">:</span> <span class="typ">ID</span><span class="pn">!</span>
+  <span class="cl">name</span><span class="pn">:</span> <span class="typ">String</span><span class="pn">!</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <p>Bây giờ, để implement interface <code>Character</code>, sử dụng key <code>implements</code>:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">TypeScript</div>
+        <div class="cb-right">
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+<pre><span class="dec">@ObjectType</span><span class="pn">({</span>
+  <span class="cl">implements</span><span class="pn">:</span> <span class="pn">()</span> <span class="kw">=&gt;</span> <span class="pn">[</span><span class="typ">Character</span><span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export</span> <span class="kw">class</span> <span class="typ">Human</span> <span class="kw">implements</span> <span class="typ">Character</span> <span class="pn">{</span>
+  <span class="cl">id</span><span class="pn">:</span> <span class="typ">string</span><span class="pn">;</span>
+  <span class="cl">name</span><span class="pn">:</span> <span class="typ">string</span><span class="pn">;</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">Gợi ý</span>
+      <p>Decorator <code>@ObjectType()</code> được export từ package <code>@nestjs/graphql</code>.</p>
+    </div>
+
+    <p>Hàm <code>resolveType()</code> mặc định được tạo bởi thư viện sẽ trích xuất type dựa trên giá trị được trả về từ phương thức resolver. Điều này có nghĩa là bạn phải trả về các class instance (bạn không thể trả về các JavaScript object literal).</p>
+
+    <p>Để cung cấp một hàm <code>resolveType()</code> tùy chỉnh, truyền thuộc tính <code>resolveType</code> vào object options được truyền vào decorator <code>@InterfaceType()</code>, như sau:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">TypeScript</div>
+        <div class="cb-right">
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+<pre><span class="dec">@InterfaceType</span><span class="pn">({</span>
+  <span class="fn">resolveType</span><span class="pn">(</span><span class="cl">book</span><span class="pn">)</span> <span class="pn">{</span>
+    <span class="kw">if</span> <span class="pn">(</span><span class="cl">book</span><span class="pn">.</span><span class="cl">colors</span><span class="pn">)</span> <span class="pn">{</span>
+      <span class="kw">return</span> <span class="typ">ColoringBook</span><span class="pn">;</span>
+    <span class="pn">}</span>
+    <span class="kw">return</span> <span class="typ">TextBook</span><span class="pn">;</span>
+  <span class="pn">},</span>
+<span class="pn">})</span>
+<span class="kw">export</span> <span class="kw">abstract</span> <span class="kw">class</span> <span class="typ">Book</span> <span class="pn">{</span>
+  <span class="dec">@Field</span><span class="pn">(()</span> <span class="kw">=&gt;</span> <span class="typ">ID</span><span class="pn">)</span>
+  <span class="cl">id</span><span class="pn">:</span> <span class="typ">string</span><span class="pn">;</span>
+
+  <span class="dec">@Field</span><span class="pn">()</span>
+  <span class="cl">title</span><span class="pn">:</span> <span class="typ">string</span><span class="pn">;</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <!-- Interface resolvers -->
+    <h3 id="interface-resolvers">Interface resolvers <a class="anchor" href="#interface-resolvers">#</a></h3>
+
+    <p>Cho đến nay, khi sử dụng interface, bạn chỉ có thể chia sẻ các định nghĩa field với các object của mình. Nếu bạn cũng muốn chia sẻ triển khai thực tế của field resolver, bạn có thể tạo một interface resolver chuyên biệt, như sau:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">TypeScript</div>
+        <div class="cb-right">
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+<pre><span class="kw">import</span> <span class="pn">{</span> <span class="typ">Resolver</span><span class="pn">,</span> <span class="typ">ResolveField</span><span class="pn">,</span> <span class="typ">Parent</span><span class="pn">,</span> <span class="typ">Info</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/graphql'</span><span class="pn">;</span>
+
+<span class="dec">@Resolver</span><span class="pn">((</span><span class="cl">type</span><span class="pn">)</span> <span class="kw">=&gt;</span> <span class="typ">Character</span><span class="pn">)</span> <span class="cm">// Reminder: Character is an interface</span>
+<span class="kw">export</span> <span class="kw">class</span> <span class="typ">CharacterInterfaceResolver</span> <span class="pn">{</span>
+  <span class="dec">@ResolveField</span><span class="pn">(()</span> <span class="kw">=&gt;</span> <span class="pn">[</span><span class="typ">Character</span><span class="pn">])</span>
+  <span class="fn">friends</span><span class="pn">(</span>
+    <span class="dec">@Parent</span><span class="pn">()</span> <span class="cl">character</span><span class="pn">,</span> <span class="cm">// Resolved object that implements Character</span>
+    <span class="dec">@Info</span><span class="pn">()</span> <span class="pn">{</span> <span class="cl">parentType</span> <span class="pn">},</span> <span class="cm">// Type of the object that implements Character</span>
+    <span class="dec">@Args</span><span class="pn">(</span><span class="str">'search'</span><span class="pn">,</span> <span class="pn">{</span> <span class="cl">type</span><span class="pn">:</span> <span class="pn">()</span> <span class="kw">=&gt;</span> <span class="typ">String</span> <span class="pn">})</span> <span class="cl">searchTerm</span><span class="pn">:</span> <span class="typ">string</span><span class="pn">,</span>
+  <span class="pn">)</span> <span class="pn">{</span>
+    <span class="cm">// Get character's friends</span>
+    <span class="kw">return</span> <span class="pn">[];</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <p>Bây giờ field resolver <code>friends</code> được tự động đăng ký cho tất cả các object type implement interface <code>Character</code>.</p>
+
+    <div class="warn">
+      <span class="lbl">Cảnh báo</span>
+      <p>Điều này yêu cầu thuộc tính <code>inheritResolversFromInterfaces</code> được đặt thành <code>true</code> trong cấu hình <code>GraphQLModule</code>.</p>
+    </div>
+
+    <!-- Schema first -->
+    <h3 id="schema-first">Schema first <a class="anchor" href="#schema-first">#</a></h3>
+
+    <p>Để định nghĩa một interface trong cách tiếp cận schema first, chỉ cần tạo một GraphQL interface bằng SDL.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">GraphQL</div>
+        <div class="cb-right">
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+<pre><span class="kw">interface</span> <span class="typ">Character</span> <span class="pn">{</span>
+  <span class="cl">id</span><span class="pn">:</span> <span class="typ">ID</span><span class="pn">!</span>
+  <span class="cl">name</span><span class="pn">:</span> <span class="typ">String</span><span class="pn">!</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <p>Sau đó, bạn có thể sử dụng tính năng tạo typings (như được trình bày trong chương <a href="/graphql/quick-start">quick start</a>) để tạo các định nghĩa TypeScript tương ứng:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">TypeScript</div>
+        <div class="cb-right">
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+<pre><span class="kw">export</span> <span class="kw">interface</span> <span class="typ">Character</span> <span class="pn">{</span>
+  <span class="cl">id</span><span class="pn">:</span> <span class="typ">string</span><span class="pn">;</span>
+  <span class="cl">name</span><span class="pn">:</span> <span class="typ">string</span><span class="pn">;</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <p>Interface yêu cầu một field <code>__resolveType</code> bổ sung trong resolver map để xác định type nào mà interface sẽ resolve. Hãy tạo một class <code>CharactersResolver</code> và định nghĩa phương thức <code>__resolveType</code>:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">TypeScript</div>
+        <div class="cb-right">
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+<pre><span class="dec">@Resolver</span><span class="pn">(</span><span class="str">'Character'</span><span class="pn">)</span>
+<span class="kw">export</span> <span class="kw">class</span> <span class="typ">CharactersResolver</span> <span class="pn">{</span>
+  <span class="dec">@ResolveField</span><span class="pn">()</span>
+  <span class="fn">__resolveType</span><span class="pn">(</span><span class="cl">value</span><span class="pn">)</span> <span class="pn">{</span>
+    <span class="kw">if</span> <span class="pn">(</span><span class="str">'age'</span> <span class="kw">in</span> <span class="cl">value</span><span class="pn">)</span> <span class="pn">{</span>
+      <span class="kw">return</span> <span class="typ">Person</span><span class="pn">;</span>
+    <span class="pn">}</span>
+    <span class="kw">return</span> <span class="kw">null</span><span class="pn">;</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">Gợi ý</span>
+      <p>Tất cả decorator đều được export từ package <code>@nestjs/graphql</code>.</p>
+    </div>
+
+    <!-- Page Navigation -->
+    <div class="page-nav">
+      <a class="pnbtn" href="Directives.html">
+        <span class="pnlbl">Trước</span>
+        <span class="pntitle">Directives</span>
+      </a>
+      <a class="pnbtn r" href="UnionsAndEnums.html">
+        <span class="pnlbl">Tiếp theo</span>
+        <span class="pntitle">Unions and Enums</span>
+      </a>
+    </div>
+
+  </div>
+
+  <!-- Table of Contents -->
+  <nav class="toc">
+    <div class="toc-title">Nội dung</div>
+    <ul>
+      <li><a href="#code-first">Code first</a></li>
+      <li><a href="#interface-resolvers">Interface resolvers</a></li>
+      <li><a href="#schema-first">Schema first</a></li>
+    </ul>
+  </nav>
+</div>
+
+<script>
+function cp(btn){var w=btn.closest('.cb');var p=w.querySelector('.tab-content.active pre')||w.querySelector('pre');if(!p)return;navigator.clipboard.writeText(p.textContent.trim()).then(function(){var o=btn.textContent;btn.textContent='Copied!';btn.style.color='#4ade80';setTimeout(function(){btn.textContent=o;btn.style.color=''},1500)})}
+function switchTab(btn,tab){var cb=btn.closest('.cb');cb.querySelectorAll('.tab-btn').forEach(function(b){b.classList.toggle('active',b===btn)});cb.querySelectorAll('.tab-content').forEach(function(c){c.classList.toggle('active',c.dataset.tab===tab)})}
+document.addEventListener('DOMContentLoaded',function(){var hs=document.querySelectorAll('h3[id]');var ls=document.querySelectorAll('.toc a');if(!hs.length)return;var obs=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){ls.forEach(function(l){l.classList.toggle('active',l.getAttribute('href')==='#'+e.target.id)})}})},{rootMargin:'-20% 0px -75% 0px'});hs.forEach(function(h){obs.observe(h)})})
+</script>
+</body>
+</html>

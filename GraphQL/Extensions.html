@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Extensions | GraphQL | NestJS - Tài liệu tiếng Việt</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root{--bg:#0e0e0e;--surface:#1a1a1a;--surface2:#222;--border:#2a2a2a;--border-l:#333;--red:#ea2845;--red-l:#ff4d6a;--red-glow:rgba(234,40,69,.15);--text:#e8e8e8;--muted:#888;--sec:#b0b0b0;--code-bg:#1e1e1e;--code-bd:#2d2d2d;--hint-bg:#0d2a1a;--hint-c:#4ade80;--warn-bg:#2a1a0d;--warn-c:#fb923c;--note-bg:#0d1a2a;--note-c:#60a0d0;--toc-w:220px;--font:'Inter',sans-serif;--mono:'Source Code Pro',monospace;--r:6px;--rl:10px}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+    body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:15px;line-height:1.78}
+    .page{max-width:1060px;margin:0 auto;padding:48px 32px 96px;display:flex;gap:56px;align-items:flex-start}.content{flex:1;min-width:0}
+    .toc{width:var(--toc-w);flex-shrink:0;position:sticky;top:32px;align-self:flex-start;max-height:calc(100vh - 48px);overflow-y:auto}
+    .toc::-webkit-scrollbar{width:3px}.toc::-webkit-scrollbar-thumb{background:var(--border-l);border-radius:2px}
+    .toc-title{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding-bottom:8px;margin-bottom:8px;border-bottom:1px solid var(--border)}
+    .toc ul{list-style:none}.toc ul li a{display:block;padding:3.5px 0;font-size:12.5px;color:var(--muted);text-decoration:none;line-height:1.5;transition:color .15s;cursor:pointer}
+    .toc ul li a:hover,.toc ul li a.active{color:var(--red-l)}
+    .vi-banner{display:flex;align-items:center;gap:10px;padding:11px 16px;border:1px solid rgba(234,40,69,.3);border-radius:var(--rl);background:linear-gradient(135deg,rgba(234,40,69,.1),rgba(234,40,69,.04));font-size:13px;color:var(--sec);margin-bottom:32px}.vi-banner strong{color:var(--red-l)}
+    h1{font-size:36px;font-weight:700;letter-spacing:-.5px;line-height:1.2;margin-bottom:6px}h1::after{content:'';display:block;width:44px;height:3px;background:var(--red);border-radius:2px;margin-top:12px}
+    h3{font-size:19px;font-weight:600;letter-spacing:-.2px;margin:40px 0 12px;display:flex;align-items:center;gap:8px;scroll-margin-top:80px}
+    h4{font-size:16px;font-weight:600;margin:28px 0 10px;color:var(--text)}
+    .anchor{font-size:14px;color:var(--muted);text-decoration:none;opacity:0;transition:opacity .2s}h3:hover .anchor{opacity:1}
+    p{color:var(--sec);line-height:1.82;margin-bottom:16px}p:last-child{margin-bottom:0}
+    a{color:var(--red-l);text-decoration:none}a:hover{text-decoration:underline}strong{color:var(--text);font-weight:600}
+    ul,ol{color:var(--sec);padding-left:22px;line-height:2.1;margin:16px 0}ul li,ol li{margin-bottom:6px}
+    code{font-family:var(--mono);font-size:13px;background:var(--code-bg);border:1px solid var(--code-bd);padding:1px 6px;border-radius:4px;color:#f9a8d4}
+    .hint,.warn,.note{margin:18px 0;padding:12px 16px;border-left:3px solid;border-radius:var(--r);font-size:13.5px;line-height:1.72}
+    .hint{background:var(--hint-bg);border-color:var(--hint-c);color:#a7f3d0}.warn{background:var(--warn-bg);border-color:var(--warn-c);color:#fed7aa}.note{background:var(--note-bg);border-color:var(--note-c);color:#bae6fd}
+    .hint p,.warn p,.note p{margin:0;color:inherit}.lbl{display:block;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
+    .hint .lbl{color:var(--hint-c)}.warn .lbl{color:var(--warn-c)}.note .lbl{color:var(--note-c)}
+    .cb{margin:18px 0;border:1px solid var(--code-bd);border-radius:var(--rl);overflow:hidden;background:var(--code-bg)}
+    .cb-head{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:#181818;border-bottom:1px solid var(--code-bd);min-height:38px}
+    .cb-fname{font-family:var(--mono);font-size:11.5px;color:var(--muted);display:flex;align-items:center;gap:6px}.cb-fname::before{content:'';display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--red)}
+    .cb-right{display:flex;align-items:center;gap:6px}
+    .tab-btn{padding:3px 10px;font-size:11px;font-family:var(--mono);background:transparent;border:1px solid var(--border-l);color:var(--muted);border-radius:4px;cursor:pointer;transition:all .14s}.tab-btn:hover{color:var(--text)}.tab-btn.active{background:var(--red);border-color:var(--red);color:#fff}
+    .tab-content{display:none}.tab-content.active{display:block}
+    .cpbtn{padding:3px 9px;font-size:10.5px;font-family:var(--mono);background:var(--surface);border:1px solid var(--border-l);color:var(--muted);border-radius:4px;cursor:pointer;transition:all .14s}.cpbtn:hover{background:var(--surface2);color:var(--text)}
+    pre{padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:13.5px;line-height:1.65;color:#abb2bf}pre::-webkit-scrollbar{height:5px}pre::-webkit-scrollbar-thumb{background:var(--border-l);border-radius:3px}
+    .kw{color:#c678dd}.fn{color:#61afef}.str{color:#98c379}.dec{color:#e5c07b}.typ{color:#e5c07b}.cm{color:#5c6370;font-style:italic}.pn{color:#abb2bf}.num{color:#d19a66}.cl{color:#e06c75}
+    table{width:100%;border-collapse:collapse;margin:18px 0;font-size:13.5px}th,td{padding:10px 14px;border:1px solid var(--border);text-align:left}th{background:var(--surface);color:var(--text);font-weight:600}td{color:var(--sec)}
+    .page-nav{display:flex;justify-content:space-between;margin-top:52px;gap:16px}.pnbtn{display:flex;flex-direction:column;padding:14px 18px;border:1px solid var(--border);border-radius:var(--rl);text-decoration:none;transition:all .2s;min-width:150px}.pnbtn:hover{border-color:var(--red);background:var(--red-glow);text-decoration:none}.pnlbl{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:3px}.pntitle{font-size:14px;font-weight:600;color:var(--text)}.pnbtn.r{text-align:right;margin-left:auto}
+    @media(max-width:860px){.toc{display:none}}@media(max-width:600px){.page{padding:24px 16px 64px}}
+  </style>
+</head>
+<body>
+<div class="page">
+  <div class="content">
+
+    <div class="vi-banner">
+      <span>&#127468;&#127483;</span>
+      <span>Tài liệu NestJS tiếng Việt &mdash; <strong>Extensions</strong> &middot; <a href="https://docs.nestjs.com/graphql/extensions" target="_blank">docs.nestjs.com/graphql/extensions</a></span>
+    </div>
+
+    <h1>Extensions</h1>
+
+    <div class="warn">
+      <span class="lbl">Cảnh báo</span>
+      <p>Chương này chỉ áp dụng cho cách tiếp cận code first.</p>
+    </div>
+
+    <p>Extensions là một <strong>tính năng nâng cao, cấp thấp</strong> cho phép bạn định nghĩa dữ liệu tùy ý trong cấu hình các type. Việc gắn custom metadata vào các field nhất định cho phép bạn tạo ra các giải pháp tổng quát và tinh vi hơn. Ví dụ, với extensions, bạn có thể định nghĩa các role cấp field cần thiết để truy cập các field cụ thể. Các role như vậy có thể được phản ánh tại runtime để xác định xem caller có đủ quyền để truy xuất một field cụ thể hay không.</p>
+
+    <!-- ================= ADDING CUSTOM METADATA ================= -->
+    <h3 id="adding-custom-metadata">Adding custom metadata <a class="anchor" href="#adding-custom-metadata">#</a></h3>
+
+    <p>Để gắn custom metadata cho một field, sử dụng decorator <code>@Extensions()</code> được export từ package <code>@nestjs/graphql</code>.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">TypeScript</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="dec">@Field</span><span class="pn">()</span>
+<span class="dec">@Extensions</span><span class="pn">({</span> role<span class="pn">:</span> <span class="cl">Role</span><span class="pn">.</span>ADMIN <span class="pn">})</span>
+password<span class="pn">:</span> <span class="typ">string</span><span class="pn">;</span></pre>
+    </div>
+
+    <p>Trong ví dụ trên, chúng ta đã gán property metadata <code>role</code> với giá trị <code>Role.ADMIN</code>. <code>Role</code> là một TypeScript enum đơn giản nhóm tất cả các user role có sẵn trong hệ thống của chúng ta.</p>
+
+    <p>Lưu ý, ngoài việc thiết lập metadata trên các field, bạn cũng có thể sử dụng decorator <code>@Extensions()</code> ở cấp class và cấp method (ví dụ, trên query handler).</p>
+
+    <!-- ================= USING CUSTOM METADATA ================= -->
+    <h3 id="using-custom-metadata">Using custom metadata <a class="anchor" href="#using-custom-metadata">#</a></h3>
+
+    <p>Logic tận dụng custom metadata có thể phức tạp tùy ý. Ví dụ, bạn có thể tạo một interceptor đơn giản lưu trữ/ghi log các sự kiện theo mỗi lần gọi method, hoặc một <a href="FieldMiddleware.html">field middleware</a> khớp các role cần thiết để truy xuất một field với quyền của caller (hệ thống quyền cấp field).</p>
+
+    <p>Để minh họa, hãy định nghĩa một <code>checkRoleMiddleware</code> so sánh role của người dùng (được hardcode ở đây) với role cần thiết để truy cập một field mục tiêu:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">TypeScript</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="kw">export const</span> checkRoleMiddleware<span class="pn">:</span> <span class="typ">FieldMiddleware</span> <span class="pn">=</span> <span class="kw">async</span> <span class="pn">(</span>
+  ctx<span class="pn">:</span> <span class="typ">MiddlewareContext</span><span class="pn">,</span>
+  next<span class="pn">:</span> <span class="typ">NextFn</span><span class="pn">,</span>
+<span class="pn">)</span> <span class="kw">=&gt;</span> <span class="pn">{</span>
+  <span class="kw">const</span> <span class="pn">{</span> info <span class="pn">}</span> <span class="pn">=</span> ctx<span class="pn">;</span>
+  <span class="kw">const</span> <span class="pn">{</span> extensions <span class="pn">}</span> <span class="pn">=</span> info<span class="pn">.</span>parentType<span class="pn">.</span><span class="fn">getFields</span><span class="pn">()[</span>info<span class="pn">.</span>fieldName<span class="pn">];</span>
+
+  <span class="cm">/**</span>
+<span class="cm">   * In a real-world application, the "userRole" variable</span>
+<span class="cm">   * should represent the caller's (user) role (for example, "ctx.user.role").</span>
+<span class="cm">   */</span>
+  <span class="kw">const</span> userRole <span class="pn">=</span> <span class="cl">Role</span><span class="pn">.</span>USER<span class="pn">;</span>
+  <span class="kw">if</span> <span class="pn">(</span>userRole <span class="pn">===</span> extensions<span class="pn">.</span>role<span class="pn">)</span> <span class="pn">{</span>
+    <span class="cm">// or just "return null" to ignore</span>
+    <span class="kw">throw new</span> <span class="cl">ForbiddenException</span><span class="pn">(</span>
+      <span class="str">`User does not have sufficient permissions to access "${info.fieldName}" field.`</span><span class="pn">,</span>
+    <span class="pn">);</span>
+  <span class="pn">}</span>
+  <span class="kw">return</span> <span class="fn">next</span><span class="pn">();</span>
+<span class="pn">};</span></pre>
+    </div>
+
+    <p>Với middleware này đã được thiết lập, chúng ta có thể đăng ký middleware cho field <code>password</code>, như sau:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">TypeScript</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="dec">@Field</span><span class="pn">({</span> middleware<span class="pn">:</span> <span class="pn">[</span>checkRoleMiddleware<span class="pn">]</span> <span class="pn">})</span>
+<span class="dec">@Extensions</span><span class="pn">({</span> role<span class="pn">:</span> <span class="cl">Role</span><span class="pn">.</span>ADMIN <span class="pn">})</span>
+password<span class="pn">:</span> <span class="typ">string</span><span class="pn">;</span></pre>
+    </div>
+
+    <!-- Page navigation -->
+    <div class="page-nav">
+      <a class="pnbtn" href="Complexity.html">
+        <span class="pnlbl">&laquo; Trước</span>
+        <span class="pntitle">Complexity</span>
+      </a>
+      <a class="pnbtn r" href="CLIPlugin.html">
+        <span class="pnlbl">Tiếp &raquo;</span>
+        <span class="pntitle">CLI Plugin</span>
+      </a>
+    </div>
+
+  </div>
+
+  <nav class="toc">
+    <div class="toc-title">Nội dung</div>
+    <ul>
+      <li><a href="#adding-custom-metadata">Adding custom metadata</a></li>
+      <li><a href="#using-custom-metadata">Using custom metadata</a></li>
+    </ul>
+  </nav>
+</div>
+
+<script>
+function cp(btn){var w=btn.closest('.cb');var p=w.querySelector('.tab-content.active pre')||w.querySelector('pre');if(!p)return;navigator.clipboard.writeText(p.textContent.trim()).then(function(){var o=btn.textContent;btn.textContent='Copied!';btn.style.color='#4ade80';setTimeout(function(){btn.textContent=o;btn.style.color=''},1500)})}
+function switchTab(btn,tab){var cb=btn.closest('.cb');cb.querySelectorAll('.tab-btn').forEach(function(b){b.classList.toggle('active',b===btn)});cb.querySelectorAll('.tab-content').forEach(function(c){c.classList.toggle('active',c.dataset.tab===tab)})}
+document.addEventListener('DOMContentLoaded',function(){var hs=document.querySelectorAll('h3[id]');var ls=document.querySelectorAll('.toc a');if(!hs.length)return;var obs=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){ls.forEach(function(l){l.classList.toggle('active',l.getAttribute('href')==='#'+e.target.id)})}})},{rootMargin:'-20% 0px -75% 0px'});hs.forEach(function(h){obs.observe(h)})})
+</script>
+</body>
+</html>

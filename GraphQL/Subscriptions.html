@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Subscriptions | GraphQL | NestJS - Tài liệu tiếng Việt</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Code+Pro:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0e0e0e;--surface:#1a1a1a;--surface2:#222;--border:#2a2a2a;--border-l:#333;--red:#ea2845;--red-l:#ff4d6a;--red-glow:rgba(234,40,69,.15);--text:#e8e8e8;--muted:#888;--sec:#b0b0b0;--code-bg:#1e1e1e;--code-bd:#2d2d2d;--hint-bg:#0d2a1a;--hint-c:#4ade80;--warn-bg:#2a1a0d;--warn-c:#fb923c;--note-bg:#0d1a2a;--note-c:#60a0d0;--toc-w:220px;--font:'Inter',sans-serif;--mono:'Source Code Pro',monospace;--r:6px;--rl:10px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:15px;line-height:1.78}
+.page{max-width:1060px;margin:0 auto;padding:48px 32px 96px;display:flex;gap:56px;align-items:flex-start}.content{flex:1;min-width:0}
+.toc{width:var(--toc-w);flex-shrink:0;position:sticky;top:32px;align-self:flex-start;max-height:calc(100vh - 48px);overflow-y:auto}
+.toc::-webkit-scrollbar{width:3px}.toc::-webkit-scrollbar-thumb{background:var(--border-l);border-radius:2px}
+.toc-title{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding-bottom:8px;margin-bottom:8px;border-bottom:1px solid var(--border)}
+.toc ul{list-style:none}.toc ul li a{display:block;padding:3.5px 0;font-size:12.5px;color:var(--muted);text-decoration:none;line-height:1.5;transition:color .15s;cursor:pointer}
+.toc ul li a:hover,.toc ul li a.active{color:var(--red-l)}
+.vi-banner{display:flex;align-items:center;gap:10px;padding:11px 16px;border:1px solid rgba(234,40,69,.3);border-radius:var(--rl);background:linear-gradient(135deg,rgba(234,40,69,.1),rgba(234,40,69,.04));font-size:13px;color:var(--sec);margin-bottom:32px}.vi-banner strong{color:var(--red-l)}
+h1{font-size:36px;font-weight:700;letter-spacing:-.5px;line-height:1.2;margin-bottom:6px}h1::after{content:'';display:block;width:44px;height:3px;background:var(--red);border-radius:2px;margin-top:12px}
+h3{font-size:19px;font-weight:600;letter-spacing:-.2px;margin:40px 0 12px;display:flex;align-items:center;gap:8px;scroll-margin-top:80px}
+h4{font-size:16px;font-weight:600;margin:28px 0 10px;color:var(--text)}
+.anchor{font-size:14px;color:var(--muted);text-decoration:none;opacity:0;transition:opacity .2s}h3:hover .anchor{opacity:1}
+p{color:var(--sec);line-height:1.82;margin-bottom:16px}p:last-child{margin-bottom:0}
+a{color:var(--red-l);text-decoration:none}a:hover{text-decoration:underline}strong{color:var(--text);font-weight:600}
+ul,ol{color:var(--sec);padding-left:22px;line-height:2.1;margin:16px 0}ul li,ol li{margin-bottom:6px}
+code{font-family:var(--mono);font-size:13px;background:var(--code-bg);border:1px solid var(--code-bd);padding:1px 6px;border-radius:4px;color:#f9a8d4}
+.hint,.warn,.note{margin:18px 0;padding:12px 16px;border-left:3px solid;border-radius:var(--r);font-size:13.5px;line-height:1.72}
+.hint{background:var(--hint-bg);border-color:var(--hint-c);color:#a7f3d0}.warn{background:var(--warn-bg);border-color:var(--warn-c);color:#fed7aa}.note{background:var(--note-bg);border-color:var(--note-c);color:#bae6fd}
+.hint p,.warn p,.note p{margin:0;color:inherit}.lbl{display:block;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
+.hint .lbl{color:var(--hint-c)}.warn .lbl{color:var(--warn-c)}.note .lbl{color:var(--note-c)}
+.cb{margin:18px 0;border:1px solid var(--code-bd);border-radius:var(--rl);overflow:hidden;background:var(--code-bg)}
+.cb-head{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:#181818;border-bottom:1px solid var(--code-bd);min-height:38px}
+.cb-fname{font-family:var(--mono);font-size:11.5px;color:var(--muted);display:flex;align-items:center;gap:6px}.cb-fname::before{content:'';display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--red)}
+.cb-right{display:flex;align-items:center;gap:6px}
+.tab-btn{padding:3px 10px;font-size:11px;font-family:var(--mono);background:transparent;border:1px solid var(--border-l);color:var(--muted);border-radius:4px;cursor:pointer;transition:all .14s}.tab-btn:hover{color:var(--text)}.tab-btn.active{background:var(--red);border-color:var(--red);color:#fff}
+.tab-content{display:none}.tab-content.active{display:block}
+.cpbtn{padding:3px 9px;font-size:10.5px;font-family:var(--mono);background:var(--surface);border:1px solid var(--border-l);color:var(--muted);border-radius:4px;cursor:pointer;transition:all .14s}.cpbtn:hover{background:var(--surface2);color:var(--text)}
+pre{padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:13.5px;line-height:1.65;color:#abb2bf}pre::-webkit-scrollbar{height:5px}pre::-webkit-scrollbar-thumb{background:var(--border-l);border-radius:3px}
+.kw{color:#c678dd}.fn{color:#61afef}.str{color:#98c379}.dec{color:#e5c07b}.typ{color:#e5c07b}.cm{color:#5c6370;font-style:italic}.pn{color:#abb2bf}.num{color:#d19a66}.cl{color:#e06c75}
+table{width:100%;border-collapse:collapse;margin:18px 0;font-size:13.5px}th,td{padding:10px 14px;border:1px solid var(--border);text-align:left}th{background:var(--surface);color:var(--text);font-weight:600}td{color:var(--sec)}
+.page-nav{display:flex;justify-content:space-between;margin-top:52px;gap:16px}.pnbtn{display:flex;flex-direction:column;padding:14px 18px;border:1px solid var(--border);border-radius:var(--rl);text-decoration:none;transition:all .2s;min-width:150px}.pnbtn:hover{border-color:var(--red);background:var(--red-glow);text-decoration:none}.pnlbl{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:3px}.pntitle{font-size:14px;font-weight:600;color:var(--text)}.pnbtn.r{text-align:right;margin-left:auto}
+@media(max-width:860px){.toc{display:none}}@media(max-width:600px){.page{padding:24px 16px 64px}}
+</style>
+</head>
+<body>
+<div class="page">
+<div class="content">
+
+<div class="vi-banner">
+  <strong>Bản dịch tiếng Việt</strong> — Tài liệu gốc: <a href="https://docs.nestjs.com/graphql/subscriptions" target="_blank">docs.nestjs.com/graphql/subscriptions</a>
+</div>
+
+<h1>Subscriptions</h1>
+
+<p>Ngoài việc lấy dữ liệu bằng query và thay đổi dữ liệu bằng mutation, đặc tả GraphQL còn hỗ trợ loại thao tác thứ ba, gọi là <code>subscription</code>. GraphQL subscriptions là cách đẩy dữ liệu từ server đến các client chọn lắng nghe các tin nhắn thời gian thực từ server. Subscriptions tương tự như queries ở chỗ chúng chỉ định một tập hợp các trường sẽ được gửi đến client, nhưng thay vì trả về ngay một câu trả lời duy nhất, một kênh được mở ra và kết quả được gửi đến client mỗi khi một sự kiện cụ thể xảy ra trên server.</p>
+
+<p>Một trường hợp sử dụng phổ biến của subscriptions là thông báo cho phía client về các sự kiện cụ thể, ví dụ việc tạo một đối tượng mới, cập nhật các trường, v.v. (đọc thêm <a href="https://www.apollographql.com/docs/react/data/subscriptions" target="_blank">tại đây</a>).</p>
+
+<!-- ============================================ -->
+<!-- APOLLO DRIVER SECTION -->
+<!-- ============================================ -->
+
+<h3 id="enable-subscriptions-apollo">Bật subscriptions với Apollo driver <a href="#enable-subscriptions-apollo" class="anchor">#</a></h3>
+
+<p>Để bật subscriptions, đặt thuộc tính <code>installSubscriptionHandlers</code> thành <code>true</code>.</p>
+
+<div class="cb"><div class="cb-head"><span></span><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="cl">GraphQLModule</span><span class="pn">.</span><span class="fn">forRoot</span><span class="pn">&lt;</span><span class="typ">ApolloDriverConfig</span><span class="pn">&gt;({</span>
+  <span class="fn">driver</span><span class="pn">:</span> <span class="cl">ApolloDriver</span><span class="pn">,</span>
+  <span class="fn">installSubscriptionHandlers</span><span class="pn">:</span> <span class="kw">true</span><span class="pn">,</span>
+<span class="pn">}),</span></pre></div>
+
+<div class="warn"><span class="lbl">Cảnh báo</span><p>Tùy chọn cấu hình <code>installSubscriptionHandlers</code> đã bị xóa khỏi phiên bản mới nhất của Apollo server và sẽ sớm bị deprecated trong package này. Mặc định, <code>installSubscriptionHandlers</code> sẽ fallback sử dụng <code>subscriptions-transport-ws</code> (<a href="https://github.com/apollographql/subscriptions-transport-ws" target="_blank">đọc thêm</a>) nhưng chúng tôi khuyến nghị mạnh mẽ sử dụng thư viện <code>graphql-ws</code> (<a href="https://github.com/enisdenjo/graphql-ws" target="_blank">đọc thêm</a>) thay thế.</p></div>
+
+<p>Để chuyển sang sử dụng package <code>graphql-ws</code>, hãy dùng cấu hình sau:</p>
+
+<div class="cb"><div class="cb-head"><span></span><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="cl">GraphQLModule</span><span class="pn">.</span><span class="fn">forRoot</span><span class="pn">&lt;</span><span class="typ">ApolloDriverConfig</span><span class="pn">&gt;({</span>
+  <span class="fn">driver</span><span class="pn">:</span> <span class="cl">ApolloDriver</span><span class="pn">,</span>
+  <span class="fn">subscriptions</span><span class="pn">: {</span>
+    <span class="str">'graphql-ws'</span><span class="pn">:</span> <span class="kw">true</span>
+  <span class="pn">},</span>
+<span class="pn">}),</span></pre></div>
+
+<div class="hint"><span class="lbl">Gợi ý</span><p>Bạn cũng có thể sử dụng cả hai package (<code>subscriptions-transport-ws</code> và <code>graphql-ws</code>) cùng lúc, ví dụ để tương thích ngược.</p></div>
+
+<!-- ============================================ -->
+<!-- CODE FIRST (APOLLO) -->
+<!-- ============================================ -->
+
+<h3 id="code-first">Code first <a href="#code-first" class="anchor">#</a></h3>
+
+<p>Để tạo một subscription sử dụng cách tiếp cận code first, chúng ta dùng decorator <code>@Subscription()</code> (được export từ package <code>@nestjs/graphql</code>) và class <code>PubSub</code> từ package <code>graphql-subscriptions</code>, cung cấp một <strong>publish/subscribe API</strong> đơn giản.</p>
+
+<p>Subscription handler sau đây đảm nhận việc <strong>subscribe</strong> vào một sự kiện bằng cách gọi <code>PubSub#asyncIterableIterator</code>. Phương thức này nhận một đối số duy nhất, <code>triggerName</code>, tương ứng với tên topic sự kiện.</p>
+
+<div class="cb"><div class="cb-head"><span></span><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">const</span> pubSub <span class="pn">=</span> <span class="kw">new</span> <span class="cl">PubSub</span><span class="pn">();</span>
+
+<span class="dec">@Resolver</span><span class="pn">(() =&gt;</span> <span class="cl">Author</span><span class="pn">)</span>
+<span class="kw">export class</span> <span class="cl">AuthorResolver</span> <span class="pn">{</span>
+  <span class="cm">// ...</span>
+  <span class="dec">@Subscription</span><span class="pn">(() =&gt;</span> <span class="cl">Comment</span><span class="pn">)</span>
+  <span class="fn">commentAdded</span><span class="pn">() {</span>
+    <span class="kw">return</span> pubSub<span class="pn">.</span><span class="fn">asyncIterableIterator</span><span class="pn">(</span><span class="str">'commentAdded'</span><span class="pn">);</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+
+<div class="hint"><span class="lbl">Gợi ý</span><p>Tất cả các decorator được export từ package <code>@nestjs/graphql</code>, trong khi class <code>PubSub</code> được export từ package <code>graphql-subscriptions</code>.</p></div>
+
+<div class="warn"><span class="lbl">Lưu ý</span><p><code>PubSub</code> là một class cung cấp <code>publish</code> và <code>subscribe API</code> đơn giản. Đọc thêm về nó <a href="https://www.apollographql.com/docs/graphql-subscriptions/setup.html" target="_blank">tại đây</a>. Lưu ý rằng tài liệu Apollo cảnh báo rằng triển khai mặc định không phù hợp cho production (đọc thêm <a href="https://github.com/apollographql/graphql-subscriptions#getting-started-with-your-first-subscription" target="_blank">tại đây</a>). Các ứng dụng production nên sử dụng triển khai <code>PubSub</code> được hỗ trợ bởi một store bên ngoài (đọc thêm <a href="https://github.com/apollographql/graphql-subscriptions#pubsub-implementations" target="_blank">tại đây</a>).</p></div>
+
+<p>Điều này sẽ tạo ra phần sau của GraphQL schema trong SDL:</p>
+
+<div class="cb"><div class="cb-head"><span></span><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">type</span> <span class="cl">Subscription</span> <span class="pn">{</span>
+  <span class="fn">commentAdded</span><span class="pn">():</span> <span class="typ">Comment!</span>
+<span class="pn">}</span></pre></div>
+
+<p>Lưu ý rằng subscriptions, theo định nghĩa, trả về một đối tượng với một thuộc tính cấp cao nhất duy nhất có key là tên của subscription. Tên này được kế thừa từ tên của phương thức subscription handler (tức là <code>commentAdded</code> ở trên), hoặc được cung cấp rõ ràng bằng cách truyền một option với key <code>name</code> làm đối số thứ hai cho decorator <code>@Subscription()</code>, như được hiển thị bên dưới.</p>
+
+<div class="cb"><div class="cb-head"><span></span><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@Subscription</span><span class="pn">(() =&gt;</span> <span class="cl">Comment</span><span class="pn">, {</span>
+  <span class="fn">name</span><span class="pn">:</span> <span class="str">'commentAdded'</span><span class="pn">,</span>
+<span class="pn">})</span>
+<span class="fn">subscribeToCommentAdded</span><span class="pn">() {</span>
+  <span class="kw">return</span> pubSub<span class="pn">.</span><span class="fn">asyncIterableIterator</span><span class="pn">(</span><span class="str">'commentAdded'</span><span class="pn">);</span>
+<span class="pn">}</span></pre></div>
+
+<p>Cấu trúc này tạo ra cùng một SDL như mẫu code trước đó, nhưng cho phép chúng ta tách rời tên phương thức khỏi subscription.</p>
+
+<!-- ============================================ -->
+<!-- PUBLISHING (APOLLO) -->
+<!-- ============================================ -->
+
+<h3 id="publishing">Publishing <a href="#publishing" class="anchor">#</a></h3>
+
+<p>Bây giờ, để publish sự kiện, chúng ta sử dụng phương thức <code>PubSub#publish</code>. Phương thức này thường được sử dụng trong một mutation để kích hoạt cập nhật phía client khi một phần của object graph đã thay đổi. Ví dụ:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">posts/posts.resolver</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@Mutation</span><span class="pn">(() =&gt;</span> <span class="cl">Comment</span><span class="pn">)</span>
+<span class="kw">async</span> <span class="fn">addComment</span><span class="pn">(</span>
+  <span class="dec">@Args</span><span class="pn">(</span><span class="str">'postId'</span><span class="pn">, {</span> <span class="fn">type</span><span class="pn">: () =&gt;</span> <span class="cl">Int</span> <span class="pn">})</span> postId<span class="pn">:</span> <span class="typ">number</span><span class="pn">,</span>
+  <span class="dec">@Args</span><span class="pn">(</span><span class="str">'comment'</span><span class="pn">, {</span> <span class="fn">type</span><span class="pn">: () =&gt;</span> <span class="cl">Comment</span> <span class="pn">})</span> comment<span class="pn">:</span> <span class="typ">CommentInput</span><span class="pn">,</span>
+<span class="pn">) {</span>
+  <span class="kw">const</span> newComment <span class="pn">=</span> <span class="kw">this</span><span class="pn">.</span>commentsService<span class="pn">.</span><span class="fn">addComment</span><span class="pn">({</span> <span class="fn">id</span><span class="pn">:</span> postId<span class="pn">,</span> comment <span class="pn">});</span>
+  pubSub<span class="pn">.</span><span class="fn">publish</span><span class="pn">(</span><span class="str">'commentAdded'</span><span class="pn">, {</span> <span class="fn">commentAdded</span><span class="pn">:</span> newComment <span class="pn">});</span>
+  <span class="kw">return</span> newComment<span class="pn">;</span>
+<span class="pn">}</span></pre></div>
+
+<p>Phương thức <code>PubSub#publish</code> nhận một <code>triggerName</code> (hãy nghĩ về nó như một tên topic sự kiện) làm tham số đầu tiên, và một event payload làm tham số thứ hai. Như đã đề cập, subscription, theo định nghĩa, trả về một giá trị và giá trị đó có một hình dạng. Hãy xem lại SDL được tạo cho subscription <code>commentAdded</code> của chúng ta:</p>
+
+<div class="cb"><div class="cb-head"><span></span><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">type</span> <span class="cl">Subscription</span> <span class="pn">{</span>
+  <span class="fn">commentAdded</span><span class="pn">():</span> <span class="typ">Comment!</span>
+<span class="pn">}</span></pre></div>
+
+<p>Điều này cho chúng ta biết rằng subscription phải trả về một đối tượng với tên thuộc tính cấp cao nhất là <code>commentAdded</code> có giá trị là một đối tượng <code>Comment</code>. Điểm quan trọng cần lưu ý là hình dạng của event payload được phát ra bởi phương thức <code>PubSub#publish</code> phải tương ứng với hình dạng của giá trị được mong đợi trả về từ subscription. Vì vậy, trong ví dụ trên, câu lệnh <code>pubSub.publish('commentAdded', { commentAdded: newComment })</code> publish một sự kiện <code>commentAdded</code> với payload có hình dạng phù hợp. Nếu các hình dạng này không khớp, subscription của bạn sẽ thất bại trong giai đoạn GraphQL validation.</p>
+
+<!-- ============================================ -->
+<!-- FILTERING SUBSCRIPTIONS (APOLLO) -->
+<!-- ============================================ -->
+
+<h3 id="filtering-subscriptions">Lọc subscriptions <a href="#filtering-subscriptions" class="anchor">#</a></h3>
+
+<p>Để lọc ra các sự kiện cụ thể, đặt thuộc tính <code>filter</code> thành một hàm lọc. Hàm này hoạt động tương tự như hàm được truyền cho <code>filter</code> của mảng. Nó nhận hai đối số: <code>payload</code> chứa event payload (như được gửi bởi event publisher), và <code>variables</code> nhận bất kỳ đối số nào được truyền vào trong quá trình subscription request. Nó trả về một boolean xác định liệu sự kiện này có nên được publish đến các client listener hay không.</p>
+
+<div class="cb"><div class="cb-head"><span></span><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@Subscription</span><span class="pn">(() =&gt;</span> <span class="cl">Comment</span><span class="pn">, {</span>
+  <span class="fn">filter</span><span class="pn">: (</span>payload<span class="pn">,</span> variables<span class="pn">) =&gt;</span>
+    payload<span class="pn">.</span>commentAdded<span class="pn">.</span>title <span class="pn">===</span> variables<span class="pn">.</span>title<span class="pn">,</span>
+<span class="pn">})</span>
+<span class="fn">commentAdded</span><span class="pn">(</span><span class="dec">@Args</span><span class="pn">(</span><span class="str">'title'</span><span class="pn">)</span> title<span class="pn">:</span> <span class="typ">string</span><span class="pn">) {</span>
+  <span class="kw">return</span> pubSub<span class="pn">.</span><span class="fn">asyncIterableIterator</span><span class="pn">(</span><span class="str">'commentAdded'</span><span class="pn">);</span>
+<span class="pn">}</span></pre></div>
+
+<!-- ============================================ -->
+<!-- MUTATING SUBSCRIPTION PAYLOADS -->
+<!-- ============================================ -->
+
+<h3 id="mutating-subscription-payloads">Thay đổi subscription payloads <a href="#mutating-subscription-payloads" class="anchor">#</a></h3>
+
+<p>Để thay đổi event payload đã publish, đặt thuộc tính <code>resolve</code> thành một hàm. Hàm này nhận event payload (như được gửi bởi event publisher) và trả về giá trị phù hợp.</p>
+
+<div class="cb"><div class="cb-head"><span></span><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@Subscription</span><span class="pn">(() =&gt;</span> <span class="cl">Comment</span><span class="pn">, {</span>
+  <span class="fn">resolve</span><span class="pn">:</span> value <span class="pn">=&gt;</span> value<span class="pn">,</span>
+<span class="pn">})</span>
+<span class="fn">commentAdded</span><span class="pn">() {</span>
+  <span class="kw">return</span> pubSub<span class="pn">.</span><span class="fn">asyncIterableIterator</span><span class="pn">(</span><span class="str">'commentAdded'</span><span class="pn">);</span>
+<span class="pn">}</span></pre></div>
+
+<div class="warn"><span class="lbl">Lưu ý</span><p>Nếu bạn sử dụng tùy chọn <code>resolve</code>, bạn nên trả về payload chưa được bọc (ví dụ, với ví dụ của chúng ta, trả về trực tiếp đối tượng <code>newComment</code>, không phải đối tượng <code>{ commentAdded: newComment }</code>).</p></div>
+
+<p>Nếu bạn cần truy cập các provider được inject (ví dụ sử dụng một service bên ngoài để validate dữ liệu), hãy sử dụng cấu trúc sau.</p>
+
+<div class="cb"><div class="cb-head"><span></span><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@Subscription</span><span class="pn">(() =&gt;</span> <span class="cl">Comment</span><span class="pn">, {</span>
+  <span class="fn">resolve</span><span class="pn">(</span><span class="kw">this</span><span class="pn">:</span> <span class="typ">AuthorResolver</span><span class="pn">,</span> value<span class="pn">) {</span>
+    <span class="cm">// "this" refers to an instance of "AuthorResolver"</span>
+    <span class="kw">return</span> value<span class="pn">;</span>
+  <span class="pn">}</span>
+<span class="pn">})</span>
+<span class="fn">commentAdded</span><span class="pn">() {</span>
+  <span class="kw">return</span> pubSub<span class="pn">.</span><span class="fn">asyncIterableIterator</span><span class="pn">(</span><span class="str">'commentAdded'</span><span class="pn">);</span>
+<span class="pn">}</span></pre></div>
+
+<p>Cấu trúc tương tự hoạt động với filters:</p>
+
+<div class="cb"><div class="cb-head"><span></span><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@Subscription</span><span class="pn">(() =&gt;</span> <span class="cl">Comment</span><span class="pn">, {</span>
+  <span class="fn">filter</span><span class="pn">(</span><span class="kw">this</span><span class="pn">:</span> <span class="typ">AuthorResolver</span><span class="pn">,</span> payload<span class="pn">,</span> variables<span class="pn">) {</span>
+    <span class="cm">// "this" refers to an instance of "AuthorResolver"</span>
+    <span class="kw">return</span> payload<span class="pn">.</span>commentAdded<span class="pn">.</span>title <span class="pn">===</span> variables<span class="pn">.</span>title<span class="pn">;</span>
+  <span class="pn">}</span>
+<span class="pn">})</span>
+<span class="fn">commentAdded</span><span class="pn">() {</span>
+  <span class="kw">return</span> pubSub<span class="pn">.</span><span class="fn">asyncIterableIterator</span><span class="pn">(</span><span class="str">'commentAdded'</span><span class="pn">);</span>
+<span class="pn">}</span></pre></div>
+
+<!-- ============================================ -->
+<!-- SCHEMA FIRST (APOLLO) -->
+<!-- ============================================ -->
+
+<h3 id="schema-first">Schema first <a href="#schema-first" class="anchor">#</a></h3>
+
+<p>Để tạo một subscription tương đương trong Nest, chúng ta sẽ sử dụng decorator <code>@Subscription()</code>.</p>
+
+<div class="cb"><div class="cb-head"><span></span><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">const</span> pubSub <span class="pn">=</span> <span class="kw">new</span> <span class="cl">PubSub</span><span class="pn">();</span>
+
+<span class="dec">@Resolver</span><span class="pn">(</span><span class="str">'Author'</span><span class="pn">)</span>
+<span class="kw">export class</span> <span class="cl">AuthorResolver</span> <span class="pn">{</span>
+  <span class="cm">// ...</span>
+  <span class="dec">@Subscription</span><span class="pn">()</span>
+  <span class="fn">commentAdded</span><span class="pn">() {</span>
+    <span class="kw">return</span> pubSub<span class="pn">.</span><span class="fn">asyncIterableIterator</span><span class="pn">(</span><span class="str">'commentAdded'</span><span class="pn">);</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+
+<p>Để lọc ra các sự kiện cụ thể dựa trên context và arguments, đặt thuộc tính <code>filter</code>.</p>
+
+<div class="cb"><div class="cb-head"><span></span><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@Subscription</span><span class="pn">(</span><span class="str">'commentAdded'</span><span class="pn">, {</span>
+  <span class="fn">filter</span><span class="pn">: (</span>payload<span class="pn">,</span> variables<span class="pn">) =&gt;</span>
+    payload<span class="pn">.</span>commentAdded<span class="pn">.</span>title <span class="pn">===</span> variables<span class="pn">.</span>title<span class="pn">,</span>
+<span class="pn">})</span>
+<span class="fn">commentAdded</span><span class="pn">() {</span>
+  <span class="kw">return</span> pubSub<span class="pn">.</span><span class="fn">asyncIterableIterator</span><span class="pn">(</span><span class="str">'commentAdded'</span><span class="pn">);</span>
+<span class="pn">}</span></pre></div>
+
+<p>Để thay đổi payload đã publish, chúng ta có thể sử dụng hàm <code>resolve</code>.</p>
+
+<div class="cb"><div class="cb-head"><span></span><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@Subscription</span><span class="pn">(</span><span class="str">'commentAdded'</span><span class="pn">, {</span>
+  <span class="fn">resolve</span><span class="pn">:</span> value <span class="pn">=&gt;</span> value<span class="pn">,</span>
+<span class="pn">})</span>
+<span class="fn">commentAdded</span><span class="pn">() {</span>
+  <span class="kw">return</span> pubSub<span class="pn">.</span><span class="fn">asyncIterableIterator</span><span class="pn">(</span><span class="str">'commentAdded'</span><span class="pn">);</span>
+<span class="pn">}</span></pre></div>
+
+<p>Nếu bạn cần truy cập các provider được inject (ví dụ sử dụng một service bên ngoài để validate dữ liệu), hãy sử dụng cấu trúc sau:</p>
+
+<div class="cb"><div class="cb-head"><span></span><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@Subscription</span><span class="pn">(</span><span class="str">'commentAdded'</span><span class="pn">, {</span>
+  <span class="fn">resolve</span><span class="pn">(</span><span class="kw">this</span><span class="pn">:</span> <span class="typ">AuthorResolver</span><span class="pn">,</span> value<span class="pn">) {</span>
+    <span class="cm">// "this" refers to an instance of "AuthorResolver"</span>
+    <span class="kw">return</span> value<span class="pn">;</span>
+  <span class="pn">}</span>
+<span class="pn">})</span>
+<span class="fn">commentAdded</span><span class="pn">() {</span>
+  <span class="kw">return</span> pubSub<span class="pn">.</span><span class="fn">asyncIterableIterator</span><span class="pn">(</span><span class="str">'commentAdded'</span><span class="pn">);</span>
+<span class="pn">}</span></pre></div>
+
+<p>Cấu trúc tương tự hoạt động với filters:</p>
+
+<div class="cb"><div class="cb-head"><span></span><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@Subscription</span><span class="pn">(</span><span class="str">'commentAdded'</span><span class="pn">, {</span>
+  <span class="fn">filter</span><span class="pn">(</span><span class="kw">this</span><span class="pn">:</span> <span class="typ">AuthorResolver</span><span class="pn">,</span> payload<span class="pn">,</span> variables<span class="pn">) {</span>
+    <span class="cm">// "this" refers to an instance of "AuthorResolver"</span>
+    <span class="kw">return</span> payload<span class="pn">.</span>commentAdded<span class="pn">.</span>title <span class="pn">===</span> variables<span class="pn">.</span>title<span class="pn">;</span>
+  <span class="pn">}</span>
+<span class="pn">})</span>
+<span class="fn">commentAdded</span><span class="pn">() {</span>
+  <span class="kw">return</span> pubSub<span class="pn">.</span><span class="fn">asyncIterableIterator</span><span class="pn">(</span><span class="str">'commentAdded'</span><span class="pn">);</span>
+<span class="pn">}</span></pre></div>
+
+<p>Bước cuối cùng là cập nhật file type definitions.</p>
+
+<div class="cb"><div class="cb-head"><span></span><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">type</span> <span class="cl">Author</span> <span class="pn">{</span>
+  id<span class="pn">:</span> <span class="typ">Int!</span>
+  firstName<span class="pn">:</span> <span class="typ">String</span>
+  lastName<span class="pn">:</span> <span class="typ">String</span>
+  posts<span class="pn">: [</span><span class="typ">Post</span><span class="pn">]</span>
+<span class="pn">}</span>
+
+<span class="kw">type</span> <span class="cl">Post</span> <span class="pn">{</span>
+  id<span class="pn">:</span> <span class="typ">Int!</span>
+  title<span class="pn">:</span> <span class="typ">String</span>
+  votes<span class="pn">:</span> <span class="typ">Int</span>
+<span class="pn">}</span>
+
+<span class="kw">type</span> <span class="cl">Query</span> <span class="pn">{</span>
+  <span class="fn">author</span><span class="pn">(</span>id<span class="pn">:</span> <span class="typ">Int!</span><span class="pn">):</span> <span class="typ">Author</span>
+<span class="pn">}</span>
+
+<span class="kw">type</span> <span class="cl">Comment</span> <span class="pn">{</span>
+  id<span class="pn">:</span> <span class="typ">String</span>
+  content<span class="pn">:</span> <span class="typ">String</span>
+<span class="pn">}</span>
+
+<span class="kw">type</span> <span class="cl">Subscription</span> <span class="pn">{</span>
+  <span class="fn">commentAdded</span><span class="pn">(</span>title<span class="pn">:</span> <span class="typ">String!</span><span class="pn">):</span> <span class="typ">Comment</span>
+<span class="pn">}</span></pre></div>
+
+<p>Với điều này, chúng ta đã tạo một subscription <code>commentAdded(title: String!): Comment</code> duy nhất. Bạn có thể tìm thấy một triển khai mẫu đầy đủ <a href="https://github.com/nestjs/nest/blob/master/sample/12-graphql-schema-first" target="_blank">tại đây</a>.</p>
+
+<!-- ============================================ -->
+<!-- PUBSUB (APOLLO) -->
+<!-- ============================================ -->
+
+<h3 id="pubsub">PubSub <a href="#pubsub" class="anchor">#</a></h3>
+
+<p>Chúng ta đã khởi tạo một instance <code>PubSub</code> local ở trên. Cách tiếp cận được ưu tiên là định nghĩa <code>PubSub</code> như một <a href="/fundamentals/custom-providers">provider</a> và inject nó thông qua constructor (sử dụng decorator <code>@Inject()</code>). Điều này cho phép chúng ta tái sử dụng instance trên toàn bộ ứng dụng. Ví dụ, định nghĩa một provider như sau, sau đó inject <code>'PUB_SUB'</code> ở nơi cần thiết.</p>
+
+<div class="cb"><div class="cb-head"><span></span><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="pn">{</span>
+  <span class="fn">provide</span><span class="pn">:</span> <span class="str">'PUB_SUB'</span><span class="pn">,</span>
+  <span class="fn">useValue</span><span class="pn">:</span> <span class="kw">new</span> <span class="cl">PubSub</span><span class="pn">(),</span>
+<span class="pn">}</span></pre></div>
+
+<!-- ============================================ -->
+<!-- CUSTOMIZE SUBSCRIPTIONS SERVER -->
+<!-- ============================================ -->
+
+<h3 id="customize-subscriptions-server">Tùy chỉnh subscriptions server <a href="#customize-subscriptions-server" class="anchor">#</a></h3>
+
+<p>Để tùy chỉnh subscriptions server (ví dụ thay đổi path), sử dụng thuộc tính tùy chọn <code>subscriptions</code>.</p>
+
+<div class="cb"><div class="cb-head"><span></span><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="cl">GraphQLModule</span><span class="pn">.</span><span class="fn">forRoot</span><span class="pn">&lt;</span><span class="typ">ApolloDriverConfig</span><span class="pn">&gt;({</span>
+  <span class="fn">driver</span><span class="pn">:</span> <span class="cl">ApolloDriver</span><span class="pn">,</span>
+  <span class="fn">subscriptions</span><span class="pn">: {</span>
+    <span class="str">'subscriptions-transport-ws'</span><span class="pn">: {</span>
+      <span class="fn">path</span><span class="pn">:</span> <span class="str">'/graphql'</span>
+    <span class="pn">},</span>
+  <span class="pn">}</span>
+<span class="pn">}),</span></pre></div>
+
+<p>Nếu bạn đang sử dụng package <code>graphql-ws</code> cho subscriptions, hãy thay thế key <code>subscriptions-transport-ws</code> bằng <code>graphql-ws</code>, như sau:</p>
+
+<div class="cb"><div class="cb-head"><span></span><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="cl">GraphQLModule</span><span class="pn">.</span><span class="fn">forRoot</span><span class="pn">&lt;</span><span class="typ">ApolloDriverConfig</span><span class="pn">&gt;({</span>
+  <span class="fn">driver</span><span class="pn">:</span> <span class="cl">ApolloDriver</span><span class="pn">,</span>
+  <span class="fn">subscriptions</span><span class="pn">: {</span>
+    <span class="str">'graphql-ws'</span><span class="pn">: {</span>
+      <span class="fn">path</span><span class="pn">:</span> <span class="str">'/graphql'</span>
+    <span class="pn">},</span>
+  <span class="pn">}</span>
+<span class="pn">}),</span></pre></div>
+
+<!-- ============================================ -->
+<!-- AUTHENTICATION OVER WEBSOCKETS (APOLLO) -->
+<!-- ============================================ -->
+
+<h3 id="authentication-over-websockets">Xác thực qua WebSockets <a href="#authentication-over-websockets" class="anchor">#</a></h3>
+
+<p>Kiểm tra xem người dùng đã được xác thực hay chưa có thể được thực hiện bên trong hàm callback <code>onConnect</code> mà bạn có thể chỉ định trong tùy chọn <code>subscriptions</code>.</p>
+
+<p><code>onConnect</code> sẽ nhận <code>connectionParams</code> được truyền đến <code>SubscriptionClient</code> làm đối số đầu tiên (đọc <a href="https://www.apollographql.com/docs/react/data/subscriptions/#5-authenticate-over-websocket-optional" target="_blank">thêm</a>).</p>
+
+<div class="cb"><div class="cb-head"><span></span><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="cl">GraphQLModule</span><span class="pn">.</span><span class="fn">forRoot</span><span class="pn">&lt;</span><span class="typ">ApolloDriverConfig</span><span class="pn">&gt;({</span>
+  <span class="fn">driver</span><span class="pn">:</span> <span class="cl">ApolloDriver</span><span class="pn">,</span>
+  <span class="fn">subscriptions</span><span class="pn">: {</span>
+    <span class="str">'subscriptions-transport-ws'</span><span class="pn">: {</span>
+      <span class="fn">onConnect</span><span class="pn">: (</span>connectionParams<span class="pn">) =&gt; {</span>
+        <span class="kw">const</span> authToken <span class="pn">=</span> connectionParams<span class="pn">.</span>authToken<span class="pn">;</span>
+        <span class="kw">if</span> <span class="pn">(!</span><span class="fn">isValid</span><span class="pn">(</span>authToken<span class="pn">)) {</span>
+          <span class="kw">throw new</span> <span class="cl">Error</span><span class="pn">(</span><span class="str">'Token is not valid'</span><span class="pn">);</span>
+        <span class="pn">}</span>
+        <span class="cm">// extract user information from token</span>
+        <span class="kw">const</span> user <span class="pn">=</span> <span class="fn">parseToken</span><span class="pn">(</span>authToken<span class="pn">);</span>
+        <span class="cm">// return user info to add them to the context later</span>
+        <span class="kw">return</span> <span class="pn">{</span> user <span class="pn">};</span>
+      <span class="pn">},</span>
+    <span class="pn">}</span>
+  <span class="pn">},</span>
+  <span class="fn">context</span><span class="pn">: ({</span> connection <span class="pn">}) =&gt; {</span>
+    <span class="cm">// connection.context will be equal to what was returned by the "onConnect" callback</span>
+  <span class="pn">},</span>
+<span class="pn">}),</span></pre></div>
+
+<p><code>authToken</code> trong ví dụ này chỉ được client gửi một lần, khi kết nối lần đầu được thiết lập. Tất cả các subscriptions được thực hiện với kết nối này sẽ có cùng <code>authToken</code>, và do đó cùng thông tin user.</p>
+
+<div class="warn"><span class="lbl">Lưu ý</span><p>Có một bug trong <code>subscriptions-transport-ws</code> cho phép các kết nối bỏ qua giai đoạn <code>onConnect</code> (đọc <a href="https://github.com/apollographql/subscriptions-transport-ws/issues/349" target="_blank">thêm</a>). Bạn không nên giả định rằng <code>onConnect</code> đã được gọi khi người dùng bắt đầu một subscription, và luôn kiểm tra rằng <code>context</code> đã được điền đầy đủ.</p></div>
+
+<p>Nếu bạn đang sử dụng package <code>graphql-ws</code>, chữ ký của callback <code>onConnect</code> sẽ hơi khác:</p>
+
+<div class="cb"><div class="cb-head"><span></span><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="cl">GraphQLModule</span><span class="pn">.</span><span class="fn">forRoot</span><span class="pn">&lt;</span><span class="typ">ApolloDriverConfig</span><span class="pn">&gt;({</span>
+  <span class="fn">driver</span><span class="pn">:</span> <span class="cl">ApolloDriver</span><span class="pn">,</span>
+  <span class="fn">subscriptions</span><span class="pn">: {</span>
+    <span class="str">'graphql-ws'</span><span class="pn">: {</span>
+      <span class="fn">onConnect</span><span class="pn">: (</span>context<span class="pn">:</span> <span class="typ">Context</span><span class="pn">&lt;</span><span class="typ">any</span><span class="pn">&gt;) =&gt; {</span>
+        <span class="kw">const</span> <span class="pn">{</span> connectionParams<span class="pn">,</span> extra <span class="pn">} =</span> context<span class="pn">;</span>
+        <span class="cm">// user validation will remain the same as in the example above</span>
+        <span class="cm">// when using with graphql-ws, additional context value should be stored in the extra field</span>
+        extra<span class="pn">.</span>user <span class="pn">= {</span> <span class="fn">user</span><span class="pn">: {} };</span>
+      <span class="pn">},</span>
+    <span class="pn">},</span>
+  <span class="pn">},</span>
+  <span class="fn">context</span><span class="pn">: ({</span> extra <span class="pn">}) =&gt; {</span>
+    <span class="cm">// you can now access your additional context value through the extra field</span>
+  <span class="pn">},</span>
+<span class="pn">});</span></pre></div>
+
+<!-- ============================================ -->
+<!-- MERCURIUS DRIVER SECTION -->
+<!-- ============================================ -->
+
+<h3 id="enable-subscriptions-mercurius">Bật subscriptions với Mercurius driver <a href="#enable-subscriptions-mercurius" class="anchor">#</a></h3>
+
+<p>Để bật subscriptions, đặt thuộc tính <code>subscription</code> thành <code>true</code>.</p>
+
+<div class="cb"><div class="cb-head"><span></span><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="cl">GraphQLModule</span><span class="pn">.</span><span class="fn">forRoot</span><span class="pn">&lt;</span><span class="typ">MercuriusDriverConfig</span><span class="pn">&gt;({</span>
+  <span class="fn">driver</span><span class="pn">:</span> <span class="cl">MercuriusDriver</span><span class="pn">,</span>
+  <span class="fn">subscription</span><span class="pn">:</span> <span class="kw">true</span><span class="pn">,</span>
+<span class="pn">}),</span></pre></div>
+
+<div class="hint"><span class="lbl">Gợi ý</span><p>Bạn cũng có thể truyền đối tượng options để thiết lập emitter tùy chỉnh, validate các kết nối đến, v.v. Đọc thêm <a href="https://github.com/mercurius-js/mercurius/blob/master/docs/api/options.md#plugin-options" target="_blank">tại đây</a> (xem <code>subscription</code>).</p></div>
+
+<!-- ============================================ -->
+<!-- CODE FIRST (MERCURIUS) -->
+<!-- ============================================ -->
+
+<h3 id="code-first-mercurius">Code first <a href="#code-first-mercurius" class="anchor">#</a></h3>
+
+<p>Để tạo một subscription sử dụng cách tiếp cận code first, chúng ta dùng decorator <code>@Subscription()</code> (được export từ package <code>@nestjs/graphql</code>) và class <code>PubSub</code> từ package <code>mercurius</code>, cung cấp một <strong>publish/subscribe API</strong> đơn giản.</p>
+
+<p>Subscription handler sau đây đảm nhận việc <strong>subscribe</strong> vào một sự kiện bằng cách gọi <code>PubSub#asyncIterableIterator</code>. Phương thức này nhận một đối số duy nhất, <code>triggerName</code>, tương ứng với tên topic sự kiện.</p>
+
+<div class="cb"><div class="cb-head"><span></span><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@Resolver</span><span class="pn">(() =&gt;</span> <span class="cl">Author</span><span class="pn">)</span>
+<span class="kw">export class</span> <span class="cl">AuthorResolver</span> <span class="pn">{</span>
+  <span class="cm">// ...</span>
+  <span class="dec">@Subscription</span><span class="pn">(() =&gt;</span> <span class="cl">Comment</span><span class="pn">)</span>
+  <span class="fn">commentAdded</span><span class="pn">(</span><span class="dec">@Context</span><span class="pn">(</span><span class="str">'pubsub'</span><span class="pn">)</span> pubSub<span class="pn">:</span> <span class="typ">PubSub</span><span class="pn">) {</span>
+    <span class="kw">return</span> pubSub<span class="pn">.</span><span class="fn">subscribe</span><span class="pn">(</span><span class="str">'commentAdded'</span><span class="pn">);</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+
+<div class="hint"><span class="lbl">Gợi ý</span><p>Tất cả các decorator được sử dụng trong ví dụ trên được export từ package <code>@nestjs/graphql</code>, trong khi class <code>PubSub</code> được export từ package <code>mercurius</code>.</p></div>
+
+<div class="warn"><span class="lbl">Lưu ý</span><p><code>PubSub</code> là một class cung cấp <code>publish</code> và <code>subscribe</code> API đơn giản. Xem <a href="https://github.com/mercurius-js/mercurius/blob/master/docs/subscriptions.md#subscriptions-with-custom-pubsub" target="_blank">phần này</a> về cách đăng ký class <code>PubSub</code> tùy chỉnh.</p></div>
+
+<p>Điều này sẽ tạo ra phần sau của GraphQL schema trong SDL:</p>
+
+<div class="cb"><div class="cb-head"><span></span><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">type</span> <span class="cl">Subscription</span> <span class="pn">{</span>
+  <span class="fn">commentAdded</span><span class="pn">():</span> <span class="typ">Comment!</span>
+<span class="pn">}</span></pre></div>
+
+<p>Lưu ý rằng subscriptions, theo định nghĩa, trả về một đối tượng với một thuộc tính cấp cao nhất duy nhất có key là tên của subscription. Tên này được kế thừa từ tên của phương thức subscription handler (tức là <code>commentAdded</code> ở trên), hoặc được cung cấp rõ ràng bằng cách truyền một option với key <code>name</code> làm đối số thứ hai cho decorator <code>@Subscription()</code>, như được hiển thị bên dưới.</p>
+
+<div class="cb"><div class="cb-head"><span></span><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@Subscription</span><span class="pn">(() =&gt;</span> <span class="cl">Comment</span><span class="pn">, {</span>
+  <span class="fn">name</span><span class="pn">:</span> <span class="str">'commentAdded'</span><span class="pn">,</span>
+<span class="pn">})</span>
+<span class="fn">subscribeToCommentAdded</span><span class="pn">(</span><span class="dec">@Context</span><span class="pn">(</span><span class="str">'pubsub'</span><span class="pn">)</span> pubSub<span class="pn">:</span> <span class="typ">PubSub</span><span class="pn">) {</span>
+  <span class="kw">return</span> pubSub<span class="pn">.</span><span class="fn">subscribe</span><span class="pn">(</span><span class="str">'commentAdded'</span><span class="pn">);</span>
+<span class="pn">}</span></pre></div>
+
+<p>Cấu trúc này tạo ra cùng một SDL như mẫu code trước đó, nhưng cho phép chúng ta tách rời tên phương thức khỏi subscription.</p>
+
+<!-- ============================================ -->
+<!-- PUBLISHING (MERCURIUS) -->
+<!-- ============================================ -->
+
+<h3 id="publishing-mercurius">Publishing <a href="#publishing-mercurius" class="anchor">#</a></h3>
+
+<p>Bây giờ, để publish sự kiện, chúng ta sử dụng phương thức <code>PubSub#publish</code>. Phương thức này thường được sử dụng trong một mutation để kích hoạt cập nhật phía client khi một phần của object graph đã thay đổi. Ví dụ:</p>
+
+<div class="cb"><div class="cb-head"><div class="cb-fname">posts/posts.resolver</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@Mutation</span><span class="pn">(() =&gt;</span> <span class="cl">Comment</span><span class="pn">)</span>
+<span class="kw">async</span> <span class="fn">addComment</span><span class="pn">(</span>
+  <span class="dec">@Args</span><span class="pn">(</span><span class="str">'postId'</span><span class="pn">, {</span> <span class="fn">type</span><span class="pn">: () =&gt;</span> <span class="cl">Int</span> <span class="pn">})</span> postId<span class="pn">:</span> <span class="typ">number</span><span class="pn">,</span>
+  <span class="dec">@Args</span><span class="pn">(</span><span class="str">'comment'</span><span class="pn">, {</span> <span class="fn">type</span><span class="pn">: () =&gt;</span> <span class="cl">Comment</span> <span class="pn">})</span> comment<span class="pn">:</span> <span class="typ">CommentInput</span><span class="pn">,</span>
+  <span class="dec">@Context</span><span class="pn">(</span><span class="str">'pubsub'</span><span class="pn">)</span> pubSub<span class="pn">:</span> <span class="typ">PubSub</span><span class="pn">,</span>
+<span class="pn">) {</span>
+  <span class="kw">const</span> newComment <span class="pn">=</span> <span class="kw">this</span><span class="pn">.</span>commentsService<span class="pn">.</span><span class="fn">addComment</span><span class="pn">({</span> <span class="fn">id</span><span class="pn">:</span> postId<span class="pn">,</span> comment <span class="pn">});</span>
+  <span class="kw">await</span> pubSub<span class="pn">.</span><span class="fn">publish</span><span class="pn">({</span>
+    <span class="fn">topic</span><span class="pn">:</span> <span class="str">'commentAdded'</span><span class="pn">,</span>
+    <span class="fn">payload</span><span class="pn">: {</span>
+      <span class="fn">commentAdded</span><span class="pn">:</span> newComment
+    <span class="pn">}</span>
+  <span class="pn">});</span>
+  <span class="kw">return</span> newComment<span class="pn">;</span>
+<span class="pn">}</span></pre></div>
+
+<p>Như đã đề cập, subscription, theo định nghĩa, trả về một giá trị và giá trị đó có một hình dạng. Hãy xem lại SDL được tạo cho subscription <code>commentAdded</code> của chúng ta:</p>
+
+<div class="cb"><div class="cb-head"><span></span><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">type</span> <span class="cl">Subscription</span> <span class="pn">{</span>
+  <span class="fn">commentAdded</span><span class="pn">():</span> <span class="typ">Comment!</span>
+<span class="pn">}</span></pre></div>
+
+<p>Điều này cho chúng ta biết rằng subscription phải trả về một đối tượng với tên thuộc tính cấp cao nhất là <code>commentAdded</code> có giá trị là một đối tượng <code>Comment</code>. Điểm quan trọng cần lưu ý là hình dạng của event payload được phát ra bởi phương thức <code>PubSub#publish</code> phải tương ứng với hình dạng của giá trị được mong đợi trả về từ subscription. Vì vậy, trong ví dụ trên, câu lệnh <code>pubSub.publish({ topic: 'commentAdded', payload: { commentAdded: newComment } })</code> publish một sự kiện <code>commentAdded</code> với payload có hình dạng phù hợp. Nếu các hình dạng này không khớp, subscription của bạn sẽ thất bại trong giai đoạn GraphQL validation.</p>
+
+<!-- ============================================ -->
+<!-- FILTERING SUBSCRIPTIONS (MERCURIUS) -->
+<!-- ============================================ -->
+
+<h3 id="filtering-subscriptions-mercurius">Lọc subscriptions <a href="#filtering-subscriptions-mercurius" class="anchor">#</a></h3>
+
+<p>Để lọc ra các sự kiện cụ thể, đặt thuộc tính <code>filter</code> thành một hàm lọc. Hàm này hoạt động tương tự như hàm được truyền cho <code>filter</code> của mảng. Nó nhận hai đối số: <code>payload</code> chứa event payload (như được gửi bởi event publisher), và <code>variables</code> nhận bất kỳ đối số nào được truyền vào trong quá trình subscription request. Nó trả về một boolean xác định liệu sự kiện này có nên được publish đến các client listener hay không.</p>
+
+<div class="cb"><div class="cb-head"><span></span><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@Subscription</span><span class="pn">(() =&gt;</span> <span class="cl">Comment</span><span class="pn">, {</span>
+  <span class="fn">filter</span><span class="pn">: (</span>payload<span class="pn">,</span> variables<span class="pn">) =&gt;</span>
+    payload<span class="pn">.</span>commentAdded<span class="pn">.</span>title <span class="pn">===</span> variables<span class="pn">.</span>title<span class="pn">,</span>
+<span class="pn">})</span>
+<span class="fn">commentAdded</span><span class="pn">(</span><span class="dec">@Args</span><span class="pn">(</span><span class="str">'title'</span><span class="pn">)</span> title<span class="pn">:</span> <span class="typ">string</span><span class="pn">,</span> <span class="dec">@Context</span><span class="pn">(</span><span class="str">'pubsub'</span><span class="pn">)</span> pubSub<span class="pn">:</span> <span class="typ">PubSub</span><span class="pn">) {</span>
+  <span class="kw">return</span> pubSub<span class="pn">.</span><span class="fn">subscribe</span><span class="pn">(</span><span class="str">'commentAdded'</span><span class="pn">);</span>
+<span class="pn">}</span></pre></div>
+
+<p>Nếu bạn cần truy cập các provider được inject (ví dụ sử dụng một service bên ngoài để validate dữ liệu), hãy sử dụng cấu trúc sau.</p>
+
+<div class="cb"><div class="cb-head"><span></span><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@Subscription</span><span class="pn">(() =&gt;</span> <span class="cl">Comment</span><span class="pn">, {</span>
+  <span class="fn">filter</span><span class="pn">(</span><span class="kw">this</span><span class="pn">:</span> <span class="typ">AuthorResolver</span><span class="pn">,</span> payload<span class="pn">,</span> variables<span class="pn">) {</span>
+    <span class="cm">// "this" refers to an instance of "AuthorResolver"</span>
+    <span class="kw">return</span> payload<span class="pn">.</span>commentAdded<span class="pn">.</span>title <span class="pn">===</span> variables<span class="pn">.</span>title<span class="pn">;</span>
+  <span class="pn">}</span>
+<span class="pn">})</span>
+<span class="fn">commentAdded</span><span class="pn">(</span><span class="dec">@Args</span><span class="pn">(</span><span class="str">'title'</span><span class="pn">)</span> title<span class="pn">:</span> <span class="typ">string</span><span class="pn">,</span> <span class="dec">@Context</span><span class="pn">(</span><span class="str">'pubsub'</span><span class="pn">)</span> pubSub<span class="pn">:</span> <span class="typ">PubSub</span><span class="pn">) {</span>
+  <span class="kw">return</span> pubSub<span class="pn">.</span><span class="fn">subscribe</span><span class="pn">(</span><span class="str">'commentAdded'</span><span class="pn">);</span>
+<span class="pn">}</span></pre></div>
+
+<!-- ============================================ -->
+<!-- SCHEMA FIRST (MERCURIUS) -->
+<!-- ============================================ -->
+
+<h3 id="schema-first-mercurius">Schema first <a href="#schema-first-mercurius" class="anchor">#</a></h3>
+
+<p>Để tạo một subscription tương đương trong Nest, chúng ta sẽ sử dụng decorator <code>@Subscription()</code>.</p>
+
+<div class="cb"><div class="cb-head"><span></span><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">const</span> pubSub <span class="pn">=</span> <span class="kw">new</span> <span class="cl">PubSub</span><span class="pn">();</span>
+
+<span class="dec">@Resolver</span><span class="pn">(</span><span class="str">'Author'</span><span class="pn">)</span>
+<span class="kw">export class</span> <span class="cl">AuthorResolver</span> <span class="pn">{</span>
+  <span class="cm">// ...</span>
+  <span class="dec">@Subscription</span><span class="pn">()</span>
+  <span class="fn">commentAdded</span><span class="pn">(</span><span class="dec">@Context</span><span class="pn">(</span><span class="str">'pubsub'</span><span class="pn">)</span> pubSub<span class="pn">:</span> <span class="typ">PubSub</span><span class="pn">) {</span>
+    <span class="kw">return</span> pubSub<span class="pn">.</span><span class="fn">subscribe</span><span class="pn">(</span><span class="str">'commentAdded'</span><span class="pn">);</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre></div>
+
+<p>Để lọc ra các sự kiện cụ thể dựa trên context và arguments, đặt thuộc tính <code>filter</code>.</p>
+
+<div class="cb"><div class="cb-head"><span></span><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@Subscription</span><span class="pn">(</span><span class="str">'commentAdded'</span><span class="pn">, {</span>
+  <span class="fn">filter</span><span class="pn">: (</span>payload<span class="pn">,</span> variables<span class="pn">) =&gt;</span>
+    payload<span class="pn">.</span>commentAdded<span class="pn">.</span>title <span class="pn">===</span> variables<span class="pn">.</span>title<span class="pn">,</span>
+<span class="pn">})</span>
+<span class="fn">commentAdded</span><span class="pn">(</span><span class="dec">@Context</span><span class="pn">(</span><span class="str">'pubsub'</span><span class="pn">)</span> pubSub<span class="pn">:</span> <span class="typ">PubSub</span><span class="pn">) {</span>
+  <span class="kw">return</span> pubSub<span class="pn">.</span><span class="fn">subscribe</span><span class="pn">(</span><span class="str">'commentAdded'</span><span class="pn">);</span>
+<span class="pn">}</span></pre></div>
+
+<p>Nếu bạn cần truy cập các provider được inject (ví dụ sử dụng một service bên ngoài để validate dữ liệu), hãy sử dụng cấu trúc sau:</p>
+
+<div class="cb"><div class="cb-head"><span></span><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="dec">@Subscription</span><span class="pn">(</span><span class="str">'commentAdded'</span><span class="pn">, {</span>
+  <span class="fn">filter</span><span class="pn">(</span><span class="kw">this</span><span class="pn">:</span> <span class="typ">AuthorResolver</span><span class="pn">,</span> payload<span class="pn">,</span> variables<span class="pn">) {</span>
+    <span class="cm">// "this" refers to an instance of "AuthorResolver"</span>
+    <span class="kw">return</span> payload<span class="pn">.</span>commentAdded<span class="pn">.</span>title <span class="pn">===</span> variables<span class="pn">.</span>title<span class="pn">;</span>
+  <span class="pn">}</span>
+<span class="pn">})</span>
+<span class="fn">commentAdded</span><span class="pn">(</span><span class="dec">@Context</span><span class="pn">(</span><span class="str">'pubsub'</span><span class="pn">)</span> pubSub<span class="pn">:</span> <span class="typ">PubSub</span><span class="pn">) {</span>
+  <span class="kw">return</span> pubSub<span class="pn">.</span><span class="fn">subscribe</span><span class="pn">(</span><span class="str">'commentAdded'</span><span class="pn">);</span>
+<span class="pn">}</span></pre></div>
+
+<p>Bước cuối cùng là cập nhật file type definitions.</p>
+
+<div class="cb"><div class="cb-head"><span></span><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="kw">type</span> <span class="cl">Author</span> <span class="pn">{</span>
+  id<span class="pn">:</span> <span class="typ">Int!</span>
+  firstName<span class="pn">:</span> <span class="typ">String</span>
+  lastName<span class="pn">:</span> <span class="typ">String</span>
+  posts<span class="pn">: [</span><span class="typ">Post</span><span class="pn">]</span>
+<span class="pn">}</span>
+
+<span class="kw">type</span> <span class="cl">Post</span> <span class="pn">{</span>
+  id<span class="pn">:</span> <span class="typ">Int!</span>
+  title<span class="pn">:</span> <span class="typ">String</span>
+  votes<span class="pn">:</span> <span class="typ">Int</span>
+<span class="pn">}</span>
+
+<span class="kw">type</span> <span class="cl">Query</span> <span class="pn">{</span>
+  <span class="fn">author</span><span class="pn">(</span>id<span class="pn">:</span> <span class="typ">Int!</span><span class="pn">):</span> <span class="typ">Author</span>
+<span class="pn">}</span>
+
+<span class="kw">type</span> <span class="cl">Comment</span> <span class="pn">{</span>
+  id<span class="pn">:</span> <span class="typ">String</span>
+  content<span class="pn">:</span> <span class="typ">String</span>
+<span class="pn">}</span>
+
+<span class="kw">type</span> <span class="cl">Subscription</span> <span class="pn">{</span>
+  <span class="fn">commentAdded</span><span class="pn">(</span>title<span class="pn">:</span> <span class="typ">String!</span><span class="pn">):</span> <span class="typ">Comment</span>
+<span class="pn">}</span></pre></div>
+
+<p>Với điều này, chúng ta đã tạo một subscription <code>commentAdded(title: String!): Comment</code> duy nhất.</p>
+
+<!-- ============================================ -->
+<!-- PUBSUB (MERCURIUS) -->
+<!-- ============================================ -->
+
+<h3 id="pubsub-mercurius">PubSub <a href="#pubsub-mercurius" class="anchor">#</a></h3>
+
+<p>Trong các ví dụ trên, chúng ta đã sử dụng PubSub emitter mặc định (<a href="https://github.com/mcollina/mqemitter" target="_blank">mqemitter</a>). Cách tiếp cận được ưu tiên (cho production) là sử dụng <code>mqemitter-redis</code>. Ngoài ra, có thể cung cấp một triển khai <code>PubSub</code> tùy chỉnh (đọc thêm <a href="https://github.com/mercurius-js/mercurius/blob/master/docs/subscriptions.md" target="_blank">tại đây</a>).</p>
+
+<div class="cb"><div class="cb-head"><span></span><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="cl">GraphQLModule</span><span class="pn">.</span><span class="fn">forRoot</span><span class="pn">&lt;</span><span class="typ">MercuriusDriverConfig</span><span class="pn">&gt;({</span>
+  <span class="fn">driver</span><span class="pn">:</span> <span class="cl">MercuriusDriver</span><span class="pn">,</span>
+  <span class="fn">subscription</span><span class="pn">: {</span>
+    <span class="fn">emitter</span><span class="pn">:</span> <span class="fn">require</span><span class="pn">(</span><span class="str">'mqemitter-redis'</span><span class="pn">)({</span>
+      <span class="fn">port</span><span class="pn">:</span> <span class="num">6579</span><span class="pn">,</span>
+      <span class="fn">host</span><span class="pn">:</span> <span class="str">'127.0.0.1'</span><span class="pn">,</span>
+    <span class="pn">}),</span>
+  <span class="pn">},</span>
+<span class="pn">});</span></pre></div>
+
+<!-- ============================================ -->
+<!-- AUTHENTICATION OVER WEBSOCKETS (MERCURIUS) -->
+<!-- ============================================ -->
+
+<h3 id="authentication-over-websockets-mercurius">Xác thực qua WebSockets <a href="#authentication-over-websockets-mercurius" class="anchor">#</a></h3>
+
+<p>Kiểm tra xem người dùng đã được xác thực hay chưa có thể được thực hiện bên trong hàm callback <code>verifyClient</code> mà bạn có thể chỉ định trong tùy chọn <code>subscription</code>.</p>
+
+<p><code>verifyClient</code> sẽ nhận đối tượng <code>info</code> làm đối số đầu tiên mà bạn có thể sử dụng để lấy các headers của request.</p>
+
+<div class="cb"><div class="cb-head"><span></span><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div><pre><span class="cl">GraphQLModule</span><span class="pn">.</span><span class="fn">forRoot</span><span class="pn">&lt;</span><span class="typ">MercuriusDriverConfig</span><span class="pn">&gt;({</span>
+  <span class="fn">driver</span><span class="pn">:</span> <span class="cl">MercuriusDriver</span><span class="pn">,</span>
+  <span class="fn">subscription</span><span class="pn">: {</span>
+    <span class="fn">verifyClient</span><span class="pn">: (</span>info<span class="pn">,</span> next<span class="pn">) =&gt; {</span>
+      <span class="kw">const</span> authorization <span class="pn">=</span> info<span class="pn">.</span>req<span class="pn">.</span>headers<span class="pn">?.</span>authorization <span class="kw">as</span> <span class="typ">string</span><span class="pn">;</span>
+      <span class="kw">if</span> <span class="pn">(!</span>authorization<span class="pn">?.</span><span class="fn">startsWith</span><span class="pn">(</span><span class="str">'Bearer '</span><span class="pn">)) {</span>
+        <span class="kw">return</span> <span class="fn">next</span><span class="pn">(</span><span class="kw">false</span><span class="pn">);</span>
+      <span class="pn">}</span>
+      <span class="fn">next</span><span class="pn">(</span><span class="kw">true</span><span class="pn">);</span>
+    <span class="pn">},</span>
+  <span class="pn">}</span>
+<span class="pn">}),</span></pre></div>
+
+<!-- PAGE NAV -->
+<div class="page-nav">
+  <a href="Mutations.html" class="pnbtn">
+    <span class="pnlbl">Trang trước</span>
+    <span class="pntitle">Mutations</span>
+  </a>
+  <a href="Scalars.html" class="pnbtn r">
+    <span class="pnlbl">Tiếp theo</span>
+    <span class="pntitle">Scalars</span>
+  </a>
+</div>
+
+</div><!-- end content -->
+
+<nav class="toc">
+  <div class="toc-title">Nội dung</div>
+  <ul>
+    <li><a href="#enable-subscriptions-apollo">Bật subscriptions với Apollo driver</a></li>
+    <li><a href="#code-first">Code first</a></li>
+    <li><a href="#publishing">Publishing</a></li>
+    <li><a href="#filtering-subscriptions">Lọc subscriptions</a></li>
+    <li><a href="#mutating-subscription-payloads">Thay đổi subscription payloads</a></li>
+    <li><a href="#schema-first">Schema first</a></li>
+    <li><a href="#pubsub">PubSub</a></li>
+    <li><a href="#customize-subscriptions-server">Tùy chỉnh subscriptions server</a></li>
+    <li><a href="#authentication-over-websockets">Xác thực qua WebSockets</a></li>
+    <li><a href="#enable-subscriptions-mercurius">Bật subscriptions với Mercurius driver</a></li>
+    <li><a href="#code-first-mercurius">Code first (Mercurius)</a></li>
+    <li><a href="#publishing-mercurius">Publishing (Mercurius)</a></li>
+    <li><a href="#filtering-subscriptions-mercurius">Lọc subscriptions (Mercurius)</a></li>
+    <li><a href="#schema-first-mercurius">Schema first (Mercurius)</a></li>
+    <li><a href="#pubsub-mercurius">PubSub (Mercurius)</a></li>
+    <li><a href="#authentication-over-websockets-mercurius">Xác thực qua WebSockets (Mercurius)</a></li>
+  </ul>
+</nav>
+
+</div><!-- end page -->
+
+<script>
+function cp(btn){var w=btn.closest('.cb');var p=w.querySelector('.tab-content.active pre')||w.querySelector('pre');if(!p)return;navigator.clipboard.writeText(p.textContent.trim()).then(function(){var o=btn.textContent;btn.textContent='Copied!';btn.style.color='#4ade80';setTimeout(function(){btn.textContent=o;btn.style.color=''},1500)})}
+function switchTab(btn,tab){var cb=btn.closest('.cb');cb.querySelectorAll('.tab-btn').forEach(function(b){b.classList.toggle('active',b===btn)});cb.querySelectorAll('.tab-content').forEach(function(c){c.classList.toggle('active',c.dataset.tab===tab)})}
+document.addEventListener('DOMContentLoaded',function(){var hs=document.querySelectorAll('h3[id]');var ls=document.querySelectorAll('.toc a');if(!hs.length)return;var obs=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){ls.forEach(function(l){l.classList.toggle('active',l.getAttribute('href')==='#'+e.target.id)})}})},{rootMargin:'-20% 0px -75% 0px'});hs.forEach(function(h){obs.observe(h)})})
+</script>
+</body>
+</html>

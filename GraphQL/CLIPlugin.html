@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CLI Plugin | GraphQL | NestJS - Tài liệu tiếng Việt</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root{--bg:#0e0e0e;--surface:#1a1a1a;--surface2:#222;--border:#2a2a2a;--border-l:#333;--red:#ea2845;--red-l:#ff4d6a;--red-glow:rgba(234,40,69,.15);--text:#e8e8e8;--muted:#888;--sec:#b0b0b0;--code-bg:#1e1e1e;--code-bd:#2d2d2d;--hint-bg:#0d2a1a;--hint-c:#4ade80;--warn-bg:#2a1a0d;--warn-c:#fb923c;--note-bg:#0d1a2a;--note-c:#60a0d0;--toc-w:220px;--font:'Inter',sans-serif;--mono:'Source Code Pro',monospace;--r:6px;--rl:10px}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+    body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:15px;line-height:1.78}
+    .page{max-width:1060px;margin:0 auto;padding:48px 32px 96px;display:flex;gap:56px;align-items:flex-start}.content{flex:1;min-width:0}
+    .toc{width:var(--toc-w);flex-shrink:0;position:sticky;top:32px;align-self:flex-start;max-height:calc(100vh - 48px);overflow-y:auto}
+    .toc::-webkit-scrollbar{width:3px}.toc::-webkit-scrollbar-thumb{background:var(--border-l);border-radius:2px}
+    .toc-title{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding-bottom:8px;margin-bottom:8px;border-bottom:1px solid var(--border)}
+    .toc ul{list-style:none}.toc ul li a{display:block;padding:3.5px 0;font-size:12.5px;color:var(--muted);text-decoration:none;line-height:1.5;transition:color .15s;cursor:pointer}
+    .toc ul li a:hover,.toc ul li a.active{color:var(--red-l)}
+    .vi-banner{display:flex;align-items:center;gap:10px;padding:11px 16px;border:1px solid rgba(234,40,69,.3);border-radius:var(--rl);background:linear-gradient(135deg,rgba(234,40,69,.1),rgba(234,40,69,.04));font-size:13px;color:var(--sec);margin-bottom:32px}.vi-banner strong{color:var(--red-l)}
+    h1{font-size:36px;font-weight:700;letter-spacing:-.5px;line-height:1.2;margin-bottom:6px}h1::after{content:'';display:block;width:44px;height:3px;background:var(--red);border-radius:2px;margin-top:12px}
+    h3{font-size:19px;font-weight:600;letter-spacing:-.2px;margin:40px 0 12px;display:flex;align-items:center;gap:8px;scroll-margin-top:80px}
+    h4{font-size:16px;font-weight:600;margin:28px 0 10px;color:var(--text)}
+    .anchor{font-size:14px;color:var(--muted);text-decoration:none;opacity:0;transition:opacity .2s}h3:hover .anchor{opacity:1}
+    p{color:var(--sec);line-height:1.82;margin-bottom:16px}p:last-child{margin-bottom:0}
+    a{color:var(--red-l);text-decoration:none}a:hover{text-decoration:underline}strong{color:var(--text);font-weight:600}
+    ul,ol{color:var(--sec);padding-left:22px;line-height:2.1;margin:16px 0}ul li,ol li{margin-bottom:6px}
+    code{font-family:var(--mono);font-size:13px;background:var(--code-bg);border:1px solid var(--code-bd);padding:1px 6px;border-radius:4px;color:#f9a8d4}
+    .hint,.warn,.note{margin:18px 0;padding:12px 16px;border-left:3px solid;border-radius:var(--r);font-size:13.5px;line-height:1.72}
+    .hint{background:var(--hint-bg);border-color:var(--hint-c);color:#a7f3d0}.warn{background:var(--warn-bg);border-color:var(--warn-c);color:#fed7aa}.note{background:var(--note-bg);border-color:var(--note-c);color:#bae6fd}
+    .hint p,.warn p,.note p{margin:0;color:inherit}.lbl{display:block;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
+    .hint .lbl{color:var(--hint-c)}.warn .lbl{color:var(--warn-c)}.note .lbl{color:var(--note-c)}
+    .cb{margin:18px 0;border:1px solid var(--code-bd);border-radius:var(--rl);overflow:hidden;background:var(--code-bg)}
+    .cb-head{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:#181818;border-bottom:1px solid var(--code-bd);min-height:38px}
+    .cb-fname{font-family:var(--mono);font-size:11.5px;color:var(--muted);display:flex;align-items:center;gap:6px}.cb-fname::before{content:'';display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--red)}
+    .cb-right{display:flex;align-items:center;gap:6px}
+    .tab-btn{padding:3px 10px;font-size:11px;font-family:var(--mono);background:transparent;border:1px solid var(--border-l);color:var(--muted);border-radius:4px;cursor:pointer;transition:all .14s}.tab-btn:hover{color:var(--text)}.tab-btn.active{background:var(--red);border-color:var(--red);color:#fff}
+    .tab-content{display:none}.tab-content.active{display:block}
+    .cpbtn{padding:3px 9px;font-size:10.5px;font-family:var(--mono);background:var(--surface);border:1px solid var(--border-l);color:var(--muted);border-radius:4px;cursor:pointer;transition:all .14s}.cpbtn:hover{background:var(--surface2);color:var(--text)}
+    pre{padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:13.5px;line-height:1.65;color:#abb2bf}pre::-webkit-scrollbar{height:5px}pre::-webkit-scrollbar-thumb{background:var(--border-l);border-radius:3px}
+    .kw{color:#c678dd}.fn{color:#61afef}.str{color:#98c379}.dec{color:#e5c07b}.typ{color:#e5c07b}.cm{color:#5c6370;font-style:italic}.pn{color:#abb2bf}.num{color:#d19a66}.cl{color:#e06c75}
+    table{width:100%;border-collapse:collapse;margin:18px 0;font-size:13.5px}th,td{padding:10px 14px;border:1px solid var(--border);text-align:left}th{background:var(--surface);color:var(--text);font-weight:600}td{color:var(--sec)}
+    .page-nav{display:flex;justify-content:space-between;margin-top:52px;gap:16px}.pnbtn{display:flex;flex-direction:column;padding:14px 18px;border:1px solid var(--border);border-radius:var(--rl);text-decoration:none;transition:all .2s;min-width:150px}.pnbtn:hover{border-color:var(--red);background:var(--red-glow);text-decoration:none}.pnlbl{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:3px}.pntitle{font-size:14px;font-weight:600;color:var(--text)}.pnbtn.r{text-align:right;margin-left:auto}
+    @media(max-width:860px){.toc{display:none}}@media(max-width:600px){.page{padding:24px 16px 64px}}
+  </style>
+</head>
+<body>
+<div class="page">
+  <div class="content">
+
+    <div class="vi-banner">
+      <span>&#127468;&#127483;</span>
+      <span>Tài liệu NestJS tiếng Việt &mdash; <strong>CLI Plugin</strong> &middot; <a href="https://docs.nestjs.com/graphql/cli-plugin" target="_blank">docs.nestjs.com/graphql/cli-plugin</a></span>
+    </div>
+
+    <h1>CLI Plugin</h1>
+
+    <div class="warn">
+      <span class="lbl">Cảnh báo</span>
+      <p>Chương này chỉ áp dụng cho cách tiếp cận code first.</p>
+    </div>
+
+    <p>Hệ thống metadata reflection của TypeScript có một số hạn chế khiến việc xác định các property của một class hay nhận biết một property là optional hay required trở nên không thể. Tuy nhiên, một số ràng buộc này có thể được giải quyết tại thời điểm biên dịch. Nest cung cấp một plugin giúp cải thiện quá trình biên dịch TypeScript để giảm lượng boilerplate code cần thiết.</p>
+
+    <div class="hint">
+      <span class="lbl">Gợi ý</span>
+      <p>Plugin này là <strong>opt-in</strong>. Nếu bạn muốn, bạn có thể khai báo tất cả các decorator thủ công, hoặc chỉ các decorator cụ thể ở những nơi bạn cần.</p>
+    </div>
+
+    <!-- ================= OVERVIEW ================= -->
+    <h3 id="overview">Overview <a class="anchor" href="#overview">#</a></h3>
+
+    <p>GraphQL plugin sẽ tự động:</p>
+
+    <ul>
+      <li>Gắn annotation cho tất cả các property của input object, object type và args class bằng <code>@Field</code> trừ khi <code>@HideField</code> được sử dụng</li>
+      <li>Thiết lập property <code>nullable</code> dựa trên dấu chấm hỏi (ví dụ: <code>name?: string</code> sẽ thiết lập <code>nullable: true</code>)</li>
+      <li>Thiết lập property <code>type</code> dựa trên kiểu dữ liệu (cũng hỗ trợ arrays)</li>
+      <li>Tạo description cho các property dựa trên comments (nếu <code>introspectComments</code> được thiết lập thành <code>true</code>)</li>
+    </ul>
+
+    <p>Xin lưu ý rằng tên file của bạn <strong>phải có</strong> một trong các hậu tố sau để được plugin phân tích: <code>['.input.ts', '.args.ts', '.entity.ts', '.model.ts']</code> (ví dụ: <code>author.entity.ts</code>). Nếu bạn sử dụng hậu tố khác, bạn có thể điều chỉnh hành vi của plugin bằng cách chỉ định tùy chọn <code>typeFileNameSuffix</code> (xem bên dưới).</p>
+
+    <p>Với những gì chúng ta đã học cho đến nay, bạn phải lặp lại rất nhiều code để cho package biết kiểu dữ liệu của bạn nên được khai báo trong GraphQL như thế nào. Ví dụ, bạn có thể định nghĩa một class <code>Author</code> đơn giản như sau:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">authors/models/author.model</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="dec">@ObjectType</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">Author</span> <span class="pn">{</span>
+  <span class="dec">@Field</span><span class="pn">(</span>type <span class="kw">=&gt;</span> <span class="typ">ID</span><span class="pn">)</span>
+  id<span class="pn">:</span> <span class="typ">number</span><span class="pn">;</span>
+
+  <span class="dec">@Field</span><span class="pn">({</span> nullable<span class="pn">:</span> <span class="kw">true</span> <span class="pn">})</span>
+  firstName<span class="pn">?:</span> <span class="typ">string</span><span class="pn">;</span>
+
+  <span class="dec">@Field</span><span class="pn">({</span> nullable<span class="pn">:</span> <span class="kw">true</span> <span class="pn">})</span>
+  lastName<span class="pn">?:</span> <span class="typ">string</span><span class="pn">;</span>
+
+  <span class="dec">@Field</span><span class="pn">(</span>type <span class="kw">=&gt;</span> <span class="pn">[</span><span class="typ">Post</span><span class="pn">])</span>
+  posts<span class="pn">:</span> <span class="typ">Post</span><span class="pn">[];</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <p>Mặc dù không phải là vấn đề lớn với các dự án cỡ trung bình, nhưng nó trở nên dài dòng và khó bảo trì khi bạn có một tập hợp lớn các class.</p>
+
+    <p>Bằng cách bật GraphQL plugin, định nghĩa class ở trên có thể được khai báo đơn giản:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">authors/models/author.model</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="dec">@ObjectType</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">Author</span> <span class="pn">{</span>
+  <span class="dec">@Field</span><span class="pn">(</span>type <span class="kw">=&gt;</span> <span class="typ">ID</span><span class="pn">)</span>
+  id<span class="pn">:</span> <span class="typ">number</span><span class="pn">;</span>
+  firstName<span class="pn">?:</span> <span class="typ">string</span><span class="pn">;</span>
+  lastName<span class="pn">?:</span> <span class="typ">string</span><span class="pn">;</span>
+  posts<span class="pn">:</span> <span class="typ">Post</span><span class="pn">[];</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <p>Plugin sẽ thêm các decorator thích hợp một cách tự động dựa trên <strong>Abstract Syntax Tree</strong>. Do đó, bạn sẽ không phải vất vả với các decorator <code>@Field</code> nằm rải rác khắp code.</p>
+
+    <div class="hint">
+      <span class="lbl">Gợi ý</span>
+      <p>Plugin sẽ tự động tạo bất kỳ property GraphQL nào bị thiếu, nhưng nếu bạn cần ghi đè chúng, chỉ cần thiết lập chúng một cách tường minh thông qua <code>@Field()</code>.</p>
+    </div>
+
+    <!-- ================= COMMENTS INTROSPECTION ================= -->
+    <h3 id="comments-introspection">Comments introspection <a class="anchor" href="#comments-introspection">#</a></h3>
+
+    <p>Với tính năng comments introspection được bật, CLI plugin sẽ tạo description cho các field dựa trên comments.</p>
+
+    <p>Ví dụ, cho một property <code>roles</code> như sau:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">TypeScript</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="cm">/**
+ * A list of user's roles
+ */</span>
+<span class="dec">@Field</span><span class="pn">(()</span> <span class="kw">=&gt;</span> <span class="pn">[</span><span class="typ">String</span><span class="pn">],</span> <span class="pn">{</span>
+  description<span class="pn">:</span> <span class="str">`A list of user's roles`</span>
+<span class="pn">})</span>
+roles<span class="pn">:</span> <span class="typ">string</span><span class="pn">[];</span></pre>
+    </div>
+
+    <p>Bạn phải lặp lại giá trị description. Với <code>introspectComments</code> được bật, CLI plugin có thể trích xuất các comments này và tự động cung cấp description cho các property. Bây giờ, field ở trên có thể được khai báo đơn giản như sau:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">TypeScript</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="cm">/**
+ * A list of user's roles
+ */</span>
+roles<span class="pn">:</span> <span class="typ">string</span><span class="pn">[];</span></pre>
+    </div>
+
+    <!-- ================= USING THE CLI PLUGIN ================= -->
+    <h3 id="using-the-cli-plugin">Using the CLI plugin <a class="anchor" href="#using-the-cli-plugin">#</a></h3>
+
+    <p>Để bật plugin, mở <code>nest-cli.json</code> (nếu bạn sử dụng <a href="/cli/overview">Nest CLI</a>) và thêm cấu hình <code>plugins</code> như sau:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">nest-cli.json</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="pn">{</span>
+  <span class="str">"collection"</span><span class="pn">:</span> <span class="str">"@nestjs/schematics"</span><span class="pn">,</span>
+  <span class="str">"sourceRoot"</span><span class="pn">:</span> <span class="str">"src"</span><span class="pn">,</span>
+  <span class="str">"compilerOptions"</span><span class="pn">:</span> <span class="pn">{</span>
+    <span class="str">"plugins"</span><span class="pn">:</span> <span class="pn">[</span><span class="str">"@nestjs/graphql"</span><span class="pn">]</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <p>Bạn có thể sử dụng property <code>options</code> để tùy chỉnh hành vi của plugin.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">nest-cli.json</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="pn">{</span>
+  <span class="str">"collection"</span><span class="pn">:</span> <span class="str">"@nestjs/schematics"</span><span class="pn">,</span>
+  <span class="str">"sourceRoot"</span><span class="pn">:</span> <span class="str">"src"</span><span class="pn">,</span>
+  <span class="str">"compilerOptions"</span><span class="pn">:</span> <span class="pn">{</span>
+    <span class="str">"plugins"</span><span class="pn">:</span> <span class="pn">[</span>
+      <span class="pn">{</span>
+        <span class="str">"name"</span><span class="pn">:</span> <span class="str">"@nestjs/graphql"</span><span class="pn">,</span>
+        <span class="str">"options"</span><span class="pn">:</span> <span class="pn">{</span>
+          <span class="str">"typeFileNameSuffix"</span><span class="pn">:</span> <span class="pn">[</span><span class="str">".input.ts"</span><span class="pn">,</span> <span class="str">".args.ts"</span><span class="pn">],</span>
+          <span class="str">"introspectComments"</span><span class="pn">:</span> <span class="kw">true</span>
+        <span class="pn">}</span>
+      <span class="pn">}</span>
+    <span class="pn">]</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <p>Property <code>options</code> phải thỏa mãn interface sau:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">TypeScript</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="kw">export interface</span> <span class="cl">PluginOptions</span> <span class="pn">{</span>
+  typeFileNameSuffix<span class="pn">?:</span> <span class="typ">string</span><span class="pn">[];</span>
+  introspectComments<span class="pn">?:</span> <span class="typ">boolean</span><span class="pn">;</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <table>
+      <tr>
+        <th>Option</th>
+        <th>Default</th>
+        <th>Mô tả</th>
+      </tr>
+      <tr>
+        <td><code>typeFileNameSuffix</code></td>
+        <td><code>['.input.ts', '.args.ts', '.entity.ts', '.model.ts']</code></td>
+        <td>Hậu tố file cho các GraphQL type</td>
+      </tr>
+      <tr>
+        <td><code>introspectComments</code></td>
+        <td><code>false</code></td>
+        <td>Nếu được thiết lập thành true, plugin sẽ tạo description cho các property dựa trên comments</td>
+      </tr>
+    </table>
+
+    <p>Nếu bạn không sử dụng CLI mà thay vào đó có cấu hình <code>webpack</code> tùy chỉnh, bạn có thể sử dụng plugin này kết hợp với <code>ts-loader</code>:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">JavaScript</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre>getCustomTransformers<span class="pn">:</span> <span class="pn">(</span>program<span class="pn">:</span> <span class="typ">any</span><span class="pn">)</span> <span class="kw">=&gt;</span> <span class="pn">({</span>
+  before<span class="pn">:</span> <span class="pn">[</span><span class="fn">require</span><span class="pn">(</span><span class="str">'@nestjs/graphql/plugin'</span><span class="pn">)</span><span class="pn">.</span><span class="fn">before</span><span class="pn">({},</span> program<span class="pn">)]</span>
+<span class="pn">}),</span></pre>
+    </div>
+
+    <!-- ================= SWC BUILDER ================= -->
+    <h3 id="swc-builder">SWC builder <a class="anchor" href="#swc-builder">#</a></h3>
+
+    <p>Đối với các thiết lập tiêu chuẩn (non-monorepo), để sử dụng CLI Plugins với SWC builder, bạn cần bật type checking, như mô tả <a href="/recipes/swc#type-checking">tại đây</a>.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">Terminal</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre>$ nest start -b swc --type-check</pre>
+    </div>
+
+    <p>Đối với thiết lập monorepo, hãy làm theo hướng dẫn <a href="/recipes/swc#monorepo-and-cli-plugins">tại đây</a>.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">Terminal</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre>$ npx ts-node src/generate-metadata.ts
+# OR npx ts-node apps/{YOUR_APP}/src/generate-metadata.ts</pre>
+    </div>
+
+    <p>Bây giờ, file serialized metadata phải được load bởi method <code>GraphQLModule</code>, như hiển thị bên dưới:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">TypeScript</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="kw">import</span> metadata <span class="kw">from</span> <span class="str">'./metadata'</span><span class="pn">;</span> <span class="cm">// &lt;-- file auto-generated by the "PluginMetadataGenerator"</span>
+
+<span class="cl">GraphQLModule</span><span class="pn">.</span><span class="fn">forRoot</span><span class="pn">&lt;...&gt;({</span>
+  <span class="pn">...,</span> <span class="cm">// other options</span>
+  metadata<span class="pn">,</span>
+<span class="pn">}),</span></pre>
+    </div>
+
+    <!-- ================= INTEGRATION WITH TS-JEST ================= -->
+    <h3 id="integration-with-ts-jest">Integration with <code>ts-jest</code> (e2e tests) <a class="anchor" href="#integration-with-ts-jest">#</a></h3>
+
+    <p>Khi chạy e2e tests với plugin này được bật, bạn có thể gặp vấn đề khi biên dịch schema. Ví dụ, một trong những lỗi phổ biến nhất là:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">JSON</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre>Object type &lt;name&gt; must define one or more fields.</pre>
+    </div>
+
+    <p>Điều này xảy ra vì cấu hình <code>jest</code> không import plugin <code>@nestjs/graphql/plugin</code> ở bất kỳ đâu.</p>
+
+    <p>Để khắc phục, hãy tạo file sau trong thư mục e2e tests của bạn:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">JavaScript</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="kw">const</span> transformer <span class="pn">=</span> <span class="fn">require</span><span class="pn">(</span><span class="str">'@nestjs/graphql/plugin'</span><span class="pn">);</span>
+
+module<span class="pn">.</span>exports<span class="pn">.</span>name <span class="pn">=</span> <span class="str">'nestjs-graphql-transformer'</span><span class="pn">;</span>
+<span class="cm">// you should change the version number anytime you change the configuration below - otherwise, jest will not detect changes</span>
+module<span class="pn">.</span>exports<span class="pn">.</span>version <span class="pn">=</span> <span class="num">1</span><span class="pn">;</span>
+
+module<span class="pn">.</span>exports<span class="pn">.</span><span class="fn">factory</span> <span class="pn">=</span> <span class="pn">(</span>cs<span class="pn">)</span> <span class="kw">=&gt;</span> <span class="pn">{</span>
+  <span class="kw">return</span> transformer<span class="pn">.</span><span class="fn">before</span><span class="pn">(</span>
+    <span class="pn">{</span>
+      <span class="cm">// @nestjs/graphql/plugin options (can be empty)</span>
+    <span class="pn">},</span>
+    cs<span class="pn">.</span>program<span class="pn">,</span> <span class="cm">// "cs.tsCompiler.program" for older versions of Jest (&lt;= v27)</span>
+  <span class="pn">);</span>
+<span class="pn">};</span></pre>
+    </div>
+
+    <p>Với file này đã sẵn sàng, hãy import AST transformer trong file cấu hình <code>jest</code> của bạn. Mặc định (trong ứng dụng starter), file cấu hình e2e tests nằm trong thư mục <code>test</code> và có tên là <code>jest-e2e.json</code>.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">jest-e2e.json</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="pn">{</span>
+  <span class="pn">...</span> <span class="cm">// other configuration</span>
+  <span class="str">"globals"</span><span class="pn">:</span> <span class="pn">{</span>
+    <span class="str">"ts-jest"</span><span class="pn">:</span> <span class="pn">{</span>
+      <span class="str">"astTransformers"</span><span class="pn">:</span> <span class="pn">{</span>
+        <span class="str">"before"</span><span class="pn">:</span> <span class="pn">[</span><span class="str">"&lt;path to the file created above&gt;"</span><span class="pn">]</span>
+      <span class="pn">}</span>
+    <span class="pn">}</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <p>Nếu bạn sử dụng <code>jest@^29</code>, hãy sử dụng đoạn code bên dưới, vì cách tiếp cận trước đã bị deprecated.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">jest-e2e.json</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="pn">{</span>
+  <span class="pn">...</span> <span class="cm">// other configuration</span>
+  <span class="str">"transform"</span><span class="pn">:</span> <span class="pn">{</span>
+    <span class="str">"^.+\\.(t|j)s$"</span><span class="pn">:</span> <span class="pn">[</span>
+      <span class="str">"ts-jest"</span><span class="pn">,</span>
+      <span class="pn">{</span>
+        <span class="str">"astTransformers"</span><span class="pn">:</span> <span class="pn">{</span>
+          <span class="str">"before"</span><span class="pn">:</span> <span class="pn">[</span><span class="str">"&lt;path to the file created above&gt;"</span><span class="pn">]</span>
+        <span class="pn">}</span>
+      <span class="pn">}</span>
+    <span class="pn">]</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <!-- Page navigation -->
+    <div class="page-nav">
+      <a class="pnbtn" href="Extensions.html">
+        <span class="pnlbl">&laquo; Trước</span>
+        <span class="pntitle">Extensions</span>
+      </a>
+      <a class="pnbtn r" href="GeneratingSDL.html">
+        <span class="pnlbl">Tiếp &raquo;</span>
+        <span class="pntitle">Generating SDL</span>
+      </a>
+    </div>
+
+  </div>
+
+  <nav class="toc">
+    <div class="toc-title">Nội dung</div>
+    <ul>
+      <li><a href="#overview">Overview</a></li>
+      <li><a href="#comments-introspection">Comments introspection</a></li>
+      <li><a href="#using-the-cli-plugin">Using the CLI plugin</a></li>
+      <li><a href="#swc-builder">SWC builder</a></li>
+      <li><a href="#integration-with-ts-jest">Integration with ts-jest</a></li>
+    </ul>
+  </nav>
+</div>
+
+<script>
+function cp(btn){var w=btn.closest('.cb');var p=w.querySelector('.tab-content.active pre')||w.querySelector('pre');if(!p)return;navigator.clipboard.writeText(p.textContent.trim()).then(function(){var o=btn.textContent;btn.textContent='Copied!';btn.style.color='#4ade80';setTimeout(function(){btn.textContent=o;btn.style.color=''},1500)})}
+function switchTab(btn,tab){var cb=btn.closest('.cb');cb.querySelectorAll('.tab-btn').forEach(function(b){b.classList.toggle('active',b===btn)});cb.querySelectorAll('.tab-content').forEach(function(c){c.classList.toggle('active',c.dataset.tab===tab)})}
+document.addEventListener('DOMContentLoaded',function(){var hs=document.querySelectorAll('h3[id]');var ls=document.querySelectorAll('.toc a');if(!hs.length)return;var obs=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){ls.forEach(function(l){l.classList.toggle('active',l.getAttribute('href')==='#'+e.target.id)})}})},{rootMargin:'-20% 0px -75% 0px'});hs.forEach(function(h){obs.observe(h)})})
+</script>
+</body>
+</html>

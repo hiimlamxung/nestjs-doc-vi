@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Resolvers | GraphQL | NestJS - Tài liệu tiếng Việt</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root{--bg:#0e0e0e;--surface:#1a1a1a;--surface2:#222;--border:#2a2a2a;--border-l:#333;--red:#ea2845;--red-l:#ff4d6a;--red-glow:rgba(234,40,69,.15);--text:#e8e8e8;--muted:#888;--sec:#b0b0b0;--code-bg:#1e1e1e;--code-bd:#2d2d2d;--hint-bg:#0d2a1a;--hint-c:#4ade80;--warn-bg:#2a1a0d;--warn-c:#fb923c;--note-bg:#0d1a2a;--note-c:#60a0d0;--toc-w:220px;--font:'Inter',sans-serif;--mono:'Source Code Pro',monospace;--r:6px;--rl:10px}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+    body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:15px;line-height:1.78}
+    .page{max-width:1060px;margin:0 auto;padding:48px 32px 96px;display:flex;gap:56px;align-items:flex-start}.content{flex:1;min-width:0}
+    .toc{width:var(--toc-w);flex-shrink:0;position:sticky;top:32px;align-self:flex-start;max-height:calc(100vh - 48px);overflow-y:auto}
+    .toc::-webkit-scrollbar{width:3px}.toc::-webkit-scrollbar-thumb{background:var(--border-l);border-radius:2px}
+    .toc-title{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding-bottom:8px;margin-bottom:8px;border-bottom:1px solid var(--border)}
+    .toc ul{list-style:none}.toc ul li a{display:block;padding:3.5px 0;font-size:12.5px;color:var(--muted);text-decoration:none;line-height:1.5;transition:color .15s;cursor:pointer}
+    .toc ul li a:hover,.toc ul li a.active{color:var(--red-l)}
+    .vi-banner{display:flex;align-items:center;gap:10px;padding:11px 16px;border:1px solid rgba(234,40,69,.3);border-radius:var(--rl);background:linear-gradient(135deg,rgba(234,40,69,.1),rgba(234,40,69,.04));font-size:13px;color:var(--sec);margin-bottom:32px}.vi-banner strong{color:var(--red-l)}
+    h1{font-size:36px;font-weight:700;letter-spacing:-.5px;line-height:1.2;margin-bottom:6px}h1::after{content:'';display:block;width:44px;height:3px;background:var(--red);border-radius:2px;margin-top:12px}
+    h3{font-size:19px;font-weight:600;letter-spacing:-.2px;margin:40px 0 12px;display:flex;align-items:center;gap:8px;scroll-margin-top:80px}
+    h4{font-size:16px;font-weight:600;margin:28px 0 10px;color:var(--text)}
+    .anchor{font-size:14px;color:var(--muted);text-decoration:none;opacity:0;transition:opacity .2s}h3:hover .anchor{opacity:1}
+    p{color:var(--sec);line-height:1.82;margin-bottom:16px}p:last-child{margin-bottom:0}
+    a{color:var(--red-l);text-decoration:none}a:hover{text-decoration:underline}strong{color:var(--text);font-weight:600}
+    ul,ol{color:var(--sec);padding-left:22px;line-height:2.1;margin:16px 0}ul li,ol li{margin-bottom:6px}
+    code{font-family:var(--mono);font-size:13px;background:var(--code-bg);border:1px solid var(--code-bd);padding:1px 6px;border-radius:4px;color:#f9a8d4}
+    .hint,.warn,.note{margin:18px 0;padding:12px 16px;border-left:3px solid;border-radius:var(--r);font-size:13.5px;line-height:1.72}
+    .hint{background:var(--hint-bg);border-color:var(--hint-c);color:#a7f3d0}.warn{background:var(--warn-bg);border-color:var(--warn-c);color:#fed7aa}.note{background:var(--note-bg);border-color:var(--note-c);color:#bae6fd}
+    .hint p,.warn p,.note p{margin:0;color:inherit}.lbl{display:block;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
+    .hint .lbl{color:var(--hint-c)}.warn .lbl{color:var(--warn-c)}.note .lbl{color:var(--note-c)}
+    .cb{margin:18px 0;border:1px solid var(--code-bd);border-radius:var(--rl);overflow:hidden;background:var(--code-bg)}
+    .cb-head{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:#181818;border-bottom:1px solid var(--code-bd);min-height:38px}
+    .cb-fname{font-family:var(--mono);font-size:11.5px;color:var(--muted);display:flex;align-items:center;gap:6px}.cb-fname::before{content:'';display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--red)}
+    .cb-right{display:flex;align-items:center;gap:6px}
+    .tab-btn{padding:3px 10px;font-size:11px;font-family:var(--mono);background:transparent;border:1px solid var(--border-l);color:var(--muted);border-radius:4px;cursor:pointer;transition:all .14s}.tab-btn:hover{color:var(--text)}.tab-btn.active{background:var(--red);border-color:var(--red);color:#fff}
+    .tab-content{display:none}.tab-content.active{display:block}
+    .cpbtn{padding:3px 9px;font-size:10.5px;font-family:var(--mono);background:var(--surface);border:1px solid var(--border-l);color:var(--muted);border-radius:4px;cursor:pointer;transition:all .14s}.cpbtn:hover{background:var(--surface2);color:var(--text)}
+    pre{padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:13.5px;line-height:1.65;color:#abb2bf}pre::-webkit-scrollbar{height:5px}pre::-webkit-scrollbar-thumb{background:var(--border-l);border-radius:3px}
+    .kw{color:#c678dd}.fn{color:#61afef}.str{color:#98c379}.dec{color:#e5c07b}.typ{color:#e5c07b}.cm{color:#5c6370;font-style:italic}.pn{color:#abb2bf}.num{color:#d19a66}.cl{color:#e06c75}
+    table{width:100%;border-collapse:collapse;margin:18px 0;font-size:13.5px}th,td{padding:10px 14px;border:1px solid var(--border);text-align:left}th{background:var(--surface);color:var(--text);font-weight:600}td{color:var(--sec)}
+    .page-nav{display:flex;justify-content:space-between;margin-top:52px;gap:16px}.pnbtn{display:flex;flex-direction:column;padding:14px 18px;border:1px solid var(--border);border-radius:var(--rl);text-decoration:none;transition:all .2s;min-width:150px}.pnbtn:hover{border-color:var(--red);background:var(--red-glow);text-decoration:none}.pnlbl{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:3px}.pntitle{font-size:14px;font-weight:600;color:var(--text)}.pnbtn.r{text-align:right;margin-left:auto}
+    @media(max-width:860px){.toc{display:none}}@media(max-width:600px){.page{padding:24px 16px 64px}}
+  </style>
+</head>
+<body>
+<div class="page">
+  <div class="content">
+
+    <div class="vi-banner">
+      <span>&#127468;&#127483;</span>
+      <span>Tài liệu NestJS tiếng Việt &mdash; <strong>Resolvers</strong> &middot; <a href="https://docs.nestjs.com/graphql/resolvers" target="_blank">docs.nestjs.com/graphql/resolvers</a></span>
+    </div>
+
+    <h1>Resolvers</h1>
+
+    <p>Resolver cung cấp các hướng dẫn để chuyển đổi một <a href="https://graphql.org/" target="_blank">GraphQL</a> operation (query, mutation hoặc subscription) thành dữ liệu. Chúng trả về cùng dạng dữ liệu mà chúng ta chỉ định trong schema &mdash; có thể đồng bộ hoặc dưới dạng promise resolve ra kết quả có dạng đó. Thông thường, bạn tạo một <strong>resolver map</strong> thủ công. Ngược lại, package <code>@nestjs/graphql</code> tạo resolver map tự động bằng cách sử dụng metadata được cung cấp bởi các decorator mà bạn dùng để annotate các class. Để minh họa quá trình sử dụng các tính năng của package để tạo GraphQL API, chúng ta sẽ tạo một API authors đơn giản.</p>
+
+    <!-- ================= CODE FIRST ================= -->
+    <h3 id="code-first">Code first <a class="anchor" href="#code-first">#</a></h3>
+
+    <p>Trong cách tiếp cận code first, chúng ta không tuân theo quy trình thông thường là tạo GraphQL schema bằng cách viết GraphQL SDL thủ công. Thay vào đó, chúng ta sử dụng TypeScript decorator để tạo SDL từ các định nghĩa class TypeScript. Package <code>@nestjs/graphql</code> đọc metadata được định nghĩa thông qua các decorator và tự động tạo schema cho bạn.</p>
+
+    <!-- ================= OBJECT TYPES ================= -->
+    <h3 id="object-types">Object types <a class="anchor" href="#object-types">#</a></h3>
+
+    <p>Hầu hết các định nghĩa trong một GraphQL schema là <strong>object type</strong>. Mỗi object type bạn định nghĩa nên đại diện cho một domain object mà client của ứng dụng có thể cần tương tác. Ví dụ, API mẫu của chúng ta cần có khả năng lấy danh sách author và các post của họ, vì vậy chúng ta nên định nghĩa type <code>Author</code> và type <code>Post</code> để hỗ trợ chức năng này.</p>
+
+    <p>Nếu chúng ta sử dụng cách tiếp cận schema first, chúng ta sẽ định nghĩa schema như vậy bằng SDL như sau:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">GraphQL</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="kw">type</span> <span class="typ">Author</span> <span class="pn">{</span>
+  id<span class="pn">:</span> <span class="typ">Int!</span>
+  firstName<span class="pn">:</span> <span class="typ">String</span>
+  lastName<span class="pn">:</span> <span class="typ">String</span>
+  posts<span class="pn">:</span> <span class="pn">[</span><span class="typ">Post!</span><span class="pn">]!</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <p>Trong trường hợp này, sử dụng cách tiếp cận code first, chúng ta định nghĩa schema bằng TypeScript class và sử dụng TypeScript decorator để annotate các field của các class đó. Phiên bản tương đương của SDL trên trong cách tiếp cận code first là:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">authors/models/author.model</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Field</span><span class="pn">,</span> <span class="cl">Int</span><span class="pn">,</span> <span class="cl">ObjectType</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/graphql'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">Post</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./post'</span><span class="pn">;</span>
+
+<span class="dec">@ObjectType</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">Author</span> <span class="pn">{</span>
+  <span class="dec">@Field</span><span class="pn">(</span><span class="fn">type</span> <span class="kw">=&gt;</span> <span class="cl">Int</span><span class="pn">)</span>
+  id<span class="pn">:</span> <span class="typ">number</span><span class="pn">;</span>
+
+  <span class="dec">@Field</span><span class="pn">({</span> nullable<span class="pn">:</span> <span class="num">true</span> <span class="pn">})</span>
+  firstName<span class="pn">?:</span> <span class="typ">string</span><span class="pn">;</span>
+
+  <span class="dec">@Field</span><span class="pn">({</span> nullable<span class="pn">:</span> <span class="num">true</span> <span class="pn">})</span>
+  lastName<span class="pn">?:</span> <span class="typ">string</span><span class="pn">;</span>
+
+  <span class="dec">@Field</span><span class="pn">(</span><span class="fn">type</span> <span class="kw">=&gt;</span> <span class="pn">[</span><span class="cl">Post</span><span class="pn">])</span>
+  posts<span class="pn">:</span> <span class="typ">Post</span><span class="pn">[];</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">Gợi ý</span>
+      <p>Hệ thống metadata reflection của TypeScript có một số hạn chế khiến cho việc xác định class bao gồm những property nào hoặc nhận biết một property cho trước là optional hay required trở nên bất khả thi. Do những hạn chế này, chúng ta phải sử dụng decorator <code>@Field()</code> một cách tường minh trong các class định nghĩa schema để cung cấp metadata về GraphQL type và tính optional của mỗi field, hoặc sử dụng <a href="/graphql/cli-plugin">CLI plugin</a> để tự động tạo chúng.</p>
+    </div>
+
+    <p>Object type <code>Author</code>, giống như bất kỳ class nào, được tạo thành từ một tập hợp các field, với mỗi field khai báo một type. Type của field tương ứng với một <a href="https://graphql.org/learn/schema/" target="_blank">GraphQL type</a>. GraphQL type của field có thể là một object type khác hoặc một scalar type. GraphQL scalar type là một kiểu nguyên thủy (như <code>ID</code>, <code>String</code>, <code>Boolean</code> hoặc <code>Int</code>) resolve thành một giá trị đơn.</p>
+
+    <div class="hint">
+      <span class="lbl">Gợi ý</span>
+      <p>Ngoài các scalar type tích hợp sẵn của GraphQL, bạn có thể định nghĩa các custom scalar type (đọc <a href="/graphql/scalars">thêm</a>).</p>
+    </div>
+
+    <p>Định nghĩa object type <code>Author</code> ở trên sẽ khiến Nest <strong>tạo ra</strong> SDL mà chúng ta đã trình bày ở trên:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">GraphQL</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="kw">type</span> <span class="typ">Author</span> <span class="pn">{</span>
+  id<span class="pn">:</span> <span class="typ">Int!</span>
+  firstName<span class="pn">:</span> <span class="typ">String</span>
+  lastName<span class="pn">:</span> <span class="typ">String</span>
+  posts<span class="pn">:</span> <span class="pn">[</span><span class="typ">Post!</span><span class="pn">]!</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <p>Decorator <code>@Field()</code> nhận một type function tùy chọn (ví dụ: <code>type =&gt; Int</code>), và tùy chọn một options object.</p>
+
+    <p>Type function là bắt buộc khi có khả năng gây nhập nhằng giữa TypeScript type system và GraphQL type system. Cụ thể: nó <strong>không</strong> bắt buộc cho kiểu <code>string</code> và <code>boolean</code>; nó <strong>bắt buộc</strong> cho <code>number</code> (phải được ánh xạ sang GraphQL <code>Int</code> hoặc <code>Float</code>). Type function chỉ đơn giản trả về GraphQL type mong muốn (như được trình bày trong các ví dụ khác nhau trong các chương này).</p>
+
+    <p>Options object có thể có bất kỳ cặp key/value nào sau đây:</p>
+
+    <ul>
+      <li><code>nullable</code>: để chỉ định liệu một field có nullable hay không (trong <code>@nestjs/graphql</code>, mỗi field mặc định là non-nullable); <code>boolean</code></li>
+      <li><code>description</code>: để thiết lập mô tả cho field; <code>string</code></li>
+      <li><code>deprecationReason</code>: để đánh dấu field là deprecated; <code>string</code></li>
+    </ul>
+
+    <p>Ví dụ:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">TypeScript</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="dec">@Field</span><span class="pn">({</span> description<span class="pn">:</span> <span class="str">`Book title`</span><span class="pn">,</span> deprecationReason<span class="pn">:</span> <span class="str">'Not useful in v2 schema'</span> <span class="pn">})</span>
+title<span class="pn">:</span> <span class="typ">string</span><span class="pn">;</span></pre>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">Gợi ý</span>
+      <p>Bạn cũng có thể thêm description, hoặc deprecate toàn bộ object type: <code>@ObjectType({ description: 'Author model' })</code>.</p>
+    </div>
+
+    <p>Khi field là một mảng, chúng ta phải chỉ định thủ công kiểu mảng trong type function của decorator <code>Field()</code>, như dưới đây:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">TypeScript</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="dec">@Field</span><span class="pn">(</span><span class="fn">type</span> <span class="kw">=&gt;</span> <span class="pn">[</span><span class="cl">Post</span><span class="pn">])</span>
+posts<span class="pn">:</span> <span class="typ">Post</span><span class="pn">[];</span></pre>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">Gợi ý</span>
+      <p>Sử dụng ký hiệu ngoặc vuông (<code>[ ]</code>), chúng ta có thể chỉ định độ sâu của mảng. Ví dụ, sử dụng <code>[[Int]]</code> sẽ biểu diễn một ma trận số nguyên.</p>
+    </div>
+
+    <p>Để khai báo rằng các phần tử của mảng (không phải chính mảng) là nullable, hãy thiết lập property <code>nullable</code> thành <code>'items'</code> như dưới đây:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">TypeScript</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="dec">@Field</span><span class="pn">(</span><span class="fn">type</span> <span class="kw">=&gt;</span> <span class="pn">[</span><span class="cl">Post</span><span class="pn">],</span> <span class="pn">{</span> nullable<span class="pn">:</span> <span class="str">'items'</span> <span class="pn">})</span>
+posts<span class="pn">:</span> <span class="typ">Post</span><span class="pn">[];</span></pre>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">Gợi ý</span>
+      <p>Nếu cả mảng lẫn các phần tử của nó đều nullable, hãy thiết lập <code>nullable</code> thành <code>'itemsAndList'</code>.</p>
+    </div>
+
+    <p>Bây giờ object type <code>Author</code> đã được tạo, hãy định nghĩa object type <code>Post</code>.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">posts/models/post.model</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Field</span><span class="pn">,</span> <span class="cl">Int</span><span class="pn">,</span> <span class="cl">ObjectType</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/graphql'</span><span class="pn">;</span>
+
+<span class="dec">@ObjectType</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">Post</span> <span class="pn">{</span>
+  <span class="dec">@Field</span><span class="pn">(</span><span class="fn">type</span> <span class="kw">=&gt;</span> <span class="cl">Int</span><span class="pn">)</span>
+  id<span class="pn">:</span> <span class="typ">number</span><span class="pn">;</span>
+
+  <span class="dec">@Field</span><span class="pn">()</span>
+  title<span class="pn">:</span> <span class="typ">string</span><span class="pn">;</span>
+
+  <span class="dec">@Field</span><span class="pn">(</span><span class="fn">type</span> <span class="kw">=&gt;</span> <span class="cl">Int</span><span class="pn">,</span> <span class="pn">{</span> nullable<span class="pn">:</span> <span class="num">true</span> <span class="pn">})</span>
+  votes<span class="pn">?:</span> <span class="typ">number</span><span class="pn">;</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <p>Object type <code>Post</code> sẽ tạo ra phần sau của GraphQL schema trong SDL:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">GraphQL</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="kw">type</span> <span class="typ">Post</span> <span class="pn">{</span>
+  id<span class="pn">:</span> <span class="typ">Int!</span>
+  title<span class="pn">:</span> <span class="typ">String!</span>
+  votes<span class="pn">:</span> <span class="typ">Int</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <!-- ================= CODE FIRST RESOLVER ================= -->
+    <h3 id="code-first-resolver">Code first resolver <a class="anchor" href="#code-first-resolver">#</a></h3>
+
+    <p>Tại thời điểm này, chúng ta đã định nghĩa các object (type definition) có thể tồn tại trong data graph, nhưng client chưa có cách nào để tương tác với các object đó. Để giải quyết điều đó, chúng ta cần tạo một resolver class. Trong phương pháp code first, một resolver class vừa định nghĩa các resolver function <strong>vừa</strong> tạo ra <strong>Query type</strong>. Điều này sẽ rõ ràng hơn khi chúng ta thực hiện ví dụ dưới đây:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">authors/authors.resolver</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="dec">@Resolver</span><span class="pn">(()</span> <span class="kw">=&gt;</span> <span class="cl">Author</span><span class="pn">)</span>
+<span class="kw">export class</span> <span class="cl">AuthorsResolver</span> <span class="pn">{</span>
+  <span class="fn">constructor</span><span class="pn">(</span>
+    <span class="kw">private</span> authorsService<span class="pn">:</span> <span class="typ">AuthorsService</span><span class="pn">,</span>
+    <span class="kw">private</span> postsService<span class="pn">:</span> <span class="typ">PostsService</span><span class="pn">,</span>
+  <span class="pn">)</span> <span class="pn">{}</span>
+
+  <span class="dec">@Query</span><span class="pn">(()</span> <span class="kw">=&gt;</span> <span class="cl">Author</span><span class="pn">)</span>
+  <span class="kw">async</span> <span class="fn">author</span><span class="pn">(</span><span class="dec">@Args</span><span class="pn">(</span><span class="str">'id'</span><span class="pn">,</span> <span class="pn">{</span> type<span class="pn">:</span> <span class="pn">()</span> <span class="kw">=&gt;</span> <span class="cl">Int</span> <span class="pn">})</span> id<span class="pn">:</span> <span class="typ">number</span><span class="pn">)</span> <span class="pn">{</span>
+    <span class="kw">return</span> <span class="kw">this</span><span class="pn">.</span>authorsService<span class="pn">.</span><span class="fn">findOneById</span><span class="pn">(</span>id<span class="pn">);</span>
+  <span class="pn">}</span>
+
+  <span class="dec">@ResolveField</span><span class="pn">()</span>
+  <span class="kw">async</span> <span class="fn">posts</span><span class="pn">(</span><span class="dec">@Parent</span><span class="pn">()</span> author<span class="pn">:</span> <span class="typ">Author</span><span class="pn">)</span> <span class="pn">{</span>
+    <span class="kw">const</span> <span class="pn">{</span> id <span class="pn">}</span> <span class="pn">=</span> author<span class="pn">;</span>
+    <span class="kw">return</span> <span class="kw">this</span><span class="pn">.</span>postsService<span class="pn">.</span><span class="fn">findAll</span><span class="pn">({</span> authorId<span class="pn">:</span> id <span class="pn">});</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">Gợi ý</span>
+      <p>Tất cả các decorator (ví dụ: <code>@Resolver</code>, <code>@ResolveField</code>, <code>@Args</code>, v.v.) đều được export từ package <code>@nestjs/graphql</code>.</p>
+    </div>
+
+    <p>Bạn có thể định nghĩa nhiều resolver class. Nest sẽ kết hợp chúng lại tại thời điểm chạy. Xem phần <a href="#module">module</a> bên dưới để biết thêm về cách tổ chức code.</p>
+
+    <div class="warn">
+      <span class="lbl">Lưu ý</span>
+      <p>Logic bên trong các class <code>AuthorsService</code> và <code>PostsService</code> có thể đơn giản hoặc phức tạp tùy ý. Điểm chính của ví dụ này là trình bày cách xây dựng resolver và cách chúng tương tác với các provider khác.</p>
+    </div>
+
+    <p>Trong ví dụ trên, chúng ta đã tạo <code>AuthorsResolver</code>, định nghĩa một query resolver function và một field resolver function. Để tạo resolver, chúng ta tạo một class với các resolver function làm method, và annotate class bằng decorator <code>@Resolver()</code>.</p>
+
+    <p>Trong ví dụ này, chúng ta định nghĩa một query handler để lấy author object dựa trên <code>id</code> được gửi trong request. Để chỉ định rằng method là một query handler, hãy sử dụng decorator <code>@Query()</code>.</p>
+
+    <p>Argument được truyền vào decorator <code>@Resolver()</code> là tùy chọn, nhưng phát huy tác dụng khi graph trở nên phức tạp. Nó được sử dụng để cung cấp parent object mà các field resolver function sử dụng khi duyệt xuống qua object graph.</p>
+
+    <p>Trong ví dụ của chúng ta, vì class bao gồm một <strong>field resolver</strong> function (cho property <code>posts</code> của object type <code>Author</code>), chúng ta <strong>phải</strong> cung cấp cho decorator <code>@Resolver()</code> một giá trị để chỉ ra class nào là parent type (tức là tên class <code>ObjectType</code> tương ứng) cho tất cả các field resolver được định nghĩa trong class này. Như rõ ràng trong ví dụ, khi viết field resolver function, cần truy cập parent object (object mà field đang được resolve thuộc về). Trong ví dụ này, chúng ta populate mảng posts của author bằng field resolver gọi service nhận <code>id</code> của author làm argument. Do đó, cần xác định parent object trong decorator <code>@Resolver()</code>. Lưu ý cách sử dụng tương ứng decorator tham số method <code>@Parent()</code> để trích xuất tham chiếu đến parent object đó trong field resolver.</p>
+
+    <p>Chúng ta có thể định nghĩa nhiều <code>@Query()</code> resolver function (cả trong class này lẫn trong bất kỳ resolver class nào khác), và chúng sẽ được tổng hợp vào một định nghĩa <strong>Query type</strong> duy nhất trong SDL được tạo ra cùng với các entry tương ứng trong resolver map. Điều này cho phép bạn định nghĩa các query gần với model và service mà chúng sử dụng, và giữ chúng được tổ chức tốt trong các module.</p>
+
+    <div class="hint">
+      <span class="lbl">Gợi ý</span>
+      <p>Nest CLI cung cấp một generator (schematic) tự động tạo <strong>tất cả boilerplate code</strong> để giúp chúng ta tránh phải làm tất cả điều này, và làm cho trải nghiệm developer đơn giản hơn nhiều. Đọc thêm về tính năng này <a href="/recipes/crud-generator">tại đây</a>.</p>
+    </div>
+
+    <!-- ================= QUERY TYPE NAMES ================= -->
+    <h3 id="query-type-names">Query type names <a class="anchor" href="#query-type-names">#</a></h3>
+
+    <p>Trong các ví dụ trên, decorator <code>@Query()</code> tạo GraphQL schema query type name dựa trên tên method. Ví dụ, xét cấu trúc sau từ ví dụ trên:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">TypeScript</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="dec">@Query</span><span class="pn">(()</span> <span class="kw">=&gt;</span> <span class="cl">Author</span><span class="pn">)</span>
+<span class="kw">async</span> <span class="fn">author</span><span class="pn">(</span><span class="dec">@Args</span><span class="pn">(</span><span class="str">'id'</span><span class="pn">,</span> <span class="pn">{</span> type<span class="pn">:</span> <span class="pn">()</span> <span class="kw">=&gt;</span> <span class="cl">Int</span> <span class="pn">})</span> id<span class="pn">:</span> <span class="typ">number</span><span class="pn">)</span> <span class="pn">{</span>
+  <span class="kw">return</span> <span class="kw">this</span><span class="pn">.</span>authorsService<span class="pn">.</span><span class="fn">findOneById</span><span class="pn">(</span>id<span class="pn">);</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <p>Điều này tạo ra entry sau cho author query trong schema (query type sử dụng cùng tên với tên method):</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">GraphQL</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="kw">type</span> <span class="typ">Query</span> <span class="pn">{</span>
+  <span class="fn">author</span><span class="pn">(</span>id<span class="pn">:</span> <span class="typ">Int!</span><span class="pn">):</span> <span class="typ">Author</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">Gợi ý</span>
+      <p>Tìm hiểu thêm về GraphQL query <a href="https://graphql.org/learn/queries/" target="_blank">tại đây</a>.</p>
+    </div>
+
+    <p>Theo quy ước, chúng ta thường muốn tách biệt các tên này; ví dụ, chúng ta muốn sử dụng tên như <code>getAuthor()</code> cho query handler method, nhưng vẫn sử dụng <code>author</code> cho query type name. Điều tương tự áp dụng cho field resolver. Chúng ta có thể dễ dàng làm điều này bằng cách truyền mapping name làm argument của các decorator <code>@Query()</code> và <code>@ResolveField()</code>, như dưới đây:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">authors/authors.resolver</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="dec">@Resolver</span><span class="pn">(()</span> <span class="kw">=&gt;</span> <span class="cl">Author</span><span class="pn">)</span>
+<span class="kw">export class</span> <span class="cl">AuthorsResolver</span> <span class="pn">{</span>
+  <span class="fn">constructor</span><span class="pn">(</span>
+    <span class="kw">private</span> authorsService<span class="pn">:</span> <span class="typ">AuthorsService</span><span class="pn">,</span>
+    <span class="kw">private</span> postsService<span class="pn">:</span> <span class="typ">PostsService</span><span class="pn">,</span>
+  <span class="pn">)</span> <span class="pn">{}</span>
+
+  <span class="dec">@Query</span><span class="pn">(()</span> <span class="kw">=&gt;</span> <span class="cl">Author</span><span class="pn">,</span> <span class="pn">{</span> name<span class="pn">:</span> <span class="str">'author'</span> <span class="pn">})</span>
+  <span class="kw">async</span> <span class="fn">getAuthor</span><span class="pn">(</span><span class="dec">@Args</span><span class="pn">(</span><span class="str">'id'</span><span class="pn">,</span> <span class="pn">{</span> type<span class="pn">:</span> <span class="pn">()</span> <span class="kw">=&gt;</span> <span class="cl">Int</span> <span class="pn">})</span> id<span class="pn">:</span> <span class="typ">number</span><span class="pn">)</span> <span class="pn">{</span>
+    <span class="kw">return</span> <span class="kw">this</span><span class="pn">.</span>authorsService<span class="pn">.</span><span class="fn">findOneById</span><span class="pn">(</span>id<span class="pn">);</span>
+  <span class="pn">}</span>
+
+  <span class="dec">@ResolveField</span><span class="pn">(</span><span class="str">'posts'</span><span class="pn">,</span> <span class="pn">()</span> <span class="kw">=&gt;</span> <span class="pn">[</span><span class="cl">Post</span><span class="pn">])</span>
+  <span class="kw">async</span> <span class="fn">getPosts</span><span class="pn">(</span><span class="dec">@Parent</span><span class="pn">()</span> author<span class="pn">:</span> <span class="typ">Author</span><span class="pn">)</span> <span class="pn">{</span>
+    <span class="kw">const</span> <span class="pn">{</span> id <span class="pn">}</span> <span class="pn">=</span> author<span class="pn">;</span>
+    <span class="kw">return</span> <span class="kw">this</span><span class="pn">.</span>postsService<span class="pn">.</span><span class="fn">findAll</span><span class="pn">({</span> authorId<span class="pn">:</span> id <span class="pn">});</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <p>Handler method <code>getAuthor</code> ở trên sẽ tạo ra phần sau của GraphQL schema trong SDL:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">GraphQL</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="kw">type</span> <span class="typ">Query</span> <span class="pn">{</span>
+  <span class="fn">author</span><span class="pn">(</span>id<span class="pn">:</span> <span class="typ">Int!</span><span class="pn">):</span> <span class="typ">Author</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <!-- ================= QUERY DECORATOR OPTIONS ================= -->
+    <h3 id="query-decorator-options">Query decorator options <a class="anchor" href="#query-decorator-options">#</a></h3>
+
+    <p>Options object của decorator <code>@Query()</code> (nơi chúng ta truyền <code>{name: 'author'}</code> ở trên) chấp nhận một số cặp key/value:</p>
+
+    <ul>
+      <li><code>name</code>: tên của query; <code>string</code></li>
+      <li><code>description</code>: mô tả sẽ được sử dụng để tạo tài liệu GraphQL schema (ví dụ: trong GraphQL playground); <code>string</code></li>
+      <li><code>deprecationReason</code>: thiết lập metadata query để hiển thị query là deprecated (ví dụ: trong GraphQL playground); <code>string</code></li>
+      <li><code>nullable</code>: liệu query có thể trả về null data response hay không; <code>boolean</code> hoặc <code>'items'</code> hoặc <code>'itemsAndList'</code> (xem ở trên để biết chi tiết về <code>'items'</code> và <code>'itemsAndList'</code>)</li>
+    </ul>
+
+    <!-- ================= ARGS DECORATOR OPTIONS ================= -->
+    <h3 id="args-decorator-options">Args decorator options <a class="anchor" href="#args-decorator-options">#</a></h3>
+
+    <p>Sử dụng decorator <code>@Args()</code> để trích xuất argument từ request để sử dụng trong method handler. Điều này hoạt động theo cách rất tương tự với <a href="/controllers#route-parameters">trích xuất argument tham số route REST</a>.</p>
+
+    <p>Thông thường, decorator <code>@Args()</code> của bạn sẽ đơn giản và không cần một object argument, như đã thấy với method <code>getAuthor()</code> ở trên. Ví dụ, nếu kiểu của identifier là string, cấu trúc sau đây là đủ, và đơn giản trích xuất named field từ inbound GraphQL request để sử dụng làm method argument.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">TypeScript</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="dec">@Args</span><span class="pn">(</span><span class="str">'id'</span><span class="pn">)</span> id<span class="pn">:</span> <span class="typ">string</span></pre>
+    </div>
+
+    <p>Trong trường hợp <code>getAuthor()</code>, kiểu <code>number</code> được sử dụng, điều này đặt ra thách thức. Kiểu <code>number</code> của TypeScript không cung cấp đủ thông tin về biểu diễn GraphQL mong đợi (ví dụ: <code>Int</code> vs. <code>Float</code>). Do đó, chúng ta phải truyền <strong>tường minh</strong> type reference. Chúng ta làm điều đó bằng cách truyền argument thứ hai vào decorator <code>Args()</code>, chứa argument options, như dưới đây:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">TypeScript</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="dec">@Query</span><span class="pn">(()</span> <span class="kw">=&gt;</span> <span class="cl">Author</span><span class="pn">,</span> <span class="pn">{</span> name<span class="pn">:</span> <span class="str">'author'</span> <span class="pn">})</span>
+<span class="kw">async</span> <span class="fn">getAuthor</span><span class="pn">(</span><span class="dec">@Args</span><span class="pn">(</span><span class="str">'id'</span><span class="pn">,</span> <span class="pn">{</span> type<span class="pn">:</span> <span class="pn">()</span> <span class="kw">=&gt;</span> <span class="cl">Int</span> <span class="pn">})</span> id<span class="pn">:</span> <span class="typ">number</span><span class="pn">)</span> <span class="pn">{</span>
+  <span class="kw">return</span> <span class="kw">this</span><span class="pn">.</span>authorsService<span class="pn">.</span><span class="fn">findOneById</span><span class="pn">(</span>id<span class="pn">);</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <p>Options object cho phép chúng ta chỉ định các cặp key-value tùy chọn sau:</p>
+
+    <ul>
+      <li><code>type</code>: một function trả về GraphQL type</li>
+      <li><code>defaultValue</code>: giá trị mặc định; <code>any</code></li>
+      <li><code>description</code>: metadata mô tả; <code>string</code></li>
+      <li><code>deprecationReason</code>: để deprecate một field và cung cấp metadata mô tả lý do; <code>string</code></li>
+      <li><code>nullable</code>: liệu field có nullable hay không</li>
+    </ul>
+
+    <p>Các query handler method có thể nhận nhiều argument. Hãy tưởng tượng rằng chúng ta muốn lấy author dựa trên <code>firstName</code> và <code>lastName</code>. Trong trường hợp này, chúng ta có thể gọi <code>@Args</code> hai lần:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">TypeScript</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="fn">getAuthor</span><span class="pn">(</span>
+  <span class="dec">@Args</span><span class="pn">(</span><span class="str">'firstName'</span><span class="pn">,</span> <span class="pn">{</span> nullable<span class="pn">:</span> <span class="num">true</span> <span class="pn">})</span> firstName<span class="pn">?:</span> <span class="typ">string</span><span class="pn">,</span>
+  <span class="dec">@Args</span><span class="pn">(</span><span class="str">'lastName'</span><span class="pn">,</span> <span class="pn">{</span> defaultValue<span class="pn">:</span> <span class="str">''</span> <span class="pn">})</span> lastName<span class="pn">?:</span> <span class="typ">string</span><span class="pn">,</span>
+<span class="pn">)</span> <span class="pn">{}</span></pre>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">Gợi ý</span>
+      <p>Trong trường hợp <code>firstName</code>, là một GraphQL nullable field, không cần thêm các kiểu non-value <code>null</code> hoặc <code>undefined</code> vào kiểu của field này. Chỉ cần lưu ý, bạn sẽ cần type guard cho các kiểu non-value có thể có trong resolver, vì một GraphQL nullable field sẽ cho phép các kiểu đó đi qua resolver của bạn.</p>
+    </div>
+
+    <!-- ================= DEDICATED ARGUMENTS CLASS ================= -->
+    <h3 id="dedicated-arguments-class">Dedicated arguments class <a class="anchor" href="#dedicated-arguments-class">#</a></h3>
+
+    <p>Với các lệnh gọi <code>@Args()</code> inline, code như ví dụ trên sẽ trở nên cồng kềnh. Thay vào đó, bạn có thể tạo một class argument <code>GetAuthorArgs</code> chuyên dụng và truy cập nó trong handler method như sau:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">TypeScript</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="dec">@Args</span><span class="pn">()</span> args<span class="pn">:</span> <span class="typ">GetAuthorArgs</span></pre>
+    </div>
+
+    <p>Tạo class <code>GetAuthorArgs</code> sử dụng <code>@ArgsType()</code> như dưới đây:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">authors/dto/get-author.args</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">MinLength</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'class-validator'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">Field</span><span class="pn">,</span> <span class="cl">ArgsType</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/graphql'</span><span class="pn">;</span>
+
+<span class="dec">@ArgsType</span><span class="pn">()</span>
+<span class="kw">class</span> <span class="cl">GetAuthorArgs</span> <span class="pn">{</span>
+  <span class="dec">@Field</span><span class="pn">({</span> nullable<span class="pn">:</span> <span class="num">true</span> <span class="pn">})</span>
+  firstName<span class="pn">?:</span> <span class="typ">string</span><span class="pn">;</span>
+
+  <span class="dec">@Field</span><span class="pn">({</span> defaultValue<span class="pn">:</span> <span class="str">''</span> <span class="pn">})</span>
+  <span class="dec">@MinLength</span><span class="pn">(</span><span class="num">3</span><span class="pn">)</span>
+  lastName<span class="pn">:</span> <span class="typ">string</span><span class="pn">;</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">Gợi ý</span>
+      <p>Một lần nữa, do các hạn chế của hệ thống metadata reflection của TypeScript, cần phải sử dụng decorator <code>@Field</code> để chỉ định thủ công type và tính optional, hoặc sử dụng <a href="/graphql/cli-plugin">CLI plugin</a>. Ngoài ra, trong trường hợp <code>firstName</code>, là một GraphQL nullable field, không cần thêm các kiểu non-value <code>null</code> hoặc <code>undefined</code> vào kiểu của field này. Chỉ cần lưu ý, bạn sẽ cần type guard cho các kiểu non-value có thể có trong resolver, vì một GraphQL nullable field sẽ cho phép các kiểu đó đi qua resolver của bạn.</p>
+    </div>
+
+    <p>Điều này sẽ tạo ra phần sau của GraphQL schema trong SDL:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">GraphQL</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="kw">type</span> <span class="typ">Query</span> <span class="pn">{</span>
+  <span class="fn">author</span><span class="pn">(</span>firstName<span class="pn">:</span> <span class="typ">String</span><span class="pn">,</span> lastName<span class="pn">:</span> <span class="typ">String</span> <span class="pn">=</span> <span class="str">''</span><span class="pn">):</span> <span class="typ">Author</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">Gợi ý</span>
+      <p>Lưu ý rằng các argument class như <code>GetAuthorArgs</code> hoạt động rất tốt với <code>ValidationPipe</code> (đọc <a href="/techniques/validation">thêm</a>).</p>
+    </div>
+
+    <!-- ================= CLASS INHERITANCE ================= -->
+    <h3 id="class-inheritance">Class inheritance <a class="anchor" href="#class-inheritance">#</a></h3>
+
+    <p>Bạn có thể sử dụng kế thừa class TypeScript tiêu chuẩn để tạo các base class với các tính năng utility type generic (field và field property, validation, v.v.) có thể được mở rộng. Ví dụ, bạn có thể có một tập hợp các argument liên quan đến pagination luôn bao gồm các field tiêu chuẩn <code>offset</code> và <code>limit</code>, nhưng cũng có các field index khác dành riêng cho type. Bạn có thể thiết lập một hệ thống phân cấp class như dưới đây.</p>
+
+    <p>Base <code>@ArgsType()</code> class:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">TypeScript</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="dec">@ArgsType</span><span class="pn">()</span>
+<span class="kw">class</span> <span class="cl">PaginationArgs</span> <span class="pn">{</span>
+  <span class="dec">@Field</span><span class="pn">(()</span> <span class="kw">=&gt;</span> <span class="cl">Int</span><span class="pn">)</span>
+  offset<span class="pn">:</span> <span class="typ">number</span> <span class="pn">=</span> <span class="num">0</span><span class="pn">;</span>
+
+  <span class="dec">@Field</span><span class="pn">(()</span> <span class="kw">=&gt;</span> <span class="cl">Int</span><span class="pn">)</span>
+  limit<span class="pn">:</span> <span class="typ">number</span> <span class="pn">=</span> <span class="num">10</span><span class="pn">;</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <p>Sub-class dành riêng cho type của base <code>@ArgsType()</code> class:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">TypeScript</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="dec">@ArgsType</span><span class="pn">()</span>
+<span class="kw">class</span> <span class="cl">GetAuthorArgs</span> <span class="kw">extends</span> <span class="cl">PaginationArgs</span> <span class="pn">{</span>
+  <span class="dec">@Field</span><span class="pn">({</span> nullable<span class="pn">:</span> <span class="num">true</span> <span class="pn">})</span>
+  firstName<span class="pn">?:</span> <span class="typ">string</span><span class="pn">;</span>
+
+  <span class="dec">@Field</span><span class="pn">({</span> defaultValue<span class="pn">:</span> <span class="str">''</span> <span class="pn">})</span>
+  <span class="dec">@MinLength</span><span class="pn">(</span><span class="num">3</span><span class="pn">)</span>
+  lastName<span class="pn">:</span> <span class="typ">string</span><span class="pn">;</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <p>Cách tiếp cận tương tự có thể được áp dụng với các object <code>@ObjectType()</code>. Định nghĩa các property generic trên base class:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">TypeScript</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="dec">@ObjectType</span><span class="pn">()</span>
+<span class="kw">class</span> <span class="cl">Character</span> <span class="pn">{</span>
+  <span class="dec">@Field</span><span class="pn">(()</span> <span class="kw">=&gt;</span> <span class="cl">Int</span><span class="pn">)</span>
+  id<span class="pn">:</span> <span class="typ">number</span><span class="pn">;</span>
+
+  <span class="dec">@Field</span><span class="pn">()</span>
+  name<span class="pn">:</span> <span class="typ">string</span><span class="pn">;</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <p>Thêm các property dành riêng cho type trên sub-class:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">TypeScript</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="dec">@ObjectType</span><span class="pn">()</span>
+<span class="kw">class</span> <span class="cl">Warrior</span> <span class="kw">extends</span> <span class="cl">Character</span> <span class="pn">{</span>
+  <span class="dec">@Field</span><span class="pn">()</span>
+  level<span class="pn">:</span> <span class="typ">number</span><span class="pn">;</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <p>Bạn cũng có thể sử dụng kế thừa với resolver. Bạn có thể đảm bảo type safety bằng cách kết hợp kế thừa và TypeScript generic. Ví dụ, để tạo một base class với query <code>findAll</code> generic, sử dụng cấu trúc như sau:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">TypeScript</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="kw">function</span> <span class="fn">BaseResolver</span><span class="pn">&lt;</span><span class="typ">T</span> <span class="kw">extends</span> <span class="typ">Type</span><span class="pn">&lt;</span><span class="typ">unknown</span><span class="pn">&gt;&gt;(</span>classRef<span class="pn">:</span> <span class="typ">T</span><span class="pn">):</span> <span class="typ">any</span> <span class="pn">{</span>
+  <span class="dec">@Resolver</span><span class="pn">({</span> isAbstract<span class="pn">:</span> <span class="num">true</span> <span class="pn">})</span>
+  <span class="kw">abstract class</span> <span class="cl">BaseResolverHost</span> <span class="pn">{</span>
+    <span class="dec">@Query</span><span class="pn">(()</span> <span class="kw">=&gt;</span> <span class="pn">[</span>classRef<span class="pn">],</span> <span class="pn">{</span> name<span class="pn">:</span> <span class="str">`findAll${classRef.name}`</span> <span class="pn">})</span>
+    <span class="kw">async</span> <span class="fn">findAll</span><span class="pn">():</span> <span class="typ">Promise</span><span class="pn">&lt;</span><span class="typ">T</span><span class="pn">[]&gt;</span> <span class="pn">{</span>
+      <span class="kw">return</span> <span class="pn">[];</span>
+    <span class="pn">}</span>
+  <span class="pn">}</span>
+  <span class="kw">return</span> <span class="cl">BaseResolverHost</span><span class="pn">;</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <p>Lưu ý những điều sau:</p>
+
+    <ul>
+      <li>Cần có return type tường minh (<code>any</code> ở trên); nếu không, TypeScript sẽ phàn nàn về việc sử dụng định nghĩa private class. Khuyến nghị: định nghĩa một interface thay vì sử dụng <code>any</code>.</li>
+      <li><code>Type</code> được import từ package <code>@nestjs/common</code></li>
+      <li>Property <code>isAbstract: true</code> chỉ ra rằng SDL (các câu lệnh Schema Definition Language) không nên được tạo cho class này. Lưu ý, bạn cũng có thể thiết lập property này cho các type khác để ngăn việc tạo SDL.</li>
+    </ul>
+
+    <p>Đây là cách bạn có thể tạo một concrete subclass của <code>BaseResolver</code>:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">TypeScript</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="dec">@Resolver</span><span class="pn">(()</span> <span class="kw">=&gt;</span> <span class="cl">Recipe</span><span class="pn">)</span>
+<span class="kw">export class</span> <span class="cl">RecipesResolver</span> <span class="kw">extends</span> <span class="fn">BaseResolver</span><span class="pn">(</span><span class="cl">Recipe</span><span class="pn">)</span> <span class="pn">{</span>
+  <span class="fn">constructor</span><span class="pn">(</span><span class="kw">private</span> recipesService<span class="pn">:</span> <span class="typ">RecipesService</span><span class="pn">)</span> <span class="pn">{</span>
+    <span class="kw">super</span><span class="pn">();</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <p>Cấu trúc này sẽ tạo ra SDL sau:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">GraphQL</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="kw">type</span> <span class="typ">Query</span> <span class="pn">{</span>
+  <span class="fn">findAllRecipe</span><span class="pn">:</span> <span class="pn">[</span><span class="typ">Recipe!</span><span class="pn">]!</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <!-- ================= GENERICS ================= -->
+    <h3 id="generics">Generics <a class="anchor" href="#generics">#</a></h3>
+
+    <p>Chúng ta đã thấy một cách sử dụng generic ở trên. Tính năng mạnh mẽ này của TypeScript có thể được sử dụng để tạo các abstraction hữu ích. Ví dụ, đây là một triển khai pagination dựa trên cursor mẫu dựa trên <a href="https://graphql.org/learn/pagination/#pagination-and-edges" target="_blank">tài liệu này</a>:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">TypeScript</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Field</span><span class="pn">,</span> <span class="cl">ObjectType</span><span class="pn">,</span> <span class="cl">Int</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/graphql'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">Type</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+
+<span class="kw">interface</span> <span class="typ">IEdgeType</span><span class="pn">&lt;</span><span class="typ">T</span><span class="pn">&gt;</span> <span class="pn">{</span>
+  cursor<span class="pn">:</span> <span class="typ">string</span><span class="pn">;</span>
+  node<span class="pn">:</span> <span class="typ">T</span><span class="pn">;</span>
+<span class="pn">}</span>
+
+<span class="kw">export interface</span> <span class="typ">IPaginatedType</span><span class="pn">&lt;</span><span class="typ">T</span><span class="pn">&gt;</span> <span class="pn">{</span>
+  edges<span class="pn">:</span> <span class="typ">IEdgeType</span><span class="pn">&lt;</span><span class="typ">T</span><span class="pn">&gt;[];</span>
+  nodes<span class="pn">:</span> <span class="typ">T</span><span class="pn">[];</span>
+  totalCount<span class="pn">:</span> <span class="typ">number</span><span class="pn">;</span>
+  hasNextPage<span class="pn">:</span> <span class="typ">boolean</span><span class="pn">;</span>
+<span class="pn">}</span>
+
+<span class="kw">export function</span> <span class="fn">Paginated</span><span class="pn">&lt;</span><span class="typ">T</span><span class="pn">&gt;(</span>classRef<span class="pn">:</span> <span class="typ">Type</span><span class="pn">&lt;</span><span class="typ">T</span><span class="pn">&gt;):</span> <span class="typ">Type</span><span class="pn">&lt;</span><span class="typ">IPaginatedType</span><span class="pn">&lt;</span><span class="typ">T</span><span class="pn">&gt;&gt;</span> <span class="pn">{</span>
+  <span class="dec">@ObjectType</span><span class="pn">(</span><span class="str">`${classRef.name}Edge`</span><span class="pn">)</span>
+  <span class="kw">abstract class</span> <span class="cl">EdgeType</span> <span class="pn">{</span>
+    <span class="dec">@Field</span><span class="pn">(()</span> <span class="kw">=&gt;</span> <span class="cl">String</span><span class="pn">)</span>
+    cursor<span class="pn">:</span> <span class="typ">string</span><span class="pn">;</span>
+
+    <span class="dec">@Field</span><span class="pn">(()</span> <span class="kw">=&gt;</span> classRef<span class="pn">)</span>
+    node<span class="pn">:</span> <span class="typ">T</span><span class="pn">;</span>
+  <span class="pn">}</span>
+
+  <span class="dec">@ObjectType</span><span class="pn">({</span> isAbstract<span class="pn">:</span> <span class="num">true</span> <span class="pn">})</span>
+  <span class="kw">abstract class</span> <span class="cl">PaginatedType</span> <span class="kw">implements</span> <span class="typ">IPaginatedType</span><span class="pn">&lt;</span><span class="typ">T</span><span class="pn">&gt;</span> <span class="pn">{</span>
+    <span class="dec">@Field</span><span class="pn">(()</span> <span class="kw">=&gt;</span> <span class="pn">[</span><span class="cl">EdgeType</span><span class="pn">],</span> <span class="pn">{</span> nullable<span class="pn">:</span> <span class="num">true</span> <span class="pn">})</span>
+    edges<span class="pn">:</span> <span class="typ">EdgeType</span><span class="pn">[];</span>
+
+    <span class="dec">@Field</span><span class="pn">(()</span> <span class="kw">=&gt;</span> <span class="pn">[</span>classRef<span class="pn">],</span> <span class="pn">{</span> nullable<span class="pn">:</span> <span class="num">true</span> <span class="pn">})</span>
+    nodes<span class="pn">:</span> <span class="typ">T</span><span class="pn">[];</span>
+
+    <span class="dec">@Field</span><span class="pn">(()</span> <span class="kw">=&gt;</span> <span class="cl">Int</span><span class="pn">)</span>
+    totalCount<span class="pn">:</span> <span class="typ">number</span><span class="pn">;</span>
+
+    <span class="dec">@Field</span><span class="pn">()</span>
+    hasNextPage<span class="pn">:</span> <span class="typ">boolean</span><span class="pn">;</span>
+  <span class="pn">}</span>
+  <span class="kw">return</span> <span class="cl">PaginatedType</span> <span class="kw">as</span> <span class="typ">Type</span><span class="pn">&lt;</span><span class="typ">IPaginatedType</span><span class="pn">&lt;</span><span class="typ">T</span><span class="pn">&gt;&gt;;</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <p>Với base class ở trên đã được định nghĩa, giờ chúng ta có thể dễ dàng tạo các type chuyên biệt kế thừa hành vi này. Ví dụ:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">TypeScript</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="dec">@ObjectType</span><span class="pn">()</span>
+<span class="kw">class</span> <span class="cl">PaginatedAuthor</span> <span class="kw">extends</span> <span class="fn">Paginated</span><span class="pn">(</span><span class="cl">Author</span><span class="pn">)</span> <span class="pn">{}</span></pre>
+    </div>
+
+    <!-- ================= SCHEMA FIRST ================= -->
+    <h3 id="schema-first">Schema first <a class="anchor" href="#schema-first">#</a></h3>
+
+    <p>Như đã đề cập trong chương <a href="/graphql/quick-start">trước</a>, trong cách tiếp cận schema first, chúng ta bắt đầu bằng cách định nghĩa thủ công các schema type trong SDL (đọc <a href="https://graphql.org/learn/schema/#type-language" target="_blank">thêm</a>). Xem xét các định nghĩa SDL type sau.</p>
+
+    <div class="hint">
+      <span class="lbl">Gợi ý</span>
+      <p>Để tiện lợi trong chương này, chúng ta đã tổng hợp tất cả SDL vào một vị trí (ví dụ: một file <code>.graphql</code>, như dưới đây). Trong thực tế, bạn có thể thấy phù hợp khi tổ chức code theo kiểu modular. Ví dụ, có thể hữu ích khi tạo các file SDL riêng lẻ với các định nghĩa type đại diện cho từng domain entity, cùng với các service liên quan, resolver code và Nest module definition class, trong một thư mục chuyên dụng cho entity đó. Nest sẽ tổng hợp tất cả các định nghĩa schema type riêng lẻ tại thời điểm chạy.</p>
+    </div>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">GraphQL</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="kw">type</span> <span class="typ">Author</span> <span class="pn">{</span>
+  id<span class="pn">:</span> <span class="typ">Int!</span>
+  firstName<span class="pn">:</span> <span class="typ">String</span>
+  lastName<span class="pn">:</span> <span class="typ">String</span>
+  posts<span class="pn">:</span> <span class="pn">[</span><span class="typ">Post</span><span class="pn">]</span>
+<span class="pn">}</span>
+
+<span class="kw">type</span> <span class="typ">Post</span> <span class="pn">{</span>
+  id<span class="pn">:</span> <span class="typ">Int!</span>
+  title<span class="pn">:</span> <span class="typ">String!</span>
+  votes<span class="pn">:</span> <span class="typ">Int</span>
+<span class="pn">}</span>
+
+<span class="kw">type</span> <span class="typ">Query</span> <span class="pn">{</span>
+  <span class="fn">author</span><span class="pn">(</span>id<span class="pn">:</span> <span class="typ">Int!</span><span class="pn">):</span> <span class="typ">Author</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <!-- ================= SCHEMA FIRST RESOLVER ================= -->
+    <h3 id="schema-first-resolver">Schema first resolver <a class="anchor" href="#schema-first-resolver">#</a></h3>
+
+    <p>Schema ở trên expose một query duy nhất &mdash; <code>author(id: Int!): Author</code>.</p>
+
+    <div class="hint">
+      <span class="lbl">Gợi ý</span>
+      <p>Tìm hiểu thêm về GraphQL query <a href="https://graphql.org/learn/queries/" target="_blank">tại đây</a>.</p>
+    </div>
+
+    <p>Bây giờ hãy tạo class <code>AuthorsResolver</code> để resolve các author query:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">authors/authors.resolver</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="dec">@Resolver</span><span class="pn">(</span><span class="str">'Author'</span><span class="pn">)</span>
+<span class="kw">export class</span> <span class="cl">AuthorsResolver</span> <span class="pn">{</span>
+  <span class="fn">constructor</span><span class="pn">(</span>
+    <span class="kw">private</span> authorsService<span class="pn">:</span> <span class="typ">AuthorsService</span><span class="pn">,</span>
+    <span class="kw">private</span> postsService<span class="pn">:</span> <span class="typ">PostsService</span><span class="pn">,</span>
+  <span class="pn">)</span> <span class="pn">{}</span>
+
+  <span class="dec">@Query</span><span class="pn">()</span>
+  <span class="kw">async</span> <span class="fn">author</span><span class="pn">(</span><span class="dec">@Args</span><span class="pn">(</span><span class="str">'id'</span><span class="pn">)</span> id<span class="pn">:</span> <span class="typ">number</span><span class="pn">)</span> <span class="pn">{</span>
+    <span class="kw">return</span> <span class="kw">this</span><span class="pn">.</span>authorsService<span class="pn">.</span><span class="fn">findOneById</span><span class="pn">(</span>id<span class="pn">);</span>
+  <span class="pn">}</span>
+
+  <span class="dec">@ResolveField</span><span class="pn">()</span>
+  <span class="kw">async</span> <span class="fn">posts</span><span class="pn">(</span><span class="dec">@Parent</span><span class="pn">()</span> author<span class="pn">)</span> <span class="pn">{</span>
+    <span class="kw">const</span> <span class="pn">{</span> id <span class="pn">}</span> <span class="pn">=</span> author<span class="pn">;</span>
+    <span class="kw">return</span> <span class="kw">this</span><span class="pn">.</span>postsService<span class="pn">.</span><span class="fn">findAll</span><span class="pn">({</span> authorId<span class="pn">:</span> id <span class="pn">});</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">Gợi ý</span>
+      <p>Tất cả các decorator (ví dụ: <code>@Resolver</code>, <code>@ResolveField</code>, <code>@Args</code>, v.v.) đều được export từ package <code>@nestjs/graphql</code>.</p>
+    </div>
+
+    <div class="warn">
+      <span class="lbl">Lưu ý</span>
+      <p>Logic bên trong các class <code>AuthorsService</code> và <code>PostsService</code> có thể đơn giản hoặc phức tạp tùy ý. Điểm chính của ví dụ này là trình bày cách xây dựng resolver và cách chúng tương tác với các provider khác.</p>
+    </div>
+
+    <p>Decorator <code>@Resolver()</code> là bắt buộc. Nó nhận một string argument tùy chọn với tên của một class. Tên class này là bắt buộc bất cứ khi nào class chứa các decorator <code>@ResolveField()</code> để thông báo cho Nest rằng method được decorate liên kết với parent type (type <code>Author</code> trong ví dụ hiện tại). Thay vào đó, thay vì thiết lập <code>@Resolver()</code> ở đầu class, điều này có thể được thực hiện cho từng method:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">TypeScript</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="dec">@Resolver</span><span class="pn">(</span><span class="str">'Author'</span><span class="pn">)</span>
+<span class="dec">@ResolveField</span><span class="pn">()</span>
+<span class="kw">async</span> <span class="fn">posts</span><span class="pn">(</span><span class="dec">@Parent</span><span class="pn">()</span> author<span class="pn">)</span> <span class="pn">{</span>
+  <span class="kw">const</span> <span class="pn">{</span> id <span class="pn">}</span> <span class="pn">=</span> author<span class="pn">;</span>
+  <span class="kw">return</span> <span class="kw">this</span><span class="pn">.</span>postsService<span class="pn">.</span><span class="fn">findAll</span><span class="pn">({</span> authorId<span class="pn">:</span> id <span class="pn">});</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <p>Trong trường hợp này (decorator <code>@Resolver()</code> ở cấp method), nếu bạn có nhiều decorator <code>@ResolveField()</code> bên trong một class, bạn phải thêm <code>@Resolver()</code> cho tất cả chúng. Điều này không được coi là best practice (vì nó tạo thêm overhead).</p>
+
+    <div class="hint">
+      <span class="lbl">Gợi ý</span>
+      <p>Bất kỳ class name argument nào được truyền vào <code>@Resolver()</code> <strong>không</strong> ảnh hưởng đến query (decorator <code>@Query()</code>) hoặc mutation (decorator <code>@Mutation()</code>).</p>
+    </div>
+
+    <div class="warn">
+      <span class="lbl">Cảnh báo</span>
+      <p>Việc sử dụng decorator <code>@Resolver</code> ở cấp method không được hỗ trợ với cách tiếp cận <strong>code first</strong>.</p>
+    </div>
+
+    <p>Trong các ví dụ trên, decorator <code>@Query()</code> và <code>@ResolveField()</code> được liên kết với các GraphQL schema type dựa trên tên method. Ví dụ, xét cấu trúc sau từ ví dụ trên:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">TypeScript</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="dec">@Query</span><span class="pn">()</span>
+<span class="kw">async</span> <span class="fn">author</span><span class="pn">(</span><span class="dec">@Args</span><span class="pn">(</span><span class="str">'id'</span><span class="pn">)</span> id<span class="pn">:</span> <span class="typ">number</span><span class="pn">)</span> <span class="pn">{</span>
+  <span class="kw">return</span> <span class="kw">this</span><span class="pn">.</span>authorsService<span class="pn">.</span><span class="fn">findOneById</span><span class="pn">(</span>id<span class="pn">);</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <p>Điều này tạo ra entry sau cho author query trong schema (query type sử dụng cùng tên với tên method):</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">GraphQL</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="kw">type</span> <span class="typ">Query</span> <span class="pn">{</span>
+  <span class="fn">author</span><span class="pn">(</span>id<span class="pn">:</span> <span class="typ">Int!</span><span class="pn">):</span> <span class="typ">Author</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <p>Theo quy ước, chúng ta thường muốn tách biệt các tên này, sử dụng các tên như <code>getAuthor()</code> hoặc <code>getPosts()</code> cho resolver method. Chúng ta có thể dễ dàng làm điều này bằng cách truyền mapping name làm argument cho decorator, như dưới đây:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">authors/authors.resolver</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="dec">@Resolver</span><span class="pn">(</span><span class="str">'Author'</span><span class="pn">)</span>
+<span class="kw">export class</span> <span class="cl">AuthorsResolver</span> <span class="pn">{</span>
+  <span class="fn">constructor</span><span class="pn">(</span>
+    <span class="kw">private</span> authorsService<span class="pn">:</span> <span class="typ">AuthorsService</span><span class="pn">,</span>
+    <span class="kw">private</span> postsService<span class="pn">:</span> <span class="typ">PostsService</span><span class="pn">,</span>
+  <span class="pn">)</span> <span class="pn">{}</span>
+
+  <span class="dec">@Query</span><span class="pn">(</span><span class="str">'author'</span><span class="pn">)</span>
+  <span class="kw">async</span> <span class="fn">getAuthor</span><span class="pn">(</span><span class="dec">@Args</span><span class="pn">(</span><span class="str">'id'</span><span class="pn">)</span> id<span class="pn">:</span> <span class="typ">number</span><span class="pn">)</span> <span class="pn">{</span>
+    <span class="kw">return</span> <span class="kw">this</span><span class="pn">.</span>authorsService<span class="pn">.</span><span class="fn">findOneById</span><span class="pn">(</span>id<span class="pn">);</span>
+  <span class="pn">}</span>
+
+  <span class="dec">@ResolveField</span><span class="pn">(</span><span class="str">'posts'</span><span class="pn">)</span>
+  <span class="kw">async</span> <span class="fn">getPosts</span><span class="pn">(</span><span class="dec">@Parent</span><span class="pn">()</span> author<span class="pn">)</span> <span class="pn">{</span>
+    <span class="kw">const</span> <span class="pn">{</span> id <span class="pn">}</span> <span class="pn">=</span> author<span class="pn">;</span>
+    <span class="kw">return</span> <span class="kw">this</span><span class="pn">.</span>postsService<span class="pn">.</span><span class="fn">findAll</span><span class="pn">({</span> authorId<span class="pn">:</span> id <span class="pn">});</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">Gợi ý</span>
+      <p>Nest CLI cung cấp một generator (schematic) tự động tạo <strong>tất cả boilerplate code</strong> để giúp chúng ta tránh phải làm tất cả điều này, và làm cho trải nghiệm developer đơn giản hơn nhiều. Đọc thêm về tính năng này <a href="/recipes/crud-generator">tại đây</a>.</p>
+    </div>
+
+    <!-- ================= GENERATING TYPES ================= -->
+    <h3 id="generating-types">Generating types <a class="anchor" href="#generating-types">#</a></h3>
+
+    <p>Giả sử rằng chúng ta sử dụng cách tiếp cận schema first và đã bật tính năng tạo typing (với <code>outputAs: 'class'</code> như đã trình bày trong chương <a href="/graphql/quick-start">trước</a>), sau khi bạn chạy ứng dụng, nó sẽ tạo ra file sau (tại vị trí bạn chỉ định trong method <code>GraphQLModule.forRoot()</code>). Ví dụ, trong <code>src/graphql.ts</code>:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">graphql</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="kw">export class</span> <span class="cl">Author</span> <span class="pn">{</span>
+  id<span class="pn">:</span> <span class="typ">number</span><span class="pn">;</span>
+  firstName<span class="pn">?:</span> <span class="typ">string</span><span class="pn">;</span>
+  lastName<span class="pn">?:</span> <span class="typ">string</span><span class="pn">;</span>
+  posts<span class="pn">?:</span> <span class="typ">Post</span><span class="pn">[];</span>
+<span class="pn">}</span>
+<span class="kw">export class</span> <span class="cl">Post</span> <span class="pn">{</span>
+  id<span class="pn">:</span> <span class="typ">number</span><span class="pn">;</span>
+  title<span class="pn">:</span> <span class="typ">string</span><span class="pn">;</span>
+  votes<span class="pn">?:</span> <span class="typ">number</span><span class="pn">;</span>
+<span class="pn">}</span>
+
+<span class="kw">export abstract class</span> <span class="cl">IQuery</span> <span class="pn">{</span>
+  <span class="kw">abstract</span> <span class="fn">author</span><span class="pn">(</span>id<span class="pn">:</span> <span class="typ">number</span><span class="pn">):</span> <span class="typ">Author</span> <span class="pn">|</span> <span class="typ">Promise</span><span class="pn">&lt;</span><span class="typ">Author</span><span class="pn">&gt;;</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <p>Bằng cách tạo class (thay vì kỹ thuật mặc định là tạo interface), bạn có thể sử dụng <strong>decorator</strong> validation khai báo kết hợp với cách tiếp cận schema first, đây là một kỹ thuật cực kỳ hữu ích (đọc <a href="/techniques/validation">thêm</a>). Ví dụ, bạn có thể thêm decorator <code>class-validator</code> vào class <code>CreatePostInput</code> được tạo ra như dưới đây để enforce độ dài string tối thiểu và tối đa trên field <code>title</code>:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">TypeScript</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">MinLength</span><span class="pn">,</span> <span class="cl">MaxLength</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'class-validator'</span><span class="pn">;</span>
+
+<span class="kw">export class</span> <span class="cl">CreatePostInput</span> <span class="pn">{</span>
+  <span class="dec">@MinLength</span><span class="pn">(</span><span class="num">3</span><span class="pn">)</span>
+  <span class="dec">@MaxLength</span><span class="pn">(</span><span class="num">50</span><span class="pn">)</span>
+  title<span class="pn">:</span> <span class="typ">string</span><span class="pn">;</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <div class="warn">
+      <span class="lbl">Lưu ý</span>
+      <p>Để bật auto-validation cho input (và parameter), hãy sử dụng <code>ValidationPipe</code>. Đọc thêm về validation <a href="/techniques/validation">tại đây</a> và cụ thể hơn về pipe <a href="/pipes">tại đây</a>.</p>
+    </div>
+
+    <p>Tuy nhiên, nếu bạn thêm decorator trực tiếp vào file được tạo tự động, chúng sẽ bị <strong>ghi đè</strong> mỗi khi file được tạo lại. Thay vào đó, hãy tạo một file riêng và đơn giản extend class được tạo ra.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">TypeScript</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">MinLength</span><span class="pn">,</span> <span class="cl">MaxLength</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'class-validator'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">Post</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'../../graphql.ts'</span><span class="pn">;</span>
+
+<span class="kw">export class</span> <span class="cl">CreatePostInput</span> <span class="kw">extends</span> <span class="cl">Post</span> <span class="pn">{</span>
+  <span class="dec">@MinLength</span><span class="pn">(</span><span class="num">3</span><span class="pn">)</span>
+  <span class="dec">@MaxLength</span><span class="pn">(</span><span class="num">50</span><span class="pn">)</span>
+  title<span class="pn">:</span> <span class="typ">string</span><span class="pn">;</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <!-- ================= GRAPHQL ARGUMENT DECORATORS ================= -->
+    <h3 id="graphql-argument-decorators">GraphQL argument decorators <a class="anchor" href="#graphql-argument-decorators">#</a></h3>
+
+    <p>Chúng ta có thể truy cập các argument chuẩn của GraphQL resolver bằng cách sử dụng các decorator chuyên dụng. Dưới đây là so sánh giữa các Nest decorator và các tham số Apollo thuần mà chúng đại diện.</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Nest Decorator</th>
+          <th>Apollo Parameter</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>@Root()</code> và <code>@Parent()</code></td>
+          <td><code>root</code>/<code>parent</code></td>
+        </tr>
+        <tr>
+          <td><code>@Context(param?: string)</code></td>
+          <td><code>context</code> / <code>context[param]</code></td>
+        </tr>
+        <tr>
+          <td><code>@Info(param?: string)</code></td>
+          <td><code>info</code> / <code>info[param]</code></td>
+        </tr>
+        <tr>
+          <td><code>@Args(param?: string)</code></td>
+          <td><code>args</code> / <code>args[param]</code></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p>Các argument này có ý nghĩa sau:</p>
+
+    <ul>
+      <li><code>root</code>: một object chứa kết quả trả về từ resolver trên parent field, hoặc trong trường hợp field <code>Query</code> cấp cao nhất, là <code>rootValue</code> được truyền từ cấu hình server.</li>
+      <li><code>context</code>: một object được chia sẻ bởi tất cả resolver trong một query cụ thể; thường được sử dụng để chứa state mỗi request.</li>
+      <li><code>info</code>: một object chứa thông tin về trạng thái thực thi của query.</li>
+      <li><code>args</code>: một object chứa các argument được truyền vào field trong query.</li>
+    </ul>
+
+    <!-- ================= MODULE ================= -->
+    <h3 id="module">Module <a class="anchor" href="#module">#</a></h3>
+
+    <p>Khi chúng ta hoàn thành các bước trên, chúng ta đã khai báo tất cả thông tin cần thiết bởi <code>GraphQLModule</code> để tạo resolver map. <code>GraphQLModule</code> sử dụng reflection để introspect metadata được cung cấp thông qua các decorator, và biến đổi class thành resolver map chính xác một cách tự động.</p>
+
+    <p>Điều duy nhất khác bạn cần quan tâm là <strong>cung cấp</strong> (tức là liệt kê như một <code>provider</code> trong một module nào đó) các resolver class (<code>AuthorsResolver</code>), và import module (<code>AuthorsModule</code>) ở đâu đó, để Nest có thể sử dụng nó.</p>
+
+    <p>Ví dụ, chúng ta có thể làm điều này trong <code>AuthorsModule</code>, module cũng có thể cung cấp các service khác cần thiết trong context này. Hãy chắc chắn import <code>AuthorsModule</code> ở đâu đó (ví dụ: trong root module, hoặc một module khác được import bởi root module).</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">authors/authors.module</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="dec">@Module</span><span class="pn">({</span>
+  imports<span class="pn">:</span> <span class="pn">[</span><span class="cl">PostsModule</span><span class="pn">],</span>
+  providers<span class="pn">:</span> <span class="pn">[</span><span class="cl">AuthorsService</span><span class="pn">,</span> <span class="cl">AuthorsResolver</span><span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">AuthorsModule</span> <span class="pn">{}</span></pre>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">Gợi ý</span>
+      <p>Sẽ hữu ích khi tổ chức code theo cái gọi là <strong>domain model</strong> (tương tự cách bạn tổ chức entry point trong REST API). Trong cách tiếp cận này, giữ các model (class <code>ObjectType</code>), resolver và service cùng nhau trong một Nest module đại diện cho domain model. Giữ tất cả các thành phần này trong một thư mục duy nhất cho mỗi module. Khi bạn làm điều này, và sử dụng <a href="/cli/overview">Nest CLI</a> để tạo từng phần tử, Nest sẽ tự động kết nối tất cả các phần này lại (định vị file trong các thư mục phù hợp, tạo entry trong mảng <code>provider</code> và <code>imports</code>, v.v.).</p>
+    </div>
+
+    <!-- Page navigation -->
+    <div class="page-nav">
+      <a class="pnbtn" href="QuickStart.html">
+        <span class="pnlbl">&laquo; Trước</span>
+        <span class="pntitle">Quick Start</span>
+      </a>
+      <a class="pnbtn r" href="Mutations.html">
+        <span class="pnlbl">Tiếp &raquo;</span>
+        <span class="pntitle">Mutations</span>
+      </a>
+    </div>
+
+  </div>
+
+  <nav class="toc">
+    <div class="toc-title">Nội dung</div>
+    <ul>
+      <li><a href="#code-first">Code first</a></li>
+      <li><a href="#object-types">Object types</a></li>
+      <li><a href="#code-first-resolver">Code first resolver</a></li>
+      <li><a href="#query-type-names">Query type names</a></li>
+      <li><a href="#query-decorator-options">Query decorator options</a></li>
+      <li><a href="#args-decorator-options">Args decorator options</a></li>
+      <li><a href="#dedicated-arguments-class">Dedicated arguments class</a></li>
+      <li><a href="#class-inheritance">Class inheritance</a></li>
+      <li><a href="#generics">Generics</a></li>
+      <li><a href="#schema-first">Schema first</a></li>
+      <li><a href="#schema-first-resolver">Schema first resolver</a></li>
+      <li><a href="#generating-types">Generating types</a></li>
+      <li><a href="#graphql-argument-decorators">GraphQL argument decorators</a></li>
+      <li><a href="#module">Module</a></li>
+    </ul>
+  </nav>
+</div>
+
+<script>
+function cp(btn){var w=btn.closest('.cb');var p=w.querySelector('.tab-content.active pre')||w.querySelector('pre');if(!p)return;navigator.clipboard.writeText(p.textContent.trim()).then(function(){var o=btn.textContent;btn.textContent='Copied!';btn.style.color='#4ade80';setTimeout(function(){btn.textContent=o;btn.style.color=''},1500)})}
+function switchTab(btn,tab){var cb=btn.closest('.cb');cb.querySelectorAll('.tab-btn').forEach(function(b){b.classList.toggle('active',b===btn)});cb.querySelectorAll('.tab-content').forEach(function(c){c.classList.toggle('active',c.dataset.tab===tab)})}
+document.addEventListener('DOMContentLoaded',function(){var hs=document.querySelectorAll('h3[id]');var ls=document.querySelectorAll('.toc a');if(!hs.length)return;var obs=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){ls.forEach(function(l){l.classList.toggle('active',l.getAttribute('href')==='#'+e.target.id)})}})},{rootMargin:'-20% 0px -75% 0px'});hs.forEach(function(h){obs.observe(h)})})
+</script>
+</body>
+</html>

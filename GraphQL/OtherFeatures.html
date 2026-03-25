@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Other Features | GraphQL | NestJS - Tài liệu tiếng Việt</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root{--bg:#0e0e0e;--surface:#1a1a1a;--surface2:#222;--border:#2a2a2a;--border-l:#333;--red:#ea2845;--red-l:#ff4d6a;--red-glow:rgba(234,40,69,.15);--text:#e8e8e8;--muted:#888;--sec:#b0b0b0;--code-bg:#1e1e1e;--code-bd:#2d2d2d;--hint-bg:#0d2a1a;--hint-c:#4ade80;--warn-bg:#2a1a0d;--warn-c:#fb923c;--note-bg:#0d1a2a;--note-c:#60a0d0;--toc-w:220px;--font:'Inter',sans-serif;--mono:'Source Code Pro',monospace;--r:6px;--rl:10px}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+    body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:15px;line-height:1.78}
+    .page{max-width:1060px;margin:0 auto;padding:48px 32px 96px;display:flex;gap:56px;align-items:flex-start}.content{flex:1;min-width:0}
+    .toc{width:var(--toc-w);flex-shrink:0;position:sticky;top:32px;align-self:flex-start;max-height:calc(100vh - 48px);overflow-y:auto}
+    .toc::-webkit-scrollbar{width:3px}.toc::-webkit-scrollbar-thumb{background:var(--border-l);border-radius:2px}
+    .toc-title{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding-bottom:8px;margin-bottom:8px;border-bottom:1px solid var(--border)}
+    .toc ul{list-style:none}.toc ul li a{display:block;padding:3.5px 0;font-size:12.5px;color:var(--muted);text-decoration:none;line-height:1.5;transition:color .15s;cursor:pointer}
+    .toc ul li a:hover,.toc ul li a.active{color:var(--red-l)}
+    .vi-banner{display:flex;align-items:center;gap:10px;padding:11px 16px;border:1px solid rgba(234,40,69,.3);border-radius:var(--rl);background:linear-gradient(135deg,rgba(234,40,69,.1),rgba(234,40,69,.04));font-size:13px;color:var(--sec);margin-bottom:32px}.vi-banner strong{color:var(--red-l)}
+    h1{font-size:36px;font-weight:700;letter-spacing:-.5px;line-height:1.2;margin-bottom:6px}h1::after{content:'';display:block;width:44px;height:3px;background:var(--red);border-radius:2px;margin-top:12px}
+    h3{font-size:19px;font-weight:600;letter-spacing:-.2px;margin:40px 0 12px;display:flex;align-items:center;gap:8px;scroll-margin-top:80px}
+    h4{font-size:16px;font-weight:600;margin:28px 0 10px;color:var(--text)}
+    .anchor{font-size:14px;color:var(--muted);text-decoration:none;opacity:0;transition:opacity .2s}h3:hover .anchor{opacity:1}
+    p{color:var(--sec);line-height:1.82;margin-bottom:16px}p:last-child{margin-bottom:0}
+    a{color:var(--red-l);text-decoration:none}a:hover{text-decoration:underline}strong{color:var(--text);font-weight:600}
+    ul,ol{color:var(--sec);padding-left:22px;line-height:2.1;margin:16px 0}ul li,ol li{margin-bottom:6px}
+    code{font-family:var(--mono);font-size:13px;background:var(--code-bg);border:1px solid var(--code-bd);padding:1px 6px;border-radius:4px;color:#f9a8d4}
+    .hint,.warn,.note{margin:18px 0;padding:12px 16px;border-left:3px solid;border-radius:var(--r);font-size:13.5px;line-height:1.72}
+    .hint{background:var(--hint-bg);border-color:var(--hint-c);color:#a7f3d0}.warn{background:var(--warn-bg);border-color:var(--warn-c);color:#fed7aa}.note{background:var(--note-bg);border-color:var(--note-c);color:#bae6fd}
+    .hint p,.warn p,.note p{margin:0;color:inherit}.lbl{display:block;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
+    .hint .lbl{color:var(--hint-c)}.warn .lbl{color:var(--warn-c)}.note .lbl{color:var(--note-c)}
+    .cb{margin:18px 0;border:1px solid var(--code-bd);border-radius:var(--rl);overflow:hidden;background:var(--code-bg)}
+    .cb-head{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:#181818;border-bottom:1px solid var(--code-bd);min-height:38px}
+    .cb-fname{font-family:var(--mono);font-size:11.5px;color:var(--muted);display:flex;align-items:center;gap:6px}.cb-fname::before{content:'';display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--red)}
+    .cb-right{display:flex;align-items:center;gap:6px}
+    .tab-btn{padding:3px 10px;font-size:11px;font-family:var(--mono);background:transparent;border:1px solid var(--border-l);color:var(--muted);border-radius:4px;cursor:pointer;transition:all .14s}.tab-btn:hover{color:var(--text)}.tab-btn.active{background:var(--red);border-color:var(--red);color:#fff}
+    .tab-content{display:none}.tab-content.active{display:block}
+    .cpbtn{padding:3px 9px;font-size:10.5px;font-family:var(--mono);background:var(--surface);border:1px solid var(--border-l);color:var(--muted);border-radius:4px;cursor:pointer;transition:all .14s}.cpbtn:hover{background:var(--surface2);color:var(--text)}
+    pre{padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:13.5px;line-height:1.65;color:#abb2bf}pre::-webkit-scrollbar{height:5px}pre::-webkit-scrollbar-thumb{background:var(--border-l);border-radius:3px}
+    .kw{color:#c678dd}.fn{color:#61afef}.str{color:#98c379}.dec{color:#e5c07b}.typ{color:#e5c07b}.cm{color:#5c6370;font-style:italic}.pn{color:#abb2bf}.num{color:#d19a66}.cl{color:#e06c75}
+    table{width:100%;border-collapse:collapse;margin:18px 0;font-size:13.5px}th,td{padding:10px 14px;border:1px solid var(--border);text-align:left}th{background:var(--surface);color:var(--text);font-weight:600}td{color:var(--sec)}
+    .page-nav{display:flex;justify-content:space-between;margin-top:52px;gap:16px}.pnbtn{display:flex;flex-direction:column;padding:14px 18px;border:1px solid var(--border);border-radius:var(--rl);text-decoration:none;transition:all .2s;min-width:150px}.pnbtn:hover{border-color:var(--red);background:var(--red-glow);text-decoration:none}.pnlbl{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:3px}.pntitle{font-size:14px;font-weight:600;color:var(--text)}.pnbtn.r{text-align:right;margin-left:auto}
+    @media(max-width:860px){.toc{display:none}}@media(max-width:600px){.page{padding:24px 16px 64px}}
+  </style>
+</head>
+<body>
+<div class="page">
+  <div class="content">
+
+    <div class="vi-banner">
+      <span>&#127468;&#127483;</span>
+      <span>Tài liệu NestJS tiếng Việt &mdash; <strong>Other Features</strong> &middot; <a href="https://docs.nestjs.com/graphql/other-features" target="_blank">docs.nestjs.com/graphql/other-features</a></span>
+    </div>
+
+    <h1>Other features</h1>
+
+    <p>Trong thế giới GraphQL, có rất nhiều cuộc tranh luận về việc xử lý các vấn đề như <strong>authentication</strong>, hoặc <strong>side-effects</strong> của các operation. Chúng ta nên xử lý mọi thứ bên trong business logic? Chúng ta nên sử dụng higher-order function để tăng cường các query và mutation với logic authorization? Hay chúng ta nên sử dụng <a href="Directives.html">schema directives</a>? Không có một câu trả lời duy nhất phù hợp cho tất cả các câu hỏi này.</p>
+
+    <p>Nest giúp giải quyết các vấn đề này với các tính năng đa nền tảng của nó như <a href="../Overview/Guards.html">guards</a> và <a href="../Overview/Interceptors.html">interceptors</a>. Triết lý là giảm sự trùng lặp và cung cấp công cụ giúp tạo ra các ứng dụng có cấu trúc tốt, dễ đọc và nhất quán.</p>
+
+    <!-- ================= OVERVIEW ================= -->
+    <h3 id="overview">Overview <a class="anchor" href="#overview">#</a></h3>
+
+    <p>Bạn có thể sử dụng các <a href="../Overview/Guards.html">guards</a>, <a href="../Overview/Interceptors.html">interceptors</a>, <a href="../Overview/Exception filters.html">filters</a> và <a href="../Overview/Pipes.html">pipes</a> tiêu chuẩn theo cùng một cách với GraphQL như với bất kỳ ứng dụng RESTful nào. Ngoài ra, bạn có thể dễ dàng tạo các decorator riêng bằng cách tận dụng tính năng <a href="../Overview/Custom decorators.html">custom decorators</a>. Hãy xem một ví dụ về GraphQL query handler.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">TypeScript</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="dec">@Query</span><span class="pn">(</span><span class="str">'author'</span><span class="pn">)</span>
+<span class="dec">@UseGuards</span><span class="pn">(</span><span class="cl">AuthGuard</span><span class="pn">)</span>
+<span class="kw">async</span> <span class="fn">getAuthor</span><span class="pn">(</span><span class="dec">@Args</span><span class="pn">(</span><span class="str">'id'</span><span class="pn">,</span> <span class="cl">ParseIntPipe</span><span class="pn">)</span> id<span class="pn">:</span> <span class="typ">number</span><span class="pn">)</span> <span class="pn">{</span>
+  <span class="kw">return</span> <span class="kw">this</span><span class="pn">.</span>authorsService<span class="pn">.</span><span class="fn">findOneById</span><span class="pn">(</span>id<span class="pn">);</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <p>Như bạn có thể thấy, GraphQL hoạt động với cả guards và pipes theo cùng cách như các HTTP REST handler. Vì vậy, bạn có thể chuyển logic authentication của mình sang một guard; thậm chí bạn có thể tái sử dụng cùng một guard class cho cả REST và GraphQL API interface. Tương tự, interceptors hoạt động trên cả hai loại ứng dụng theo cùng một cách:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">TypeScript</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="dec">@Mutation</span><span class="pn">()</span>
+<span class="dec">@UseInterceptors</span><span class="pn">(</span><span class="cl">EventsInterceptor</span><span class="pn">)</span>
+<span class="kw">async</span> <span class="fn">upvotePost</span><span class="pn">(</span><span class="dec">@Args</span><span class="pn">(</span><span class="str">'postId'</span><span class="pn">)</span> postId<span class="pn">:</span> <span class="typ">number</span><span class="pn">)</span> <span class="pn">{</span>
+  <span class="kw">return</span> <span class="kw">this</span><span class="pn">.</span>postsService<span class="pn">.</span><span class="fn">upvoteById</span><span class="pn">({</span> id<span class="pn">:</span> postId <span class="pn">});</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <!-- ================= EXECUTION CONTEXT ================= -->
+    <h3 id="execution-context">Execution context <a class="anchor" href="#execution-context">#</a></h3>
+
+    <p>Vì GraphQL nhận một loại dữ liệu khác trong request đến, <a href="../Fundamentals/execution-context.html">execution context</a> mà cả guards và interceptors nhận được có phần khác biệt giữa GraphQL và REST. Các GraphQL resolver có một tập hợp argument riêng biệt: <code>root</code>, <code>args</code>, <code>context</code>, và <code>info</code>. Do đó, guards và interceptors phải chuyển đổi <code>ExecutionContext</code> generic thành một <code>GqlExecutionContext</code>. Điều này rất đơn giản:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">TypeScript</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">CanActivate</span><span class="pn">,</span> <span class="cl">ExecutionContext</span><span class="pn">,</span> <span class="cl">Injectable</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">GqlExecutionContext</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/graphql'</span><span class="pn">;</span>
+
+<span class="dec">@Injectable</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">AuthGuard</span> <span class="kw">implements</span> <span class="cl">CanActivate</span> <span class="pn">{</span>
+  <span class="fn">canActivate</span><span class="pn">(</span>context<span class="pn">:</span> <span class="typ">ExecutionContext</span><span class="pn">):</span> <span class="typ">boolean</span> <span class="pn">{</span>
+    <span class="kw">const</span> ctx <span class="pn">=</span> <span class="cl">GqlExecutionContext</span><span class="pn">.</span><span class="fn">create</span><span class="pn">(</span>context<span class="pn">);</span>
+    <span class="kw">return</span> <span class="num">true</span><span class="pn">;</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <p>Object GraphQL context được trả về bởi <code>GqlExecutionContext.create()</code> expose một phương thức <strong>get</strong> cho mỗi argument của GraphQL resolver (ví dụ: <code>getArgs()</code>, <code>getContext()</code>, v.v.). Sau khi chuyển đổi, chúng ta có thể dễ dàng lấy bất kỳ GraphQL argument nào cho request hiện tại.</p>
+
+    <!-- ================= EXCEPTION FILTERS ================= -->
+    <h3 id="exception-filters">Exception filters <a class="anchor" href="#exception-filters">#</a></h3>
+
+    <p>Các <a href="../Overview/Exception filters.html">exception filters</a> tiêu chuẩn của Nest cũng tương thích với các ứng dụng GraphQL. Tương tự như <code>ExecutionContext</code>, các ứng dụng GraphQL nên chuyển đổi object <code>ArgumentsHost</code> thành object <code>GqlArgumentsHost</code>.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">TypeScript</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="dec">@Catch</span><span class="pn">(</span><span class="cl">HttpException</span><span class="pn">)</span>
+<span class="kw">export class</span> <span class="cl">HttpExceptionFilter</span> <span class="kw">implements</span> <span class="cl">GqlExceptionFilter</span> <span class="pn">{</span>
+  <span class="fn">catch</span><span class="pn">(</span>exception<span class="pn">:</span> <span class="typ">HttpException</span><span class="pn">,</span> host<span class="pn">:</span> <span class="typ">ArgumentsHost</span><span class="pn">)</span> <span class="pn">{</span>
+    <span class="kw">const</span> gqlHost <span class="pn">=</span> <span class="cl">GqlArgumentsHost</span><span class="pn">.</span><span class="fn">create</span><span class="pn">(</span>host<span class="pn">);</span>
+    <span class="kw">return</span> exception<span class="pn">;</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">Gợi ý</span>
+      <p>Cả <code>GqlExceptionFilter</code> và <code>GqlArgumentsHost</code> đều được import từ package <code>@nestjs/graphql</code>.</p>
+    </div>
+
+    <p>Lưu ý rằng khác với trường hợp REST, bạn không sử dụng object <code>response</code> gốc để tạo response.</p>
+
+    <!-- ================= CUSTOM DECORATORS ================= -->
+    <h3 id="custom-decorators">Custom decorators <a class="anchor" href="#custom-decorators">#</a></h3>
+
+    <p>Như đã đề cập, tính năng <a href="../Overview/Custom decorators.html">custom decorators</a> hoạt động như mong đợi với các GraphQL resolver.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">TypeScript</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="kw">export const</span> <span class="cl">User</span> <span class="pn">=</span> <span class="fn">createParamDecorator</span><span class="pn">(</span>
+  <span class="pn">(</span>data<span class="pn">:</span> <span class="typ">unknown</span><span class="pn">,</span> ctx<span class="pn">:</span> <span class="typ">ExecutionContext</span><span class="pn">)</span> <span class="pn">=&gt;</span>
+    <span class="cl">GqlExecutionContext</span><span class="pn">.</span><span class="fn">create</span><span class="pn">(</span>ctx<span class="pn">).</span><span class="fn">getContext</span><span class="pn">().</span>user<span class="pn">,</span>
+<span class="pn">);</span></pre>
+    </div>
+
+    <p>Sử dụng custom decorator <code>@User()</code> như sau:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">TypeScript</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="dec">@Mutation</span><span class="pn">()</span>
+<span class="kw">async</span> <span class="fn">upvotePost</span><span class="pn">(</span>
+  <span class="dec">@User</span><span class="pn">()</span> user<span class="pn">:</span> <span class="typ">UserEntity</span><span class="pn">,</span>
+  <span class="dec">@Args</span><span class="pn">(</span><span class="str">'postId'</span><span class="pn">)</span> postId<span class="pn">:</span> <span class="typ">number</span><span class="pn">,</span>
+<span class="pn">)</span> <span class="pn">{}</span></pre>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">Gợi ý</span>
+      <p>Trong ví dụ trên, chúng ta đã giả định rằng object <code>user</code> được gán vào context của ứng dụng GraphQL của bạn.</p>
+    </div>
+
+    <!-- ================= EXECUTE ENHANCERS AT FIELD RESOLVER LEVEL ================= -->
+    <h3 id="execute-enhancers-at-the-field-resolver-level">Execute enhancers at the field resolver level <a class="anchor" href="#execute-enhancers-at-the-field-resolver-level">#</a></h3>
+
+    <p>Trong ngữ cảnh GraphQL, Nest không chạy các <strong>enhancers</strong> (tên gọi chung cho interceptors, guards và filters) ở cấp field (<a href="https://github.com/nestjs/graphql/issues/320#issuecomment-511193229" target="_blank">xem issue này</a>): chúng chỉ chạy cho method <code>@Query()</code>/<code>@Mutation()</code> cấp cao nhất. Bạn có thể yêu cầu Nest thực thi interceptors, guards hoặc filters cho các method được đánh dấu bằng <code>@ResolveField()</code> bằng cách thiết lập tùy chọn <code>fieldResolverEnhancers</code> trong <code>GqlModuleOptions</code>. Truyền vào một danh sách <code>'interceptors'</code>, <code>'guards'</code>, và/hoặc <code>'filters'</code> tùy theo nhu cầu:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">TypeScript</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="cl">GraphQLModule</span><span class="pn">.</span><span class="fn">forRoot</span><span class="pn">({</span>
+  fieldResolverEnhancers<span class="pn">:</span> <span class="pn">[</span><span class="str">'interceptors'</span><span class="pn">]</span>
+<span class="pn">}),</span></pre>
+    </div>
+
+    <div class="warn">
+      <span class="lbl">Cảnh báo</span>
+      <p>Việc bật enhancers cho field resolvers có thể gây ra vấn đề hiệu năng khi bạn trả về nhiều bản ghi và field resolver của bạn được thực thi hàng nghìn lần. Vì lý do này, khi bạn bật <code>fieldResolverEnhancers</code>, chúng tôi khuyên bạn nên bỏ qua việc thực thi các enhancers không thực sự cần thiết cho các field resolvers. Bạn có thể làm điều này bằng cách sử dụng hàm helper sau:</p>
+    </div>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">TypeScript</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="kw">export function</span> <span class="fn">isResolvingGraphQLField</span><span class="pn">(</span>context<span class="pn">:</span> <span class="typ">ExecutionContext</span><span class="pn">):</span> <span class="typ">boolean</span> <span class="pn">{</span>
+  <span class="kw">if</span> <span class="pn">(</span>context<span class="pn">.</span><span class="fn">getType</span><span class="pn">&lt;</span><span class="typ">GqlContextType</span><span class="pn">&gt;()</span> <span class="pn">===</span> <span class="str">'graphql'</span><span class="pn">)</span> <span class="pn">{</span>
+    <span class="kw">const</span> gqlContext <span class="pn">=</span> <span class="cl">GqlExecutionContext</span><span class="pn">.</span><span class="fn">create</span><span class="pn">(</span>context<span class="pn">);</span>
+    <span class="kw">const</span> info <span class="pn">=</span> gqlContext<span class="pn">.</span><span class="fn">getInfo</span><span class="pn">();</span>
+    <span class="kw">const</span> parentType <span class="pn">=</span> info<span class="pn">.</span>parentType<span class="pn">.</span>name<span class="pn">;</span>
+    <span class="kw">return</span> parentType <span class="pn">!==</span> <span class="str">'Query'</span> <span class="pn">&amp;&amp;</span> parentType <span class="pn">!==</span> <span class="str">'Mutation'</span><span class="pn">;</span>
+  <span class="pn">}</span>
+  <span class="kw">return</span> <span class="num">false</span><span class="pn">;</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <!-- ================= CREATING A CUSTOM DRIVER ================= -->
+    <h3 id="creating-a-custom-driver">Creating a custom driver <a class="anchor" href="#creating-a-custom-driver">#</a></h3>
+
+    <p>Nest cung cấp hai driver chính thức sẵn có: <code>@nestjs/apollo</code> và <code>@nestjs/mercurius</code>, cũng như một API cho phép các nhà phát triển xây dựng các <strong>custom driver</strong> mới. Với custom driver, bạn có thể tích hợp bất kỳ thư viện GraphQL nào hoặc mở rộng tích hợp hiện có, thêm các tính năng bổ sung lên trên.</p>
+
+    <p>Ví dụ, để tích hợp package <code>express-graphql</code>, bạn có thể tạo driver class sau:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">TypeScript</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">AbstractGraphQLDriver</span><span class="pn">,</span> <span class="cl">GqlModuleOptions</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/graphql'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> graphqlHTTP <span class="pn">}</span> <span class="kw">from</span> <span class="str">'express-graphql'</span><span class="pn">;</span>
+
+<span class="kw">class</span> <span class="cl">ExpressGraphQLDriver</span> <span class="kw">extends</span> <span class="cl">AbstractGraphQLDriver</span> <span class="pn">{</span>
+  <span class="kw">async</span> <span class="fn">start</span><span class="pn">(</span>options<span class="pn">:</span> <span class="typ">GqlModuleOptions</span><span class="pn">&lt;</span><span class="typ">any</span><span class="pn">&gt;):</span> <span class="typ">Promise</span><span class="pn">&lt;</span><span class="typ">void</span><span class="pn">&gt;</span> <span class="pn">{</span>
+    options <span class="pn">=</span> <span class="kw">await</span> <span class="kw">this</span><span class="pn">.</span>graphQlFactory<span class="pn">.</span><span class="fn">mergeWithSchema</span><span class="pn">(</span>options<span class="pn">);</span>
+
+    <span class="kw">const</span> <span class="pn">{</span> httpAdapter <span class="pn">}</span> <span class="pn">=</span> <span class="kw">this</span><span class="pn">.</span>httpAdapterHost<span class="pn">;</span>
+    httpAdapter<span class="pn">.</span><span class="fn">use</span><span class="pn">(</span>
+      <span class="str">'/graphql'</span><span class="pn">,</span>
+      <span class="fn">graphqlHTTP</span><span class="pn">({</span>
+        schema<span class="pn">:</span> options<span class="pn">.</span>schema<span class="pn">,</span>
+        graphiql<span class="pn">:</span> <span class="num">true</span><span class="pn">,</span>
+      <span class="pn">}),</span>
+    <span class="pn">);</span>
+  <span class="pn">}</span>
+
+  <span class="kw">async</span> <span class="fn">stop</span><span class="pn">()</span> <span class="pn">{}</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <p>Và sau đó sử dụng nó như sau:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">TypeScript</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="cl">GraphQLModule</span><span class="pn">.</span><span class="fn">forRoot</span><span class="pn">({</span>
+  driver<span class="pn">:</span> <span class="cl">ExpressGraphQLDriver</span><span class="pn">,</span>
+<span class="pn">});</span></pre>
+    </div>
+
+    <!-- Page navigation -->
+    <div class="page-nav">
+      <a class="pnbtn" href="SharingModels.html">
+        <span class="pnlbl">&laquo; Trước</span>
+        <span class="pntitle">Sharing Models</span>
+      </a>
+      <a class="pnbtn r" href="Federation.html">
+        <span class="pnlbl">Tiếp &raquo;</span>
+        <span class="pntitle">Federation</span>
+      </a>
+    </div>
+
+  </div>
+
+  <nav class="toc">
+    <div class="toc-title">Nội dung</div>
+    <ul>
+      <li><a href="#overview">Overview</a></li>
+      <li><a href="#execution-context">Execution context</a></li>
+      <li><a href="#exception-filters">Exception filters</a></li>
+      <li><a href="#custom-decorators">Custom decorators</a></li>
+      <li><a href="#execute-enhancers-at-the-field-resolver-level">Execute enhancers at the field resolver level</a></li>
+      <li><a href="#creating-a-custom-driver">Creating a custom driver</a></li>
+    </ul>
+  </nav>
+</div>
+
+<script>
+function cp(btn){var w=btn.closest('.cb');var p=w.querySelector('.tab-content.active pre')||w.querySelector('pre');if(!p)return;navigator.clipboard.writeText(p.textContent.trim()).then(function(){var o=btn.textContent;btn.textContent='Copied!';btn.style.color='#4ade80';setTimeout(function(){btn.textContent=o;btn.style.color=''},1500)})}
+function switchTab(btn,tab){var cb=btn.closest('.cb');cb.querySelectorAll('.tab-btn').forEach(function(b){b.classList.toggle('active',b===btn)});cb.querySelectorAll('.tab-content').forEach(function(c){c.classList.toggle('active',c.dataset.tab===tab)})}
+document.addEventListener('DOMContentLoaded',function(){var hs=document.querySelectorAll('h3[id]');var ls=document.querySelectorAll('.toc a');if(!hs.length)return;var obs=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){ls.forEach(function(l){l.classList.toggle('active',l.getAttribute('href')==='#'+e.target.id)})}})},{rootMargin:'-20% 0px -75% 0px'});hs.forEach(function(h){obs.observe(h)})})
+</script>
+</body>
+</html>

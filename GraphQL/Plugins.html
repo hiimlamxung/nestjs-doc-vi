@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Plugins | GraphQL | NestJS - Tài liệu tiếng Việt</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root{--bg:#0e0e0e;--surface:#1a1a1a;--surface2:#222;--border:#2a2a2a;--border-l:#333;--red:#ea2845;--red-l:#ff4d6a;--red-glow:rgba(234,40,69,.15);--text:#e8e8e8;--muted:#888;--sec:#b0b0b0;--code-bg:#1e1e1e;--code-bd:#2d2d2d;--hint-bg:#0d2a1a;--hint-c:#4ade80;--warn-bg:#2a1a0d;--warn-c:#fb923c;--note-bg:#0d1a2a;--note-c:#60a0d0;--toc-w:220px;--font:'Inter',sans-serif;--mono:'Source Code Pro',monospace;--r:6px;--rl:10px}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+    body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:15px;line-height:1.78}
+    .page{max-width:1060px;margin:0 auto;padding:48px 32px 96px;display:flex;gap:56px;align-items:flex-start}.content{flex:1;min-width:0}
+    .toc{width:var(--toc-w);flex-shrink:0;position:sticky;top:32px;align-self:flex-start;max-height:calc(100vh - 48px);overflow-y:auto}
+    .toc::-webkit-scrollbar{width:3px}.toc::-webkit-scrollbar-thumb{background:var(--border-l);border-radius:2px}
+    .toc-title{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding-bottom:8px;margin-bottom:8px;border-bottom:1px solid var(--border)}
+    .toc ul{list-style:none}.toc ul li a{display:block;padding:3.5px 0;font-size:12.5px;color:var(--muted);text-decoration:none;line-height:1.5;transition:color .15s;cursor:pointer}
+    .toc ul li a:hover,.toc ul li a.active{color:var(--red-l)}
+    .vi-banner{display:flex;align-items:center;gap:10px;padding:11px 16px;border:1px solid rgba(234,40,69,.3);border-radius:var(--rl);background:linear-gradient(135deg,rgba(234,40,69,.1),rgba(234,40,69,.04));font-size:13px;color:var(--sec);margin-bottom:32px}.vi-banner strong{color:var(--red-l)}
+    h1{font-size:36px;font-weight:700;letter-spacing:-.5px;line-height:1.2;margin-bottom:6px}h1::after{content:'';display:block;width:44px;height:3px;background:var(--red);border-radius:2px;margin-top:12px}
+    h3{font-size:19px;font-weight:600;letter-spacing:-.2px;margin:40px 0 12px;display:flex;align-items:center;gap:8px;scroll-margin-top:80px}
+    h4{font-size:16px;font-weight:600;margin:28px 0 10px;color:var(--text)}
+    .anchor{font-size:14px;color:var(--muted);text-decoration:none;opacity:0;transition:opacity .2s}h3:hover .anchor{opacity:1}
+    p{color:var(--sec);line-height:1.82;margin-bottom:16px}p:last-child{margin-bottom:0}
+    a{color:var(--red-l);text-decoration:none}a:hover{text-decoration:underline}strong{color:var(--text);font-weight:600}
+    ul,ol{color:var(--sec);padding-left:22px;line-height:2.1;margin:16px 0}ul li,ol li{margin-bottom:6px}
+    code{font-family:var(--mono);font-size:13px;background:var(--code-bg);border:1px solid var(--code-bd);padding:1px 6px;border-radius:4px;color:#f9a8d4}
+    .hint,.warn,.note{margin:18px 0;padding:12px 16px;border-left:3px solid;border-radius:var(--r);font-size:13.5px;line-height:1.72}
+    .hint{background:var(--hint-bg);border-color:var(--hint-c);color:#a7f3d0}.warn{background:var(--warn-bg);border-color:var(--warn-c);color:#fed7aa}.note{background:var(--note-bg);border-color:var(--note-c);color:#bae6fd}
+    .hint p,.warn p,.note p{margin:0;color:inherit}.lbl{display:block;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
+    .hint .lbl{color:var(--hint-c)}.warn .lbl{color:var(--warn-c)}.note .lbl{color:var(--note-c)}
+    .cb{margin:18px 0;border:1px solid var(--code-bd);border-radius:var(--rl);overflow:hidden;background:var(--code-bg)}
+    .cb-head{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:#181818;border-bottom:1px solid var(--code-bd);min-height:38px}
+    .cb-fname{font-family:var(--mono);font-size:11.5px;color:var(--muted);display:flex;align-items:center;gap:6px}.cb-fname::before{content:'';display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--red)}
+    .cb-right{display:flex;align-items:center;gap:6px}
+    .tab-btn{padding:3px 10px;font-size:11px;font-family:var(--mono);background:transparent;border:1px solid var(--border-l);color:var(--muted);border-radius:4px;cursor:pointer;transition:all .14s}.tab-btn:hover{color:var(--text)}.tab-btn.active{background:var(--red);border-color:var(--red);color:#fff}
+    .tab-content{display:none}.tab-content.active{display:block}
+    .cpbtn{padding:3px 9px;font-size:10.5px;font-family:var(--mono);background:var(--surface);border:1px solid var(--border-l);color:var(--muted);border-radius:4px;cursor:pointer;transition:all .14s}.cpbtn:hover{background:var(--surface2);color:var(--text)}
+    pre{padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:13.5px;line-height:1.65;color:#abb2bf}pre::-webkit-scrollbar{height:5px}pre::-webkit-scrollbar-thumb{background:var(--border-l);border-radius:3px}
+    .kw{color:#c678dd}.fn{color:#61afef}.str{color:#98c379}.dec{color:#e5c07b}.typ{color:#e5c07b}.cm{color:#5c6370;font-style:italic}.pn{color:#abb2bf}.num{color:#d19a66}.cl{color:#e06c75}
+    table{width:100%;border-collapse:collapse;margin:18px 0;font-size:13.5px}th,td{padding:10px 14px;border:1px solid var(--border);text-align:left}th{background:var(--surface);color:var(--text);font-weight:600}td{color:var(--sec)}
+    .page-nav{display:flex;justify-content:space-between;margin-top:52px;gap:16px}.pnbtn{display:flex;flex-direction:column;padding:14px 18px;border:1px solid var(--border);border-radius:var(--rl);text-decoration:none;transition:all .2s;min-width:150px}.pnbtn:hover{border-color:var(--red);background:var(--red-glow);text-decoration:none}.pnlbl{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:3px}.pntitle{font-size:14px;font-weight:600;color:var(--text)}.pnbtn.r{text-align:right;margin-left:auto}
+    @media(max-width:860px){.toc{display:none}}@media(max-width:600px){.page{padding:24px 16px 64px}}
+  </style>
+</head>
+<body>
+<div class="page">
+  <div class="content">
+
+    <div class="vi-banner">
+      <span>&#127468;&#127483;</span>
+      <span>Tài liệu NestJS tiếng Việt &mdash; <strong>Plugins</strong> &middot; <a href="https://docs.nestjs.com/graphql/plugins" target="_blank">docs.nestjs.com/graphql/plugins</a></span>
+    </div>
+
+    <h1>Plugins</h1>
+
+    <!-- ================= PLUGINS WITH APOLLO ================= -->
+    <h3 id="plugins-with-apollo">Plugins với Apollo <a class="anchor" href="#plugins-with-apollo">#</a></h3>
+
+    <p>Plugins cho phép bạn mở rộng chức năng cốt lõi của Apollo Server bằng cách thực hiện các thao tác tùy chỉnh để phản hồi các sự kiện nhất định. Hiện tại, các sự kiện này tương ứng với các giai đoạn riêng lẻ trong vòng đời request GraphQL, và với việc khởi động của chính Apollo Server (đọc thêm <a href="https://www.apollographql.com/docs/apollo-server/integrations/plugins/" target="_blank">tại đây</a>). Ví dụ, một plugin logging cơ bản có thể ghi lại chuỗi query GraphQL liên kết với mỗi request được gửi đến Apollo Server.</p>
+
+    <!-- ================= CUSTOM PLUGINS ================= -->
+    <h4 id="custom-plugins">Custom plugins</h4>
+
+    <p>Để tạo một plugin, hãy khai báo một class được gắn decorator <code>@Plugin</code> được export từ package <code>@nestjs/apollo</code>. Ngoài ra, để có autocompletion code tốt hơn, hãy implement interface <code>ApolloServerPlugin</code> từ package <code>@apollo/server</code>.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">TypeScript</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">ApolloServerPlugin</span><span class="pn">,</span> <span class="cl">GraphQLRequestListener</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@apollo/server'</span><span class="pn">;</span>
+<span class="kw">import</span> <span class="pn">{</span> <span class="cl">Plugin</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/apollo'</span><span class="pn">;</span>
+
+<span class="dec">@Plugin</span><span class="pn">()</span>
+<span class="kw">export class</span> <span class="cl">LoggingPlugin</span> <span class="kw">implements</span> <span class="typ">ApolloServerPlugin</span> <span class="pn">{</span>
+  <span class="kw">async</span> <span class="fn">requestDidStart</span><span class="pn">():</span> <span class="typ">Promise</span><span class="pn">&lt;</span><span class="typ">GraphQLRequestListener</span><span class="pn">&lt;</span><span class="typ">any</span><span class="pn">&gt;&gt;</span> <span class="pn">{</span>
+    console<span class="pn">.</span><span class="fn">log</span><span class="pn">(</span><span class="str">'Request started'</span><span class="pn">);</span>
+    <span class="kw">return</span> <span class="pn">{</span>
+      <span class="kw">async</span> <span class="fn">willSendResponse</span><span class="pn">()</span> <span class="pn">{</span>
+        console<span class="pn">.</span><span class="fn">log</span><span class="pn">(</span><span class="str">'Will send response'</span><span class="pn">);</span>
+      <span class="pn">},</span>
+    <span class="pn">};</span>
+  <span class="pn">}</span>
+<span class="pn">}</span></pre>
+    </div>
+
+    <p>Với điều này, chúng ta có thể đăng ký <code>LoggingPlugin</code> như một provider.</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">TypeScript</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="dec">@Module</span><span class="pn">({</span>
+  providers<span class="pn">:</span> <span class="pn">[</span><span class="cl">LoggingPlugin</span><span class="pn">],</span>
+<span class="pn">})</span>
+<span class="kw">export class</span> <span class="cl">CommonModule</span> <span class="pn">{}</span></pre>
+    </div>
+
+    <p>Nest sẽ tự động khởi tạo plugin và áp dụng nó vào Apollo Server.</p>
+
+    <!-- ================= USING EXTERNAL PLUGINS ================= -->
+    <h4 id="using-external-plugins">Sử dụng external plugins</h4>
+
+    <p>Có một số plugin được cung cấp sẵn. Để sử dụng một plugin hiện có, chỉ cần import nó và thêm vào mảng <code>plugins</code>:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">TypeScript</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="cl">GraphQLModule</span><span class="pn">.</span><span class="fn">forRoot</span><span class="pn">({</span>
+  <span class="cm">// ...</span>
+  plugins<span class="pn">:</span> <span class="pn">[</span><span class="fn">ApolloServerOperationRegistry</span><span class="pn">({</span> <span class="cm">/* options */</span><span class="pn">})],</span>
+<span class="pn">}),</span></pre>
+    </div>
+
+    <div class="hint">
+      <span class="lbl">Gợi ý</span>
+      <p>Plugin <code>ApolloServerOperationRegistry</code> được export từ package <code>@apollo/server-plugin-operation-registry</code>.</p>
+    </div>
+
+    <!-- ================= PLUGINS WITH MERCURIUS ================= -->
+    <h3 id="plugins-with-mercurius">Plugins với Mercurius <a class="anchor" href="#plugins-with-mercurius">#</a></h3>
+
+    <p>Một số Fastify plugin hiện có dành riêng cho mercurius phải được load sau mercurius plugin (đọc thêm <a href="https://mercurius.dev/#/docs/plugins" target="_blank">tại đây</a>) trong cây plugin.</p>
+
+    <div class="warn">
+      <span class="lbl">Cảnh báo</span>
+      <p><a href="https://github.com/mercurius-js/mercurius-upload" target="_blank">mercurius-upload</a> là một ngoại lệ và nên được đăng ký trong file chính.</p>
+    </div>
+
+    <p>Để thực hiện điều này, <code>MercuriusDriver</code> cung cấp một tùy chọn cấu hình <code>plugins</code> tùy chọn. Nó đại diện cho một mảng các object gồm hai thuộc tính: <code>plugin</code> và <code>options</code> của nó. Do đó, việc đăng ký <a href="https://github.com/mercurius-js/cache" target="_blank">cache plugin</a> sẽ trông như sau:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">TypeScript</div>
+        <div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div>
+      </div>
+<pre><span class="cl">GraphQLModule</span><span class="pn">.</span><span class="fn">forRoot</span><span class="pn">({</span>
+  driver<span class="pn">:</span> <span class="cl">MercuriusDriver</span><span class="pn">,</span>
+  <span class="cm">// ...</span>
+  plugins<span class="pn">:</span> <span class="pn">[</span>
+    <span class="pn">{</span>
+      plugin<span class="pn">:</span> cache<span class="pn">,</span>
+      options<span class="pn">:</span> <span class="pn">{</span>
+        ttl<span class="pn">:</span> <span class="num">10</span><span class="pn">,</span>
+        policy<span class="pn">:</span> <span class="pn">{</span>
+          Query<span class="pn">:</span> <span class="pn">{</span>
+            add<span class="pn">:</span> <span class="num">true</span>
+          <span class="pn">}</span>
+        <span class="pn">}</span>
+      <span class="pn">},</span>
+    <span class="pn">}</span>
+  <span class="pn">]</span>
+<span class="pn">}),</span></pre>
+    </div>
+
+    <!-- Page navigation -->
+    <div class="page-nav">
+      <a class="pnbtn" href="MappedTypes.html">
+        <span class="pnlbl">&laquo; Trước</span>
+        <span class="pntitle">Mapped Types</span>
+      </a>
+      <a class="pnbtn r" href="Complexity.html">
+        <span class="pnlbl">Tiếp &raquo;</span>
+        <span class="pntitle">Complexity</span>
+      </a>
+    </div>
+
+  </div>
+
+  <nav class="toc">
+    <div class="toc-title">Nội dung</div>
+    <ul>
+      <li><a href="#plugins-with-apollo">Plugins với Apollo</a></li>
+      <li><a href="#plugins-with-mercurius">Plugins với Mercurius</a></li>
+    </ul>
+  </nav>
+</div>
+
+<script>
+function cp(btn){var w=btn.closest('.cb');var p=w.querySelector('.tab-content.active pre')||w.querySelector('pre');if(!p)return;navigator.clipboard.writeText(p.textContent.trim()).then(function(){var o=btn.textContent;btn.textContent='Copied!';btn.style.color='#4ade80';setTimeout(function(){btn.textContent=o;btn.style.color=''},1500)})}
+function switchTab(btn,tab){var cb=btn.closest('.cb');cb.querySelectorAll('.tab-btn').forEach(function(b){b.classList.toggle('active',b===btn)});cb.querySelectorAll('.tab-content').forEach(function(c){c.classList.toggle('active',c.dataset.tab===tab)})}
+document.addEventListener('DOMContentLoaded',function(){var hs=document.querySelectorAll('h3[id]');var ls=document.querySelectorAll('.toc a');if(!hs.length)return;var obs=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){ls.forEach(function(l){l.classList.toggle('active',l.getAttribute('href')==='#'+e.target.id)})}})},{rootMargin:'-20% 0px -75% 0px'});hs.forEach(function(h){obs.observe(h)})})
+</script>
+</body>
+</html>
