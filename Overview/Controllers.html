@@ -873,21 +873,14 @@
         <div class="code-block-wrapper">
           <div class="code-block-header">
             <div class="code-block-filename">create-cat.dto.ts</div>
-            <div style="display:flex;gap:8px;align-items:center;">
-              <div class="code-tabs">
-                <div class="code-tab active" onclick="switchTab(this,'blk-dto','ts')">TS</div>
-                <div class="code-tab" onclick="switchTab(this,'blk-dto','js')">JS</div>
-              </div>
-              <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
-            </div>
+            <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
           </div>
           <div id="blk-dto">
-            <div class="code-pane active" data-lang="ts"><pre><span class="kw">export class</span> <span class="cl">CreateCatDto</span> <span class="pn">{</span>
+            <div class="code-pane active"><pre><span class="kw">export class</span> <span class="cl">CreateCatDto</span> <span class="pn">{</span>
   name<span class="pn">:</span> <span class="typ">string</span><span class="pn">;</span>
   age<span class="pn">:</span> <span class="typ">number</span><span class="pn">;</span>
   breed<span class="pn">:</span> <span class="typ">string</span><span class="pn">;</span>
 <span class="pn">}</span></pre></div>
-            <div class="code-pane" data-lang="js"><pre><span class="kw">export class</span> <span class="cl">CreateCatDto</span> <span class="pn">{}</span></pre></div>
           </div>
         </div>
 
@@ -930,27 +923,11 @@
         <div class="code-block-wrapper">
           <div class="code-block-header">
             <div class="code-block-filename">cats.controller.ts</div>
-            <div style="display:flex;gap:8px;align-items:center;">
-              <div class="code-tabs">
-                <div class="code-tab active" onclick="switchTab(this,'blk-query','ts')">TS</div>
-                <div class="code-tab" onclick="switchTab(this,'blk-query','js')">JS</div>
-              </div>
-              <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
-            </div>
+            <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
           </div>
           <div id="blk-query">
-            <div class="code-pane active" data-lang="ts"><pre><span class="dec">@Get</span><span class="pn">()</span>
-<span class="kw">async</span> <span class="fn">findAll</span><span class="pn">(</span>
-  <span class="dec">@Query</span><span class="pn">(</span><span class="str">'age'</span><span class="pn">)</span> age<span class="pn">:</span> <span class="typ">number</span><span class="pn">,</span>
-  <span class="dec">@Query</span><span class="pn">(</span><span class="str">'breed'</span><span class="pn">)</span> breed<span class="pn">:</span> <span class="typ">string</span><span class="pn">,</span>
-<span class="pn">)</span> <span class="pn">{</span>
-  <span class="kw">return</span> <span class="str">`This action returns all cats filtered by age: <span class="tmpl">${age}</span> and breed: <span class="tmpl">${breed}</span>`</span><span class="pn">;</span>
-<span class="pn">}</span></pre></div>
-            <div class="code-pane" data-lang="js"><pre><span class="dec">@Get</span><span class="pn">()</span>
-<span class="kw">async</span> <span class="fn">findAll</span><span class="pn">(</span>
-  <span class="dec">@Query</span><span class="pn">(</span><span class="str">'age'</span><span class="pn">)</span> age<span class="pn">,</span>
-  <span class="dec">@Query</span><span class="pn">(</span><span class="str">'breed'</span><span class="pn">)</span> breed<span class="pn">,</span>
-<span class="pn">)</span> <span class="pn">{</span>
+            <div class="code-pane active"><pre><span class="dec">@Get</span><span class="pn">()</span>
+<span class="kw">async</span> <span class="fn">findAll</span><span class="pn">(</span><span class="dec">@Query</span><span class="pn">(</span><span class="str">'age'</span><span class="pn">)</span> age<span class="pn">:</span> <span class="typ">number</span><span class="pn">,</span> <span class="dec">@Query</span><span class="pn">(</span><span class="str">'breed'</span><span class="pn">)</span> breed<span class="pn">:</span> <span class="typ">string</span><span class="pn">)</span> <span class="pn">{</span>
   <span class="kw">return</span> <span class="str">`This action returns all cats filtered by age: <span class="tmpl">${age}</span> and breed: <span class="tmpl">${breed}</span>`</span><span class="pn">;</span>
 <span class="pn">}</span></pre></div>
           </div>
@@ -1109,23 +1086,10 @@ app<span class="pn">.</span><span class="fn">set</span><span class="pn">(</span>
         <div class="code-block-wrapper">
           <div class="code-block-header">
             <div class="code-block-filename">app.module.ts</div>
-            <div style="display:flex;gap:8px;align-items:center;">
-              <div class="code-tabs">
-                <div class="code-tab active" onclick="switchTab(this,'blk-module','ts')">TS</div>
-                <div class="code-tab" onclick="switchTab(this,'blk-module','js')">JS</div>
-              </div>
-              <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
-            </div>
+            <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
           </div>
           <div id="blk-module">
-            <div class="code-pane active" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Module</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
-<span class="kw">import</span> <span class="pn">{</span> <span class="cl">CatsController</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./cats/cats.controller'</span><span class="pn">;</span>
-
-<span class="dec">@Module</span><span class="pn">({</span>
-  controllers<span class="pn">:</span> <span class="pn">[</span><span class="cl">CatsController</span><span class="pn">],</span>
-<span class="pn">})</span>
-<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="pn">{}</span></pre></div>
-            <div class="code-pane" data-lang="js"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Module</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+            <div class="code-pane active"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Module</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
 <span class="kw">import</span> <span class="pn">{</span> <span class="cl">CatsController</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./cats/cats.controller'</span><span class="pn">;</span>
 
 <span class="dec">@Module</span><span class="pn">({</span>

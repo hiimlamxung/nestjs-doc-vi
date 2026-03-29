@@ -387,20 +387,15 @@
       <div class="cb-head">
         <div class="cb-fname">interfaces/cat.interface.ts</div>
         <div class="cb-right">
-          <div class="tabs">
-            <div class="tab on" onclick="sw(this,'b2','ts')">TS</div>
-            <div class="tab"    onclick="sw(this,'b2','js')">JS</div>
-          </div>
           <button class="cpbtn" onclick="cp(this)">Copy</button>
         </div>
       </div>
       <div id="b2">
-        <div class="pane on" data-lang="ts"><pre><span class="kw">export interface</span> <span class="cl">Cat</span> <span class="pn">{</span>
+        <div class="pane on"><pre><span class="kw">export interface</span> <span class="cl">Cat</span> <span class="pn">{</span>
   name<span class="pn">:</span> <span class="typ">string</span><span class="pn">;</span>
   age<span class="pn">:</span> <span class="typ">number</span><span class="pn">;</span>
   breed<span class="pn">:</span> <span class="typ">string</span><span class="pn">;</span>
 <span class="pn">}</span></pre></div>
-        <div class="pane" data-lang="js"><pre><span class="cm">// JavaScript không có interface — dùng JSDoc hoặc class thay thế</span></pre></div>
       </div>
     </div>
 
@@ -549,24 +544,11 @@
       <div class="cb-head">
         <div class="cb-fname">app.module.ts</div>
         <div class="cb-right">
-          <div class="tabs">
-            <div class="tab on" onclick="sw(this,'b7','ts')">TS</div>
-            <div class="tab"    onclick="sw(this,'b7','js')">JS</div>
-          </div>
           <button class="cpbtn" onclick="cp(this)">Copy</button>
         </div>
       </div>
       <div id="b7">
-        <div class="pane on" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Module</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
-<span class="kw">import</span> <span class="pn">{</span> <span class="cl">CatsController</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./cats/cats.controller'</span><span class="pn">;</span>
-<span class="kw">import</span> <span class="pn">{</span> <span class="cl">CatsService</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./cats/cats.service'</span><span class="pn">;</span>
-
-<span class="dec">@Module</span><span class="pn">({</span>
-  controllers<span class="pn">:</span> <span class="pn">[</span><span class="cl">CatsController</span><span class="pn">],</span>
-  providers<span class="pn">:</span>   <span class="pn">[</span><span class="cl">CatsService</span><span class="pn">],</span>
-<span class="pn">})</span>
-<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="pn">{}</span></pre></div>
-        <div class="pane" data-lang="js"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Module</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+        <div class="pane on"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Module</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
 <span class="kw">import</span> <span class="pn">{</span> <span class="cl">CatsController</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./cats/cats.controller'</span><span class="pn">;</span>
 <span class="kw">import</span> <span class="pn">{</span> <span class="cl">CatsService</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'./cats/cats.service'</span><span class="pn">;</span>
 
@@ -607,11 +589,11 @@
 
     <!-- PAGE NAV -->
     <div class="page-nav">
-      <a class="pnbtn" href="nestjs-controllers-vi.html">
+      <a class="pnbtn" href="Controllers.html">
         <div class="pnlbl">&larr; Trước</div>
         <div class="pntitle">Controllers</div>
       </a>
-      <a class="pnbtn r" href="https://docs.nestjs.com/modules" target="_blank">
+      <a class="pnbtn r" href="Modules.html">
         <div class="pnlbl">Tiếp theo &rarr;</div>
         <div class="pntitle">Modules</div>
       </a>

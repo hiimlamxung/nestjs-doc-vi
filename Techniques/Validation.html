@@ -338,7 +338,7 @@
     <p>Payload đến qua network là các plain JavaScript object. <code>ValidationPipe</code> có thể tự động transform payload thành object được typed theo DTO class của chúng. Để enable auto-transformation, set <code>transform</code> thành <code>true</code>. Điều này có thể được thực hiện ở method level:</p>
 
     <div class="cb">
-      <div class="cb-head"><div class="cb-fname">cats.controller.ts</div><div class="cb-right"><div class="tabs"><div class="tab on">JS</div></div><button class="cpbtn" onclick="cp(this)">Copy</button></div></div>
+      <div class="cb-head"><div class="cb-fname">cats.controller.ts</div><div class="cb-right"><button class="cpbtn" onclick="cp(this)">Copy</button></div></div>
       <div id="v10"><div class="pane on"><pre><span class="dec">@Post</span><span class="pn">()</span>
 <span class="dec">@UsePipes</span><span class="pn">(</span><span class="kw">new</span> <span class="cl">ValidationPipe</span><span class="pn">({</span> transform<span class="pn">:</span> <span class="kw">true</span> <span class="pn">}))</span>
 <span class="kw">async</span> <span class="fn">create</span><span class="pn">(</span><span class="dec">@Body</span><span class="pn">()</span> createCatDto<span class="pn">:</span> <span class="typ">CreateCatDto</span><span class="pn">) {</span>
@@ -519,7 +519,7 @@
     <!-- ═══════════════════════ PARSING AND VALIDATING ARRAYS ═══════════════════════ -->
     <h3 id="parsing-arrays">Parsing and validating arrays <a class="anchor" href="#parsing-arrays">#</a></h3>
 
-    <p>TypeScript không lưu trữ metadata về generic hoặc interface, vì vậy khi bạn sử dụng chúng trong DTO, <code>ValidationPipe</code> có thể không validate và parse payload đúng cách. Ví dụ, trong code sau, <code>createUserDtos</code> sẽ không được type đúng:</p>
+    <p>TypeScript không lưu trữ metadata về generic hoặc interface, vì vậy khi bạn sử dụng chúng trong DTO, <code>ValidationPipe</code> có thể không validate incoming data đúng cách. Ví dụ, trong code sau, <code>createUserDtos</code> sẽ không được validate chính xác:</p>
 
     <div class="cb">
       <div class="cb-head"><div style="flex:1"></div><button class="cpbtn" onclick="cp(this)">Copy</button></div>

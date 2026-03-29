@@ -277,19 +277,11 @@
       <div class="cb-head">
         <div class="cb-fname">cats.controller.ts</div>
         <div class="cb-right">
-          <div class="tabs">
-            <div class="tab on" onclick="sw(this,'b1','ts')">TS</div>
-            <div class="tab"    onclick="sw(this,'b1','js')">JS</div>
-          </div>
           <button class="cpbtn" onclick="cp(this)">Copy</button>
         </div>
       </div>
       <div id="b1">
-        <div class="pane on" data-lang="ts"><pre><span class="dec">@Get</span><span class="pn">()</span>
-<span class="kw">async</span> <span class="fn">findAll</span><span class="pn">()</span> <span class="pn">{</span>
-  <span class="kw">throw new</span> <span class="cl">HttpException</span><span class="pn">(</span><span class="str">'Forbidden'</span><span class="pn">,</span> <span class="typ">HttpStatus</span><span class="pn">.</span>FORBIDDEN<span class="pn">);</span>
-<span class="pn">}</span></pre></div>
-        <div class="pane" data-lang="js"><pre><span class="dec">@Get</span><span class="pn">()</span>
+        <div class="pane on"><pre><span class="dec">@Get</span><span class="pn">()</span>
 <span class="kw">async</span> <span class="fn">findAll</span><span class="pn">()</span> <span class="pn">{</span>
   <span class="kw">throw new</span> <span class="cl">HttpException</span><span class="pn">(</span><span class="str">'Forbidden'</span><span class="pn">,</span> <span class="typ">HttpStatus</span><span class="pn">.</span>FORBIDDEN<span class="pn">);</span>
 <span class="pn">}</span></pre></div>
@@ -321,7 +313,9 @@
 
     <p>Để chỉ override phần message, truyền một <code>string</code> vào argument <code>response</code>. Để override toàn bộ JSON response body, truyền một <code>object</code>. Nest sẽ serialize object và trả về như JSON response body.</p>
 
-    <p>Còn có argument constructor <strong>thứ ba</strong> (optional) — <code>options</code> — có thể dùng để cung cấp error <a href="https://nodejs.org/en/blog/release/v16.9.0/#error-cause" target="_blank">cause</a>. Object <code>cause</code> không được serialize vào response object, nhưng hữu ích cho mục đích logging.</p>
+    <p>Argument constructor thứ hai — <code>status</code> — phải là HTTP status code hợp lệ. Best practice là dùng enum <code>HttpStatus</code> được import từ <code>@nestjs/common</code>.</p>
+
+    <p>Còn có argument constructor <strong>thứ ba</strong> (optional) — <code>options</code> — có thể dùng để cung cấp error <a href="https://nodejs.org/en/blog/release/v16.9.0/#error-cause" target="_blank">cause</a>. Object <code>cause</code> không được serialize vào response object, nhưng hữu ích cho mục đích logging, cung cấp thông tin có giá trị về inner error đã gây ra <code>HttpException</code> được throw.</p>
 
     <p>Đây là ví dụ override toàn bộ response body và cung cấp error cause:</p>
 
@@ -329,28 +323,11 @@
       <div class="cb-head">
         <div class="cb-fname">cats.controller.ts</div>
         <div class="cb-right">
-          <div class="tabs">
-            <div class="tab on" onclick="sw(this,'b2','ts')">TS</div>
-            <div class="tab"    onclick="sw(this,'b2','js')">JS</div>
-          </div>
           <button class="cpbtn" onclick="cp(this)">Copy</button>
         </div>
       </div>
       <div id="b2">
-        <div class="pane on" data-lang="ts"><pre><span class="dec">@Get</span><span class="pn">()</span>
-<span class="kw">async</span> <span class="fn">findAll</span><span class="pn">()</span> <span class="pn">{</span>
-  <span class="kw">try</span> <span class="pn">{</span>
-    <span class="kw">await</span> <span class="kw">this</span><span class="pn">.</span>service<span class="pn">.</span><span class="fn">findAll</span><span class="pn">()</span>
-  <span class="pn">}</span> <span class="kw">catch</span> <span class="pn">(</span>error<span class="pn">)</span> <span class="pn">{</span>
-    <span class="kw">throw new</span> <span class="cl">HttpException</span><span class="pn">({</span>
-      status<span class="pn">:</span> <span class="typ">HttpStatus</span><span class="pn">.</span>FORBIDDEN<span class="pn">,</span>
-      error<span class="pn">:</span> <span class="str">'This is a custom message'</span><span class="pn">,</span>
-    <span class="pn">},</span> <span class="typ">HttpStatus</span><span class="pn">.</span>FORBIDDEN<span class="pn">, {</span>
-      cause<span class="pn">:</span> error
-    <span class="pn">});</span>
-  <span class="pn">}</span>
-<span class="pn">}</span></pre></div>
-        <div class="pane" data-lang="js"><pre><span class="dec">@Get</span><span class="pn">()</span>
+        <div class="pane on"><pre><span class="dec">@Get</span><span class="pn">()</span>
 <span class="kw">async</span> <span class="fn">findAll</span><span class="pn">()</span> <span class="pn">{</span>
   <span class="kw">try</span> <span class="pn">{</span>
     <span class="kw">await</span> <span class="kw">this</span><span class="pn">.</span>service<span class="pn">.</span><span class="fn">findAll</span><span class="pn">()</span>
@@ -393,20 +370,11 @@
       <div class="cb-head">
         <div class="cb-fname">forbidden.exception.ts</div>
         <div class="cb-right">
-          <div class="tabs">
-            <div class="tab on" onclick="sw(this,'b3','ts')">TS</div>
-            <div class="tab"    onclick="sw(this,'b3','js')">JS</div>
-          </div>
           <button class="cpbtn" onclick="cp(this)">Copy</button>
         </div>
       </div>
       <div id="b3">
-        <div class="pane on" data-lang="ts"><pre><span class="kw">export class</span> <span class="cl">ForbiddenException</span> <span class="kw">extends</span> <span class="cl">HttpException</span> <span class="pn">{</span>
-  <span class="fn">constructor</span><span class="pn">()</span> <span class="pn">{</span>
-    <span class="kw">super</span><span class="pn">(</span><span class="str">'Forbidden'</span><span class="pn">,</span> <span class="typ">HttpStatus</span><span class="pn">.</span>FORBIDDEN<span class="pn">);</span>
-  <span class="pn">}</span>
-<span class="pn">}</span></pre></div>
-        <div class="pane" data-lang="js"><pre><span class="kw">export class</span> <span class="cl">ForbiddenException</span> <span class="kw">extends</span> <span class="cl">HttpException</span> <span class="pn">{</span>
+        <div class="pane on"><pre><span class="kw">export class</span> <span class="cl">ForbiddenException</span> <span class="kw">extends</span> <span class="cl">HttpException</span> <span class="pn">{</span>
   <span class="fn">constructor</span><span class="pn">()</span> <span class="pn">{</span>
     <span class="kw">super</span><span class="pn">(</span><span class="str">'Forbidden'</span><span class="pn">,</span> <span class="typ">HttpStatus</span><span class="pn">.</span>FORBIDDEN<span class="pn">);</span>
   <span class="pn">}</span>
@@ -420,19 +388,11 @@
       <div class="cb-head">
         <div class="cb-fname">cats.controller.ts</div>
         <div class="cb-right">
-          <div class="tabs">
-            <div class="tab on" onclick="sw(this,'b4','ts')">TS</div>
-            <div class="tab"    onclick="sw(this,'b4','js')">JS</div>
-          </div>
           <button class="cpbtn" onclick="cp(this)">Copy</button>
         </div>
       </div>
       <div id="b4">
-        <div class="pane on" data-lang="ts"><pre><span class="dec">@Get</span><span class="pn">()</span>
-<span class="kw">async</span> <span class="fn">findAll</span><span class="pn">()</span> <span class="pn">{</span>
-  <span class="kw">throw new</span> <span class="cl">ForbiddenException</span><span class="pn">();</span>
-<span class="pn">}</span></pre></div>
-        <div class="pane" data-lang="js"><pre><span class="dec">@Get</span><span class="pn">()</span>
+        <div class="pane on"><pre><span class="dec">@Get</span><span class="pn">()</span>
 <span class="kw">async</span> <span class="fn">findAll</span><span class="pn">()</span> <span class="pn">{</span>
   <span class="kw">throw new</span> <span class="cl">ForbiddenException</span><span class="pn">();</span>
 <span class="pn">}</span></pre></div>
@@ -497,7 +457,7 @@
 
     <p>Trong khi exception filter base (tích hợp sẵn) có thể tự động xử lý nhiều trường hợp, bạn có thể muốn <strong>kiểm soát hoàn toàn</strong> exceptions layer. Ví dụ: thêm logging hoặc dùng JSON schema khác dựa trên một số yếu tố động. <strong>Exception filter</strong> được thiết kế chính xác cho mục đích này — chúng cho phép kiểm soát luồng xử lý và nội dung response gửi về client.</p>
 
-    <p>Hãy tạo một exception filter chịu trách nhiệm bắt exception là instance của class <code>HttpException</code> và implement logic response tuỳ biến cho chúng. Để làm điều này, cần truy cập vào các đối tượng platform <code>Request</code> và <code>Response</code>.</p>
+    <p>Hãy tạo một exception filter chịu trách nhiệm bắt exception là instance của class <code>HttpException</code> và implement logic response tuỳ biến cho chúng. Để làm điều này, cần truy cập vào các đối tượng platform <code>Request</code> và <code>Response</code>. Chúng ta truy cập đối tượng <code>Request</code> để lấy <code>url</code> gốc và đưa vào thông tin logging. Chúng ta dùng đối tượng <code>Response</code> để kiểm soát trực tiếp response được gửi đi, sử dụng method <code>response.json()</code>.</p>
 
     <div class="cb">
       <div class="cb-head">
@@ -570,7 +530,7 @@
 
     <p>Hãy xem xét các parameter của method <code>catch()</code>. Parameter <code>exception</code> là đối tượng exception đang được xử lý. Parameter <code>host</code> là đối tượng <code>ArgumentsHost</code> — một utility object mạnh mẽ mà chúng ta sẽ tìm hiểu thêm trong <a href="https://docs.nestjs.com/fundamentals/execution-context" target="_blank">chương execution context</a>.</p>
 
-    <p>Trong code mẫu này, chúng ta dùng nó để lấy tham chiếu đến các đối tượng <code>Request</code> và <code>Response</code> đang được truyền đến request handler gốc (trong controller nơi exception phát sinh). Chúng ta dùng một số helper method trên <code>ArgumentsHost</code> để lấy các đối tượng <code>Request</code> và <code>Response</code> mong muốn.</p>
+    <p>Trong code mẫu này, chúng ta dùng nó để lấy tham chiếu đến các đối tượng <code>Request</code> và <code>Response</code> đang được truyền đến request handler gốc (trong controller nơi exception phát sinh). Chúng ta dùng một số helper method trên <code>ArgumentsHost</code> để lấy các đối tượng <code>Request</code> và <code>Response</code> mong muốn. Tìm hiểu thêm về <code>ArgumentsHost</code> <a href="https://docs.nestjs.com/fundamentals/execution-context" target="_blank">tại đây</a>.</p>
 
     <p>Lý do cho mức độ trừu tượng này là <code>ArgumentsHost</code> hoạt động trong mọi context (ví dụ: HTTP server context mà chúng ta đang làm việc, nhưng cũng cả Microservices và WebSockets). Trong chương execution context, chúng ta sẽ thấy cách truy cập <a href="https://docs.nestjs.com/fundamentals/execution-context#host-methods" target="_blank">các argument cơ bản phù hợp</a> cho <strong>bất kỳ</strong> execution context nào — điều này cho phép viết các generic exception filter hoạt động trên tất cả context.</p>
 
@@ -610,7 +570,7 @@
       <p>Decorator <code>@UseFilters()</code> được import từ package <code>@nestjs/common</code>.</p>
     </div>
 
-    <p>Ở đây chúng ta dùng decorator <code>@UseFilters()</code>. Tương tự <code>@Catch()</code>, nó có thể nhận một filter instance hoặc danh sách phân cách bởi dấu phẩy. Ngoài ra, có thể truyền class (thay vì instance), để framework chịu trách nhiệm khởi tạo và cho phép <strong>dependency injection</strong>.</p>
+    <p>Ở đây chúng ta dùng decorator <code>@UseFilters()</code>. Tương tự <code>@Catch()</code>, nó có thể nhận một filter instance hoặc danh sách phân cách bởi dấu phẩy. Ở đây chúng ta tạo instance của <code>HttpExceptionFilter</code> ngay tại chỗ. Ngoài ra, có thể truyền class (thay vì instance), để framework chịu trách nhiệm khởi tạo và cho phép <strong>dependency injection</strong>.</p>
 
     <div class="cb">
       <div class="cb-head">
@@ -643,7 +603,7 @@
       <p>Ưu tiên áp dụng filter bằng <strong>class</strong> thay vì instance khi có thể. Điều này giảm <strong>memory usage</strong> vì Nest có thể dễ dàng tái sử dụng các instance của cùng một class trong toàn bộ module.</p>
     </div>
 
-    <p>Exception filter có thể có scope ở các cấp độ khác nhau:</p>
+    <p>Trong ví dụ trên, <code>HttpExceptionFilter</code> chỉ được áp dụng cho route handler <code>create()</code> duy nhất, khiến nó có method-scoped. Exception filter có thể có scope ở các cấp độ khác nhau: method-scoped của controller/resolver/gateway, controller-scoped, hoặc global-scoped.</p>
 
     <div class="scope-row">
       <div class="scope-badge method">Method-scoped</div>
@@ -657,22 +617,17 @@
       <div class="cb-head">
         <div class="cb-fname">cats.controller.ts</div>
         <div class="cb-right">
-          <div class="tabs">
-            <div class="tab on" onclick="sw(this,'b9','ts')">TS</div>
-            <div class="tab"    onclick="sw(this,'b9','js')">JS</div>
-          </div>
           <button class="cpbtn" onclick="cp(this)">Copy</button>
         </div>
       </div>
       <div id="b9">
-        <div class="pane on" data-lang="ts"><pre><span class="dec">@Controller</span><span class="pn">()</span>
-<span class="dec">@UseFilters</span><span class="pn">(</span><span class="kw">new</span> <span class="cl">HttpExceptionFilter</span><span class="pn">())</span>
-<span class="kw">export class</span> <span class="cl">CatsController</span> <span class="pn">{}</span></pre></div>
-        <div class="pane" data-lang="js"><pre><span class="dec">@Controller</span><span class="pn">()</span>
+        <div class="pane on"><pre><span class="dec">@Controller</span><span class="pn">()</span>
 <span class="dec">@UseFilters</span><span class="pn">(</span><span class="kw">new</span> <span class="cl">HttpExceptionFilter</span><span class="pn">())</span>
 <span class="kw">export class</span> <span class="cl">CatsController</span> <span class="pn">{}</span></pre></div>
       </div>
     </div>
+
+    <p>Cấu trúc này thiết lập <code>HttpExceptionFilter</code> cho mọi route handler được định nghĩa bên trong <code>CatsController</code>.</p>
 
     <p>Để tạo global-scoped filter:</p>
 
@@ -680,21 +635,11 @@
       <div class="cb-head">
         <div class="cb-fname">main.ts</div>
         <div class="cb-right">
-          <div class="tabs">
-            <div class="tab on" onclick="sw(this,'b10','ts')">TS</div>
-            <div class="tab"    onclick="sw(this,'b10','js')">JS</div>
-          </div>
           <button class="cpbtn" onclick="cp(this)">Copy</button>
         </div>
       </div>
       <div id="b10">
-        <div class="pane on" data-lang="ts"><pre><span class="kw">async function</span> <span class="fn">bootstrap</span><span class="pn">()</span> <span class="pn">{</span>
-  <span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> <span class="cl">NestFactory</span><span class="pn">.</span><span class="fn">create</span><span class="pn">(</span><span class="cl">AppModule</span><span class="pn">);</span>
-  app<span class="pn">.</span><span class="fn">useGlobalFilters</span><span class="pn">(</span><span class="kw">new</span> <span class="cl">HttpExceptionFilter</span><span class="pn">());</span>
-  <span class="kw">await</span> app<span class="pn">.</span><span class="fn">listen</span><span class="pn">(</span>process<span class="pn">.</span>env<span class="pn">.</span>PORT <span class="pn">??</span> <span class="num">3000</span><span class="pn">);</span>
-<span class="pn">}</span>
-<span class="fn">bootstrap</span><span class="pn">();</span></pre></div>
-        <div class="pane" data-lang="js"><pre><span class="kw">async function</span> <span class="fn">bootstrap</span><span class="pn">()</span> <span class="pn">{</span>
+        <div class="pane on"><pre><span class="kw">async function</span> <span class="fn">bootstrap</span><span class="pn">()</span> <span class="pn">{</span>
   <span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> <span class="cl">NestFactory</span><span class="pn">.</span><span class="fn">create</span><span class="pn">(</span><span class="cl">AppModule</span><span class="pn">);</span>
   app<span class="pn">.</span><span class="fn">useGlobalFilters</span><span class="pn">(</span><span class="kw">new</span> <span class="cl">HttpExceptionFilter</span><span class="pn">());</span>
   <span class="kw">await</span> app<span class="pn">.</span><span class="fn">listen</span><span class="pn">(</span>process<span class="pn">.</span>env<span class="pn">.</span>PORT <span class="pn">??</span> <span class="num">3000</span><span class="pn">);</span>
@@ -708,33 +653,17 @@
       <p>Method <code>useGlobalFilters()</code> không thiết lập filter cho gateway hoặc hybrid application.</p>
     </div>
 
-    <p>Global filter được đăng ký từ bên ngoài bất kỳ module nào (với <code>useGlobalFilters()</code>) không thể inject dependency vì điều này được thực hiện ngoài context của bất kỳ module nào. Để giải quyết vấn đề này, bạn có thể đăng ký global-scoped filter <strong>trực tiếp từ bất kỳ module nào</strong> bằng cách sau:</p>
+    <p>Global-scoped filter được sử dụng trên toàn bộ ứng dụng, cho mọi controller và mọi route handler. Về mặt dependency injection, global filter được đăng ký từ bên ngoài bất kỳ module nào (với <code>useGlobalFilters()</code> như ví dụ trên) không thể inject dependency vì điều này được thực hiện ngoài context của bất kỳ module nào. Để giải quyết vấn đề này, bạn có thể đăng ký global-scoped filter <strong>trực tiếp từ bất kỳ module nào</strong> bằng cách sau:</p>
 
     <div class="cb">
       <div class="cb-head">
         <div class="cb-fname">app.module.ts</div>
         <div class="cb-right">
-          <div class="tabs">
-            <div class="tab on" onclick="sw(this,'b11','ts')">TS</div>
-            <div class="tab"    onclick="sw(this,'b11','js')">JS</div>
-          </div>
           <button class="cpbtn" onclick="cp(this)">Copy</button>
         </div>
       </div>
       <div id="b11">
-        <div class="pane on" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Module</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
-<span class="kw">import</span> <span class="pn">{</span> <span class="cl">APP_FILTER</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/core'</span><span class="pn">;</span>
-
-<span class="dec">@Module</span><span class="pn">({</span>
-  providers<span class="pn">:</span> <span class="pn">[</span>
-    <span class="pn">{</span>
-      provide<span class="pn">:</span>  <span class="cl">APP_FILTER</span><span class="pn">,</span>
-      useClass<span class="pn">:</span> <span class="cl">HttpExceptionFilter</span><span class="pn">,</span>
-    <span class="pn">},</span>
-  <span class="pn">],</span>
-<span class="pn">})</span>
-<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="pn">{}</span></pre></div>
-        <div class="pane" data-lang="js"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Module</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+        <div class="pane on"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Module</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
 <span class="kw">import</span> <span class="pn">{</span> <span class="cl">APP_FILTER</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/core'</span><span class="pn">;</span>
 
 <span class="dec">@Module</span><span class="pn">({</span>
@@ -753,6 +682,8 @@
       <span class="lbl">💡 Hint</span>
       <p>Khi dùng cách này để thực hiện dependency injection cho filter, lưu ý rằng bất kể module nào sử dụng cấu trúc này, filter thực chất là global. Nên thực hiện điều này ở module nơi filter được định nghĩa. Ngoài ra, <code>useClass</code> không phải là cách duy nhất để đăng ký custom provider. Tìm hiểu thêm <a href="https://docs.nestjs.com/fundamentals/custom-providers" target="_blank">tại đây</a>.</p>
     </div>
+
+    <p>Bạn có thể thêm bao nhiêu filter tuỳ thích bằng kỹ thuật này; chỉ cần thêm từng filter vào mảng providers.</p>
 
     <!-- ── CATCH EVERYTHING ── -->
     <h3 id="catch-everything">Catch everything <a class="anchor" href="#catch-everything">#</a></h3>
@@ -778,7 +709,8 @@
   <span class="fn">constructor</span><span class="pn">(</span><span class="kw">private readonly</span> httpAdapterHost<span class="pn">:</span> <span class="cl">HttpAdapterHost</span><span class="pn">)</span> <span class="pn">{}</span>
 
   <span class="fn">catch</span><span class="pn">(</span>exception<span class="pn">:</span> <span class="kw">unknown</span><span class="pn">,</span> host<span class="pn">:</span> <span class="typ">ArgumentsHost</span><span class="pn">):</span> <span class="kw">void</span> <span class="pn">{</span>
-    <span class="cm">// httpAdapter có thể chưa có trong constructor, resolve ở đây</span>
+    <span class="cm">// In certain situations `httpAdapter` might not be available in the</span>
+    <span class="cm">// constructor method, thus we should resolve it here.</span>
     <span class="kw">const</span> <span class="pn">{</span> httpAdapter <span class="pn">}</span> <span class="pn">=</span> <span class="kw">this</span><span class="pn">.</span>httpAdapterHost<span class="pn">;</span>
     <span class="kw">const</span> ctx <span class="pn">=</span> host<span class="pn">.</span><span class="fn">switchToHttp</span><span class="pn">();</span>
 
@@ -873,11 +805,11 @@
 
     <!-- PAGE NAV -->
     <div class="page-nav">
-      <a class="pnbtn" href="nestjs-middleware-vi.html">
+      <a class="pnbtn" href="Middleware.html">
         <div class="pnlbl">&larr; Trước</div>
         <div class="pntitle">Middleware</div>
       </a>
-      <a class="pnbtn r" href="https://docs.nestjs.com/pipes" target="_blank">
+      <a class="pnbtn r" href="Pipes.html">
         <div class="pnlbl">Tiếp theo &rarr;</div>
         <div class="pntitle">Pipes</div>
       </a>

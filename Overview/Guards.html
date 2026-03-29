@@ -190,7 +190,7 @@
 
     <p>Guard có <strong>một trách nhiệm duy nhất</strong>: xác định xem một request đã cho có được route handler xử lý hay không, dựa trên các điều kiện nhất định (như permission, role, ACL…) có mặt tại runtime. Điều này thường được gọi là <strong>authorization</strong>.</p>
 
-    <p>Authorization (và người anh em <strong>authentication</strong>, thường phối hợp cùng) thường được xử lý bởi <a href="nestjs-middleware-vi.html">middleware</a> trong các ứng dụng Express truyền thống. Middleware là lựa chọn tốt cho authentication vì những thứ như token validation và attach property vào <code>request</code> không gắn chặt với route context cụ thể.</p>
+    <p>Authorization (và người anh em <strong>authentication</strong>, thường phối hợp cùng) thường được xử lý bởi <a href="Middleware.html">middleware</a> trong các ứng dụng Express truyền thống. Middleware là lựa chọn tốt cho authentication vì những thứ như token validation và attach property vào <code>request</code> không gắn chặt với route context cụ thể.</p>
 
     <p>Nhưng middleware, về bản chất, là "ngu ngốc". Nó không biết handler nào sẽ được thực thi sau khi gọi <code>next()</code>. Ngược lại, <strong>Guard</strong> có quyền truy cập vào instance <code>ExecutionContext</code> và do đó biết chính xác điều gì sẽ được thực thi tiếp theo. Guard được thiết kế giống như exception filter, pipe và interceptor — cho phép bạn xen vào logic xử lý tại đúng điểm trong chu kỳ request/response một cách <strong>declarative</strong>.</p>
 
@@ -245,6 +245,8 @@
       <p>Nếu bạn đang tìm ví dụ thực tế về cách implement cơ chế authentication trong ứng dụng, hãy xem <a href="https://docs.nestjs.com/security/authentication" target="_blank">chương này</a>. Tương tự, để có ví dụ authorization phức tạp hơn, hãy xem <a href="https://docs.nestjs.com/security/authorization" target="_blank">trang này</a>.</p>
     </div>
 
+    <p>Logic bên trong hàm <code>validateRequest()</code> có thể đơn giản hoặc phức tạp tuỳ ý. Trọng tâm của ví dụ này là minh hoạ cách guard phù hợp vào chu kỳ request/response.</p>
+
     <p>Mỗi guard phải implement hàm <code>canActivate()</code>. Hàm này trả về boolean cho biết request hiện tại được cho phép hay không. Nó có thể trả về response đồng bộ hoặc bất đồng bộ (qua <code>Promise</code> hoặc <code>Observable</code>). Nest dùng giá trị trả về để điều khiển hành động tiếp theo:</p>
 
     <div class="result-row">
@@ -261,7 +263,7 @@
     <!-- ── EXECUTION CONTEXT ── -->
     <h3 id="execution-context">Execution context <a class="anchor" href="#execution-context">#</a></h3>
 
-    <p>Hàm <code>canActivate()</code> nhận một argument duy nhất là instance <code>ExecutionContext</code>. <code>ExecutionContext</code> kế thừa từ <code>ArgumentsHost</code> — chúng ta đã gặp <code>ArgumentsHost</code> trong chương exception filters.</p>
+    <p>Hàm <code>canActivate()</code> nhận một argument duy nhất là instance <code>ExecutionContext</code>. <code>ExecutionContext</code> kế thừa từ <code>ArgumentsHost</code>. Chúng ta đã gặp <code>ArgumentsHost</code> trong chương exception filters. Trong ví dụ trên, chúng ta chỉ dùng các helper method đã được định nghĩa trên <code>ArgumentsHost</code> để lấy reference đến <code>Request</code> object. Bạn có thể tham khảo lại phần <strong>Arguments host</strong> của chương <a href="Exception filters.html">exception filters</a> để biết thêm.</p>
 
     <p>Bằng cách extend <code>ArgumentsHost</code>, <code>ExecutionContext</code> còn thêm một số helper method mới cung cấp thêm chi tiết về quá trình thực thi hiện tại. Những chi tiết này hữu ích để build các guard generic có thể hoạt động trên nhiều loại controller, method và execution context. Tìm hiểu thêm về <code>ExecutionContext</code> <a href="https://docs.nestjs.com/fundamentals/execution-context" target="_blank">tại đây</a>.</p>
 
@@ -315,24 +317,17 @@
       <div class="scope-badge global">Global-scoped</div>
     </div>
 
-    <p>Dưới đây, chúng ta thiết lập controller-scoped guard bằng decorator <code>@UseGuards()</code>. Decorator này có thể nhận một argument duy nhất hoặc danh sách phân cách bởi dấu phẩy.</p>
+    <p>Dưới đây, chúng ta thiết lập controller-scoped guard bằng decorator <code>@UseGuards()</code>. Decorator này có thể nhận một argument duy nhất hoặc danh sách phân cách bởi dấu phẩy. Điều này cho phép bạn dễ dàng áp dụng tập hợp guard phù hợp chỉ với một khai báo.</p>
 
     <div class="cb">
       <div class="cb-head">
         <div style="flex:1"></div>
         <div class="cb-right">
-          <div class="tabs">
-            <div class="tab on" onclick="sw(this,'b3','ts')">TS</div>
-            <div class="tab"    onclick="sw(this,'b3','js')">JS</div>
-          </div>
           <button class="cpbtn" onclick="cp(this)">Copy</button>
         </div>
       </div>
       <div id="b3">
-        <div class="pane on" data-lang="ts"><pre><span class="dec">@Controller</span><span class="pn">(</span><span class="str">'cats'</span><span class="pn">)</span>
-<span class="dec">@UseGuards</span><span class="pn">(</span><span class="cl">RolesGuard</span><span class="pn">)</span>
-<span class="kw">export class</span> <span class="cl">CatsController</span> <span class="pn">{}</span></pre></div>
-        <div class="pane" data-lang="js"><pre><span class="dec">@Controller</span><span class="pn">(</span><span class="str">'cats'</span><span class="pn">)</span>
+        <div class="pane on"><pre><span class="dec">@Controller</span><span class="pn">(</span><span class="str">'cats'</span><span class="pn">)</span>
 <span class="dec">@UseGuards</span><span class="pn">(</span><span class="cl">RolesGuard</span><span class="pn">)</span>
 <span class="kw">export class</span> <span class="cl">CatsController</span> <span class="pn">{}</span></pre></div>
       </div>
@@ -349,18 +344,11 @@
       <div class="cb-head">
         <div style="flex:1"></div>
         <div class="cb-right">
-          <div class="tabs">
-            <div class="tab on" onclick="sw(this,'b4','ts')">TS</div>
-            <div class="tab"    onclick="sw(this,'b4','js')">JS</div>
-          </div>
           <button class="cpbtn" onclick="cp(this)">Copy</button>
         </div>
       </div>
       <div id="b4">
-        <div class="pane on" data-lang="ts"><pre><span class="dec">@Controller</span><span class="pn">(</span><span class="str">'cats'</span><span class="pn">)</span>
-<span class="dec">@UseGuards</span><span class="pn">(</span><span class="kw">new</span> <span class="cl">RolesGuard</span><span class="pn">())</span>
-<span class="kw">export class</span> <span class="cl">CatsController</span> <span class="pn">{}</span></pre></div>
-        <div class="pane" data-lang="js"><pre><span class="dec">@Controller</span><span class="pn">(</span><span class="str">'cats'</span><span class="pn">)</span>
+        <div class="pane on"><pre><span class="dec">@Controller</span><span class="pn">(</span><span class="str">'cats'</span><span class="pn">)</span>
 <span class="dec">@UseGuards</span><span class="pn">(</span><span class="kw">new</span> <span class="cl">RolesGuard</span><span class="pn">())</span>
 <span class="kw">export class</span> <span class="cl">CatsController</span> <span class="pn">{}</span></pre></div>
       </div>
@@ -374,53 +362,31 @@
       <div class="cb-head">
         <div style="flex:1"></div>
         <div class="cb-right">
-          <div class="tabs">
-            <div class="tab on" onclick="sw(this,'b5','ts')">TS</div>
-            <div class="tab"    onclick="sw(this,'b5','js')">JS</div>
-          </div>
           <button class="cpbtn" onclick="cp(this)">Copy</button>
         </div>
       </div>
       <div id="b5">
-        <div class="pane on" data-lang="ts"><pre><span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> <span class="cl">NestFactory</span><span class="pn">.</span><span class="fn">create</span><span class="pn">(</span><span class="cl">AppModule</span><span class="pn">);</span>
-app<span class="pn">.</span><span class="fn">useGlobalGuards</span><span class="pn">(</span><span class="kw">new</span> <span class="cl">RolesGuard</span><span class="pn">());</span></pre></div>
-        <div class="pane" data-lang="js"><pre><span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> <span class="cl">NestFactory</span><span class="pn">.</span><span class="fn">create</span><span class="pn">(</span><span class="cl">AppModule</span><span class="pn">);</span>
+        <div class="pane on"><pre><span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> <span class="cl">NestFactory</span><span class="pn">.</span><span class="fn">create</span><span class="pn">(</span><span class="cl">AppModule</span><span class="pn">);</span>
 app<span class="pn">.</span><span class="fn">useGlobalGuards</span><span class="pn">(</span><span class="kw">new</span> <span class="cl">RolesGuard</span><span class="pn">());</span></pre></div>
       </div>
     </div>
 
-    <div class="note">
-      <span class="lbl">📌 Notice</span>
-      <p>Với hybrid app, method <code>useGlobalGuards()</code> mặc định không thiết lập guard cho gateway và microservice. Với microservice app "chuẩn" (non-hybrid), <code>useGlobalGuards()</code> mount guard globally.</p>
+    <div class="warn">
+      <span class="lbl">⚠️ Notice</span>
+      <p>Với hybrid app, method <code>useGlobalGuards()</code> mặc định không thiết lập guard cho gateway và microservice (xem <a href="https://docs.nestjs.com/faq/hybrid-application" target="_blank">Hybrid application</a> để biết cách thay đổi hành vi này). Với microservice app "chuẩn" (non-hybrid), <code>useGlobalGuards()</code> mount guard globally.</p>
     </div>
 
-    <p>Global guard được đăng ký từ bên ngoài module (với <code>useGlobalGuards()</code>) không thể inject dependency. Để giải quyết, đăng ký guard trực tiếp từ bất kỳ module nào bằng token <code>APP_GUARD</code>:</p>
+    <p>Global guard được sử dụng trên toàn bộ ứng dụng, cho mọi controller và mọi route handler. Về mặt dependency injection, global guard được đăng ký từ bên ngoài bất kỳ module nào (với <code>useGlobalGuards()</code> như ví dụ trên) không thể inject dependency vì điều này được thực hiện ngoài context của bất kỳ module nào. Để giải quyết vấn đề này, bạn có thể thiết lập guard trực tiếp từ bất kỳ module nào bằng cấu trúc sau:</p>
 
     <div class="cb">
       <div class="cb-head">
         <div class="cb-fname">app.module.ts</div>
         <div class="cb-right">
-          <div class="tabs">
-            <div class="tab on" onclick="sw(this,'b6','ts')">TS</div>
-            <div class="tab"    onclick="sw(this,'b6','js')">JS</div>
-          </div>
           <button class="cpbtn" onclick="cp(this)">Copy</button>
         </div>
       </div>
       <div id="b6">
-        <div class="pane on" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Module</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
-<span class="kw">import</span> <span class="pn">{</span> <span class="cl">APP_GUARD</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/core'</span><span class="pn">;</span>
-
-<span class="dec">@Module</span><span class="pn">({</span>
-  providers<span class="pn">:</span> <span class="pn">[</span>
-    <span class="pn">{</span>
-      provide<span class="pn">:</span>  <span class="cl">APP_GUARD</span><span class="pn">,</span>
-      useClass<span class="pn">:</span> <span class="cl">RolesGuard</span><span class="pn">,</span>
-    <span class="pn">},</span>
-  <span class="pn">],</span>
-<span class="pn">})</span>
-<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="pn">{}</span></pre></div>
-        <div class="pane" data-lang="js"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Module</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+        <div class="pane on"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Module</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
 <span class="kw">import</span> <span class="pn">{</span> <span class="cl">APP_GUARD</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/core'</span><span class="pn">;</span>
 
 <span class="dec">@Module</span><span class="pn">({</span>
@@ -453,20 +419,13 @@ app<span class="pn">.</span><span class="fn">useGlobalGuards</span><span class="
       <div class="cb-head">
         <div class="cb-fname">roles.decorator.ts</div>
         <div class="cb-right">
-          <div class="tabs">
-            <div class="tab on" onclick="sw(this,'b7','ts')">TS</div>
-            <div class="tab"    onclick="sw(this,'b7','js')">JS</div>
-          </div>
           <button class="cpbtn" onclick="cp(this)">Copy</button>
         </div>
       </div>
       <div id="b7">
-        <div class="pane on" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Reflector</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/core'</span><span class="pn">;</span>
+        <div class="pane on"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Reflector</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/core'</span><span class="pn">;</span>
 
 <span class="kw">export const</span> Roles <span class="pn">=</span> <span class="cl">Reflector</span><span class="pn">.</span><span class="fn">createDecorator</span><span class="pn">&lt;</span><span class="typ">string</span><span class="pn">[]&gt;();</span></pre></div>
-        <div class="pane" data-lang="js"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Reflector</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/core'</span><span class="pn">;</span>
-
-<span class="kw">export const</span> Roles <span class="pn">=</span> <span class="cl">Reflector</span><span class="pn">.</span><span class="fn">createDecorator</span><span class="pn">();</span></pre></div>
       </div>
     </div>
 
@@ -530,7 +489,7 @@ app<span class="pn">.</span><span class="fn">useGlobalGuards</span><span class="
   <span class="fn">canActivate</span><span class="pn">(</span>context<span class="pn">:</span> <span class="typ">ExecutionContext</span><span class="pn">):</span> <span class="typ">boolean</span> <span class="pn">{</span>
     <span class="kw">const</span> roles <span class="pn">=</span> <span class="kw">this</span><span class="pn">.</span>reflector<span class="pn">.</span><span class="fn">get</span><span class="pn">(</span>Roles<span class="pn">,</span> context<span class="pn">.</span><span class="fn">getHandler</span><span class="pn">());</span>
     <span class="kw">if</span> <span class="pn">(!</span>roles<span class="pn">)</span> <span class="pn">{</span>
-      <span class="kw">return</span> <span class="kw">true</span><span class="pn">;</span> <span class="cm">// không yêu cầu role → cho phép</span>
+      <span class="kw">return</span> <span class="kw">true</span><span class="pn">;</span>
     <span class="pn">}</span>
     <span class="kw">const</span> request <span class="pn">=</span> context<span class="pn">.</span><span class="fn">switchToHttp</span><span class="pn">().</span><span class="fn">getRequest</span><span class="pn">();</span>
     <span class="kw">const</span> user <span class="pn">=</span> request<span class="pn">.</span>user<span class="pn">;</span>
@@ -592,7 +551,7 @@ app<span class="pn">.</span><span class="fn">useGlobalGuards</span><span class="
       </div>
     </div>
 
-    <p>Mọi exception được throw bởi guard sẽ được xử lý bởi <a href="nestjs-exception-filters-vi.html">exceptions layer</a> (global exceptions filter và bất kỳ exceptions filter nào được áp dụng cho context hiện tại).</p>
+    <p>Mọi exception được throw bởi guard sẽ được xử lý bởi <a href="Exception filters.html">exceptions layer</a> (global exceptions filter và bất kỳ exceptions filter nào được áp dụng cho context hiện tại).</p>
 
     <div class="hint">
       <span class="lbl">💡 Hint</span>
@@ -601,11 +560,11 @@ app<span class="pn">.</span><span class="fn">useGlobalGuards</span><span class="
 
     <!-- PAGE NAV -->
     <div class="page-nav">
-      <a class="pnbtn" href="nestjs-pipes-vi.html">
+      <a class="pnbtn" href="Pipes.html">
         <div class="pnlbl">&larr; Trước</div>
         <div class="pntitle">Pipes</div>
       </a>
-      <a class="pnbtn r" href="https://docs.nestjs.com/interceptors" target="_blank">
+      <a class="pnbtn r" href="Interceptors.html">
         <div class="pnlbl">Tiếp theo &rarr;</div>
         <div class="pntitle">Interceptors</div>
       </a>

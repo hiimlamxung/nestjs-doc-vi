@@ -181,14 +181,6 @@
       <div>Dịch từ <strong><a href="https://docs.nestjs.com/custom-decorators" target="_blank">docs.nestjs.com/custom-decorators</a></strong>. Thuật ngữ kỹ thuật giữ nguyên tiếng Anh.</div>
     </div>
 
-    <div class="series-done">
-      <div class="series-done-icon">🎉</div>
-      <div class="series-done-text">
-        <strong>Hoàn thành toàn bộ phần Overview!</strong><br>
-        Đây là trang cuối cùng trong series <strong>10 trang</strong> NestJS Overview được dịch sang tiếng Việt.
-      </div>
-    </div>
-
     <h1>Custom decorators</h1>
 
     <p style="margin-top:18px">Nest được xây dựng xung quanh một tính năng ngôn ngữ gọi là <strong>decorators</strong>. Decorator là khái niệm được biết đến rộng rãi trong nhiều ngôn ngữ lập trình phổ biến, nhưng trong thế giới JavaScript, chúng vẫn còn tương đối mới. Để hiểu rõ hơn cách decorator hoạt động, hãy đọc <a href="https://medium.com/google-developers/exploring-es7-decorators-76ecb65fb841" target="_blank">bài viết này</a>.</p>
@@ -237,15 +229,11 @@
       <div class="cb-head">
         <div class="cb-fname">user.decorator.ts</div>
         <div class="cb-right">
-          <div class="tabs">
-            <div class="tab on" onclick="sw(this,'b1','ts')">TS</div>
-            <div class="tab"    onclick="sw(this,'b1','js')">JS</div>
-          </div>
           <button class="cpbtn" onclick="cp(this)">Copy</button>
         </div>
       </div>
       <div id="b1">
-        <div class="pane on" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">{</span> createParamDecorator<span class="pn">,</span> <span class="typ">ExecutionContext</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+        <div class="pane on"><pre><span class="kw">import</span> <span class="pn">{</span> createParamDecorator<span class="pn">,</span> <span class="typ">ExecutionContext</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
 
 <span class="kw">export const</span> User <span class="pn">=</span> <span class="fn">createParamDecorator</span><span class="pn">(</span>
   <span class="pn">(</span>data<span class="pn">:</span> <span class="kw">unknown</span><span class="pn">,</span> ctx<span class="pn">:</span> <span class="typ">ExecutionContext</span><span class="pn">)</span> <span class="pn">=&gt; {</span>
@@ -253,12 +241,6 @@
     <span class="kw">return</span> request<span class="pn">.</span>user<span class="pn">;</span>
   <span class="pn">},</span>
 <span class="pn">);</span></pre></div>
-        <div class="pane" data-lang="js"><pre><span class="kw">import</span> <span class="pn">{</span> createParamDecorator <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
-
-<span class="kw">export const</span> User <span class="pn">=</span> <span class="fn">createParamDecorator</span><span class="pn">((</span>data<span class="pn">,</span> ctx<span class="pn">)</span> <span class="pn">=&gt; {</span>
-  <span class="kw">const</span> request <span class="pn">=</span> ctx<span class="pn">.</span><span class="fn">switchToHttp</span><span class="pn">().</span><span class="fn">getRequest</span><span class="pn">();</span>
-  <span class="kw">return</span> request<span class="pn">.</span>user<span class="pn">;</span>
-<span class="pn">});</span></pre></div>
       </div>
     </div>
 
@@ -415,23 +397,6 @@
 
     <p>Nest cung cấp helper method <code>applyDecorators</code> để kết hợp nhiều decorator thành một. Ví dụ, giả sử bạn muốn kết hợp tất cả decorator liên quan đến authentication thành một decorator duy nhất:</p>
 
-    <!-- Minh hoạ trực quan composition -->
-    <div class="compose-diagram">
-      <div class="compose-row">
-        <div class="cd-label">Trước:</div>
-        <div class="cd-tag before">@SetMetadata('roles', roles)</div>
-        <div class="cd-tag before">@UseGuards(AuthGuard, RolesGuard)</div>
-        <div class="cd-tag before">@ApiBearerAuth()</div>
-        <div class="cd-tag before">@ApiUnauthorizedResponse(…)</div>
-      </div>
-      <div class="compose-row">
-        <div class="cd-label" style="color:#4ade80">Sau:</div>
-        <div class="cd-tag after">@Auth('admin')</div>
-        <div class="cd-equals">=</div>
-        <span style="font-size:12.5px;color:var(--muted);font-family:var(--mono)">4 decorator trong 1 lần khai báo</span>
-      </div>
-    </div>
-
     <div class="cb">
       <div class="cb-head">
         <div class="cb-fname">auth.decorator.ts</div>
@@ -485,50 +450,11 @@
       <p>Decorator <code>@ApiHideProperty()</code> từ package <code>@nestjs/swagger</code> không composable và sẽ không hoạt động đúng với hàm <code>applyDecorators</code>.</p>
     </div>
 
-    <!-- ── SERIES COMPLETE ── -->
-    <h3 id="series-complete">Toàn bộ series Overview <a class="anchor" href="#series-complete">#</a></h3>
-
-    <p>Bạn đã hoàn thành toàn bộ <strong>10 trang</strong> trong phần Overview của NestJS! Dưới đây là danh sách đầy đủ các trang đã được dịch:</p>
-
-    <div class="series-grid">
-      <a class="series-item done" href="nestjs-controllers-vi.html">
-        <span class="si-num">01</span> Controllers
-      </a>
-      <a class="series-item done" href="nestjs-providers-vi.html">
-        <span class="si-num">02</span> Providers
-      </a>
-      <a class="series-item done" href="nestjs-modules-vi.html">
-        <span class="si-num">03</span> Modules
-      </a>
-      <a class="series-item done" href="nestjs-middleware-vi.html">
-        <span class="si-num">04</span> Middleware
-      </a>
-      <a class="series-item done" href="nestjs-exception-filters-vi.html">
-        <span class="si-num">05</span> Exception filters
-      </a>
-      <a class="series-item done" href="nestjs-pipes-vi.html">
-        <span class="si-num">06</span> Pipes
-      </a>
-      <a class="series-item done" href="nestjs-guards-vi.html">
-        <span class="si-num">07</span> Guards
-      </a>
-      <a class="series-item done" href="nestjs-interceptors-vi.html">
-        <span class="si-num">08</span> Interceptors
-      </a>
-      <a class="series-item done" href="nestjs-custom-decorators-vi.html" style="border-color:var(--red);color:var(--red-l)">
-        <span class="si-num">09</span> Custom decorators ✓
-      </a>
-    </div>
-
     <!-- PAGE NAV -->
     <div class="page-nav">
-      <a class="pnbtn" href="nestjs-interceptors-vi.html">
+      <a class="pnbtn" href="Interceptors.html">
         <div class="pnlbl">&larr; Trước</div>
         <div class="pntitle">Interceptors</div>
-      </a>
-      <a class="pnbtn r" href="https://docs.nestjs.com/fundamentals/custom-providers" target="_blank">
-        <div class="pnlbl">Tiếp theo (docs gốc) &rarr;</div>
-        <div class="pntitle">Custom providers</div>
       </a>
     </div>
 
@@ -542,7 +468,6 @@
       <li><a href="#passing-data">Passing data</a></li>
       <li><a href="#working-with-pipes">Working with pipes</a></li>
       <li><a href="#decorator-composition">Decorator composition</a></li>
-      <li><a href="#series-complete">Toàn bộ series Overview</a></li>
     </ul>
   </aside>
 

@@ -200,21 +200,19 @@
     <!-- ── BASICS ── -->
     <h3 id="basics">Basics <a class="anchor" href="#basics">#</a></h3>
 
-    <p>Mỗi interceptor implement method <code>intercept()</code>, nhận hai argument. Argument đầu tiên là instance <code>ExecutionContext</code> (cùng đối tượng như ở <a href="nestjs-guards-vi.html">guards</a>). <code>ExecutionContext</code> kế thừa từ <code>ArgumentsHost</code> — chúng ta đã thấy trong chương exception filters, nó là wrapper bao quanh các argument được truyền đến handler gốc.</p>
+    <p>Mỗi interceptor implement method <code>intercept()</code>, nhận hai argument. Argument đầu tiên là instance <code>ExecutionContext</code> (cùng đối tượng như ở <a href="Guards.html">guards</a>). <code>ExecutionContext</code> kế thừa từ <code>ArgumentsHost</code>. Chúng ta đã thấy <code>ArgumentsHost</code> trong chương exception filters. Nó là wrapper bao quanh các argument được truyền đến handler gốc, và chứa các mảng argument khác nhau dựa trên loại ứng dụng. Bạn có thể tham khảo lại phần <a href="Exception filters.html">exception filters</a> để biết thêm.</p>
 
     <!-- ── EXECUTION CONTEXT ── -->
     <h3 id="execution-context">Execution context <a class="anchor" href="#execution-context">#</a></h3>
 
-    <p>Bằng cách extend <code>ArgumentsHost</code>, <code>ExecutionContext</code> thêm một số helper method mới cung cấp chi tiết bổ sung về quá trình thực thi hiện tại. Những chi tiết này hữu ích để build các interceptor generic có thể hoạt động trên nhiều loại controller, method và execution context. Tìm hiểu thêm về <code>ExecutionContext</code> <a href="https://docs.nestjs.com/fundamentals/execution-context" target="_blank">tại đây</a>.</p>
+    <p>Bằng cách extend <code>ArgumentsHost</code>, <code>ExecutionContext</code> thêm một số helper method mới cung cấp chi tiết bổ sung về quá trình thực thi hiện tại. Những chi tiết này hữu ích để build các interceptor generic có thể hoạt động trên nhiều loại controller, method và execution context. Tìm hiểu thêm về <code>ExecutionContext</code> <a href="../Fundamentals/execution-context.html">tại đây</a>.</p>
 
     <!-- ── CALL HANDLER ── -->
     <h3 id="call-handler">Call handler <a class="anchor" href="#call-handler">#</a></h3>
 
     <p>Argument thứ hai là <code>CallHandler</code>. Interface <code>CallHandler</code> implement method <code>handle()</code>, bạn có thể dùng nó để gọi route handler method tại một điểm nào đó trong interceptor. Nếu bạn không gọi <code>handle()</code> trong implementation của <code>intercept()</code>, route handler sẽ <strong>không được thực thi</strong>.</p>
 
-    <p>Cách tiếp cận này có nghĩa là method <code>intercept()</code> hiệu quả <strong>bọc</strong> request/response stream. Kết quả là bạn có thể implement custom logic <strong>cả trước và sau</strong> khi route handler cuối cùng thực thi.</p>
-
-    <p>Vì <code>handle()</code> trả về RxJS <code>Observable</code>, chúng ta có nhiều operator mạnh mẽ để xử lý response. Sử dụng thuật ngữ AOP, việc gọi route handler (tức gọi <code>handle()</code>) được gọi là <a href="https://en.wikipedia.org/wiki/Pointcut" target="_blank">Pointcut</a> — điểm mà logic bổ sung được chèn vào.</p>
+    <p>Cách tiếp cận này có nghĩa là method <code>intercept()</code> hiệu quả <strong>bọc</strong> request/response stream. Kết quả là bạn có thể implement custom logic <strong>cả trước và sau</strong> khi route handler cuối cùng thực thi. Rõ ràng bạn có thể viết code trong method <code>intercept()</code> thực thi <strong>trước</strong> khi gọi <code>handle()</code>, nhưng làm sao ảnh hưởng đến những gì xảy ra sau đó? Vì method <code>handle()</code> trả về <code>Observable</code>, chúng ta có thể dùng các <a href="https://github.com/ReactiveX/rxjs" target="_blank">RxJS</a> operator mạnh mẽ để xử lý thêm response. Sử dụng thuật ngữ Aspect Oriented Programming, việc gọi route handler (tức gọi <code>handle()</code>) được gọi là <a href="https://en.wikipedia.org/wiki/Pointcut" target="_blank">Pointcut</a> — điểm mà logic bổ sung được chèn vào.</p>
 
     <p>Ví dụ: với request <code>POST /cats</code> hướng đến handler <code>create()</code> trong <code>CatsController</code> — nếu một interceptor không gọi <code>handle()</code>, method <code>create()</code> sẽ không được thực thi. Khi <code>handle()</code> được gọi và <code>Observable</code> của nó được trả về, handler <code>create()</code> mới được kích hoạt. Và khi response stream được nhận qua <code>Observable</code>, các thao tác bổ sung có thể được thực hiện trên stream.</p>
 
@@ -277,8 +275,8 @@
       <p><code>NestInterceptor&lt;T, R&gt;</code> là generic interface trong đó <code>T</code> biểu thị type của <code>Observable&lt;T&gt;</code> (hỗ trợ response stream), và <code>R</code> là type của value được wrap bởi <code>Observable&lt;R&gt;</code>.</p>
     </div>
 
-    <div class="note">
-      <span class="lbl">📌 Notice</span>
+    <div class="warn">
+      <span class="lbl">⚠️ Notice</span>
       <p>Interceptor, cũng như controller, provider, guard, v.v., có thể <strong>inject dependency</strong> qua <code>constructor</code>.</p>
     </div>
 
@@ -287,23 +285,17 @@
     <!-- ── BINDING INTERCEPTORS ── -->
     <h3 id="binding-interceptors">Binding interceptors <a class="anchor" href="#binding-interceptors">#</a></h3>
 
-    <p>Để thiết lập interceptor, dùng decorator <code>@UseInterceptors()</code> được import từ <code>@nestjs/common</code>. Giống như <a href="nestjs-pipes-vi.html">pipe</a> và <a href="nestjs-guards-vi.html">guard</a>, interceptor có thể có scope controller-scoped, method-scoped, hoặc global-scoped.</p>
+    <p>Để thiết lập interceptor, dùng decorator <code>@UseInterceptors()</code> được import từ <code>@nestjs/common</code>. Giống như <a href="Pipes.html">pipe</a> và <a href="Guards.html">guard</a>, interceptor có thể có scope controller-scoped, method-scoped, hoặc global-scoped.</p>
 
     <div class="cb">
       <div class="cb-head">
         <div class="cb-fname">cats.controller.ts</div>
         <div class="cb-right">
-          <div class="tabs">
-            <div class="tab on" onclick="sw(this,'b2','ts')">TS</div>
-            <div class="tab"    onclick="sw(this,'b2','js')">JS</div>
-          </div>
           <button class="cpbtn" onclick="cp(this)">Copy</button>
         </div>
       </div>
       <div id="b2">
-        <div class="pane on" data-lang="ts"><pre><span class="dec">@UseInterceptors</span><span class="pn">(</span><span class="cl">LoggingInterceptor</span><span class="pn">)</span>
-<span class="kw">export class</span> <span class="cl">CatsController</span> <span class="pn">{}</span></pre></div>
-        <div class="pane" data-lang="js"><pre><span class="dec">@UseInterceptors</span><span class="pn">(</span><span class="cl">LoggingInterceptor</span><span class="pn">)</span>
+        <div class="pane on"><pre><span class="dec">@UseInterceptors</span><span class="pn">(</span><span class="cl">LoggingInterceptor</span><span class="pn">)</span>
 <span class="kw">export class</span> <span class="cl">CatsController</span> <span class="pn">{}</span></pre></div>
       </div>
     </div>
@@ -321,28 +313,24 @@
       After... 1ms
     </div>
 
-    <p>Chúng ta truyền class <code>LoggingInterceptor</code> (không phải instance), để framework đảm nhận khởi tạo và cho phép dependency injection. Cũng có thể truyền in-place instance:</p>
+    <p>Chúng ta truyền class <code>LoggingInterceptor</code> (không phải instance), để framework đảm nhận khởi tạo và cho phép dependency injection. Giống như pipe, guard và exception filter, chúng ta cũng có thể truyền in-place instance:</p>
 
     <div class="cb">
       <div class="cb-head">
         <div class="cb-fname">cats.controller.ts</div>
         <div class="cb-right">
-          <div class="tabs">
-            <div class="tab on" onclick="sw(this,'b3','ts')">TS</div>
-            <div class="tab"    onclick="sw(this,'b3','js')">JS</div>
-          </div>
           <button class="cpbtn" onclick="cp(this)">Copy</button>
         </div>
       </div>
       <div id="b3">
-        <div class="pane on" data-lang="ts"><pre><span class="dec">@UseInterceptors</span><span class="pn">(</span><span class="kw">new</span> <span class="cl">LoggingInterceptor</span><span class="pn">())</span>
-<span class="kw">export class</span> <span class="cl">CatsController</span> <span class="pn">{}</span></pre></div>
-        <div class="pane" data-lang="js"><pre><span class="dec">@UseInterceptors</span><span class="pn">(</span><span class="kw">new</span> <span class="cl">LoggingInterceptor</span><span class="pn">())</span>
+        <div class="pane on"><pre><span class="dec">@UseInterceptors</span><span class="pn">(</span><span class="kw">new</span> <span class="cl">LoggingInterceptor</span><span class="pn">())</span>
 <span class="kw">export class</span> <span class="cl">CatsController</span> <span class="pn">{}</span></pre></div>
       </div>
     </div>
 
-    <p>Để giới hạn scope của interceptor cho một method duy nhất, dùng decorator <code>@UseInterceptors()</code> ở <strong>cấp method</strong>. Để thiết lập global interceptor, dùng method <code>useGlobalInterceptors()</code>:</p>
+    <p>Như đã đề cập, cấu trúc trên gắn interceptor vào mọi handler trong controller. Nếu muốn giới hạn scope cho một method duy nhất, chỉ cần áp dụng decorator ở <strong>cấp method</strong>.</p>
+
+    <p>Để thiết lập global interceptor, dùng method <code>useGlobalInterceptors()</code> của Nest application instance:</p>
 
     <div class="cb">
       <div class="cb-head">
@@ -355,33 +343,17 @@ app<span class="pn">.</span><span class="fn">useGlobalInterceptors</span><span c
       </div>
     </div>
 
-    <p>Global interceptor đăng ký từ ngoài module không thể inject dependency. Để giải quyết, dùng token <code>APP_INTERCEPTOR</code> từ bất kỳ module nào:</p>
+    <p>Global interceptor được sử dụng trên toàn bộ ứng dụng, cho mọi controller và mọi route handler. Về mặt dependency injection, global interceptor đăng ký từ ngoài bất kỳ module nào (với <code>useGlobalInterceptors()</code>, như ví dụ trên) không thể inject dependency vì việc này được thực hiện bên ngoài context của bất kỳ module nào. Để giải quyết vấn đề này, bạn có thể thiết lập interceptor <strong>trực tiếp từ bất kỳ module nào</strong> bằng cấu trúc sau:</p>
 
     <div class="cb">
       <div class="cb-head">
         <div class="cb-fname">app.module.ts</div>
         <div class="cb-right">
-          <div class="tabs">
-            <div class="tab on" onclick="sw(this,'b5','ts')">TS</div>
-            <div class="tab"    onclick="sw(this,'b5','js')">JS</div>
-          </div>
           <button class="cpbtn" onclick="cp(this)">Copy</button>
         </div>
       </div>
       <div id="b5">
-        <div class="pane on" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Module</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
-<span class="kw">import</span> <span class="pn">{</span> <span class="cl">APP_INTERCEPTOR</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/core'</span><span class="pn">;</span>
-
-<span class="dec">@Module</span><span class="pn">({</span>
-  providers<span class="pn">:</span> <span class="pn">[</span>
-    <span class="pn">{</span>
-      provide<span class="pn">:</span>  <span class="cl">APP_INTERCEPTOR</span><span class="pn">,</span>
-      useClass<span class="pn">:</span> <span class="cl">LoggingInterceptor</span><span class="pn">,</span>
-    <span class="pn">},</span>
-  <span class="pn">],</span>
-<span class="pn">})</span>
-<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="pn">{}</span></pre></div>
-        <div class="pane" data-lang="js"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Module</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+        <div class="pane on"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Module</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
 <span class="kw">import</span> <span class="pn">{</span> <span class="cl">APP_INTERCEPTOR</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/core'</span><span class="pn">;</span>
 
 <span class="dec">@Module</span><span class="pn">({</span>
@@ -398,7 +370,7 @@ app<span class="pn">.</span><span class="fn">useGlobalInterceptors</span><span c
 
     <div class="hint">
       <span class="lbl">💡 Hint</span>
-      <p>Khi dùng cách này, interceptor thực chất là global bất kể module nào sử dụng cấu trúc này. Nên đặt ở module nơi interceptor (<code>LoggingInterceptor</code>) được định nghĩa. Ngoài ra, <code>useClass</code> không phải cách duy nhất để đăng ký custom provider. Tìm hiểu thêm <a href="https://docs.nestjs.com/fundamentals/custom-providers" target="_blank">tại đây</a>.</p>
+      <p>Khi dùng cách này, lưu ý rằng bất kể module nào sử dụng cấu trúc này, interceptor thực chất là global. Nên đặt ở module nơi interceptor (<code>LoggingInterceptor</code> trong ví dụ trên) được định nghĩa. Ngoài ra, <code>useClass</code> không phải cách duy nhất để đăng ký custom provider. Tìm hiểu thêm <a href="../Fundamentals/custom-providers.html">tại đây</a>.</p>
     </div>
 
     <!-- ── RESPONSE MAPPING ── -->
@@ -580,7 +552,7 @@ app<span class="pn">.</span><span class="fn">useGlobalInterceptors</span><span c
   <span class="fn">intercept</span><span class="pn">(</span>context<span class="pn">:</span> <span class="typ">ExecutionContext</span><span class="pn">,</span> next<span class="pn">:</span> <span class="typ">CallHandler</span><span class="pn">):</span> <span class="typ">Observable</span><span class="pn">&lt;</span><span class="kw">any</span><span class="pn">&gt;</span> <span class="pn">{</span>
     <span class="kw">const</span> isCached <span class="pn">=</span> <span class="kw">true</span><span class="pn">;</span>
     <span class="kw">if</span> <span class="pn">(</span>isCached<span class="pn">)</span> <span class="pn">{</span>
-      <span class="kw">return</span> <span class="fn">of</span><span class="pn">([]);</span> <span class="cm">// trả về stream mới, route handler không được gọi</span>
+      <span class="kw">return</span> <span class="fn">of</span><span class="pn">([]);</span>
     <span class="pn">}</span>
     <span class="kw">return</span> next<span class="pn">.</span><span class="fn">handle</span><span class="pn">();</span>
   <span class="pn">}</span>
@@ -601,7 +573,7 @@ app<span class="pn">.</span><span class="fn">useGlobalInterceptors</span><span c
       </div>
     </div>
 
-    <p><code>CacheInterceptor</code> có biến <code>isCached</code> và response <code>[]</code> được hard-code. Điểm mấu chốt: chúng ta trả về một stream <strong>mới</strong> được tạo bởi operator <code>of()</code> của RxJS, do đó route handler <strong>sẽ không được gọi</strong>. Để tạo giải pháp generic, có thể tận dụng <code>Reflector</code> và tạo custom decorator — <code>Reflector</code> được mô tả kỹ trong <a href="nestjs-guards-vi.html">chương guards</a>.</p>
+    <p><code>CacheInterceptor</code> có biến <code>isCached</code> và response <code>[]</code> được hard-code. Điểm mấu chốt: chúng ta trả về một stream <strong>mới</strong> được tạo bởi operator <code>of()</code> của RxJS, do đó route handler <strong>sẽ không được gọi</strong>. Để tạo giải pháp generic, có thể tận dụng <code>Reflector</code> và tạo custom decorator — <code>Reflector</code> được mô tả kỹ trong chương <a href="Guards.html">guards</a>.</p>
 
     <!-- ── MORE OPERATORS ── -->
     <h3 id="more-operators">More operators <a class="anchor" href="#more-operators">#</a></h3>
@@ -639,8 +611,8 @@ app<span class="pn">.</span><span class="fn">useGlobalInterceptors</span><span c
         <span class="kw">return</span> <span class="fn">throwError</span><span class="pn">(()</span> <span class="pn">=&gt;</span> err<span class="pn">);</span>
       <span class="pn">}),</span>
     <span class="pn">);</span>
-  <span class="pn">}</span>
-<span class="pn">}</span></pre></div>
+  <span class="pn">};</span>
+<span class="pn">};</span></pre></div>
         <div class="pane" data-lang="js"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Injectable</span><span class="pn">,</span> <span class="cl">RequestTimeoutException</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
 <span class="kw">import</span> <span class="pn">{</span> <span class="typ">Observable</span><span class="pn">,</span> throwError<span class="pn">,</span> <span class="cl">TimeoutError</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'rxjs'</span><span class="pn">;</span>
 <span class="kw">import</span> <span class="pn">{</span> catchError<span class="pn">,</span> timeout <span class="pn">}</span> <span class="kw">from</span> <span class="str">'rxjs/operators'</span><span class="pn">;</span>
@@ -657,8 +629,8 @@ app<span class="pn">.</span><span class="fn">useGlobalInterceptors</span><span c
         <span class="kw">return</span> <span class="fn">throwError</span><span class="pn">(()</span> <span class="pn">=&gt;</span> err<span class="pn">);</span>
       <span class="pn">}),</span>
     <span class="pn">);</span>
-  <span class="pn">}</span>
-<span class="pn">}</span></pre></div>
+  <span class="pn">};</span>
+<span class="pn">};</span></pre></div>
       </div>
     </div>
 
@@ -666,11 +638,11 @@ app<span class="pn">.</span><span class="fn">useGlobalInterceptors</span><span c
 
     <!-- PAGE NAV -->
     <div class="page-nav">
-      <a class="pnbtn" href="nestjs-guards-vi.html">
+      <a class="pnbtn" href="Guards.html">
         <div class="pnlbl">&larr; Trước</div>
         <div class="pntitle">Guards</div>
       </a>
-      <a class="pnbtn r" href="https://docs.nestjs.com/custom-decorators" target="_blank">
+      <a class="pnbtn r" href="Custom decorators.html">
         <div class="pnlbl">Tiếp theo &rarr;</div>
         <div class="pntitle">Custom decorators</div>
       </a>

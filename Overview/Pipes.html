@@ -67,6 +67,7 @@
     strong { color: var(--text); font-weight: 600; }
     ol.steps { color: var(--sec); padding-left: 22px; line-height: 2.1; margin-bottom: 16px; }
     ol.steps li::marker { color: var(--red-l); font-weight: 700; }
+    ul.list { color: var(--sec); padding-left: 22px; line-height: 2.1; margin-bottom: 16px; }
 
     /* inline code */
     code { font-family: var(--mono); font-size: 13px; background: var(--code-bg); border: 1px solid var(--code-bd); padding: 1px 6px; border-radius: 4px; color: #f9a8d4; }
@@ -115,21 +116,6 @@
     .cl  { color: #e06c75; }
     .tmpl{ color: #d19a66; }
 
-    /* Pipe diagram */
-    .pipe-diagram { margin: 24px 0 28px; padding: 22px 20px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--rl); display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 0; }
-    .pd-box { padding: 10px 16px; border-radius: var(--r); font-size: 13px; font-weight: 600; font-family: var(--mono); border: 1px solid; text-align: center; line-height: 1.4; }
-    .pd-box.req    { background: #1a2a3a; border-color: #2a4a6a; color: #60a0d0; }
-    .pd-box.pipe   { background: rgba(234,40,69,.12); border-color: var(--red); color: var(--red-l); }
-    .pd-box.hand   { background: #1a2a1a; border-color: #2a5a2a; color: #4ade80; }
-    .pd-arrow { padding: 0 12px; color: var(--muted); font-size: 18px; }
-    .pd-caption { width: 100%; text-align: center; font-size: 11.5px; color: var(--muted); margin-top: 12px; }
-
-    /* Use case badges */
-    .use-cases { display: flex; gap: 10px; flex-wrap: wrap; margin: 18px 0; }
-    .uc-badge { padding: 8px 18px; border-radius: 20px; font-size: 13px; font-weight: 600; border: 1px solid; display: flex; align-items: center; gap: 7px; }
-    .uc-badge.transform { background: rgba(96,160,208,.1); border-color: #2a4a6a; color: #60a0d0; }
-    .uc-badge.validate  { background: rgba(74,222,128,.1); border-color: #2a5a2a; color: #4ade80; }
-
     /* Metadata table */
     .meta-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 13.5px; border: 1px solid var(--border); border-radius: var(--rl); overflow: hidden; }
     .meta-table thead th { padding: 10px 16px; text-align: left; background: #1e1e1e; color: var(--text); font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; border-bottom: 1px solid var(--border); }
@@ -140,11 +126,6 @@
     .meta-table tbody tr:hover { background: var(--surface2); }
     .meta-table td { padding: 10px 16px; color: var(--sec); vertical-align: top; line-height: 1.7; }
     .meta-table td:first-child { font-family: var(--mono); font-size: 12.5px; color: #f9a8d4; white-space: nowrap; }
-
-    /* Built-in pipes grid */
-    .pipes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px; margin: 16px 0; }
-    .pipe-item { padding: 8px 12px; background: var(--code-bg); border: 1px solid var(--code-bd); border-radius: var(--r); font-family: var(--mono); font-size: 12.5px; color: #f9a8d4; transition: border-color .15s; }
-    .pipe-item:hover { border-color: var(--red); }
 
     /* JSON response */
     .json-block { margin: 14px 0; padding: 16px 20px; background: #161616; border: 1px solid var(--code-bd); border-radius: var(--rl); font-family: var(--mono); font-size: 13.5px; line-height: 1.7; color: #abb2bf; }
@@ -167,11 +148,11 @@
 <body>
 <div class="page">
 
-  <!-- ════════════════════ MAIN CONTENT ════════════════════ -->
+  <!-- MAIN CONTENT -->
   <main class="content">
 
     <div class="vi-banner">
-      <span style="font-size:17px">🇻🇳</span>
+      <span style="font-size:17px">&#127483;&#127475;</span>
       <div>Dịch từ <strong><a href="https://docs.nestjs.com/pipes" target="_blank">docs.nestjs.com/pipes</a></strong>. Thuật ngữ kỹ thuật giữ nguyên tiếng Anh.</div>
     </div>
 
@@ -179,54 +160,46 @@
 
     <p style="margin-top:18px">Pipe là một class được annotate bằng decorator <code>@Injectable()</code>, implement interface <code>PipeTransform</code>.</p>
 
-    <!-- Diagram -->
-    <div class="pipe-diagram">
-      <div class="pd-box req">Arguments<br><span style="font-size:10px;opacity:.7">Route Handler Params</span></div>
-      <div class="pd-arrow">→</div>
-      <div class="pd-box pipe">Pipe<br><span style="font-size:10px;opacity:.7">transform / validate</span></div>
-      <div class="pd-arrow">→</div>
-      <div class="pd-box hand">Route Handler<br><span style="font-size:10px;opacity:.7">Method invoked</span></div>
-      <div class="pd-caption">Pipe hoạt động trên argument TRƯỚC khi method được gọi</div>
-    </div>
-
     <p>Pipe có hai trường hợp sử dụng điển hình:</p>
+    <ul class="list">
+      <li><strong>transformation</strong>: chuyển đổi input data sang dạng mong muốn (ví dụ: từ string sang integer)</li>
+      <li><strong>validation</strong>: kiểm tra input data, nếu hợp lệ thì truyền tiếp không đổi; ngược lại throw exception</li>
+    </ul>
 
-    <div class="use-cases">
-      <div class="uc-badge transform">🔄 Transformation — chuyển đổi input sang dạng mong muốn (ví dụ: string → integer)</div>
-      <div class="uc-badge validate">✅ Validation — kiểm tra input; nếu hợp lệ thì truyền tiếp không đổi; ngược lại throw exception</div>
-    </div>
+    <p>Trong cả hai trường hợp, pipe hoạt động trên các <code>arguments</code> được xử lý bởi controller route handler. Nest đặt pipe ngay trước khi method được gọi — pipe nhận các argument dành cho method và thực hiện thao tác trên chúng. Mọi thao tác transformation hoặc validation diễn ra tại thời điểm đó, sau đó route handler mới được gọi với các argument đã (có thể) được biến đổi.</p>
 
-    <p>Trong cả hai trường hợp, pipe hoạt động trên các <code>arguments</code> được xử lý bởi <a href="https://docs.nestjs.com/controllers#route-parameters" target="_blank">controller route handler</a>. Nest đặt pipe ngay trước khi method được gọi — pipe nhận các argument dành cho method và thực hiện thao tác trên chúng. Mọi thao tác transformation hoặc validation diễn ra tại thời điểm đó, sau đó route handler mới được gọi với các argument đã (có thể) được biến đổi.</p>
+    <p>Nest đi kèm một số built-in pipe mà bạn có thể sử dụng ngay. Bạn cũng có thể tự build custom pipe. Trong chương này, chúng ta sẽ giới thiệu các built-in pipe và cách bind chúng vào route handler. Sau đó, chúng ta sẽ xem qua một số custom pipe để thấy cách build pipe từ đầu.</p>
 
     <div class="hint">
-      <span class="lbl">💡 Hint</span>
-      <p>Pipe chạy bên trong <strong>exceptions zone</strong>. Nghĩa là khi Pipe throw exception, nó được xử lý bởi exceptions layer. Khi exception được throw trong Pipe, không có controller method nào được thực thi sau đó — đây là kỹ thuật best-practice để validate dữ liệu đến từ nguồn bên ngoài tại system boundary.</p>
+      <span class="lbl">Hint</span>
+      <p>Pipe chạy bên trong <strong>exceptions zone</strong>. Nghĩa là khi Pipe throw exception, nó được xử lý bởi exceptions layer (global exceptions filter và bất kỳ exceptions filter nào được áp dụng cho context hiện tại). Với điều trên, rõ ràng là khi exception được throw trong Pipe, không có controller method nào được thực thi sau đó. Đây là kỹ thuật best-practice để validate dữ liệu đến từ nguồn bên ngoài tại system boundary.</p>
     </div>
 
-    <!-- ── BUILT-IN PIPES ── -->
+    <!-- BUILT-IN PIPES -->
     <h3 id="built-in-pipes">Built-in pipes <a class="anchor" href="#built-in-pipes">#</a></h3>
 
-    <p>Nest đi kèm với một số pipe có sẵn, đều được export từ package <code>@nestjs/common</code>:</p>
+    <p>Nest đi kèm một số pipe có sẵn:</p>
+    <ul class="list">
+      <li><code>ValidationPipe</code></li>
+      <li><code>ParseIntPipe</code></li>
+      <li><code>ParseFloatPipe</code></li>
+      <li><code>ParseBoolPipe</code></li>
+      <li><code>ParseArrayPipe</code></li>
+      <li><code>ParseUUIDPipe</code></li>
+      <li><code>ParseEnumPipe</code></li>
+      <li><code>DefaultValuePipe</code></li>
+      <li><code>ParseFilePipe</code></li>
+      <li><code>ParseDatePipe</code></li>
+    </ul>
 
-    <div class="pipes-grid">
-      <div class="pipe-item">ValidationPipe</div>
-      <div class="pipe-item">ParseIntPipe</div>
-      <div class="pipe-item">ParseFloatPipe</div>
-      <div class="pipe-item">ParseBoolPipe</div>
-      <div class="pipe-item">ParseArrayPipe</div>
-      <div class="pipe-item">ParseUUIDPipe</div>
-      <div class="pipe-item">ParseEnumPipe</div>
-      <div class="pipe-item">DefaultValuePipe</div>
-      <div class="pipe-item">ParseFilePipe</div>
-      <div class="pipe-item">ParseDatePipe</div>
-    </div>
+    <p>Chúng được export từ package <code>@nestjs/common</code>.</p>
 
-    <p>Hãy xem nhanh cách dùng <code>ParseIntPipe</code> — ví dụ về trường hợp <strong>transformation</strong>, nơi pipe đảm bảo rằng parameter của method handler được convert sang JavaScript integer (hoặc throw exception nếu convert thất bại).</p>
+    <p>Hãy xem nhanh cách dùng <code>ParseIntPipe</code>. Đây là ví dụ về trường hợp <strong>transformation</strong>, nơi pipe đảm bảo rằng parameter của method handler được convert sang JavaScript integer (hoặc throw exception nếu convert thất bại). Ở phần sau của chương này, chúng ta sẽ trình bày một custom implementation đơn giản cho <code>ParseIntPipe</code>. Các kỹ thuật ví dụ bên dưới cũng áp dụng cho các built-in transformation pipe khác (<code>ParseBoolPipe</code>, <code>ParseFloatPipe</code>, <code>ParseEnumPipe</code>, <code>ParseArrayPipe</code>, <code>ParseDatePipe</code>, và <code>ParseUUIDPipe</code> — mà chúng ta sẽ gọi chung là các <code>Parse*</code> pipe trong chương này).</p>
 
-    <!-- ── BINDING PIPES ── -->
+    <!-- BINDING PIPES -->
     <h3 id="binding-pipes">Binding pipes <a class="anchor" href="#binding-pipes">#</a></h3>
 
-    <p>Để dùng pipe, chúng ta cần bind một instance của pipe class vào context phù hợp. Trong ví dụ <code>ParseIntPipe</code>, chúng ta muốn liên kết pipe với một route handler method cụ thể và đảm bảo nó chạy trước khi method được gọi — đây được gọi là binding pipe ở cấp method parameter:</p>
+    <p>Để dùng pipe, chúng ta cần bind một instance của pipe class vào context phù hợp. Trong ví dụ <code>ParseIntPipe</code>, chúng ta muốn liên kết pipe với một route handler method cụ thể và đảm bảo nó chạy trước khi method được gọi. Chúng ta thực hiện bằng cấu trúc sau, được gọi là binding pipe ở cấp method parameter:</p>
 
     <div class="cb">
       <div class="cb-head">
@@ -241,9 +214,9 @@
       </div>
     </div>
 
-    <p>Điều này đảm bảo một trong hai điều kiện: hoặc parameter nhận được trong <code>findOne()</code> là number, hoặc exception được throw trước khi route handler được gọi.</p>
+    <p>Điều này đảm bảo một trong hai điều kiện sau là đúng: hoặc parameter nhận được trong method <code>findOne()</code> là number (như mong đợi trong lời gọi <code>this.catsService.findOne()</code>), hoặc exception được throw trước khi route handler được gọi.</p>
 
-    <p>Ví dụ nếu route được gọi như:</p>
+    <p>Ví dụ, giả sử route được gọi như:</p>
 
     <div class="cb">
       <div class="cb-head"><div style="flex:1"></div><button class="cpbtn" onclick="cp(this)">Copy</button></div>
@@ -260,7 +233,9 @@
       <span class="pn">}</span>
     </div>
 
-    <p>Trong ví dụ trên, chúng ta truyền class (<code>ParseIntPipe</code>), không phải instance, để framework đảm nhận việc khởi tạo và cho phép dependency injection. Ngoài ra, có thể truyền in-place instance để tuỳ biến hành vi của built-in pipe bằng cách truyền options:</p>
+    <p>Exception sẽ ngăn body của method <code>findOne()</code> thực thi.</p>
+
+    <p>Trong ví dụ trên, chúng ta truyền class (<code>ParseIntPipe</code>), không phải instance, để framework đảm nhận việc khởi tạo và cho phép dependency injection. Giống như với pipe và guard, chúng ta có thể truyền in-place instance thay vào đó. Truyền in-place instance hữu ích nếu muốn tuỳ biến hành vi của built-in pipe bằng cách truyền options:</p>
 
     <div class="cb">
       <div class="cb-head"><div style="flex:1"></div><button class="cpbtn" onclick="cp(this)">Copy</button></div>
@@ -275,7 +250,9 @@
       </div>
     </div>
 
-    <p>Binding các transformation pipe khác (tất cả <strong>Parse*</strong> pipe) hoạt động tương tự. Ví dụ với query string parameter:</p>
+    <p>Binding các transformation pipe khác (tất cả <strong>Parse*</strong> pipe) hoạt động tương tự. Các pipe này đều hoạt động trong ngữ cảnh validate route parameter, query string parameter và request body value.</p>
+
+    <p>Ví dụ với query string parameter:</p>
 
     <div class="cb">
       <div class="cb-head"><div style="flex:1"></div><button class="cpbtn" onclick="cp(this)">Copy</button></div>
@@ -287,7 +264,7 @@
       </div>
     </div>
 
-    <p>Đây là ví dụ dùng <code>ParseUUIDPipe</code> để parse string parameter và validate xem đó có phải UUID không:</p>
+    <p>Đây là ví dụ dùng <code>ParseUUIDPipe</code> để parse string parameter và validate xem đó có phải UUID không.</p>
 
     <div class="cb">
       <div class="cb-head">
@@ -314,18 +291,27 @@
     </div>
 
     <div class="hint">
-      <span class="lbl">💡 Hint</span>
-      <p>Khi dùng <code>ParseUUIDPipe()</code>, bạn đang parse UUID version 3, 4 hoặc 5. Nếu chỉ yêu cầu version cụ thể, có thể truyền version vào pipe options.</p>
+      <span class="lbl">Hint</span>
+      <p>Khi dùng <code>ParseUUIDPipe()</code>, bạn đang parse UUID version 3, 4 hoặc 5. Nếu chỉ yêu cầu version cụ thể của UUID, có thể truyền version vào pipe options.</p>
     </div>
 
-    <!-- ── CUSTOM PIPES ── -->
+    <p>Ở trên chúng ta đã thấy các ví dụ binding các <code>Parse*</code> pipe built-in. Binding validation pipe hơi khác một chút; chúng ta sẽ thảo luận trong phần tiếp theo.</p>
+
+    <div class="hint">
+      <span class="lbl">Hint</span>
+      <p>Ngoài ra, xem <a href="/techniques/validation">Validation techniques</a> để biết các ví dụ mở rộng về validation pipe.</p>
+    </div>
+
+    <!-- CUSTOM PIPES -->
     <h3 id="custom-pipes">Custom pipes <a class="anchor" href="#custom-pipes">#</a></h3>
 
-    <p>Như đã đề cập, bạn có thể tự build custom pipe. Hãy build phiên bản đơn giản của <code>ValidationPipe</code> để xem custom pipe được xây dựng như thế nào. Ban đầu, nó chỉ nhận input value và trả về ngay giá trị đó — hoạt động như một identity function.</p>
+    <p>Như đã đề cập, bạn có thể tự build custom pipe. Trong khi Nest cung cấp <code>ParseIntPipe</code> và <code>ValidationPipe</code> built-in mạnh mẽ, hãy build các phiên bản custom đơn giản của mỗi loại từ đầu để thấy cách custom pipe được xây dựng.</p>
+
+    <p>Chúng ta bắt đầu với một <code>ValidationPipe</code> đơn giản. Ban đầu, nó chỉ nhận input value và trả về ngay giá trị đó — hoạt động như một identity function.</p>
 
     <div class="cb">
       <div class="cb-head">
-        <div class="cb-fname">validation.pipe.ts</div>
+        <div class="cb-fname">validation.pipe</div>
         <div class="cb-right">
           <div class="tabs">
             <div class="tab on" onclick="sw(this,'b5','ts')">TS</div>
@@ -355,18 +341,17 @@
     </div>
 
     <div class="hint">
-      <span class="lbl">💡 Hint</span>
-      <p><code>PipeTransform&lt;T, R&gt;</code> là generic interface phải được implement bởi mọi pipe. <code>T</code> biểu thị type của input <code>value</code>, <code>R</code> biểu thị kiểu trả về của method <code>transform()</code>.</p>
+      <span class="lbl">Hint</span>
+      <p><code>PipeTransform&lt;T, R&gt;</code> là generic interface phải được implement bởi mọi pipe. Generic interface dùng <code>T</code> để biểu thị type của input <code>value</code>, và <code>R</code> để biểu thị kiểu trả về của method <code>transform()</code>.</p>
     </div>
 
     <p>Mọi pipe phải implement method <code>transform()</code> để hoàn thành contract của interface <code>PipeTransform</code>. Method này có hai parameter:</p>
-
-    <ul style="color:var(--sec);padding-left:22px;line-height:2.1;margin-bottom:16px;">
-      <li><code>value</code> — method argument hiện tại đang được xử lý (trước khi được route handling method nhận)</li>
-      <li><code>metadata</code> — metadata của method argument đang được xử lý</li>
+    <ul class="list">
+      <li><code>value</code></li>
+      <li><code>metadata</code></li>
     </ul>
 
-    <p>Object <code>metadata</code> có các property sau:</p>
+    <p>Parameter <code>value</code> là method argument hiện tại đang được xử lý (trước khi được route handling method nhận), và <code>metadata</code> là metadata của method argument đang được xử lý. Object metadata có các property sau:</p>
 
     <div class="cb">
       <div class="cb-head"><div style="flex:1"></div><button class="cpbtn" onclick="cp(this)">Copy</button></div>
@@ -389,37 +374,94 @@
           </tr>
           <tr>
             <td>metatype</td>
-            <td>Cung cấp metatype của argument, ví dụ <code>String</code>. Giá trị là <code>undefined</code> nếu bỏ khai báo type trong chữ ký method hoặc dùng vanilla JavaScript.</td>
+            <td>Cung cấp metatype của argument, ví dụ <code>String</code>. Lưu ý: giá trị là <code>undefined</code> nếu bạn bỏ khai báo type trong chữ ký method của route handler, hoặc dùng vanilla JavaScript.</td>
           </tr>
           <tr>
             <td>data</td>
-            <td>String được truyền vào decorator, ví dụ <code>@Body('string')</code>. Là <code>undefined</code> nếu để trống dấu ngoặc của decorator.</td>
+            <td>String được truyền vào decorator, ví dụ <code>@Body('string')</code>. Là <code>undefined</code> nếu bạn để trống dấu ngoặc của decorator.</td>
           </tr>
         </tbody>
       </table>
     </div>
 
     <div class="warn">
-      <span class="lbl">⚠️ Warning</span>
-      <p>TypeScript interface biến mất sau khi transpile. Do đó nếu type của method parameter được khai báo là interface thay vì class, giá trị <code>metatype</code> sẽ là <code>Object</code>.</p>
+      <span class="lbl">Warning</span>
+      <p>TypeScript interface biến mất sau khi transpile. Do đó, nếu type của method parameter được khai báo là interface thay vì class, giá trị <code>metatype</code> sẽ là <code>Object</code>.</p>
     </div>
 
-    <!-- ── SCHEMA BASED VALIDATION ── -->
+    <!-- SCHEMA BASED VALIDATION -->
     <h3 id="schema-based-validation">Schema based validation <a class="anchor" href="#schema-based-validation">#</a></h3>
 
-    <p>Hãy làm validation pipe hữu ích hơn. Xem xét method <code>create()</code> của <code>CatsController</code> — chúng ta muốn đảm bảo post body object hợp lệ trước khi chạy service method. Chúng ta có thể validate bên trong route handler, nhưng điều đó vi phạm <strong>single responsibility principle (SRP)</strong>. Middleware validation cũng không phù hợp vì middleware không biết về <strong>execution context</strong>. Đây chính xác là use case mà pipe được thiết kế để xử lý.</p>
+    <p>Hãy làm validation pipe hữu ích hơn. Xem xét method <code>create()</code> của <code>CatsController</code>, nơi chúng ta có lẽ muốn đảm bảo post body object hợp lệ trước khi chạy service method.</p>
 
-    <!-- ── OBJECT SCHEMA VALIDATION ── -->
+    <div class="cb">
+      <div class="cb-head">
+        <div style="flex:1"></div>
+        <div class="cb-right">
+          <div class="tabs">
+            <div class="tab on" onclick="sw(this,'bschema1','ts')">TS</div>
+            <div class="tab"    onclick="sw(this,'bschema1','js')">JS</div>
+          </div>
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div id="bschema1">
+        <div class="pane on" data-lang="ts"><pre><span class="dec">@Post</span><span class="pn">()</span>
+<span class="kw">async</span> <span class="fn">create</span><span class="pn">(</span><span class="dec">@Body</span><span class="pn">()</span> createCatDto<span class="pn">:</span> <span class="cl">CreateCatDto</span><span class="pn">)</span> <span class="pn">{</span>
+  <span class="kw">this</span><span class="pn">.</span>catsService<span class="pn">.</span><span class="fn">create</span><span class="pn">(</span>createCatDto<span class="pn">);</span>
+<span class="pn">}</span></pre></div>
+        <div class="pane" data-lang="js"><pre><span class="dec">@Post</span><span class="pn">()</span>
+<span class="kw">async</span> <span class="fn">create</span><span class="pn">(</span><span class="dec">@Body</span><span class="pn">()</span> createCatDto<span class="pn">)</span> <span class="pn">{</span>
+  <span class="kw">this</span><span class="pn">.</span>catsService<span class="pn">.</span><span class="fn">create</span><span class="pn">(</span>createCatDto<span class="pn">);</span>
+<span class="pn">}</span></pre></div>
+      </div>
+    </div>
+
+    <p>Hãy tập trung vào body parameter <code>createCatDto</code>. Type của nó là <code>CreateCatDto</code>:</p>
+
+    <div class="cb">
+      <div class="cb-head">
+        <div class="cb-fname">create-cat.dto</div>
+        <div class="cb-right">
+          <button class="cpbtn" onclick="cp(this)">Copy</button>
+        </div>
+      </div>
+      <div id="bcreatecatdto">
+        <div class="pane on"><pre><span class="kw">export class</span> <span class="cl">CreateCatDto</span> <span class="pn">{</span>
+  name<span class="pn">:</span> <span class="typ">string</span><span class="pn">;</span>
+  age<span class="pn">:</span> <span class="typ">number</span><span class="pn">;</span>
+  breed<span class="pn">:</span> <span class="typ">string</span><span class="pn">;</span>
+<span class="pn">}</span></pre></div>
+      </div>
+    </div>
+
+    <p>Chúng ta muốn đảm bảo mọi request đến method create chứa body hợp lệ. Vì vậy chúng ta phải validate ba member của object <code>createCatDto</code>. Chúng ta có thể làm điều này bên trong route handler method, nhưng làm vậy không lý tưởng vì sẽ vi phạm <strong>single responsibility principle</strong> (SRP).</p>
+
+    <p>Một cách tiếp cận khác là tạo <strong>validator class</strong> và ủy thác công việc cho nó. Điều này có nhược điểm là phải nhớ gọi validator này ở đầu mỗi method.</p>
+
+    <p>Vậy tạo validation middleware thì sao? Cách này có thể hoạt động, nhưng không may là không thể tạo <strong>generic middleware</strong> có thể sử dụng xuyên suốt mọi context trong toàn bộ ứng dụng. Bởi vì middleware không biết về <strong>execution context</strong>, bao gồm handler sẽ được gọi và bất kỳ parameter nào của nó.</p>
+
+    <p>Tất nhiên, đây chính xác là use case mà pipe được thiết kế để xử lý. Vì vậy hãy tiếp tục tinh chỉnh validation pipe của chúng ta.</p>
+
+    <!-- OBJECT SCHEMA VALIDATION -->
     <h3 id="object-schema-validation">Object schema validation <a class="anchor" href="#object-schema-validation">#</a></h3>
 
-    <p>Thư viện <a href="https://zod.dev/" target="_blank">Zod</a> cho phép tạo schema theo cách đơn giản với API dễ đọc. Hãy build validation pipe sử dụng Zod-based schema.</p>
+    <p>Có một số cách tiếp cận để thực hiện object validation theo cách clean, <a href="https://en.wikipedia.org/wiki/Don%27t_repeat_yourself" target="_blank">DRY</a>. Một cách phổ biến là sử dụng validation dựa trên <strong>schema</strong>. Hãy thử cách tiếp cận đó.</p>
 
-    <p>Cài đặt package cần thiết:</p>
+    <p>Thư viện <a href="https://zod.dev/" target="_blank">Zod</a> cho phép tạo schema theo cách đơn giản, với API dễ đọc. Hãy build validation pipe sử dụng Zod-based schema.</p>
+
+    <p>Bắt đầu bằng cách cài đặt package cần thiết:</p>
 
     <div class="cb">
       <div class="cb-head"><div style="flex:1"></div><button class="cpbtn" onclick="cp(this)">Copy</button></div>
       <div id="binstall"><div class="pane on"><pre>$ npm install --save zod</pre></div></div>
     </div>
+
+    <p>Trong đoạn code bên dưới, chúng ta tạo một class đơn giản nhận schema làm argument của <code>constructor</code>. Sau đó áp dụng method <code>schema.parse()</code> để validate incoming argument theo schema đã cung cấp.</p>
+
+    <p>Như đã lưu ý trước đó, <strong>validation pipe</strong> hoặc trả về giá trị không đổi hoặc throw exception.</p>
+
+    <p>Trong phần tiếp theo, bạn sẽ thấy cách cung cấp schema phù hợp cho một controller method cụ thể bằng decorator <code>@UsePipes()</code>. Làm vậy giúp validation pipe của chúng ta có thể tái sử dụng xuyên suốt các context, đúng như mục tiêu ban đầu.</p>
 
     <div class="cb">
       <div class="cb-head">
@@ -465,14 +507,18 @@
       </div>
     </div>
 
-    <!-- ── BINDING VALIDATION PIPES ── -->
+    <!-- BINDING VALIDATION PIPES -->
     <h3 id="binding-validation-pipes">Binding validation pipes <a class="anchor" href="#binding-validation-pipes">#</a></h3>
 
-    <p>Để dùng <code>ZodValidationPipe</code>, chúng ta cần:</p>
+    <p>Trước đó, chúng ta đã thấy cách bind transformation pipe (như <code>ParseIntPipe</code> và các <code>Parse*</code> pipe còn lại).</p>
+
+    <p>Binding validation pipe cũng rất đơn giản.</p>
+
+    <p>Trong trường hợp này, chúng ta muốn bind pipe ở cấp method call. Trong ví dụ hiện tại, chúng ta cần thực hiện các bước sau để dùng <code>ZodValidationPipe</code>:</p>
 
     <ol class="steps">
       <li>Tạo instance của <code>ZodValidationPipe</code></li>
-      <li>Truyền context-specific Zod schema vào constructor của pipe</li>
+      <li>Truyền context-specific Zod schema vào class constructor của pipe</li>
       <li>Bind pipe vào method</li>
     </ol>
 
@@ -495,11 +541,11 @@
       </div>
     </div>
 
-    <p>Dùng decorator <code>@UsePipes()</code> để bind:</p>
+    <p>Chúng ta thực hiện bằng decorator <code>@UsePipes()</code> như bên dưới:</p>
 
     <div class="cb">
       <div class="cb-head">
-        <div class="cb-fname">cats.controller.ts</div>
+        <div class="cb-fname">cats.controller</div>
         <div class="cb-right">
           <div class="tabs">
             <div class="tab on" onclick="sw(this,'b8','ts')">TS</div>
@@ -524,44 +570,43 @@
     </div>
 
     <div class="hint">
-      <span class="lbl">💡 Hint</span>
+      <span class="lbl">Hint</span>
       <p>Decorator <code>@UsePipes()</code> được import từ package <code>@nestjs/common</code>.</p>
     </div>
+
     <div class="warn">
-      <span class="lbl">⚠️ Warning</span>
+      <span class="lbl">Warning</span>
       <p>Thư viện <code>zod</code> yêu cầu bật cấu hình <code>strictNullChecks</code> trong file <code>tsconfig.json</code>.</p>
     </div>
 
-    <!-- ── CLASS VALIDATOR ── -->
+    <!-- CLASS VALIDATOR -->
     <h3 id="class-validator">Class validator <a class="anchor" href="#class-validator">#</a></h3>
 
     <div class="warn">
-      <span class="lbl">⚠️ Warning</span>
-      <p>Các kỹ thuật trong phần này yêu cầu TypeScript và không khả dụng với vanilla JavaScript.</p>
+      <span class="lbl">Warning</span>
+      <p>Các kỹ thuật trong phần này yêu cầu TypeScript và không khả dụng nếu ứng dụng của bạn được viết bằng vanilla JavaScript.</p>
     </div>
 
-    <p>Nest hoạt động tốt với thư viện <a href="https://github.com/typestack/class-validator" target="_blank">class-validator</a> — cho phép dùng decorator-based validation. Kỹ thuật này đặc biệt mạnh mẽ khi kết hợp với khả năng <strong>Pipe</strong> của Nest vì chúng ta có quyền truy cập vào <code>metatype</code> của property đang xử lý. Cài đặt trước:</p>
+    <p>Hãy xem một implementation thay thế cho kỹ thuật validation của chúng ta.</p>
+
+    <p>Nest hoạt động tốt với thư viện <a href="https://github.com/typestack/class-validator" target="_blank">class-validator</a>. Thư viện mạnh mẽ này cho phép bạn dùng decorator-based validation. Decorator-based validation đặc biệt mạnh mẽ, nhất là khi kết hợp với khả năng <strong>Pipe</strong> của Nest vì chúng ta có quyền truy cập vào <code>metatype</code> của property đang xử lý. Trước khi bắt đầu, cần cài đặt các package cần thiết:</p>
 
     <div class="cb">
       <div class="cb-head"><div style="flex:1"></div><button class="cpbtn" onclick="cp(this)">Copy</button></div>
       <div id="binstall2"><div class="pane on"><pre>$ npm i --save class-validator class-transformer</pre></div></div>
     </div>
 
-    <p>Sau khi cài đặt, thêm decorator vào class <code>CreateCatDto</code>. Ưu điểm lớn ở đây: <code>CreateCatDto</code> vẫn là nguồn sự thật duy nhất cho Post body object:</p>
+    <p>Sau khi cài đặt, chúng ta có thể thêm một số decorator vào class <code>CreateCatDto</code>. Ở đây chúng ta thấy một ưu điểm đáng kể của kỹ thuật này: class <code>CreateCatDto</code> vẫn là nguồn sự thật duy nhất cho Post body object (thay vì phải tạo một validation class riêng).</p>
 
     <div class="cb">
       <div class="cb-head">
-        <div class="cb-fname">create-cat.dto.ts</div>
+        <div class="cb-fname">create-cat.dto</div>
         <div class="cb-right">
-          <div class="tabs">
-            <div class="tab on" onclick="sw(this,'b9','ts')">TS</div>
-            <div class="tab"    onclick="sw(this,'b9','js')">JS</div>
-          </div>
           <button class="cpbtn" onclick="cp(this)">Copy</button>
         </div>
       </div>
       <div id="b9">
-        <div class="pane on" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">IsString</span><span class="pn">,</span> <span class="cl">IsInt</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'class-validator'</span><span class="pn">;</span>
+        <div class="pane on"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">IsString</span><span class="pn">,</span> <span class="cl">IsInt</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'class-validator'</span><span class="pn">;</span>
 
 <span class="kw">export class</span> <span class="cl">CreateCatDto</span> <span class="pn">{</span>
   <span class="dec">@IsString</span><span class="pn">()</span>
@@ -573,26 +618,25 @@
   <span class="dec">@IsString</span><span class="pn">()</span>
   breed<span class="pn">:</span> <span class="typ">string</span><span class="pn">;</span>
 <span class="pn">}</span></pre></div>
-        <div class="pane" data-lang="js"><pre><span class="cm">// Vanilla JS không hỗ trợ decorator-based validation</span>
-<span class="cm">// Sử dụng TypeScript để dùng class-validator</span></pre></div>
       </div>
     </div>
 
-    <p>Bây giờ tạo class <code>ValidationPipe</code> sử dụng các annotation này:</p>
+    <div class="hint">
+      <span class="lbl">Hint</span>
+      <p>Đọc thêm về các class-validator decorator <a href="https://github.com/typestack/class-validator#usage" target="_blank">tại đây</a>.</p>
+    </div>
+
+    <p>Bây giờ chúng ta có thể tạo class <code>ValidationPipe</code> sử dụng các annotation này.</p>
 
     <div class="cb">
       <div class="cb-head">
-        <div class="cb-fname">validation.pipe.ts</div>
+        <div class="cb-fname">validation.pipe</div>
         <div class="cb-right">
-          <div class="tabs">
-            <div class="tab on" onclick="sw(this,'b10','ts')">TS</div>
-            <div class="tab"    onclick="sw(this,'b10','js')">JS</div>
-          </div>
           <button class="cpbtn" onclick="cp(this)">Copy</button>
         </div>
       </div>
       <div id="b10">
-        <div class="pane on" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="typ">PipeTransform</span><span class="pn">,</span> <span class="cl">Injectable</span><span class="pn">,</span> <span class="typ">ArgumentMetadata</span><span class="pn">,</span> <span class="cl">BadRequestException</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+        <div class="pane on"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="typ">PipeTransform</span><span class="pn">,</span> <span class="cl">Injectable</span><span class="pn">,</span> <span class="typ">ArgumentMetadata</span><span class="pn">,</span> <span class="cl">BadRequestException</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
 <span class="kw">import</span> <span class="pn">{</span> validate <span class="pn">}</span> <span class="kw">from</span> <span class="str">'class-validator'</span><span class="pn">;</span>
 <span class="kw">import</span> <span class="pn">{</span> plainToInstance <span class="pn">}</span> <span class="kw">from</span> <span class="str">'class-transformer'</span><span class="pn">;</span>
 
@@ -615,92 +659,64 @@
     <span class="kw">return</span> <span class="pn">!</span>types<span class="pn">.</span><span class="fn">includes</span><span class="pn">(</span>metatype<span class="pn">);</span>
   <span class="pn">}</span>
 <span class="pn">}</span></pre></div>
-        <div class="pane" data-lang="js"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Injectable</span><span class="pn">,</span> <span class="cl">BadRequestException</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
-<span class="kw">import</span> <span class="pn">{</span> validate <span class="pn">}</span> <span class="kw">from</span> <span class="str">'class-validator'</span><span class="pn">;</span>
-<span class="kw">import</span> <span class="pn">{</span> plainToInstance <span class="pn">}</span> <span class="kw">from</span> <span class="str">'class-transformer'</span><span class="pn">;</span>
-
-<span class="dec">@Injectable</span><span class="pn">()</span>
-<span class="kw">export class</span> <span class="cl">ValidationPipe</span> <span class="pn">{</span>
-  <span class="kw">async</span> <span class="fn">transform</span><span class="pn">(</span>value<span class="pn">,</span> <span class="pn">{</span> metatype <span class="pn">})</span> <span class="pn">{</span>
-    <span class="kw">if</span> <span class="pn">(!</span>metatype <span class="pn">|| !</span><span class="kw">this</span><span class="pn">.</span><span class="fn">toValidate</span><span class="pn">(</span>metatype<span class="pn">))</span> <span class="pn">{</span>
-      <span class="kw">return</span> value<span class="pn">;</span>
-    <span class="pn">}</span>
-    <span class="kw">const</span> object <span class="pn">=</span> <span class="fn">plainToInstance</span><span class="pn">(</span>metatype<span class="pn">,</span> value<span class="pn">);</span>
-    <span class="kw">const</span> errors <span class="pn">=</span> <span class="kw">await</span> <span class="fn">validate</span><span class="pn">(</span>object<span class="pn">);</span>
-    <span class="kw">if</span> <span class="pn">(</span>errors<span class="pn">.</span>length <span class="pn">&gt;</span> <span class="num">0</span><span class="pn">)</span> <span class="pn">{</span>
-      <span class="kw">throw new</span> <span class="cl">BadRequestException</span><span class="pn">(</span><span class="str">'Validation failed'</span><span class="pn">);</span>
-    <span class="pn">}</span>
-    <span class="kw">return</span> value<span class="pn">;</span>
-  <span class="pn">}</span>
-
-  <span class="fn">toValidate</span><span class="pn">(</span>metatype<span class="pn">)</span> <span class="pn">{</span>
-    <span class="kw">const</span> types <span class="pn">= [</span><span class="cl">String</span><span class="pn">,</span> <span class="cl">Boolean</span><span class="pn">,</span> <span class="cl">Number</span><span class="pn">,</span> <span class="cl">Array</span><span class="pn">,</span> <span class="cl">Object</span><span class="pn">];</span>
-    <span class="kw">return</span> <span class="pn">!</span>types<span class="pn">.</span><span class="fn">includes</span><span class="pn">(</span>metatype<span class="pn">);</span>
-  <span class="pn">}</span>
-<span class="pn">}</span></pre></div>
       </div>
     </div>
 
-    <div class="note">
-      <span class="lbl">📌 Notice</span>
-      <p>Thư viện <a href="https://github.com/typestack/class-transformer" target="_blank">class-transformer</a> được tạo bởi cùng tác giả với <strong>class-validator</strong> nên chúng phối hợp rất tốt với nhau.</p>
+    <div class="hint">
+      <span class="lbl">Hint</span>
+      <p>Nhắc nhở, bạn không cần tự build generic validation pipe vì <code>ValidationPipe</code> đã được Nest cung cấp sẵn. Built-in <code>ValidationPipe</code> cung cấp nhiều option hơn ví dụ chúng ta tự build trong chương này, được giữ ở mức cơ bản để minh họa cơ chế hoạt động của custom pipe. Bạn có thể tìm chi tiết đầy đủ cùng nhiều ví dụ <a href="https://docs.nestjs.com/techniques/validation" target="_blank">tại đây</a>.</p>
     </div>
 
-    <p>Method <code>transform()</code> được đánh dấu <code>async</code> vì Nest hỗ trợ cả pipe đồng bộ lẫn <strong>bất đồng bộ</strong> — một số class-validator validation có thể là async. Chúng ta dùng <code>plainToInstance()</code> từ class-transformer để transform plain JavaScript argument object thành typed object để có thể áp dụng validation, vì body deserialized từ network request <strong>không có bất kỳ type information nào</strong>.</p>
+    <div class="warn">
+      <span class="lbl">Notice</span>
+      <p>Chúng ta đã dùng thư viện <a href="https://github.com/typestack/class-transformer" target="_blank">class-transformer</a> ở trên, được tạo bởi cùng tác giả với <strong>class-validator</strong>, và do đó chúng phối hợp rất tốt với nhau.</p>
+    </div>
 
-    <p>Bind <code>ValidationPipe</code> vào route handler <code>@Body()</code>:</p>
+    <p>Hãy đi qua đoạn code này. Đầu tiên, lưu ý rằng method <code>transform()</code> được đánh dấu <code>async</code>. Điều này có thể vì Nest hỗ trợ cả pipe đồng bộ lẫn <strong>bất đồng bộ</strong>. Chúng ta đặt method này là <code>async</code> vì một số class-validator validation có thể là async (sử dụng Promise).</p>
+
+    <p>Tiếp theo, lưu ý rằng chúng ta dùng destructuring để trích xuất trường metatype (chỉ trích xuất member này từ <code>ArgumentMetadata</code>) vào parameter <code>metatype</code>. Đây chỉ là cách viết tắt cho việc lấy toàn bộ <code>ArgumentMetadata</code> rồi có thêm câu lệnh gán biến metatype.</p>
+
+    <p>Tiếp theo, lưu ý helper function <code>toValidate()</code>. Nó chịu trách nhiệm bỏ qua bước validation khi argument hiện tại đang xử lý là native JavaScript type (những type này không thể gắn validation decorator, nên không có lý do chạy chúng qua bước validation).</p>
+
+    <p>Tiếp theo, chúng ta dùng function <code>plainToInstance()</code> của class-transformer để transform plain JavaScript argument object thành typed object để có thể áp dụng validation. Lý do phải làm vậy là incoming post body object, khi được deserialize từ network request, <strong>không có bất kỳ type information nào</strong> (đây là cách nền tảng underlying như Express hoạt động). Class-validator cần sử dụng các validation decorator mà chúng ta đã định nghĩa cho DTO trước đó, nên cần thực hiện transformation này để xử lý incoming body như một object được decorate đúng cách, chứ không phải một plain vanilla object.</p>
+
+    <p>Cuối cùng, như đã lưu ý trước đó, vì đây là <strong>validation pipe</strong> nên nó hoặc trả về giá trị không đổi, hoặc throw exception.</p>
+
+    <p>Bước cuối cùng là bind <code>ValidationPipe</code>. Pipe có thể là parameter-scoped, method-scoped, controller-scoped, hoặc global-scoped. Trước đó, với Zod-based validation pipe, chúng ta đã thấy ví dụ binding pipe ở cấp method. Trong ví dụ bên dưới, chúng ta sẽ bind pipe instance vào decorator <code>@Body()</code> của route handler để pipe được gọi để validate post body.</p>
 
     <div class="cb">
       <div class="cb-head">
-        <div class="cb-fname">cats.controller.ts</div>
+        <div class="cb-fname">cats.controller</div>
         <div class="cb-right">
-          <div class="tabs">
-            <div class="tab on" onclick="sw(this,'b11','ts')">TS</div>
-            <div class="tab"    onclick="sw(this,'b11','js')">JS</div>
-          </div>
           <button class="cpbtn" onclick="cp(this)">Copy</button>
         </div>
       </div>
       <div id="b11">
-        <div class="pane on" data-lang="ts"><pre><span class="dec">@Post</span><span class="pn">()</span>
+        <div class="pane on"><pre><span class="dec">@Post</span><span class="pn">()</span>
 <span class="kw">async</span> <span class="fn">create</span><span class="pn">(</span>
   <span class="dec">@Body</span><span class="pn">(</span><span class="kw">new</span> <span class="cl">ValidationPipe</span><span class="pn">())</span> createCatDto<span class="pn">:</span> <span class="cl">CreateCatDto</span><span class="pn">,</span>
 <span class="pn">)</span> <span class="pn">{</span>
   <span class="kw">this</span><span class="pn">.</span>catsService<span class="pn">.</span><span class="fn">create</span><span class="pn">(</span>createCatDto<span class="pn">);</span>
 <span class="pn">}</span></pre></div>
-        <div class="pane" data-lang="js"><pre><span class="dec">@Post</span><span class="pn">()</span>
-<span class="kw">async</span> <span class="fn">create</span><span class="pn">(</span>
-  <span class="dec">@Body</span><span class="pn">(</span><span class="kw">new</span> <span class="cl">ValidationPipe</span><span class="pn">())</span> createCatDto<span class="pn">,</span>
-<span class="pn">)</span> <span class="pn">{</span>
-  <span class="kw">this</span><span class="pn">.</span>catsService<span class="pn">.</span><span class="fn">create</span><span class="pn">(</span>createCatDto<span class="pn">);</span>
-<span class="pn">}</span></pre></div>
       </div>
     </div>
 
-    <!-- ── GLOBAL SCOPED PIPES ── -->
+    <p>Parameter-scoped pipe hữu ích khi logic validation chỉ liên quan đến một parameter cụ thể.</p>
+
+    <!-- GLOBAL SCOPED PIPES -->
     <h3 id="global-scoped-pipes">Global scoped pipes <a class="anchor" href="#global-scoped-pipes">#</a></h3>
 
-    <p>Vì <code>ValidationPipe</code> được tạo để generic nhất có thể, chúng ta có thể phát huy tối đa lợi ích của nó bằng cách thiết lập như <strong>global-scoped</strong> pipe — được áp dụng cho mọi route handler trong toàn bộ ứng dụng:</p>
+    <p>Vì <code>ValidationPipe</code> được tạo để generic nhất có thể, chúng ta có thể phát huy tối đa lợi ích của nó bằng cách thiết lập như <strong>global-scoped</strong> pipe để nó được áp dụng cho mọi route handler trong toàn bộ ứng dụng.</p>
 
     <div class="cb">
       <div class="cb-head">
-        <div class="cb-fname">main.ts</div>
+        <div class="cb-fname">main</div>
         <div class="cb-right">
-          <div class="tabs">
-            <div class="tab on" onclick="sw(this,'b12','ts')">TS</div>
-            <div class="tab"    onclick="sw(this,'b12','js')">JS</div>
-          </div>
           <button class="cpbtn" onclick="cp(this)">Copy</button>
         </div>
       </div>
       <div id="b12">
-        <div class="pane on" data-lang="ts"><pre><span class="kw">async function</span> <span class="fn">bootstrap</span><span class="pn">()</span> <span class="pn">{</span>
-  <span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> <span class="cl">NestFactory</span><span class="pn">.</span><span class="fn">create</span><span class="pn">(</span><span class="cl">AppModule</span><span class="pn">);</span>
-  app<span class="pn">.</span><span class="fn">useGlobalPipes</span><span class="pn">(</span><span class="kw">new</span> <span class="cl">ValidationPipe</span><span class="pn">());</span>
-  <span class="kw">await</span> app<span class="pn">.</span><span class="fn">listen</span><span class="pn">(</span>process<span class="pn">.</span>env<span class="pn">.</span>PORT <span class="pn">??</span> <span class="num">3000</span><span class="pn">);</span>
-<span class="pn">}</span>
-<span class="fn">bootstrap</span><span class="pn">();</span></pre></div>
-        <div class="pane" data-lang="js"><pre><span class="kw">async function</span> <span class="fn">bootstrap</span><span class="pn">()</span> <span class="pn">{</span>
+        <div class="pane on"><pre><span class="kw">async function</span> <span class="fn">bootstrap</span><span class="pn">()</span> <span class="pn">{</span>
   <span class="kw">const</span> app <span class="pn">=</span> <span class="kw">await</span> <span class="cl">NestFactory</span><span class="pn">.</span><span class="fn">create</span><span class="pn">(</span><span class="cl">AppModule</span><span class="pn">);</span>
   app<span class="pn">.</span><span class="fn">useGlobalPipes</span><span class="pn">(</span><span class="kw">new</span> <span class="cl">ValidationPipe</span><span class="pn">());</span>
   <span class="kw">await</span> app<span class="pn">.</span><span class="fn">listen</span><span class="pn">(</span>process<span class="pn">.</span>env<span class="pn">.</span>PORT <span class="pn">??</span> <span class="num">3000</span><span class="pn">);</span>
@@ -709,33 +725,24 @@
       </div>
     </div>
 
-    <p>Global pipe đăng ký từ bên ngoài module (với <code>useGlobalPipes()</code>) không thể inject dependency. Để giải quyết, đăng ký global pipe <strong>trực tiếp từ bất kỳ module nào</strong>:</p>
+    <div class="warn">
+      <span class="lbl">Notice</span>
+      <p>Trong trường hợp hybrid app, method <code>useGlobalPipes()</code> không thiết lập pipe cho gateway và microservice. Với ứng dụng microservice "tiêu chuẩn" (non-hybrid), <code>useGlobalPipes()</code> sẽ mount pipe globally.</p>
+    </div>
+
+    <p>Global pipe được sử dụng trong toàn bộ ứng dụng, cho mọi controller và mọi route handler.</p>
+
+    <p>Lưu ý rằng về mặt dependency injection, global pipe được đăng ký từ bên ngoài bất kỳ module nào (với <code>useGlobalPipes()</code> như ví dụ trên) không thể inject dependency vì binding được thực hiện ngoài context của bất kỳ module nào. Để giải quyết vấn đề này, bạn có thể thiết lập global pipe <strong>trực tiếp từ bất kỳ module nào</strong> bằng cấu trúc sau:</p>
 
     <div class="cb">
       <div class="cb-head">
-        <div class="cb-fname">app.module.ts</div>
+        <div class="cb-fname">app.module</div>
         <div class="cb-right">
-          <div class="tabs">
-            <div class="tab on" onclick="sw(this,'b13','ts')">TS</div>
-            <div class="tab"    onclick="sw(this,'b13','js')">JS</div>
-          </div>
           <button class="cpbtn" onclick="cp(this)">Copy</button>
         </div>
       </div>
       <div id="b13">
-        <div class="pane on" data-lang="ts"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Module</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
-<span class="kw">import</span> <span class="pn">{</span> <span class="cl">APP_PIPE</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/core'</span><span class="pn">;</span>
-
-<span class="dec">@Module</span><span class="pn">({</span>
-  providers<span class="pn">:</span> <span class="pn">[</span>
-    <span class="pn">{</span>
-      provide<span class="pn">:</span>  <span class="cl">APP_PIPE</span><span class="pn">,</span>
-      useClass<span class="pn">:</span> <span class="cl">ValidationPipe</span><span class="pn">,</span>
-    <span class="pn">},</span>
-  <span class="pn">],</span>
-<span class="pn">})</span>
-<span class="kw">export class</span> <span class="cl">AppModule</span> <span class="pn">{}</span></pre></div>
-        <div class="pane" data-lang="js"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Module</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
+        <div class="pane on"><pre><span class="kw">import</span> <span class="pn">{</span> <span class="cl">Module</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/common'</span><span class="pn">;</span>
 <span class="kw">import</span> <span class="pn">{</span> <span class="cl">APP_PIPE</span> <span class="pn">}</span> <span class="kw">from</span> <span class="str">'@nestjs/core'</span><span class="pn">;</span>
 
 <span class="dec">@Module</span><span class="pn">({</span>
@@ -750,21 +757,28 @@
       </div>
     </div>
 
-    <!-- ── BUILT-IN VALIDATIONPIPE ── -->
+    <div class="hint">
+      <span class="lbl">Hint</span>
+      <p>Khi sử dụng cách tiếp cận này để thực hiện dependency injection cho pipe, lưu ý rằng bất kể module nào sử dụng cấu trúc này, pipe thực tế là global. Nên thực hiện ở đâu? Chọn module nơi pipe (<code>ValidationPipe</code> trong ví dụ trên) được định nghĩa. Ngoài ra, <code>useClass</code> không phải là cách duy nhất để đăng ký custom provider. Tìm hiểu thêm <a href="https://docs.nestjs.com/fundamentals/custom-providers" target="_blank">tại đây</a>.</p>
+    </div>
+
+    <!-- BUILT-IN VALIDATIONPIPE -->
     <h3 id="built-in-validationpipe">The built-in ValidationPipe <a class="anchor" href="#built-in-validationpipe">#</a></h3>
 
-    <p>Nhắc nhở: bạn không cần tự build generic validation pipe vì <code>ValidationPipe</code> đã được Nest cung cấp sẵn. Built-in <code>ValidationPipe</code> cung cấp nhiều option hơn ví dụ chúng ta tự build trong chương này. Xem chi tiết đầy đủ cùng nhiều ví dụ <a href="https://docs.nestjs.com/techniques/validation" target="_blank">tại đây</a>.</p>
+    <p>Nhắc nhở, bạn không cần tự build generic validation pipe vì <code>ValidationPipe</code> đã được Nest cung cấp sẵn. Built-in <code>ValidationPipe</code> cung cấp nhiều option hơn ví dụ chúng ta tự build trong chương này, được giữ ở mức cơ bản để minh họa cơ chế hoạt động của custom pipe. Bạn có thể tìm chi tiết đầy đủ cùng nhiều ví dụ <a href="https://docs.nestjs.com/techniques/validation" target="_blank">tại đây</a>.</p>
 
-    <!-- ── TRANSFORMATION USE CASE ── -->
+    <!-- TRANSFORMATION USE CASE -->
     <h3 id="transformation-use-case">Transformation use case <a class="anchor" href="#transformation-use-case">#</a></h3>
 
-    <p>Validation không phải là use case duy nhất cho custom pipe. Pipe cũng có thể <strong>transform</strong> input data sang format mong muốn vì value trả về từ hàm <code>transform</code> hoàn toàn ghi đè giá trị cũ của argument.</p>
+    <p>Validation không phải là use case duy nhất cho custom pipe. Ở đầu chương này, chúng ta đã đề cập rằng pipe cũng có thể <strong>transform</strong> input data sang format mong muốn. Điều này có thể vì value trả về từ hàm <code>transform</code> hoàn toàn ghi đè giá trị trước đó của argument.</p>
 
-    <p>Đây là <code>ParseIntPipe</code> đơn giản tự implement — chịu trách nhiệm parse string thành integer:</p>
+    <p>Khi nào điều này hữu ích? Xem xét rằng đôi khi dữ liệu từ client cần trải qua một số thay đổi — ví dụ chuyển string thành integer — trước khi có thể được xử lý đúng cách bởi route handler method. Hơn nữa, một số trường dữ liệu bắt buộc có thể bị thiếu, và chúng ta muốn áp dụng giá trị mặc định. <strong>Transformation pipe</strong> có thể thực hiện các chức năng này bằng cách đặt một hàm xử lý giữa client request và request handler.</p>
+
+    <p>Đây là <code>ParseIntPipe</code> đơn giản chịu trách nhiệm parse string thành giá trị integer. (Như đã lưu ý ở trên, Nest có built-in <code>ParseIntPipe</code> phức tạp hơn; chúng ta bao gồm ví dụ này như một custom transformation pipe đơn giản).</p>
 
     <div class="cb">
       <div class="cb-head">
-        <div class="cb-fname">parse-int.pipe.ts</div>
+        <div class="cb-fname">parse-int.pipe</div>
         <div class="cb-right">
           <div class="tabs">
             <div class="tab on" onclick="sw(this,'b14','ts')">TS</div>
@@ -801,7 +815,7 @@
       </div>
     </div>
 
-    <p>Bind pipe này vào param được chọn:</p>
+    <p>Sau đó chúng ta có thể bind pipe này vào param đã chọn như bên dưới:</p>
 
     <div class="cb">
       <div class="cb-head">
@@ -827,7 +841,7 @@
       </div>
     </div>
 
-    <p>Một trường hợp transformation hữu ích khác là chọn một <strong>user entity</strong> từ database bằng id từ request:</p>
+    <p>Một trường hợp transformation hữu ích khác là chọn một <strong>existing user</strong> entity từ database bằng id được cung cấp trong request:</p>
 
     <div class="cb">
       <div class="cb-head">
@@ -853,38 +867,26 @@
       </div>
     </div>
 
-    <p>Pipe này nhận input <code>id</code> và trả về output (<code>UserEntity</code> object). Điều này làm cho code của bạn trở nên declarative và <a href="https://en.wikipedia.org/wiki/Don%27t_repeat_yourself" target="_blank">DRY</a> hơn bằng cách trừu tượng hoá boilerplate ra khỏi handler và đưa vào pipe chung.</p>
+    <p>Chúng ta để việc implement pipe này cho người đọc, nhưng lưu ý rằng giống như tất cả transformation pipe khác, nó nhận input value (một <code>id</code>) và trả về output value (một <code>UserEntity</code> object). Điều này có thể làm code của bạn trở nên declarative và DRY hơn bằng cách trừu tượng hoá boilerplate code ra khỏi handler và đưa vào một pipe chung.</p>
 
-    <!-- ── PROVIDING DEFAULTS ── -->
+    <!-- PROVIDING DEFAULTS -->
     <h3 id="providing-defaults">Providing defaults <a class="anchor" href="#providing-defaults">#</a></h3>
 
-    <p>Các <strong>Parse*</strong> pipe kỳ vọng giá trị của parameter phải được định nghĩa — chúng throw exception khi nhận giá trị <code>null</code> hoặc <code>undefined</code>. Để cho phép endpoint xử lý các query string parameter bị thiếu, chúng ta phải cung cấp giá trị mặc định trước khi các <strong>Parse*</strong> pipe hoạt động. <code>DefaultValuePipe</code> phục vụ mục đích đó. Chỉ cần khởi tạo <code>DefaultValuePipe</code> trong decorator <code>@Query()</code> trước <strong>Parse*</strong> pipe liên quan:</p>
+    <p>Các <code>Parse*</code> pipe kỳ vọng giá trị của parameter phải được định nghĩa. Chúng throw exception khi nhận giá trị <code>null</code> hoặc <code>undefined</code>. Để cho phép endpoint xử lý các giá trị querystring parameter bị thiếu, chúng ta phải cung cấp giá trị mặc định trước khi các <code>Parse*</code> pipe hoạt động trên các giá trị này. <code>DefaultValuePipe</code> phục vụ mục đích đó. Chỉ cần khởi tạo <code>DefaultValuePipe</code> trong decorator <code>@Query()</code> trước <code>Parse*</code> pipe liên quan, như bên dưới:</p>
 
     <div class="cb">
       <div class="cb-head">
         <div style="flex:1"></div>
         <div class="cb-right">
-          <div class="tabs">
-            <div class="tab on" onclick="sw(this,'b17','ts')">TS</div>
-            <div class="tab"    onclick="sw(this,'b17','js')">JS</div>
-          </div>
           <button class="cpbtn" onclick="cp(this)">Copy</button>
         </div>
       </div>
       <div id="b17">
-        <div class="pane on" data-lang="ts"><pre><span class="dec">@Get</span><span class="pn">()</span>
+        <div class="pane on"><pre><span class="dec">@Get</span><span class="pn">()</span>
 <span class="kw">async</span> <span class="fn">findAll</span><span class="pn">(</span>
   <span class="dec">@Query</span><span class="pn">(</span><span class="str">'activeOnly'</span><span class="pn">,</span> <span class="kw">new</span> <span class="cl">DefaultValuePipe</span><span class="pn">(</span><span class="kw">false</span><span class="pn">),</span> <span class="cl">ParseBoolPipe</span><span class="pn">)</span> activeOnly<span class="pn">:</span> <span class="typ">boolean</span><span class="pn">,</span>
   <span class="dec">@Query</span><span class="pn">(</span><span class="str">'page'</span><span class="pn">,</span> <span class="kw">new</span> <span class="cl">DefaultValuePipe</span><span class="pn">(</span><span class="num">0</span><span class="pn">),</span> <span class="cl">ParseIntPipe</span><span class="pn">)</span> page<span class="pn">:</span> <span class="typ">number</span><span class="pn">,</span>
 <span class="pn">)</span> <span class="pn">{</span>
-  <span class="kw">return</span> <span class="kw">this</span><span class="pn">.</span>catsService<span class="pn">.</span><span class="fn">findAll</span><span class="pn">({</span> activeOnly<span class="pn">,</span> page <span class="pn">});</span>
-<span class="pn">}</span></pre></div>
-        <div class="pane" data-lang="js"><pre><span class="dec">@Get</span><span class="pn">()</span>
-<span class="dec">@Bind</span><span class="pn">(</span>
-  <span class="fn">Query</span><span class="pn">(</span><span class="str">'activeOnly'</span><span class="pn">,</span> <span class="kw">new</span> <span class="cl">DefaultValuePipe</span><span class="pn">(</span><span class="kw">false</span><span class="pn">),</span> <span class="cl">ParseBoolPipe</span><span class="pn">),</span>
-  <span class="fn">Query</span><span class="pn">(</span><span class="str">'page'</span><span class="pn">,</span> <span class="kw">new</span> <span class="cl">DefaultValuePipe</span><span class="pn">(</span><span class="num">0</span><span class="pn">),</span> <span class="cl">ParseIntPipe</span><span class="pn">),</span>
-<span class="pn">)</span>
-<span class="kw">async</span> <span class="fn">findAll</span><span class="pn">(</span>activeOnly<span class="pn">,</span> page<span class="pn">)</span> <span class="pn">{</span>
   <span class="kw">return</span> <span class="kw">this</span><span class="pn">.</span>catsService<span class="pn">.</span><span class="fn">findAll</span><span class="pn">({</span> activeOnly<span class="pn">,</span> page <span class="pn">});</span>
 <span class="pn">}</span></pre></div>
       </div>
@@ -892,11 +894,11 @@
 
     <!-- PAGE NAV -->
     <div class="page-nav">
-      <a class="pnbtn" href="nestjs-exception-filters-vi.html">
+      <a class="pnbtn" href="Exception filters.html">
         <div class="pnlbl">&larr; Trước</div>
         <div class="pntitle">Exception filters</div>
       </a>
-      <a class="pnbtn r" href="https://docs.nestjs.com/guards" target="_blank">
+      <a class="pnbtn r" href="Guards.html">
         <div class="pnlbl">Tiếp theo &rarr;</div>
         <div class="pntitle">Guards</div>
       </a>
@@ -904,7 +906,7 @@
 
   </main>
 
-  <!-- ════════════════════ TOC ════════════════════ -->
+  <!-- TOC -->
   <aside class="toc">
     <div class="toc-title">Trong trang này</div>
     <ul>
